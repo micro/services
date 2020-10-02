@@ -1,7 +1,7 @@
 package main
 
 import (
-	"idiomatic/handler"
+	"github.com/micro/services/idiomatic/handler"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
