@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package pubsub;
+
+message Message {
+	string id = 1;
+	bytes body = 2;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package comments;
+
+service Comments {
+	rpc Save(Request) returns (Response) {}
+}
+
+message Request {
+	// post to comment on
+	string post_id = 1;
+	// message to leave
+	string message = 2;
+
+}
+
+message Response {}

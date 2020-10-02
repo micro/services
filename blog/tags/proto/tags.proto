@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package tags;
+
+service Tags {
+	// Increase count creates the tag or bumps the counter
+	rpc IncreaseCount(IncreaseCountRequest) returns (IncreaseCountResponse) {}
+	// Decreases the counter
+	rpc DecreaseCount(DecreaseCountRequest) returns (DecreaseCountResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	// Change properties of a tag, currently only the title
+	rpc Update(UpdateRequest) returns (UpdateResponse){}
+}
+
+message Tag {
+	// The id of the parent object
+	string parentID = 1;
+	// Type is useful for namespacing and listing across parents,
+	// ie. list tags for posts, customers etc.
+	string type = 2;
+	string slug = 3;
+	string title = 4;
+	int64 count = 5;
+}
+
+message IncreaseCountRequest {
+	string parentID = 1;
+	string type = 2;
+	string title = 3;
+}
+
+message IncreaseCountResponse{}
+
+message DecreaseCountRequest{
+	string parentID = 1;
+	string type = 2;
+	string title = 3;
+}
+
+message DecreaseCountResponse{}
+
+message UpdateRequest {
+	string parentID = 1;
+	string type = 2;
+	string title = 3;
+}
+
+message UpdateResponse{}
+
+// ListRequest: list either by parent id or type.
+// Optionally filter by min or max count.
+message ListRequest{
+	string parentID = 1;
+	string type = 2;
+	int64 minCount = 3;
+	int64 maxCount = 4;
+}
+
+message ListResponse{
+	repeated Tag tags = 1;
+}
+

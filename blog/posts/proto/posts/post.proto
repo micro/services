@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package posts;
+
+service Posts {
+	// Query currently only supports read by slug or timestamp, no listing.
+	rpc Query(QueryRequest) returns (QueryResponse) {}
+	rpc Save(SaveRequest) returns (SaveResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+}
+
+message Post {
+	string id = 1;
+	string title = 2;
+	string slug = 3;
+	string content = 4;
+	int64 timestamp = 5;
+	repeated string tagNames = 6;
+}
+
+message QueryRequest {
+	string slug = 1;
+	int64 offset = 2;
+	int64 limit = 3;
+}
+
+message QueryResponse {
+	repeated Post posts = 1;
+}
+
+message SaveRequest {
+	Post post = 1;
+}
+
+message SaveResponse {
+	Post post = 1;
+}
+
+message DeleteRequest {
+	string id = 1;
+}
+
+message DeleteResponse {
+}
+

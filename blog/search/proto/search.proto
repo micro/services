@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package search;
+
+service Search {
+	rpc Index(IndexRequest) returns (IndexResponse) {}
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+}
+
+message Document {
+	string id = 1;
+	string text = 2;
+}
+
+message IndexRequest {
+	Document document = 1;
+}
+
+message IndexResponse {}
+
+message SearchRequest {
+	string keyword = 1;
+}
+
+message SearchResponse {
+	repeated Document documents = 1;
+}
