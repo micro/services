@@ -1,7 +1,7 @@
 package main
 
 import (
-	"example/handler"
+	"github.com/micro/services/store/handler"
 
 	"github.com/micro/micro/v3/service"
 )

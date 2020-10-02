@@ -8,7 +8,7 @@ import (
 	log "github.com/micro/go-micro/v3/logger"
 	store "github.com/micro/micro/v3/service/store"
 
-	pb "example/proto"
+	pb "github.com/micro/services/store/proto"
 )
 
 type Example struct{}
