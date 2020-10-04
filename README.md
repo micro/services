@@ -35,5 +35,5 @@ Feel free to contribute by PR and signoff.
 
 ## License
 
-Apache 2.0 Licensed
+[Polyform Strict](https://polyformproject.org/licenses/strict/1.0.0/)
 
