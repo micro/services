@@ -1,11 +1,11 @@
-# Idiomatic Service
+# Template Service
 
-This is the Idiomatic service
+This is an example of a service template
 
 Generated with
 
 ```
-micro new idiomatic
+micro new template
 ```
 
 ## Getting Started
@@ -16,7 +16,7 @@ micro new idiomatic
 
 ## Configuration
 
-- Alias: idiomatic
+- Alias: template
 
 ## Dependencies
 
@@ -44,7 +44,7 @@ make build
 
 Run the service
 ```
-./idiomatic
+./template
 ```
 
 Build a docker image
