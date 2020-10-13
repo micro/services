@@ -43,6 +43,10 @@ jobs:
         go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.26.0
         go install
 
+    - name: Build container
+      run: |
+        bash services/tests/image/test-docker.sh
+
     - name: Test Blog services
       working-directory: services/tests
       run: |

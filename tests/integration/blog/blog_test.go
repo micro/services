@@ -130,7 +130,7 @@ func testPosts(t *test.T) {
 
 	if err := test.Try("Save post", t, func() ([]byte, error) {
 		return cmd.Exec("micro", "posts", "--id=1", "--title=Hi", `--content="Hi there"`, "save")
-	}, 180*time.Second); err != nil {
+	}, 60*time.Second); err != nil {
 		return
 	}
 
