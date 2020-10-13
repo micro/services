@@ -16,9 +16,10 @@ require (
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gosimple/slug v1.9.0
 	github.com/hashicorp/go-retryablehttp v0.6.7 // indirect
+	github.com/m3o/services v0.0.0-20201013090801-c9adc79659de
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/micro/go-micro v1.18.0 // indirect
-	github.com/micro/go-micro/v3 v3.0.0-beta.3
+	github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201007113728-c701f96a09da
 	github.com/micro/go-plugins/broker/nats/v3 v3.0.0-20200908121001-4ea6f6760baf // indirect
 	github.com/micro/go-plugins/events/stream/nats/v3 v3.0.0-20200908121001-4ea6f6760baf // indirect
 	github.com/micro/go-plugins/metrics/prometheus/v3 v3.0.0-20200908121001-4ea6f6760baf // indirect

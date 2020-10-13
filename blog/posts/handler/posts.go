@@ -40,23 +40,23 @@ type Posts struct {
 }
 
 func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.SaveResponse) error {
-	if len(req.Post.Id) == 0 || len(req.Post.Title) == 0 || len(req.Post.Content) == 0 {
+	if len(req.Id) == 0 || len(req.Title) == 0 || len(req.Content) == 0 {
 		return errors.BadRequest("posts.save.input-check", "Id, title or content is missing")
 	}
 
 	// read by post
-	records, err := store.Read(fmt.Sprintf("%v:%v", idPrefix, req.Post.Id))
+	records, err := store.Read(fmt.Sprintf("%v:%v", idPrefix, req.Id))
 	if err != nil && err != gostore.ErrNotFound {
 		return errors.InternalServerError("posts.save.store-id-read", "Failed to read post by id: %v", err.Error())
 	}
-	postSlug := slug.Make(req.Post.Title)
+	postSlug := slug.Make(req.Title)
 	// If no existing record is found, create a new one
 	if len(records) == 0 {
 		post := &Post{
-			ID:              req.Post.Id,
-			Title:           req.Post.Title,
-			Content:         req.Post.Content,
-			TagNames:        req.Post.TagNames,
+			ID:              req.Id,
+			Title:           req.Title,
+			Content:         req.Content,
+			TagNames:        req.TagNames,
 			Slug:            postSlug,
 			CreateTimestamp: time.Now().Unix(),
 		}
@@ -73,11 +73,11 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 		return errors.InternalServerError("posts.save.unmarshal", "Failed to unmarshal old post: %v", err.Error())
 	}
 	post := &Post{
-		ID:              req.Post.Id,
-		Title:           req.Post.Title,
-		Content:         req.Post.Content,
+		ID:              req.Id,
+		Title:           req.Title,
+		Content:         req.Content,
 		Slug:            postSlug,
-		TagNames:        req.Post.TagNames,
+		TagNames:        req.TagNames,
 		CreateTimestamp: oldPost.CreateTimestamp,
 		UpdateTimestamp: time.Now().Unix(),
 	}
