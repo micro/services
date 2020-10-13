@@ -139,7 +139,7 @@ func testPosts(t *test.T) {
 		return
 	}
 
-	outp, err := cmd.Exec("micro", "posts", "query")
+	outp, err := cmd.Exec("posts", "query")
 	if err != nil {
 		t.Fatal(string(outp))
 	}
