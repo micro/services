@@ -1,4 +1,4 @@
-// +build m3o
+// +build blog
 
 package signup
 
