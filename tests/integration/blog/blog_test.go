@@ -129,8 +129,13 @@ func testPosts(t *test.T) {
 	cmd := serv.Command()
 
 	if err := test.Try("Save post", t, func() ([]byte, error) {
-		return cmd.Exec("micro", "posts", "--id=1", "--title=Hi", `--content="Hi there"`, "save")
-	}, 60*time.Second); err != nil {
+		outp, err := cmd.Exec("posts", "--id=1", "--title=Hi", `--content="Hi there"`, "save")
+		if err != nil {
+			outp1, _ := cmd.Exec("logs", "posts")
+			return append(outp, outp1...), err
+		}
+		return outp, err
+	}, 90*time.Second); err != nil {
 		return
 	}
 
