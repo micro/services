@@ -110,7 +110,7 @@ func setupBlogTests(serv test.Server, t *test.T) {
 	}
 }
 
-func TestSignupFlow(t *testing.T) {
+func TestPostsService(t *testing.T) {
 	test.TrySuite(t, testPosts, retryCount)
 }
 
@@ -126,14 +126,15 @@ func testPosts(t *test.T) {
 	setupBlogTests(serv, t)
 
 	time.Sleep(5 * time.Second)
-
 	cmd := serv.Command()
-	outp, err := cmd.Exec("micro", "posts", "--id=1", "--title=Hi", `--content="Hi there"`, "save")
-	if err != nil {
-		t.Fatal(string(outp))
+
+	if err := test.Try("Save post", t, func() ([]byte, error) {
+		return cmd.Exec("micro", "posts", "--id=1", "--title=Hi", `--content="Hi there"`, "save")
+	}, 180*time.Second); err != nil {
+		return
 	}
 
-	outp, err = cmd.Exec("micro", "posts", "query")
+	outp, err := cmd.Exec("micro", "posts", "query")
 	if err != nil {
 		t.Fatal(string(outp))
 	}
