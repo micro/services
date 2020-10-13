@@ -3,6 +3,7 @@
 package signup
 
 import (
+	"encoding/json"
 	"errors"
 	"math/rand"
 
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/test"
+	p "github.com/micro/services/blog/posts/handler"
 )
 
 const (
@@ -129,7 +131,8 @@ func testPosts(t *test.T) {
 	cmd := serv.Command()
 
 	if err := test.Try("Save post", t, func() ([]byte, error) {
-		outp, err := cmd.Exec("posts", "--id=1", "--title=Hi", `--content="Hi there"`, "save")
+		// Attention! The content must be unquoted, don't add quotes.
+		outp, err := cmd.Exec("posts", "--id=1", "--title=Hi", "--content=Hi there", "save")
 		if err != nil {
 			outp1, _ := cmd.Exec("logs", "posts")
 			return append(outp, outp1...), err
@@ -143,7 +146,27 @@ func testPosts(t *test.T) {
 	if err != nil {
 		t.Fatal(string(outp))
 	}
-	if !strings.Contains(string(outp), "Hi there") {
+
+	expected := []p.Post{
+		{
+			ID:      "1",
+			Title:   "Hi",
+			Content: "Hi there",
+		},
+	}
+	type rsp struct {
+		Posts []p.Post `json:"posts"`
+	}
+	var actual rsp
+	json.Unmarshal(outp, &actual)
+	if len(actual.Posts) == 0 {
 		t.Fatal(string(outp))
+		return
+	}
+
+	if expected[0].ID != actual.Posts[0].ID ||
+		expected[0].Title != actual.Posts[0].Title ||
+		expected[0].Content != actual.Posts[0].Content {
+		t.Fatal(expected[0], actual.Posts[0])
 	}
 }

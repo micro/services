@@ -56,7 +56,7 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 			ID:              req.Id,
 			Title:           req.Title,
 			Content:         req.Content,
-			TagNames:        req.TagNames,
+			TagNames:        req.Tags,
 			Slug:            postSlug,
 			CreateTimestamp: time.Now().Unix(),
 		}
@@ -77,7 +77,7 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 		Title:           req.Title,
 		Content:         req.Content,
 		Slug:            postSlug,
-		TagNames:        req.TagNames,
+		TagNames:        req.Tags,
 		CreateTimestamp: oldPost.CreateTimestamp,
 		UpdateTimestamp: time.Now().Unix(),
 	}
@@ -218,11 +218,11 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 			return errors.InternalServerError("posts.save.unmarshal", "Failed to unmarshal old post: %v", err.Error())
 		}
 		rsp.Posts[i] = &pb.Post{
-			Id:       postRecord.ID,
-			Title:    postRecord.Title,
-			Slug:     postRecord.Slug,
-			Content:  postRecord.Content,
-			TagNames: postRecord.TagNames,
+			Id:      postRecord.ID,
+			Title:   postRecord.Title,
+			Slug:    postRecord.Slug,
+			Content: postRecord.Content,
+			Tags:    postRecord.TagNames,
 		}
 	}
 	return nil

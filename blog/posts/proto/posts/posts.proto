@@ -17,7 +17,7 @@ message Post {
 	int64 created = 5;
 	int64 updated = 6;
 	string author = 7;
-	repeated string tagNames = 8;
+	repeated string tags = 8;
 }
 
 message QueryRequest {
@@ -36,7 +36,7 @@ message SaveRequest {
 	string slug = 3;
 	string content = 4;
 	int64 timestamp = 5;
-	repeated string tagNames = 6;
+	repeated string tags = 6;
 }
 
 message SaveResponse {
