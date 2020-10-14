@@ -171,4 +171,19 @@ func testPosts(t *test.T) {
 		len(expected[0].Tags) != len(actual.Posts[0].Tags) {
 		t.Fatal(expected[0], actual.Posts[0])
 	}
+
+	outp, err = cmd.Exec("tags", "list")
+	type tagsRsp struct {
+		Tags []p.Post `json:"tags"`
+	}
+	var tagsActual tagsRsp
+	json.Unmarshal(outp, &tagsActual)
+	if len(tagsActual.Tags) == 0 {
+		t.Fatal(string(outp))
+		return
+	}
+	if len(tagsActual.Tags) != 2 {
+		t.Fatal(tagsActual.Tags)
+		return
+	}
 }

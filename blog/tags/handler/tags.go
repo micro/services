@@ -14,21 +14,21 @@ import (
 )
 
 const (
-	parentPrefix = "parent"
-	typePrefix   = "type"
+	slugPrefix   = "bySlug"
+	parentPrefix = "byParent"
+	typePrefix   = "byType"
 )
 
 type Tag struct {
-	ParentID string `json:"parentID"`
-	Title    string `json:"title"`
-	Slug     string `json:"slug"`
-	Type     string `json:"type"`
-	Count    int64  `json:"count"`
+	Title string `json:"title"`
+	Slug  string `json:"slug"`
+	Type  string `json:"type"`
+	Count int64  `json:"count"`
 }
 
 type Tags struct{}
 
-func (t *Tags) IncreaseCount(ctx context.Context, req *pb.IncreaseCountRequest, rsp *pb.IncreaseCountResponse) error {
+func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) error {
 	if len(req.ParentID) == 0 || len(req.Type) == 0 {
 		return errors.BadRequest("tags.increasecount.input-check", "parent id and type is required")
 	}
@@ -45,11 +45,10 @@ func (t *Tags) IncreaseCount(ctx context.Context, req *pb.IncreaseCountRequest, 
 	// If no existing record is found, create a new one
 	if len(records) == 0 {
 		tag := &Tag{
-			ParentID: req.GetParentID(),
-			Title:    req.GetTitle(),
-			Type:     req.Type,
-			Slug:     tagSlug,
-			Count:    1,
+			Title: req.GetTitle(),
+			Type:  req.Type,
+			Slug:  tagSlug,
+			Count: 1,
 		}
 		return t.saveTag(tag)
 	}
@@ -60,46 +59,59 @@ func (t *Tags) IncreaseCount(ctx context.Context, req *pb.IncreaseCountRequest, 
 		return err
 	}
 	tag.Count++
-	return t.saveTag(tag)
+	err = t.saveTag(tag)
+	if err != nil {
+		return err
+	}
+	return store.Write(&store.Record{
+		Key:   fmt.Sprintf("%v:%v:%v", parentPrefix, parentID, tag.Slug),
+		Value: nil,
+	})
 }
 
 func (t *Tags) saveTag(tag *Tag) error {
 	tagSlug := slug.Make(tag.Title)
 
-	parentID := fmt.Sprintf("%v:%v:%v", parentPrefix, tag.ParentID, tagSlug)
-	typeID := fmt.Sprintf("%v:%v:%v", typePrefix, tag.Type, tagSlug)
+	key := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
+	typeKey := fmt.Sprintf("%v:%v:%v", typePrefix, tag.Type, tagSlug)
 
 	bytes, err := json.Marshal(tag)
 	if err != nil {
 		return err
 	}
 
-	// write parentId:slug to enable prefix listing based on parent
+	// write parentId:slug to enable prefix listing based on type
 	err = store.Write(&store.Record{
-		Key:   parentID,
+		Key:   key,
 		Value: bytes,
 	})
 	if err != nil {
 		return err
 	}
-
-	// write type:slug to enable prefix listing based on parent
 	return store.Write(&store.Record{
-		Key:   typeID,
-		Value: bytes,
+		Key:   typeKey,
+		Value: nil,
 	})
 }
 
-func (t *Tags) DecreaseCount(ctx context.Context, req *pb.DecreaseCountRequest, rsp *pb.DecreaseCountResponse) error {
+func (t *Tags) addTagToParent(parentID string, tag *Tag) error {
+	return nil
+}
+
+func (t *Tags) removeTagFromParent(parentID string, tag *Tag) error {
+	return nil
+}
+
+func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.RemoveResponse) error {
 	if len(req.ParentID) == 0 || len(req.Type) == 0 {
 		return errors.BadRequest("tags.decreaseecount.input-check", "parent id and type is required")
 	}
 
 	tagSlug := slug.Make(req.GetTitle())
-	parentID := fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tagSlug)
+	parentKey := fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tagSlug)
 
 	// read by parent ID + slug, the record is identical in boths places anyway
-	records, err := store.Read(parentID)
+	records, err := store.Read(parentKey)
 	if err != nil && err != store.ErrNotFound {
 		return err
 	}
@@ -120,7 +132,14 @@ func (t *Tags) DecreaseCount(ctx context.Context, req *pb.DecreaseCountRequest, 
 		return nil
 	}
 	tag.Count--
-	return t.saveTag(tag)
+	err = t.saveTag(tag)
+	if err != nil {
+		return err
+	}
+	return store.Write(&store.Record{
+		Key:   fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tag.Slug),
+		Value: nil,
+	})
 }
 
 func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
@@ -146,23 +165,22 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 			return err
 		}
 		rsp.Tags[i] = &pb.Tag{
-			ParentID: tagRecord.ParentID,
-			Title:    tagRecord.Title,
-			Type:     tagRecord.Type,
-			Slug:     tagRecord.Slug,
-			Count:    tagRecord.Count,
+			Title: tagRecord.Title,
+			Type:  tagRecord.Type,
+			Slug:  tagRecord.Slug,
+			Count: tagRecord.Count,
 		}
 	}
 	return nil
 }
 
 func (t *Tags) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
-	if len(req.ParentID) == 0 || len(req.Type) == 0 {
-		return errors.BadRequest("tags.update.input-check", "parent id and type is required")
+	if len(req.Title) == 0 || len(req.Type) == 0 {
+		return errors.BadRequest("tags.update.input-check", "title and type is required")
 	}
 
 	tagSlug := slug.Make(req.GetTitle())
-	parentID := fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tagSlug)
+	parentID := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
 
 	// read by parent ID + slug, the record is identical in boths places anyway
 	records, err := store.Read(parentID)

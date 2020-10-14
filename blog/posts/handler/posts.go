@@ -134,7 +134,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 	}
 	if oldPost == nil {
 		for _, tagName := range post.Tags {
-			_, err := p.Tags.IncreaseCount(ctx, &tags.IncreaseCountRequest{
+			_, err := p.Tags.Add(ctx, &tags.AddRequest{
 				ParentID: post.ID,
 				Type:     tagType,
 				Title:    tagName,
@@ -160,7 +160,7 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 	for i := range oldTags {
 		_, stillThere := newTags[i]
 		if !stillThere {
-			_, err := p.Tags.DecreaseCount(ctx, &tags.DecreaseCountRequest{
+			_, err := p.Tags.Remove(ctx, &tags.RemoveRequest{
 				ParentID: parentID,
 				Type:     tagType,
 				Title:    i,
@@ -173,7 +173,7 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 	for i := range newTags {
 		_, newlyAdded := oldTags[i]
 		if newlyAdded {
-			_, err := p.Tags.IncreaseCount(ctx, &tags.IncreaseCountRequest{
+			_, err := p.Tags.Add(ctx, &tags.AddRequest{
 				ParentID: parentID,
 				Type:     tagType,
 				Title:    i,

@@ -3,46 +3,46 @@ syntax = "proto3";
 package tags;
 
 service Tags {
-	// Increase count creates the tag or bumps the counter
-	rpc IncreaseCount(IncreaseCountRequest) returns (IncreaseCountResponse) {}
-	// Decreases the counter
-	rpc DecreaseCount(DecreaseCountRequest) returns (DecreaseCountResponse) {}
+	// Add a tag to a parent
+	rpc Add(AddRequest) returns (AddResponse) {}
+	// Remove a tag from a parent
+	rpc Remove(RemoveRequest) returns (RemoveResponse) {}
+	// List tags by
 	rpc List(ListRequest) returns (ListResponse) {}
-	// Change properties of a tag, currently only the title
+	// Change properties of a tag, currently only the title and description
 	rpc Update(UpdateRequest) returns (UpdateResponse){}
 }
 
 message Tag {
-	// The id of the parent object
-	string parentID = 1;
 	// Type is useful for namespacing and listing across parents,
 	// ie. list tags for posts, customers etc.
-	string type = 2;
-	string slug = 3;
-	string title = 4;
+	string type = 1;
+	string slug = 2;
+	string title = 3;
+	string description = 4;
 	int64 count = 5;
 }
 
-message IncreaseCountRequest {
+message AddRequest {
 	string parentID = 1;
 	string type = 2;
 	string title = 3;
 }
 
-message IncreaseCountResponse{}
+message AddResponse{}
 
-message DecreaseCountRequest{
+message RemoveRequest {
 	string parentID = 1;
 	string type = 2;
 	string title = 3;
 }
 
-message DecreaseCountResponse{}
+message RemoveResponse{}
 
 message UpdateRequest {
-	string parentID = 1;
-	string type = 2;
-	string title = 3;
+	string type = 1;
+	string title = 2;
+	string description = 3;
 }
 
 message UpdateResponse{}
