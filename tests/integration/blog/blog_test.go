@@ -132,7 +132,7 @@ func testPosts(t *test.T) {
 
 	if err := test.Try("Save post", t, func() ([]byte, error) {
 		// Attention! The content must be unquoted, don't add quotes.
-		outp, err := cmd.Exec("posts", "--id=1", "--title=Hi", "--content=Hi there", "save")
+		outp, err := cmd.Exec("posts", "--id=1", "--title=Hi", "--content=Hi there", "--tags=a,b", "save")
 		if err != nil {
 			outp1, _ := cmd.Exec("logs", "posts")
 			return append(outp, outp1...), err
@@ -152,6 +152,7 @@ func testPosts(t *test.T) {
 			ID:      "1",
 			Title:   "Hi",
 			Content: "Hi there",
+			Tags:    []string{"a", "b"},
 		},
 	}
 	type rsp struct {
@@ -166,7 +167,8 @@ func testPosts(t *test.T) {
 
 	if expected[0].ID != actual.Posts[0].ID ||
 		expected[0].Title != actual.Posts[0].Title ||
-		expected[0].Content != actual.Posts[0].Content {
+		expected[0].Content != actual.Posts[0].Content ||
+		len(expected[0].Tags) != len(actual.Posts[0].Tags) {
 		t.Fatal(expected[0], actual.Posts[0])
 	}
 }

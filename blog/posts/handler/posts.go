@@ -32,7 +32,7 @@ type Post struct {
 	Content         string   `json:"content"`
 	CreateTimestamp int64    `json:"create_timestamp"`
 	UpdateTimestamp int64    `json:"update_timestamp"`
-	TagNames        []string `json:"tagNames"`
+	Tags            []string `json:"tags"`
 }
 
 type Posts struct {
@@ -56,7 +56,7 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 			ID:              req.Id,
 			Title:           req.Title,
 			Content:         req.Content,
-			TagNames:        req.Tags,
+			Tags:            req.Tags,
 			Slug:            postSlug,
 			CreateTimestamp: time.Now().Unix(),
 		}
@@ -77,7 +77,7 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 		Title:           req.Title,
 		Content:         req.Content,
 		Slug:            postSlug,
-		TagNames:        req.Tags,
+		Tags:            req.Tags,
 		CreateTimestamp: oldPost.CreateTimestamp,
 		UpdateTimestamp: time.Now().Unix(),
 	}
@@ -134,7 +134,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 		return err
 	}
 	if oldPost == nil {
-		for _, tagName := range post.TagNames {
+		for _, tagName := range post.Tags {
 			_, err := p.Tags.IncreaseCount(ctx, &tags.IncreaseCountRequest{
 				ParentID: post.ID,
 				Type:     tagType,
@@ -146,7 +146,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 		}
 		return nil
 	}
-	return p.diffTags(ctx, post.ID, oldPost.TagNames, post.TagNames)
+	return p.diffTags(ctx, post.ID, oldPost.Tags, post.Tags)
 }
 
 func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newTagNames []string) error {
@@ -222,7 +222,7 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 			Title:   postRecord.Title,
 			Slug:    postRecord.Slug,
 			Content: postRecord.Content,
-			Tags:    postRecord.TagNames,
+			Tags:    postRecord.Tags,
 		}
 	}
 	return nil
