@@ -20,8 +20,7 @@ go get github.com/micro/micro/v3
 # run the server
 micro server
 
-# login using the default account
-# user: admin pass: micro
+# login with user: admin pass: micro
 micro login
 
 # run the service
