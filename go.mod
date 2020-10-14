@@ -8,7 +8,7 @@ require (
 	github.com/gosimple/slug v1.9.0
 	github.com/m3o/services v0.0.0-20201013090801-c9adc79659de
 	github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201013135405-1a962e46fd3a
-	github.com/micro/micro/v3 v3.0.0-beta.6.0.20201014122141-839fa4135caf
+	github.com/micro/micro/v3 v3.0.0-beta.6.0.20201014125737-097dd92a1b29
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	golang.org/x/crypto v0.0.0-20201002094018-c90954cbb977 // indirect
