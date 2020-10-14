@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/micro/go-micro/v3/errors"
-	gostore "github.com/micro/go-micro/v3/store"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 
@@ -46,7 +45,7 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 
 	// read by post
 	records, err := store.Read(fmt.Sprintf("%v:%v", idPrefix, req.Id))
-	if err != nil && err != gostore.ErrNotFound {
+	if err != nil && err != store.ErrNotFound {
 		return errors.InternalServerError("posts.save.store-id-read", "Failed to read post by id: %v", err.Error())
 	}
 	postSlug := slug.Make(req.Title)
@@ -84,7 +83,7 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 
 	// Check if slug exists
 	recordsBySlug, err := store.Read(fmt.Sprintf("%v:%v", slugPrefix, postSlug))
-	if err != nil && err != gostore.ErrNotFound {
+	if err != nil && err != store.ErrNotFound {
 		return errors.InternalServerError("posts.save.store-read", "Failed to read post by slug: %v", err.Error())
 	}
 	otherSlugPost := &Post{}
@@ -105,7 +104,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 		return err
 	}
 
-	err = store.Write(&gostore.Record{
+	err = store.Write(&store.Record{
 		Key:   fmt.Sprintf("%v:%v", idPrefix, post.ID),
 		Value: bytes,
 	})
@@ -119,14 +118,14 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 			return err
 		}
 	}
-	err = store.Write(&gostore.Record{
+	err = store.Write(&store.Record{
 		Key:   fmt.Sprintf("%v:%v", slugPrefix, post.Slug),
 		Value: bytes,
 	})
 	if err != nil {
 		return err
 	}
-	err = store.Write(&gostore.Record{
+	err = store.Write(&store.Record{
 		Key:   fmt.Sprintf("%v:%v", timeStampPrefix, math.MaxInt64-post.CreateTimestamp),
 		Value: bytes,
 	})
@@ -188,7 +187,7 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 }
 
 func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryResponse) error {
-	var records []*gostore.Record
+	var records []*store.Record
 	var err error
 	if len(req.Slug) > 0 {
 		key := fmt.Sprintf("%v:%v", slugPrefix, req.Slug)
@@ -231,7 +230,7 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 func (p *Posts) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	logger.Info("Received Post.Delete request")
 	records, err := store.Read(fmt.Sprintf("%v:%v", idPrefix, req.Id))
-	if err != nil && err != gostore.ErrNotFound {
+	if err != nil && err != store.ErrNotFound {
 		return err
 	}
 	if len(records) == 0 {
