@@ -7,7 +7,6 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/gosimple/slug v1.9.0
 	github.com/m3o/services v0.0.0-20201013090801-c9adc79659de
-	github.com/micro/go-micro/v2 v2.9.1
 	github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201013135405-1a962e46fd3a
 	github.com/micro/micro/v3 v3.0.0-beta.6.0.20201014122141-839fa4135caf
 	github.com/miekg/dns v1.1.31 // indirect
@@ -16,7 +15,7 @@ require (
 	golang.org/x/net v0.0.0-20200930145003-4acb6c075d10 // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43 // indirect
 	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect
-	google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 // indirect
+	google.golang.org/genproto v0.0.0-20201013134114-7f9ee70cb474 // indirect
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect

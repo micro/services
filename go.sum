@@ -337,8 +337,10 @@ github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201007113728-c701f96a09da h1:Qopn
 github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201007113728-c701f96a09da/go.mod h1:DiwYchJ8kCWOZVXMsZwuFcNDAdSCS6aEbYfEni4LvK4=
 github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201013135405-1a962e46fd3a h1:wuoj1zDdq0rAkJ2q+JaJuJd7eOTVsvhfcjPoTRQY0+k=
 github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201013135405-1a962e46fd3a/go.mod h1:DiwYchJ8kCWOZVXMsZwuFcNDAdSCS6aEbYfEni4LvK4=
+github.com/micro/micro v1.18.0 h1:v+xiQOXbT9xxotLwu1nJM81t4FbruBxZSSyIdhUfujM=
 github.com/micro/micro/v3 v3.0.0-beta.5.0.20201002112013-43399372bd3b h1:LGmxdWtJfEDPYrM8+aoi+VdphiaLAvYIqug+31LG670=
 github.com/micro/micro/v3 v3.0.0-beta.5.0.20201002112013-43399372bd3b/go.mod h1:ve03xgzqn+koxm3TuJe3+uXJluiiUg4lavAb1aKuW5w=
+github.com/micro/micro/v3 v3.0.0-beta.6 h1:TtklfOdte5Piu80clLpfb+4yK9jovt1s1svobChu/o0=
 github.com/micro/micro/v3 v3.0.0-beta.6.0.20201014122141-839fa4135caf h1:k1mo6XzOB2zJ28y4COoRaD3egpmYBjVHNEQT9+Hw+kU=
 github.com/micro/micro/v3 v3.0.0-beta.6.0.20201014122141-839fa4135caf/go.mod h1:1o7lnFkcscCDXNK7mDmfDWcOrzYdWd/VGgZ5KTp353I=
 github.com/miekg/dns v1.1.15/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
@@ -792,6 +794,8 @@ google.golang.org/genproto v0.0.0-20200804131852-c06518451d9c/go.mod h1:FWY/as6D
 google.golang.org/genproto v0.0.0-20200825200019-8632dd797987/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 h1:MUqDMe4W4vbVh6qN/ZxuB1HRKX65h7FErlemt2ABsmM=
 google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
+google.golang.org/genproto v0.0.0-20201013134114-7f9ee70cb474 h1:TbNifhX2UFPFG5PL1RUfAajMT29pJ1hq6FME8V8ZdgE=
+google.golang.org/genproto v0.0.0-20201013134114-7f9ee70cb474/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/grpc v1.26.0 h1:2dTRdpdFEEhJYQD8EMLB61nnrzSCTbG38PhqdhvOltg=
 google.golang.org/grpc v1.26.0/go.mod h1:qbnxyOmOxrQa7FizSgH+ReBfzJrCY1pSN7KXBS8abTk=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
