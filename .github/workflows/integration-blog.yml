@@ -26,6 +26,7 @@ jobs:
       with:
         repository: 'micro/micro'
         path: 'micro'
+        ref: '20cabee'
 
     - name: Enable caching
       uses: actions/cache@v2
