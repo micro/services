@@ -4,5 +4,6 @@ A list of open source services to be created
 
 ## Services
 
-- messages - a simple inbox of messages
-- notifications - updates or events 
+- inbox - a simple inbox for mail and private messages
+  * messages - store the messages for the inbox
+  * notifications - holds updates and alerts
