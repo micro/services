@@ -7,8 +7,8 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 
-	pb "github.com/micro/services/routes/proto"
-	"github.com/micro/services/routes/routes-server/handler"
+	pb "github.com/micro/services/test/routes/proto"
+	"github.com/micro/services/test/routes/routes-server/handler"
 )
 
 func main() {

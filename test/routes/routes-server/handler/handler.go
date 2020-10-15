@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	pb "github.com/micro/services/routes/proto"
+	pb "github.com/micro/services/test/routes/proto"
 )
 
 // RouteGuide implements the route guide handler interface

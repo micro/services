@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/micro/services/template/handler"
+	"github.com/micro/services/test/template/handler"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
