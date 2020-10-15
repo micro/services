@@ -4,9 +4,9 @@ import (
 	"sync"
 	"time"
 
-	goevents "github.com/micro/go-micro/v3/events"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/events"
+	goevents "github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
 )
 

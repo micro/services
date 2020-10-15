@@ -14,8 +14,10 @@ message Post {
 	string title = 2;
 	string slug = 3;
 	string content = 4;
-	int64 timestamp = 5;
-	repeated string tagNames = 6;
+	int64 created = 5;
+	int64 updated = 6;
+	string author = 7;
+	repeated string tags = 8;
 }
 
 message QueryRequest {
@@ -29,17 +31,21 @@ message QueryResponse {
 }
 
 message SaveRequest {
-	Post post = 1;
+	string id = 1;
+	string title = 2;
+	string slug = 3;
+	string content = 4;
+	int64 timestamp = 5;
+	repeated string tags = 6;
 }
 
 message SaveResponse {
-	Post post = 1;
+	string id = 1;
 }
 
 message DeleteRequest {
 	string id = 1;
 }
 
-message DeleteResponse {
-}
+message DeleteResponse {}
 
