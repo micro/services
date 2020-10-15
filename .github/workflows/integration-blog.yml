@@ -47,10 +47,10 @@ jobs:
 
     - name: Build container
       run: |
-        bash services/tests/image/test-docker.sh
+        bash services/test/image/test-docker.sh
 
     - name: Test Blog services
-      working-directory: services/tests
+      working-directory: services/test/integration
       run: |
           go clean -testcache && GOMAXPROCS=4 go test -timeout 15m --tags=blog -v ./...
         

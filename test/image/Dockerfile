@@ -20,7 +20,7 @@ RUN         apk add --update ca-certificates openssl tar && \
             rm -Rf etcd-v3.4.7-linux-amd64* /var/cache/apk/*
 VOLUME      /data
 EXPOSE      2379 2380 4001 7001
-ADD         services/tests/image/run-etcd.sh /bin/run.sh
+ADD         services/test/image/run-etcd.sh /bin/run.sh
 
 # Speeding up tests by predownloading and building dependencies for services used.
 RUN mkdir services

@@ -7,7 +7,7 @@ import (
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/pubsub/proto"
+	pb "github.com/micro/services/test/pubsub/proto"
 )
 
 // Pub will publish messages every second
