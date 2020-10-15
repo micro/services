@@ -1,4 +1,4 @@
-cp test/image/.dockerignore .
+cp services/test/image/.dockerignore .
 pushd micro
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build
 popd
