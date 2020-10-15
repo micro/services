@@ -74,5 +74,43 @@ func (t *Test) Config(ctx context.Context, req *test.Request, rsp *test.Response
 	val, _ = config.Get("key.subkey_does_not_exist")
 	fmt.Println("Default", val.String("Hello"))
 
+	// set status
+	rsp.Status = "OK"
+
+	return nil
+}
+
+func (t *Test) Store(ctx context.Context, req *test.Request, rsp *test.Response) error {
+	key := "Test"
+	val := []byte(`foobar`)
+
+	if err := store.Write(&store.Record{Key: key, Value: []byte(val)}); err != nil {
+		log.Errorf("Error writing %s", err)
+		return errors.InternalServerError("test.store", fmt.Errorf("Error writing record %s with expiry %s", key, err))
+	}
+
+	recs, err := store.List()
+	if err != nil {
+		return fmt.Errorf("Error listing from store %s", err)
+	}
+
+	log.Infof("Recs %+v", recs)
+	if len(recs) != 1 {
+		return fmt.Errorf("Error listing records, expected 3, received %d", len(recs))
+	}
+
+	rsp.Status = "OK"
+	return nil
+}
+
+func (t *Test) Events(ctx context.Context, req *test.Request, rsp *test.Response) error {}
+
+func (t *Test) Broker(ctx context.Context, req *test.Request, rsp *test.Response) error {}
+
+func (t *Test) BlobStore(ctx context.Context, req *test.Request, rsp *test.Response) error {}
+
+func (t *Test) Logger(ctx context.Context, req *test.Request, rsp *test.Response) error {
+	log.Infof("Testing logger: %v", req.Id)
+	rsp.Status = "OK"
 	return nil
 }

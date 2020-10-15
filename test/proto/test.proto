@@ -9,8 +9,18 @@ service Test {
 	rpc Call(Request) returns (Response) {};
 	// Stream handles a streaming request
 	rpc Stream(Request) returns (stream Response) {};
-	// Config tests the usage of Config
+	// Config tests the usage of config service
 	rpc Config(Request) returns (Response) {};
+	// Store tests the usage of the store service
+	rpc Store(Request) returns (Response) {};
+	// Events tests the usage of the events service
+	rpc Events(Request) returns (Response) {};
+	// Broker tests the usage of the broker service
+	rpc Broker(Request) returns (Response) {};
+	// BlobStore tests the usage of the blob store
+	rpc BlobStore(Request) returns (Response) {};
+	// Logger tests the usage of the service logger
+	rpc Logger(Request) returns (Response) {};
 }
 
 // Request is used to start a test 
@@ -21,6 +31,6 @@ message Request {
 
 // Response returns the result of a etst
 message Response {
-	string result = 1;
+	string status = 1;
 	string error = 2;
 }

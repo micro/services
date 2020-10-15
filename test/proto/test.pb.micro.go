@@ -46,8 +46,18 @@ type TestService interface {
 	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	// Stream handles a streaming request
 	Stream(ctx context.Context, in *Request, opts ...client.CallOption) (Test_StreamService, error)
-	// Config tests the usage of Config
+	// Config tests the usage of config service
 	Config(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	// Store tests the usage of the store service
+	Store(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	// Events tests the usage of the events service
+	Events(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	// Broker tests the usage of the broker service
+	Broker(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	// BlobStore tests the usage of the blob store
+	BlobStore(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	// Logger tests the usage of the service logger
+	Logger(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 }
 
 type testService struct {
@@ -131,6 +141,56 @@ func (c *testService) Config(ctx context.Context, in *Request, opts ...client.Ca
 	return out, nil
 }
 
+func (c *testService) Store(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Test.Store", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *testService) Events(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Test.Events", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *testService) Broker(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Test.Broker", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *testService) BlobStore(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Test.BlobStore", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *testService) Logger(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Test.Logger", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Test service
 
 type TestHandler interface {
@@ -138,8 +198,18 @@ type TestHandler interface {
 	Call(context.Context, *Request, *Response) error
 	// Stream handles a streaming request
 	Stream(context.Context, *Request, Test_StreamStream) error
-	// Config tests the usage of Config
+	// Config tests the usage of config service
 	Config(context.Context, *Request, *Response) error
+	// Store tests the usage of the store service
+	Store(context.Context, *Request, *Response) error
+	// Events tests the usage of the events service
+	Events(context.Context, *Request, *Response) error
+	// Broker tests the usage of the broker service
+	Broker(context.Context, *Request, *Response) error
+	// BlobStore tests the usage of the blob store
+	BlobStore(context.Context, *Request, *Response) error
+	// Logger tests the usage of the service logger
+	Logger(context.Context, *Request, *Response) error
 }
 
 func RegisterTestHandler(s server.Server, hdlr TestHandler, opts ...server.HandlerOption) error {
@@ -147,6 +217,11 @@ func RegisterTestHandler(s server.Server, hdlr TestHandler, opts ...server.Handl
 		Call(ctx context.Context, in *Request, out *Response) error
 		Stream(ctx context.Context, stream server.Stream) error
 		Config(ctx context.Context, in *Request, out *Response) error
+		Store(ctx context.Context, in *Request, out *Response) error
+		Events(ctx context.Context, in *Request, out *Response) error
+		Broker(ctx context.Context, in *Request, out *Response) error
+		BlobStore(ctx context.Context, in *Request, out *Response) error
+		Logger(ctx context.Context, in *Request, out *Response) error
 	}
 	type Test struct {
 		test
@@ -205,4 +280,24 @@ func (x *testStreamStream) Send(m *Response) error {
 
 func (h *testHandler) Config(ctx context.Context, in *Request, out *Response) error {
 	return h.TestHandler.Config(ctx, in, out)
+}
+
+func (h *testHandler) Store(ctx context.Context, in *Request, out *Response) error {
+	return h.TestHandler.Store(ctx, in, out)
+}
+
+func (h *testHandler) Events(ctx context.Context, in *Request, out *Response) error {
+	return h.TestHandler.Events(ctx, in, out)
+}
+
+func (h *testHandler) Broker(ctx context.Context, in *Request, out *Response) error {
+	return h.TestHandler.Broker(ctx, in, out)
+}
+
+func (h *testHandler) BlobStore(ctx context.Context, in *Request, out *Response) error {
+	return h.TestHandler.BlobStore(ctx, in, out)
+}
+
+func (h *testHandler) Logger(ctx context.Context, in *Request, out *Response) error {
+	return h.TestHandler.Logger(ctx, in, out)
 }
