@@ -44,7 +44,7 @@ Access is governed by auth rules, ie. Posts List, Tags List is open, Posts Save 
 If we provide a user/login service (markedly different from auth, it can be a simple session based auth) to enable non Micro users to register, the following can be done:
 
 - A user (let's call the user Alice from this point) launches posts, tags, login service in their namespace.
-- User opens up said endpoints
+- Alice opens up said endpoints
 - People (let's call them Yoga Pants Co and Drone Inc) hosting JS and HTML on Netlify or Github Pages could create accounts in the services hosted by Alice. In this way, Alice, by having a Micro account becomes a headless CMS provider. Multiple blogs can be created on top of Alice's service instances.
 
 Questions:
