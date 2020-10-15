@@ -58,15 +58,23 @@ func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse)
 	if err != nil {
 		return err
 	}
-	tag.Count++
-	err = t.saveTag(tag)
+	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", parentPrefix, req.ParentID)), store.Limit(1000))
 	if err != nil {
 		return err
 	}
-	return store.Write(&store.Record{
+	tag.Count = int64(len(recs))
+	tagJSON, err := json.Marshal(tag)
+	if err != nil {
+		return err
+	}
+	err = store.Write(&store.Record{
 		Key:   fmt.Sprintf("%v:%v:%v", parentPrefix, parentID, tag.Slug),
-		Value: nil,
+		Value: tagJSON,
 	})
+	if err != nil {
+		return err
+	}
+	return t.saveTag(tag)
 }
 
 func (t *Tags) saveTag(tag *Tag) error {
@@ -90,16 +98,8 @@ func (t *Tags) saveTag(tag *Tag) error {
 	}
 	return store.Write(&store.Record{
 		Key:   typeKey,
-		Value: nil,
+		Value: bytes,
 	})
-}
-
-func (t *Tags) addTagToParent(parentID string, tag *Tag) error {
-	return nil
-}
-
-func (t *Tags) removeTagFromParent(parentID string, tag *Tag) error {
-	return nil
 }
 
 func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.RemoveResponse) error {
@@ -127,19 +127,16 @@ func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.Remove
 	if err != nil {
 		return err
 	}
-	if tag.Count == 0 {
-		// return error?
-		return nil
-	}
-	tag.Count--
-	err = t.saveTag(tag)
+	err = store.Delete(fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tag.Slug))
 	if err != nil {
 		return err
 	}
-	return store.Write(&store.Record{
-		Key:   fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tag.Slug),
-		Value: nil,
-	})
+	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", parentPrefix, req.ParentID)), store.Limit(1000))
+	if err != nil {
+		return err
+	}
+	tag.Count = int64(len(recs))
+	return t.saveTag(tag)
 }
 
 func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
@@ -157,6 +154,7 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 	if err != nil {
 		return err
 	}
+
 	rsp.Tags = make([]*pb.Tag, len(records))
 	for i, record := range records {
 		tagRecord := &Tag{}
@@ -171,6 +169,7 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 			Count: tagRecord.Count,
 		}
 	}
+
 	return nil
 }
 

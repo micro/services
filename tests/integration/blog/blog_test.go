@@ -138,7 +138,7 @@ func testPosts(t *test.T) {
 			return append(outp, outp1...), err
 		}
 		return outp, err
-	}, 90*time.Second); err != nil {
+	}, 15*time.Second); err != nil {
 		return
 	}
 
@@ -172,18 +172,22 @@ func testPosts(t *test.T) {
 		t.Fatal(expected[0], actual.Posts[0])
 	}
 
-	outp, err = cmd.Exec("tags", "list")
-	type tagsRsp struct {
-		Tags []p.Post `json:"tags"`
-	}
-	var tagsActual tagsRsp
-	json.Unmarshal(outp, &tagsActual)
-	if len(tagsActual.Tags) == 0 {
-		t.Fatal(string(outp))
-		return
-	}
-	if len(tagsActual.Tags) != 2 {
-		t.Fatal(tagsActual.Tags)
+	if err := test.Try("Save post", t, func() ([]byte, error) {
+		outp, err = cmd.Exec("tags", "list", "--type=post-tag")
+		type tagsRsp struct {
+			Tags []p.Post `json:"tags"`
+		}
+		var tagsActual tagsRsp
+		json.Unmarshal(outp, &tagsActual)
+		if len(tagsActual.Tags) == 0 {
+			outp1, _ := cmd.Exec("logs", "tags")
+			return append(outp, outp1...), errors.New("Unexpected output")
+		}
+		if len(tagsActual.Tags) != 2 {
+			return outp, errors.New("Unexpected output")
+		}
+		return outp, err
+	}, 15*time.Second); err != nil {
 		return
 	}
 }
