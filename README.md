@@ -8,7 +8,7 @@ Services provides a home for real world examples for using Micro v3.
 
 - [blog](blog) - A blog app composed as micro services
 - [helloworld](helloworld) - A simple helloworld service
-- [messages](messages) - an inbox for text messages
+- [messages](messages) - A service for text messages
 - [test](test) - A set of sample test services for Micro
 
 ## Usage
