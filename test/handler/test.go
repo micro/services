@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/micro/micro/v3/service/broker"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
@@ -106,28 +107,46 @@ func (t *Test) Store(ctx context.Context, req *test.Request, rsp *test.Response)
 
 func (t *Test) Events(ctx context.Context, req *test.Request, rsp *test.Response) error {}
 
-func (t *Test) Broker(ctx context.Context, req *test.Request, rsp *test.Response) error {}
+func (t *Test) Broker(ctx context.Context, req *test.Request, rsp *test.Response) error {
+	sub, err := broker.Subscribe("test", func(m *broker.Message) error {
+		log.Info("Received test subscription message")
+		sub.Unsubscribe()
+		return nil
+	})
+	if err != nil {
+		return errors.InternalServerError("test.broker", err.Error())
+	}
+
+	if err := broker.Publish("test", &broker.Message{
+		Message: []byte(req.Id),
+	}); err != nil {
+		return errors.InternalServerError("test.broker", err.Error())
+	}
+
+	rsp.Status = "OK"
+	return nil
+}
 
 func (t *Test) BlobStore(ctx context.Context, req *test.Request, rsp *test.Response) error {
 	key := uuid.New().String()
 
 	buf := bytes.NewBuffer([]byte("world"))
 	if err := store.DefaultBlobStore.Write(key, buf); err != nil {
-		return errors.InternalServerError("test.config", "Error writing to blob store: %v", err)
+		return errors.InternalServerError("test.blob", "Error writing to blob store: %v", err)
 	}
 
 	res, err := store.DefaultBlobStore.Read(key)
 	if err != nil {
-		return errors.InternalServerError("Error reading from the blog store: %v", err)
+		return errors.InternalServerError("test.blob", "Error reading from the blog store: %v", err)
 	}
 
 	bytes, err := ioutil.ReadAll(res)
 	if err != nil {
-		return errors.InternalServerError("Error reading result: %v", err)
+		return errors.InternalServerError("test.blob", "Error reading result: %v", err)
 	}
 
 	if err := store.DefaultBlobStore.Delete(key); err != nil {
-		return errors.InternalServerError("Error deleting from blob store: %v", err)
+		return errors.InternalServerError("test.blob", "Error deleting from blob store: %v", err)
 	}
 
 	rsp.Status = "OK"
