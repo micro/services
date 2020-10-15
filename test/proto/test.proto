@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package test;
+
+option go_package = "proto;test";
+
+service Test {
+	// Call handles a single request
+	rpc Call(Request) returns (Response) {};
+	// Stream handles a streaming request
+	rpc Stream(Request) returns (stream Response) {};
+	// Config tests the usage of Config
+	rpc Config(Request) returns (Response) {};
+}
+
+// Request is used to start a test 
+message Request {
+	// id of this request
+	string id = 1;
+}
+
+// Response returns the result of a etst
+message Response {
+	string result = 1;
+	string error = 2;
+}
