@@ -6,6 +6,7 @@ import (
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	test "github.com/micro/services/test/proto"
 )
 
@@ -107,7 +108,31 @@ func (t *Test) Events(ctx context.Context, req *test.Request, rsp *test.Response
 
 func (t *Test) Broker(ctx context.Context, req *test.Request, rsp *test.Response) error {}
 
-func (t *Test) BlobStore(ctx context.Context, req *test.Request, rsp *test.Response) error {}
+func (t *Test) BlobStore(ctx context.Context, req *test.Request, rsp *test.Response) error {
+	key := uuid.New().String()
+
+	buf := bytes.NewBuffer([]byte("world"))
+	if err := store.DefaultBlobStore.Write(key, buf); err != nil {
+		return errors.InternalServerError("test.config", "Error writing to blob store: %v", err)
+	}
+
+	res, err := store.DefaultBlobStore.Read(key)
+	if err != nil {
+		return errors.InternalServerError("Error reading from the blog store: %v", err)
+	}
+
+	bytes, err := ioutil.ReadAll(res)
+	if err != nil {
+		return errors.InternalServerError("Error reading result: %v", err)
+	}
+
+	if err := store.DefaultBlobStore.Delete(key); err != nil {
+		return errors.InternalServerError("Error deleting from blob store: %v", err)
+	}
+
+	rsp.Status = "OK"
+	return nil
+}
 
 func (t *Test) Logger(ctx context.Context, req *test.Request, rsp *test.Response) error {
 	log.Infof("Testing logger: %v", req.Id)
