@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package inbox;
+option go_package = "github.com/micro/services/inbox/proto;inbox";
+
+service Inbox {
+  rpc Create(CreateRequest) returns (CreateResponse);
+  rpc Read(ReadRequest) returns (ReadResponse);
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message CreateRequest {
+  string client_id = 1;
+  string sender_id = 2;
+  string recipient_id = 3;
+  string subject = 4;
+  string text = 5;
+}
+
+message CreateResponse {}
+
+message ReadRequest {
+  string recipient_id = 1;
+}
+
+message Message {
+  string id = 1;
+  string client_id = 2;
+  string sender_id = 3;
+  string recipient_id = 4;
+  string subject = 5;
+  string text = 6;
+  int64 sent_at = 7;
+  bool seen = 8;
+}
+
+message ReadResponse {
+  repeated Message message = 1;
+}
+
+message UpdateRequest {
+  string id = 1;
+  bool seen = 2;
+}
+
+message UpdateResponse {}
+
+message DeleteRequest {
+  string id = 1;
+}
+
+message DeleteResponse {}
