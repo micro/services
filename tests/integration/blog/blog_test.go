@@ -116,6 +116,14 @@ func TestPostsService(t *testing.T) {
 	test.TrySuite(t, testPosts, retryCount)
 }
 
+// count is a string in responses...
+type protoTag struct {
+	Title string `json:"title"`
+	Slug  string `json:"slug"`
+	Type  string `json:"type"`
+	Count string `json:"count"`
+}
+
 func testPosts(t *test.T) {
 	t.Parallel()
 
@@ -127,7 +135,6 @@ func testPosts(t *test.T) {
 
 	setupBlogTests(serv, t)
 
-	time.Sleep(5 * time.Second)
 	cmd := serv.Command()
 
 	if err := test.Try("Save post", t, func() ([]byte, error) {
@@ -172,22 +179,61 @@ func testPosts(t *test.T) {
 		t.Fatal(expected[0], actual.Posts[0])
 	}
 
-	if err := test.Try("Save post", t, func() ([]byte, error) {
-		outp, err = cmd.Exec("tags", "list", "--type=post-tag")
-		type tagsRsp struct {
-			Tags []p.Post `json:"tags"`
-		}
-		var tagsActual tagsRsp
-		json.Unmarshal(outp, &tagsActual)
-		if len(tagsActual.Tags) == 0 {
-			outp1, _ := cmd.Exec("logs", "tags")
-			return append(outp, outp1...), errors.New("Unexpected output")
-		}
-		if len(tagsActual.Tags) != 2 {
-			return outp, errors.New("Unexpected output")
-		}
-		return outp, err
-	}, 15*time.Second); err != nil {
+	outp, err = cmd.Exec("tags", "list", "--type=post-tag")
+	type tagsRsp struct {
+		Tags []protoTag `json:"tags"`
+	}
+	var tagsActual tagsRsp
+	json.Unmarshal(outp, &tagsActual)
+	if len(tagsActual.Tags) == 0 {
+		outp1, _ := cmd.Exec("logs", "tags")
+		t.Fatal(string(append(outp, outp1...)))
+		return
+	}
+	if len(tagsActual.Tags) != 2 {
+		t.Fatal(tagsActual.Tags)
+		return
+	}
+
+	if tagsActual.Tags[0].Count != "1" {
+		t.Fatal(tagsActual.Tags[0])
+		return
+	}
+	if tagsActual.Tags[1].Count != "1" {
+		t.Fatal(tagsActual.Tags[1])
+		return
+	}
+
+	time.Sleep(5 * time.Second)
+	// Inserting an other post so tag counts increase
+	outp, err = cmd.Exec("posts", "--id=2", "--title=Hi1", "--content=Hi there1", "--tags=a,b", "save")
+	if err != nil {
+		t.Fatal(string(outp))
+		return
+	}
+
+	outp, err = cmd.Exec("tags", "list", "--type=post-tag")
+	json.Unmarshal(outp, &tagsActual)
+	if len(tagsActual.Tags) == 0 {
+		outp1, _ := cmd.Exec("logs", "tags")
+		t.Fatal(string(append(outp, outp1...)))
+		return
+	}
+	if len(tagsActual.Tags) != 2 {
+		t.Fatal(tagsActual.Tags)
+		return
+	}
+
+	if tagsActual.Tags[0].Count != "2" {
+		outp1, _ := cmd.Exec("store", "list", "--table=tags")
+		outp2, _ := cmd.Exec("store", "list", "--table=posts")
+		t.Fatal(tagsActual.Tags[0], string(outp1), string(outp2))
+		return
+	}
+	if tagsActual.Tags[1].Count != "2" {
+		outp1, _ := cmd.Exec("store", "list", "--table=tags")
+		outp2, _ := cmd.Exec("store", "list", "--table=posts")
+		t.Fatal(tagsActual.Tags[1], string(outp1), string(outp2))
 		return
 	}
 }

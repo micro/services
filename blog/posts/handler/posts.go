@@ -179,7 +179,7 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 				Title:    i,
 			})
 			if err != nil {
-				logger.Errorf("Error increasing count for tag '%v' with type '%v' for parent '%v'", i, tagType, parentID)
+				logger.Errorf("Error increasing count for tag '%v' with type '%v' for parent '%v': %v", i, tagType, parentID, err)
 			}
 		}
 	}

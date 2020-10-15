@@ -14,9 +14,10 @@ import (
 )
 
 const (
-	slugPrefix   = "bySlug"
-	parentPrefix = "byParent"
-	typePrefix   = "byType"
+	slugPrefix     = "bySlug"
+	parentPrefix   = "byParent"
+	typePrefix     = "byType"
+	tagCountPrefix = "tagCount"
 )
 
 type Tag struct {
@@ -34,41 +35,57 @@ func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse)
 	}
 
 	tagSlug := slug.Make(req.GetTitle())
-	parentID := fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tagSlug)
+	key := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
 
 	// read by parent ID + slug, the record is identical in boths places anyway
-	records, err := store.Read(parentID)
+	records, err := store.Read(key)
 	if err != nil && err != store.ErrNotFound {
 		return err
 	}
 
+	var tag *Tag
 	// If no existing record is found, create a new one
 	if len(records) == 0 {
-		tag := &Tag{
+		tag = &Tag{
 			Title: req.GetTitle(),
 			Type:  req.Type,
 			Slug:  tagSlug,
-			Count: 1,
 		}
-		return t.saveTag(tag)
+	} else {
+		record := records[0]
+		tag = &Tag{}
+		err = json.Unmarshal(record.Value, tag)
+		if err != nil {
+			return err
+		}
 	}
-	record := records[0]
-	tag := &Tag{}
-	err = json.Unmarshal(record.Value, tag)
+
+	// increase tag count
+	err = store.Write(&store.Record{
+		Key:   fmt.Sprintf("%v:%v:%v", tagCountPrefix, tag.Slug, req.GetParentID()),
+		Value: nil,
+	})
 	if err != nil {
 		return err
 	}
-	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", parentPrefix, req.ParentID)), store.Limit(1000))
+
+	oldTagCount := tag.Count
+	// get tag count
+	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", tagCountPrefix, tag.Slug)), store.Limit(1000))
 	if err != nil {
 		return err
 	}
+
 	tag.Count = int64(len(recs))
+	if tag.Count == oldTagCount {
+		return fmt.Errorf("Tag count for tag %v is unchanged, was: %v, now: %v", tagSlug, oldTagCount, tag.Count)
+	}
 	tagJSON, err := json.Marshal(tag)
 	if err != nil {
 		return err
 	}
 	err = store.Write(&store.Record{
-		Key:   fmt.Sprintf("%v:%v:%v", parentPrefix, parentID, tag.Slug),
+		Key:   fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tag.Slug),
 		Value: tagJSON,
 	})
 	if err != nil {
@@ -127,11 +144,15 @@ func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.Remove
 	if err != nil {
 		return err
 	}
-	err = store.Delete(fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tag.Slug))
+
+	// decrease tag count
+	err = store.Delete(fmt.Sprintf("%v:%v:%v", tagCountPrefix, tag.Slug, req.GetParentID()))
 	if err != nil {
 		return err
 	}
-	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", parentPrefix, req.ParentID)), store.Limit(1000))
+
+	// get tag count
+	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", tagCountPrefix, tag.Slug)), store.Limit(1000))
 	if err != nil {
 		return err
 	}
