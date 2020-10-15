@@ -5,7 +5,7 @@ MODIFY=Mgithub.com/micro/go-micro/api/proto/api.proto=github.com/micro/go-micro/
 .PHONY: proto
 proto:
     
-	protoc --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/tag/tag.proto
+	protoc --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/tags.proto
     
 
 .PHONY: build

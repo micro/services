@@ -8,100 +8,128 @@ import (
 
 	"github.com/gosimple/slug"
 	"github.com/micro/go-micro/v3/errors"
-	gostore "github.com/micro/go-micro/v3/store"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/blog/tags/proto"
 )
 
 const (
-	parentPrefix = "parent"
-	typePrefix   = "type"
+	slugPrefix     = "bySlug"
+	parentPrefix   = "byParent"
+	typePrefix     = "byType"
+	tagCountPrefix = "tagCount"
 )
 
 type Tag struct {
-	ParentID string `json:"parentID"`
-	Title    string `json:"title"`
-	Slug     string `json:"slug"`
-	Type     string `json:"type"`
-	Count    int64  `json:"count"`
+	Title string `json:"title"`
+	Slug  string `json:"slug"`
+	Type  string `json:"type"`
+	Count int64  `json:"count"`
 }
 
 type Tags struct{}
 
-func (t *Tags) IncreaseCount(ctx context.Context, req *pb.IncreaseCountRequest, rsp *pb.IncreaseCountResponse) error {
+func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) error {
 	if len(req.ParentID) == 0 || len(req.Type) == 0 {
 		return errors.BadRequest("tags.increasecount.input-check", "parent id and type is required")
 	}
 
 	tagSlug := slug.Make(req.GetTitle())
-	parentID := fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tagSlug)
+	key := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
 
 	// read by parent ID + slug, the record is identical in boths places anyway
-	records, err := store.Read(parentID)
-	if err != nil && err != gostore.ErrNotFound {
+	records, err := store.Read(key)
+	if err != nil && err != store.ErrNotFound {
 		return err
 	}
 
+	var tag *Tag
 	// If no existing record is found, create a new one
 	if len(records) == 0 {
-		tag := &Tag{
-			ParentID: req.GetParentID(),
-			Title:    req.GetTitle(),
-			Type:     req.Type,
-			Slug:     tagSlug,
-			Count:    1,
+		tag = &Tag{
+			Title: req.GetTitle(),
+			Type:  req.Type,
+			Slug:  tagSlug,
 		}
-		return t.saveTag(tag)
+	} else {
+		record := records[0]
+		tag = &Tag{}
+		err = json.Unmarshal(record.Value, tag)
+		if err != nil {
+			return err
+		}
 	}
-	record := records[0]
-	tag := &Tag{}
-	err = json.Unmarshal(record.Value, tag)
+
+	// increase tag count
+	err = store.Write(&store.Record{
+		Key:   fmt.Sprintf("%v:%v:%v", tagCountPrefix, tag.Slug, req.GetParentID()),
+		Value: nil,
+	})
 	if err != nil {
 		return err
 	}
-	tag.Count++
+
+	oldTagCount := tag.Count
+	// get tag count
+	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", tagCountPrefix, tag.Slug)), store.Limit(1000))
+	if err != nil {
+		return err
+	}
+
+	tag.Count = int64(len(recs))
+	if tag.Count == oldTagCount {
+		return fmt.Errorf("Tag count for tag %v is unchanged, was: %v, now: %v", tagSlug, oldTagCount, tag.Count)
+	}
+	tagJSON, err := json.Marshal(tag)
+	if err != nil {
+		return err
+	}
+	err = store.Write(&store.Record{
+		Key:   fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tag.Slug),
+		Value: tagJSON,
+	})
+	if err != nil {
+		return err
+	}
 	return t.saveTag(tag)
 }
 
 func (t *Tags) saveTag(tag *Tag) error {
 	tagSlug := slug.Make(tag.Title)
 
-	parentID := fmt.Sprintf("%v:%v:%v", parentPrefix, tag.ParentID, tagSlug)
-	typeID := fmt.Sprintf("%v:%v:%v", typePrefix, tag.Type, tagSlug)
+	key := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
+	typeKey := fmt.Sprintf("%v:%v:%v", typePrefix, tag.Type, tagSlug)
 
 	bytes, err := json.Marshal(tag)
 	if err != nil {
 		return err
 	}
 
-	// write parentId:slug to enable prefix listing based on parent
-	err = store.Write(&gostore.Record{
-		Key:   parentID,
+	// write parentId:slug to enable prefix listing based on type
+	err = store.Write(&store.Record{
+		Key:   key,
 		Value: bytes,
 	})
 	if err != nil {
 		return err
 	}
-
-	// write type:slug to enable prefix listing based on parent
-	return store.Write(&gostore.Record{
-		Key:   typeID,
+	return store.Write(&store.Record{
+		Key:   typeKey,
 		Value: bytes,
 	})
 }
 
-func (t *Tags) DecreaseCount(ctx context.Context, req *pb.DecreaseCountRequest, rsp *pb.DecreaseCountResponse) error {
+func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.RemoveResponse) error {
 	if len(req.ParentID) == 0 || len(req.Type) == 0 {
 		return errors.BadRequest("tags.decreaseecount.input-check", "parent id and type is required")
 	}
 
 	tagSlug := slug.Make(req.GetTitle())
-	parentID := fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tagSlug)
+	parentKey := fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tagSlug)
 
 	// read by parent ID + slug, the record is identical in boths places anyway
-	records, err := store.Read(parentID)
-	if err != nil && err != gostore.ErrNotFound {
+	records, err := store.Read(parentKey)
+	if err != nil && err != store.ErrNotFound {
 		return err
 	}
 
@@ -116,11 +144,19 @@ func (t *Tags) DecreaseCount(ctx context.Context, req *pb.DecreaseCountRequest, 
 	if err != nil {
 		return err
 	}
-	if tag.Count == 0 {
-		// return error?
-		return nil
+
+	// decrease tag count
+	err = store.Delete(fmt.Sprintf("%v:%v:%v", tagCountPrefix, tag.Slug, req.GetParentID()))
+	if err != nil {
+		return err
 	}
-	tag.Count--
+
+	// get tag count
+	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", tagCountPrefix, tag.Slug)), store.Limit(1000))
+	if err != nil {
+		return err
+	}
+	tag.Count = int64(len(recs))
 	return t.saveTag(tag)
 }
 
@@ -139,6 +175,7 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 	if err != nil {
 		return err
 	}
+
 	rsp.Tags = make([]*pb.Tag, len(records))
 	for i, record := range records {
 		tagRecord := &Tag{}
@@ -147,23 +184,23 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 			return err
 		}
 		rsp.Tags[i] = &pb.Tag{
-			ParentID: tagRecord.ParentID,
-			Title:    tagRecord.Title,
-			Type:     tagRecord.Type,
-			Slug:     tagRecord.Slug,
-			Count:    tagRecord.Count,
+			Title: tagRecord.Title,
+			Type:  tagRecord.Type,
+			Slug:  tagRecord.Slug,
+			Count: tagRecord.Count,
 		}
 	}
+
 	return nil
 }
 
 func (t *Tags) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
-	if len(req.ParentID) == 0 || len(req.Type) == 0 {
-		return errors.BadRequest("tags.update.input-check", "parent id and type is required")
+	if len(req.Title) == 0 || len(req.Type) == 0 {
+		return errors.BadRequest("tags.update.input-check", "title and type is required")
 	}
 
 	tagSlug := slug.Make(req.GetTitle())
-	parentID := fmt.Sprintf("%v:%v:%v", parentPrefix, req.GetParentID(), tagSlug)
+	parentID := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
 
 	// read by parent ID + slug, the record is identical in boths places anyway
 	records, err := store.Read(parentID)
