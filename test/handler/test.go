@@ -2,7 +2,11 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"bytes"
+	"io/ioutil"
 
+	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/broker"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
@@ -88,7 +92,7 @@ func (t *Test) Store(ctx context.Context, req *test.Request, rsp *test.Response)
 
 	if err := store.Write(&store.Record{Key: key, Value: []byte(val)}); err != nil {
 		log.Errorf("Error writing %s", err)
-		return errors.InternalServerError("test.store", fmt.Errorf("Error writing record %s with expiry %s", key, err))
+		return errors.InternalServerError("test.store", "Error writing record %s with expiry %s", key, err)
 	}
 
 	recs, err := store.List()
@@ -105,20 +109,29 @@ func (t *Test) Store(ctx context.Context, req *test.Request, rsp *test.Response)
 	return nil
 }
 
-func (t *Test) Events(ctx context.Context, req *test.Request, rsp *test.Response) error {}
+func (t *Test) Events(ctx context.Context, req *test.Request, rsp *test.Response) error {
+	rsp.Status = "OK"
+	return nil
+}
 
 func (t *Test) Broker(ctx context.Context, req *test.Request, rsp *test.Response) error {
+	exit := make(chan bool, 1)
 	sub, err := broker.Subscribe("test", func(m *broker.Message) error {
 		log.Info("Received test subscription message")
-		sub.Unsubscribe()
+		exit <- true
 		return nil
 	})
+	go func() {
+		<-exit
+		sub.Unsubscribe()
+	}()
+
 	if err != nil {
 		return errors.InternalServerError("test.broker", err.Error())
 	}
 
 	if err := broker.Publish("test", &broker.Message{
-		Message: []byte(req.Id),
+		Body: []byte(req.Id),
 	}); err != nil {
 		return errors.InternalServerError("test.broker", err.Error())
 	}
@@ -140,7 +153,7 @@ func (t *Test) BlobStore(ctx context.Context, req *test.Request, rsp *test.Respo
 		return errors.InternalServerError("test.blob", "Error reading from the blog store: %v", err)
 	}
 
-	bytes, err := ioutil.ReadAll(res)
+	_, err = ioutil.ReadAll(res)
 	if err != nil {
 		return errors.InternalServerError("test.blob", "Error reading result: %v", err)
 	}

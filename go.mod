@@ -16,8 +16,8 @@ require (
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gosimple/slug v1.9.0
 	github.com/hashicorp/go-retryablehttp v0.6.7 // indirect
-	github.com/micro/go-micro/v3 v3.0.0-beta.3
-	github.com/micro/micro/v3 v3.0.0-beta.5.1
+	github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201014163401-04726dbea56a
+	github.com/micro/micro/v3 v3.0.0-beta.6.0.20201015084013-5adee1bbfb5e
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/xanzy/go-gitlab v0.38.1 // indirect
