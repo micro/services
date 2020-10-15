@@ -47,7 +47,7 @@ jobs:
 
     - name: Build container
       run: |
-        bash test/image/test-docker.sh
+        bash services/test/image/test-docker.sh
 
     - name: Test Blog services
       working-directory: services/test/integration
