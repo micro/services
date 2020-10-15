@@ -50,7 +50,7 @@ message Message {
   // id of the user who sent the message
   string user_id = 4;
   // time time the message was sent in unix format 
-  int32 sent_at = 5;
+  int64 sent_at = 5;
   // subject of the message
   string subject = 6;
   // text of the message
