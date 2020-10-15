@@ -6,9 +6,9 @@ This is a full end to end example of writing a multi-service blog application
 
 Check out the [blog tutorial](https://m3o.dev/tutorials/building-a-blog) on the developer docs.
 
-# How it works
+## How it works
 
-# Present
+### Present
 
 The blog services are designed so a user can deploy them to their own micro namespace, write content with their Micro account with commands like
 
@@ -37,9 +37,9 @@ curl -H "Authorization: Bearer $MICRO_API_TOKEN" "Micro-Namespace: $NAMESPACE" h
 There are no comments provided yet, just posts and tags.
 Access is governed by auth rules, ie. Posts List, Tags List is open, Posts Save requires a Micro login.
 
-# Future possibilities
+### Future possibilities
 
-## Enable non Micro users to write posts, comments
+#### Enable non Micro users to write posts, comments
 
 If we provide a user/login service (markedly different from auth, it can be a simple session based auth) to enable non Micro users to register, the following can be done:
 
