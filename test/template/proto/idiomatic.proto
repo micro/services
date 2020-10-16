@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package idiomatic;
 
-option go_package = "proto;idiomatic";
+option go_package = "github.com/micro/services/test/template/proto;idiomatic";
 
 service Idiomatic {
 	rpc Call(Request) returns (Response) {}
