@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package messages;
+option go_package = "github.com/micro/services/messages/proto;messages";
+
+service Messages {
+  rpc Send(SendRequest) returns (SendResponse);
+  rpc List(ListRequest) returns (ListResponse);
+  rpc Read(ReadRequest) returns (ReadResponse);
+}
+
+message Message {
+  string id = 1;
+  string to = 2;
+  string from = 3;
+  string subject = 4;
+  string text = 5;
+  int64 sent_at = 6;
+}
+
+message SendRequest {
+  string to = 1;
+  string from = 2;
+  string subject = 3;
+  string text = 4;
+}
+
+message SendResponse {}
+
+message ListRequest {
+  string user = 1;
+}
+
+message ListResponse {
+  repeated Message messages = 1;
+}
+
+message ReadRequest {
+  string id = 1;
+}
+
+message ReadResponse {
+  Message message = 1;
+}

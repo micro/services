@@ -39,8 +39,8 @@ type Posts struct {
 }
 
 func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.SaveResponse) error {
-	if len(req.Id) == 0 || len(req.Title) == 0 || len(req.Content) == 0 {
-		return errors.BadRequest("posts.save.input-check", "Id, title or content is missing")
+	if len(req.Id) == 0 {
+		return errors.BadRequest("posts.save.input-check", "Id is missing")
 	}
 
 	// read by post
@@ -71,14 +71,33 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 	if err != nil {
 		return errors.InternalServerError("posts.save.unmarshal", "Failed to unmarshal old post: %v", err.Error())
 	}
+
 	post := &Post{
 		ID:              req.Id,
-		Title:           req.Title,
-		Content:         req.Content,
-		Slug:            postSlug,
-		Tags:            req.Tags,
+		Title:           oldPost.Title,
+		Content:         oldPost.Content,
+		Slug:            oldPost.Slug,
+		Tags:            oldPost.Tags,
 		CreateTimestamp: oldPost.CreateTimestamp,
 		UpdateTimestamp: time.Now().Unix(),
+	}
+	if len(req.Title) > 0 {
+		post.Title = req.Title
+		post.Slug = slug.Make(post.Title)
+	}
+	if len(req.Slug) > 0 {
+		post.Slug = req.Slug
+	}
+	if len(req.Content) > 0 {
+		post.Content = req.Content
+	}
+	if len(req.Tags) > 0 {
+		// Handle the special case of deletion
+		if len(req.Tags) == 0 && req.Tags[0] == "" {
+			post.Tags = []string{}
+		} else {
+			post.Tags = req.Tags
+		}
 	}
 
 	// Check if slug exists
@@ -86,12 +105,14 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 	if err != nil && err != store.ErrNotFound {
 		return errors.InternalServerError("posts.save.store-read", "Failed to read post by slug: %v", err.Error())
 	}
-	otherSlugPost := &Post{}
-	err = json.Unmarshal(record.Value, otherSlugPost)
-	if err != nil {
-		return errors.InternalServerError("posts.save.slug-unmarshal", "Error unmarshaling other post with same slug: %v", err.Error())
-	}
-	if len(recordsBySlug) > 0 && oldPost.ID != otherSlugPost.ID {
+	if len(recordsBySlug) > 0 {
+		otherSlugPost := &Post{}
+		err = json.Unmarshal(recordsBySlug[0].Value, otherSlugPost)
+		if oldPost.ID != otherSlugPost.ID {
+			if err != nil {
+				return errors.InternalServerError("posts.save.slug-unmarshal", "Error unmarshaling other post with same slug: %v", err.Error())
+			}
+		}
 		return errors.BadRequest("posts.save.slug-check", "An other post with this slug already exists")
 	}
 
@@ -135,9 +156,9 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 	if oldPost == nil {
 		for _, tagName := range post.Tags {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
-				ParentID: post.ID,
-				Type:     tagType,
-				Title:    tagName,
+				ResourceID: post.ID,
+				Type:       tagType,
+				Title:      tagName,
 			})
 			if err != nil {
 				return err
@@ -161,9 +182,9 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 		_, stillThere := newTags[i]
 		if !stillThere {
 			_, err := p.Tags.Remove(ctx, &tags.RemoveRequest{
-				ParentID: parentID,
-				Type:     tagType,
-				Title:    i,
+				ResourceID: parentID,
+				Type:       tagType,
+				Title:      i,
 			})
 			if err != nil {
 				logger.Errorf("Error decreasing count for tag '%v' with type '%v' for parent '%v'", i, tagType, parentID)
@@ -174,9 +195,9 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 		_, newlyAdded := oldTags[i]
 		if newlyAdded {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
-				ParentID: parentID,
-				Type:     tagType,
-				Title:    i,
+				ResourceID: parentID,
+				Type:       tagType,
+				Title:      i,
 			})
 			if err != nil {
 				logger.Errorf("Error increasing count for tag '%v' with type '%v' for parent '%v': %v", i, tagType, parentID, err)
@@ -192,6 +213,10 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 	if len(req.Slug) > 0 {
 		key := fmt.Sprintf("%v:%v", slugPrefix, req.Slug)
 		logger.Infof("Reading post by slug: %v", req.Slug)
+		records, err = store.Read("", store.Prefix(key))
+	} else if len(req.Id) > 0 {
+		key := fmt.Sprintf("%v:%v", idPrefix, req.Id)
+		logger.Infof("Reading post by id: %v", req.Id)
 		records, err = store.Read("", store.Prefix(key))
 	} else {
 		key := fmt.Sprintf("%v:", timeStampPrefix)
