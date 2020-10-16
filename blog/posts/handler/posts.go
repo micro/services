@@ -156,9 +156,9 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 	if oldPost == nil {
 		for _, tagName := range post.Tags {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
-				ParentID: post.ID,
-				Type:     tagType,
-				Title:    tagName,
+				ResourceID: post.ID,
+				Type:       tagType,
+				Title:      tagName,
 			})
 			if err != nil {
 				return err
@@ -182,9 +182,9 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 		_, stillThere := newTags[i]
 		if !stillThere {
 			_, err := p.Tags.Remove(ctx, &tags.RemoveRequest{
-				ParentID: parentID,
-				Type:     tagType,
-				Title:    i,
+				ResourceID: parentID,
+				Type:       tagType,
+				Title:      i,
 			})
 			if err != nil {
 				logger.Errorf("Error decreasing count for tag '%v' with type '%v' for parent '%v'", i, tagType, parentID)
@@ -195,9 +195,9 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 		_, newlyAdded := oldTags[i]
 		if newlyAdded {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
-				ParentID: parentID,
-				Type:     tagType,
-				Title:    i,
+				ResourceID: parentID,
+				Type:       tagType,
+				Title:      i,
 			})
 			if err != nil {
 				logger.Errorf("Error increasing count for tag '%v' with type '%v' for parent '%v': %v", i, tagType, parentID, err)

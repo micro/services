@@ -25,8 +25,9 @@ message Post {
 message QueryRequest {
 	string id = 1;
 	string slug = 2;
-	int64 offset = 3;
-	int64 limit = 4;
+	string tag = 3;
+	int64 offset = 4;
+	int64 limit = 5;
 }
 
 message QueryResponse {
