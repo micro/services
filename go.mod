@@ -6,7 +6,6 @@ require (
 	github.com/golang/protobuf v1.4.2
 	github.com/google/uuid v1.1.2
 	github.com/gosimple/slug v1.9.0
-	github.com/micro/go-micro/v3 v3.0.0-beta.3
 	github.com/micro/micro/v3 v3.0.0-beta.6.0.20201015134940-68ac1ddfa568
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
@@ -15,8 +14,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43 // indirect
 	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect
 	google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 // indirect
-	google.golang.org/grpc v1.32.0
-	google.golang.org/protobuf v1.25.0
+	google.golang.org/grpc v1.32.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )
 
