@@ -48,6 +48,8 @@ type ChatService interface {
 	New(ctx context.Context, in *NewRequest, opts ...client.CallOption) (*NewResponse, error)
 	// History returns the historical messages in a chat
 	History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error)
+	// Send a single message to the chat
+	Send(ctx context.Context, in *SendRequest, opts ...client.CallOption) (*SendResponse, error)
 	// Connect to a chat using a bidirectional stream enabling the client to send and recieve messages
 	// over a single RPC. When a message is sent on the stream, it will be added to the chat history
 	// and sent to the other connected users. When opening the connection, the client should provide
@@ -80,6 +82,16 @@ func (c *chatService) New(ctx context.Context, in *NewRequest, opts ...client.Ca
 func (c *chatService) History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error) {
 	req := c.c.NewRequest(c.name, "Chat.History", in)
 	out := new(HistoryResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatService) Send(ctx context.Context, in *SendRequest, opts ...client.CallOption) (*SendResponse, error) {
+	req := c.c.NewRequest(c.name, "Chat.Send", in)
+	out := new(SendResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -147,6 +159,8 @@ type ChatHandler interface {
 	New(context.Context, *NewRequest, *NewResponse) error
 	// History returns the historical messages in a chat
 	History(context.Context, *HistoryRequest, *HistoryResponse) error
+	// Send a single message to the chat
+	Send(context.Context, *SendRequest, *SendResponse) error
 	// Connect to a chat using a bidirectional stream enabling the client to send and recieve messages
 	// over a single RPC. When a message is sent on the stream, it will be added to the chat history
 	// and sent to the other connected users. When opening the connection, the client should provide
@@ -158,6 +172,7 @@ func RegisterChatHandler(s server.Server, hdlr ChatHandler, opts ...server.Handl
 	type chat interface {
 		New(ctx context.Context, in *NewRequest, out *NewResponse) error
 		History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error
+		Send(ctx context.Context, in *SendRequest, out *SendResponse) error
 		Connect(ctx context.Context, stream server.Stream) error
 	}
 	type Chat struct {
@@ -177,6 +192,10 @@ func (h *chatHandler) New(ctx context.Context, in *NewRequest, out *NewResponse)
 
 func (h *chatHandler) History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error {
 	return h.ChatHandler.History(ctx, in, out)
+}
+
+func (h *chatHandler) Send(ctx context.Context, in *SendRequest, out *SendResponse) error {
+	return h.ChatHandler.Send(ctx, in, out)
 }
 
 func (h *chatHandler) Connect(ctx context.Context, stream server.Stream) error {

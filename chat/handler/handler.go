@@ -138,6 +138,38 @@ func (h *handler) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.H
 	return nil
 }
 
+// Send a single message to the chat, designed for ease of use via the API / CLI
+func (h *handler) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResponse) error {
+	// validate the request
+	if len(req.ChatId) == 0 {
+		return errors.BadRequest("chat.Send.MissingChatID", "ChatID is missing")
+	}
+	if len(req.UserId) == 0 {
+		return errors.BadRequest("chat.Send.MissingUserID", "UserID is missing")
+	}
+	if len(req.Text) == 0 {
+		return errors.BadRequest("chat.Send.MissingText", "Text is missing")
+	}
+
+	// construct the message
+	msg := &pb.Message{
+		Id:       uuid.New().String(),
+		ClientId: req.ClientId,
+		ChatId:   req.ChatId,
+		UserId:   req.UserId,
+		Subject:  req.Subject,
+		Text:     req.Text,
+	}
+
+	// default the client id if not provided
+	if len(msg.ClientId) == 0 {
+		msg.ClientId = uuid.New().String()
+	}
+
+	// create the message
+	return h.createMessage(msg)
+}
+
 // Connect to a chat using a bidirectional stream enabling the client to send and recieve messages
 // over a single RPC. When a message is sent on the stream, it will be added to the chat history
 // and sent to the other connected users. When opening the connection, the client should provide
@@ -236,28 +268,39 @@ func (h *handler) Connect(ctx context.Context, stream pb.Chat_ConnectStream) err
 			// an error occured in another goroutine, terminate the stream
 			return err
 		case msg := <-msgChan:
-			// a message was recieved from the client. validate it hasn't been recieved before
-			if _, err := store.Read(messageStoreKeyPrefix + msg.ClientId); err == nil {
-				// the message has already been processed
-				continue
-			} else if err != store.ErrNotFound {
-				// an unexpected error occured
-				return err
-			}
-
 			// set the defaults
 			msg.UserId = userID
 			msg.ChatId = chatID
 
-			// send the message to the event stream
-			if err := events.Publish(chatEventKeyPrefix+chatID, msg); err != nil {
-				return err
-			}
-
-			// record the messages client id
-			if err := store.Write(&store.Record{Key: messageStoreKeyPrefix + msg.ClientId}); err != nil {
+			// create the message
+			if err := h.createMessage(msg); err != nil {
 				return err
 			}
 		}
 	}
+}
+
+// createMessage is a helper function which creates a message in the event stream. It handles the
+// logic for ensuring client id is unique.
+func (h *handler) createMessage(msg *pb.Message) error {
+	// a message was recieved from the client. validate it hasn't been recieved before
+	if _, err := store.Read(messageStoreKeyPrefix + msg.ClientId); err == nil {
+		// the message has already been processed
+		return nil
+	} else if err != store.ErrNotFound {
+		// an unexpected error occured
+		return err
+	}
+
+	// send the message to the event stream
+	if err := events.Publish(chatEventKeyPrefix+msg.ChatId, msg); err != nil {
+		return err
+	}
+
+	// record the messages client id
+	if err := store.Write(&store.Record{Key: messageStoreKeyPrefix + msg.ClientId}); err != nil {
+		return err
+	}
+
+	return nil
 }
