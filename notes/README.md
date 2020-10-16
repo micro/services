@@ -1,6 +1,6 @@
 # Notes Service
 
-Notes service is an RPC service which offers CRUD for notes. It demonstrates usage of the store and errors pacakges. Example usage:
+Notes service is an RPC service which offers CRUD for notes. It demonstrates usage of the store, errors and logger pacakges. Example usage:
 
 ```bash
 > micro notes create --title="HelloWorld" --text="MyFirstNote"
