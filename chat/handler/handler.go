@@ -16,24 +16,19 @@ import (
 	pb "github.com/micro/services/chat/proto"
 )
 
-// New returns an initialized chat handler
-func New() pb.ChatHandler {
-	return new(handler)
-}
-
 const (
 	chatStoreKeyPrefix    = "chats/"
 	chatEventKeyPrefix    = "chats/"
 	messageStoreKeyPrefix = "messages/"
 )
 
-// handler satisfies the ChatHandler interface. You can see this inteface defined in chat.pb.micro.go
-type handler struct{}
+// Chat satisfies the ChatHandler interface. You can see this inteface defined in chat.pb.micro.go
+type Chat struct{}
 
 // New creates a chat for a group of users. The RPC is idempotent so if it's called multiple times
 // for the same users, the same response will be returned. It's good practice to design APIs as
 // idempotent since this enables safe retries.
-func (h *handler) New(ctx context.Context, req *pb.NewRequest, rsp *pb.NewResponse) error {
+func (c *Chat) New(ctx context.Context, req *pb.NewRequest, rsp *pb.NewResponse) error {
 	// in a real world application we would authorize the request to ensure the authenticated user
 	// is part of the chat they're attempting to create. We could do this by getting the user id from
 	// auth.AccountFromContext(ctx) and then validating the presence of their id in req.UserIds. If
@@ -95,7 +90,7 @@ func (h *handler) New(ctx context.Context, req *pb.NewRequest, rsp *pb.NewRespon
 }
 
 // History returns the historical messages in a chat
-func (h *handler) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
+func (c *Chat) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
 	// as per the New function, in a real world application we would authorize the request to ensure
 	// the authenticated user is part of the chat they're attempting to read the history of
 
@@ -138,7 +133,7 @@ func (h *handler) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.H
 }
 
 // Send a single message to the chat, designed for ease of use via the API / CLI
-func (h *handler) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResponse) error {
+func (c *Chat) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResponse) error {
 	// validate the request
 	if len(req.ChatId) == 0 {
 		return errors.BadRequest("chat.Send.MissingChatID", "ChatID is missing")
@@ -166,14 +161,14 @@ func (h *handler) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRes
 	}
 
 	// create the message
-	return h.createMessage(msg)
+	return c.createMessage(msg)
 }
 
 // Connect to a chat using a bidirectional stream enabling the client to send and recieve messages
 // over a single RPC. When a message is sent on the stream, it will be added to the chat history
 // and sent to the other connected users. When opening the connection, the client should provide
 // the chat_id and user_id in the context so the server knows which messages to stream.
-func (h *handler) Connect(ctx context.Context, stream pb.Chat_ConnectStream) error {
+func (c *Chat) Connect(ctx context.Context, stream pb.Chat_ConnectStream) error {
 	// the client passed the chat id and user id in the request context. we'll load that information
 	// now and validate it. If any information is missing we'll return a BadRequest error to the client
 	userID, ok := metadata.Get(ctx, "user-id")
@@ -272,7 +267,7 @@ func (h *handler) Connect(ctx context.Context, stream pb.Chat_ConnectStream) err
 			msg.ChatId = chatID
 
 			// create the message
-			if err := h.createMessage(msg); err != nil {
+			if err := c.createMessage(msg); err != nil {
 				return err
 			}
 		}
@@ -281,7 +276,7 @@ func (h *handler) Connect(ctx context.Context, stream pb.Chat_ConnectStream) err
 
 // createMessage is a helper function which creates a message in the event stream. It handles the
 // logic for ensuring client id is unique.
-func (h *handler) createMessage(msg *pb.Message) error {
+func (c *Chat) createMessage(msg *pb.Message) error {
 	// a message was recieved from the client. validate it hasn't been recieved before
 	if _, err := store.Read(messageStoreKeyPrefix + msg.ClientId); err == nil {
 		// the message has already been processed

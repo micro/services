@@ -17,15 +17,10 @@ const (
 	joinKey       = "/"
 )
 
-// New returns an initialized messages handler
-func New() pb.MessagesHandler {
-	return new(handler)
-}
-
-type handler struct{}
+type Messages struct{}
 
 // Send a message
-func (h *handler) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResponse) error {
+func (m *Messages) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResponse) error {
 	// validate the request
 	if len(req.To) == 0 {
 		return errors.BadRequest("messages.Send.MissingTo", "Missing to")
@@ -68,7 +63,7 @@ func (h *handler) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRes
 }
 
 // List messages for a user
-func (h *handler) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+func (m *Messages) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	// validate the request
 	if len(req.User) == 0 {
 		return errors.BadRequest("messages.List.MissingUser", "Missing user")
@@ -95,7 +90,7 @@ func (h *handler) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRes
 }
 
 // Read a message
-func (h *handler) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
+func (m *Messages) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
 	// validate the request
 	if len(req.Id) == 0 {
 		return errors.BadRequest("messages.Read.MissingUser", "Missing user")
