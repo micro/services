@@ -20,10 +20,14 @@ message Post {
 	repeated string tags = 8;
 }
 
+// Query posts. Acts as a listing when no id or slug provided.
+// Gets a single post by id or slug if any of them provided.
 message QueryRequest {
-	string slug = 1;
-	int64 offset = 2;
-	int64 limit = 3;
+	string id = 1;
+	string slug = 2;
+	string tag = 3;
+	int64 offset = 4;
+	int64 limit = 5;
 }
 
 message QueryResponse {
@@ -36,6 +40,8 @@ message SaveRequest {
 	string slug = 3;
 	string content = 4;
 	int64 timestamp = 5;
+	// When updating a post and wanting to delete all tags,
+	// send a list of tags with only one member being an empty string [""]
 	repeated string tags = 6;
 }
 

@@ -3,9 +3,9 @@ syntax = "proto3";
 package tags;
 
 service Tags {
-	// Add a tag to a parent
+	// Add a tag to a resource
 	rpc Add(AddRequest) returns (AddResponse) {}
-	// Remove a tag from a parent
+	// Remove a tag from a resource
 	rpc Remove(RemoveRequest) returns (RemoveResponse) {}
 	// List tags by
 	rpc List(ListRequest) returns (ListResponse) {}
@@ -14,7 +14,7 @@ service Tags {
 }
 
 message Tag {
-	// Type is useful for namespacing and listing across parents,
+	// Type is useful for namespacing and listing across resources,
 	// ie. list tags for posts, customers etc.
 	string type = 1;
 	string slug = 2;
@@ -24,15 +24,16 @@ message Tag {
 }
 
 message AddRequest {
-	string parentID = 1;
+	string resourceID = 1;
 	string type = 2;
 	string title = 3;
+	int64 resourceCreated = 4;
 }
 
 message AddResponse{}
 
 message RemoveRequest {
-	string parentID = 1;
+	string resourceID = 1;
 	string type = 2;
 	string title = 3;
 }
@@ -47,10 +48,10 @@ message UpdateRequest {
 
 message UpdateResponse{}
 
-// ListRequest: list either by parent id or type.
+// ListRequest: list either by resource id or type.
 // Optionally filter by min or max count.
 message ListRequest{
-	string parentID = 1;
+	string resourceID = 1;
 	string type = 2;
 	int64 minCount = 3;
 	int64 maxCount = 4;
