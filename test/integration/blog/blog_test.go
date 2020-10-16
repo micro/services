@@ -236,4 +236,54 @@ func testPosts(t *test.T) {
 		t.Fatal(tagsActual.Tags[1], string(outp1), string(outp2))
 		return
 	}
+
+	// test updating fields fields and removing tags
+	outp, err = cmd.Exec("posts", "--id=2", "--title=Hi2", "--tags=a", "save")
+	if err != nil {
+		t.Fatal(string(outp))
+		return
+	}
+
+	outp, err = cmd.Exec("tags", "list", "--type=post-tag")
+	json.Unmarshal(outp, &tagsActual)
+	if len(tagsActual.Tags) == 0 {
+		outp1, _ := cmd.Exec("logs", "tags")
+		t.Fatal(string(append(outp, outp1...)))
+		return
+	}
+	if len(tagsActual.Tags) != 2 {
+		t.Fatal(tagsActual.Tags)
+		return
+	}
+	for _, tag := range tagsActual.Tags {
+		if tag.Title == "b" {
+			if tag.Count != "1" {
+				t.Fatal("Tag b should have a count 1")
+				return
+			}
+		}
+		if tag.Title == "a" {
+			if tag.Count != "2" {
+				t.Fatal("Tag b should have a count 2")
+				return
+			}
+		}
+	}
+
+	outp, err = cmd.Exec("posts", "--id=2", "query")
+	if err != nil {
+		t.Fatal(string(outp))
+		return
+	}
+	json.Unmarshal(outp, &actual)
+	if len(actual.Posts) == 0 {
+		t.Fatal(string(outp))
+		return
+	}
+	if actual.Posts[0].Title != "Hi2" ||
+		actual.Posts[0].Content != "Hi there1" ||
+		actual.Posts[0].Slug != "hi2" || len(actual.Posts[0].Tags) != 1 {
+		t.Fatal(actual)
+		return
+	}
 }
