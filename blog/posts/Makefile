@@ -1,6 +1,6 @@
 
 GOPATH:=$(shell go env GOPATH)
-MODIFY=Mgithub.com/micro/micro/service/api/proto/api.proto=github.com/micro/micro/v3/service/api/proto
+MODIFY=Mgithub.com/micro/micro/proto/api/api.proto=github.com/micro/micro/v3/proto/api
 
 .PHONY: proto
 proto:
