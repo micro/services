@@ -203,7 +203,7 @@ func (c *Chat) Connect(ctx context.Context, stream pb.Chat_ConnectStream) error 
 
 	// create an event stream to consume messages posted by other users into the chat. we'll use the
 	// user id as a queue to ensure each user recieves the message
-	evStream, err := events.Subscribe(chatEventKeyPrefix+chatID, events.WithQueue(userID))
+	evStream, err := events.Consume(chatEventKeyPrefix+chatID, events.WithGroup(userID))
 	if err != nil {
 		logger.Errorf("Error streaming events. Chat ID: %v. Error: %v", chatID, err)
 		return errors.InternalServerError("chat.Connect.Unknown", "Error connecting to the event stream")
