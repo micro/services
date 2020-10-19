@@ -1,1 +1,1 @@
-package logger
+service logger

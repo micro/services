@@ -1,1 +1,1 @@
-package kv
+service kv
