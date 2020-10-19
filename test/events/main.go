@@ -24,7 +24,7 @@ func main() {
 	srv.Init()
 
 	go func() { // test 1, ordinary sub with autoack
-		evChan, err := events.Subscribe("test1")
+		evChan, err := events.Consume("test1")
 		if err != nil {
 			logger.Fatalf("Error creating subscriber: %v", err)
 		}
@@ -71,7 +71,7 @@ func main() {
 	}()
 
 	go func() { // test 2, sub with manual ack
-		evChan, err := events.Subscribe("test2", goevents.WithAutoAck(false, 5*time.Second))
+		evChan, err := events.Consume("test2", goevents.WithAutoAck(false, 5*time.Second))
 		if err != nil {
 			logger.Errorf("TEST2: Error creating subscriber: %v", err)
 			return
