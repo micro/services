@@ -2,8 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -38,15 +36,15 @@ type Posts struct {
 }
 
 func NewPosts(tagsService tags.TagsService) *Posts {
-	createdIndex := model.ByEq("created")
-	createdIndex.Reverse = true
+	createdIndex := model.ByEquality("created")
+	createdIndex.Desc = true
 
 	return &Posts{
 		Tags: tagsService,
 		db: model.NewDB(
 			store.DefaultStore,
 			"posts",
-			model.Indexes(model.ByEq("id"), model.ByEq("slug"), createdIndex),
+			model.Indexes(model.ByEquality("id"), model.ByEquality("slug"), createdIndex),
 		),
 	}
 }
@@ -198,7 +196,7 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 		if req.Limit > 0 {
 			limit = uint(req.Limit)
 		}
-		q.Limit = limit
+		q.Limit = int64(limit)
 		q.Offset = req.Offset
 		logger.Infof("Listing posts, offset: %v, limit: %v", req.Offset, limit)
 	}
@@ -223,29 +221,5 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 
 func (p *Posts) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	logger.Info("Received Post.Delete request")
-	records, err := store.Read(fmt.Sprintf("%v:%v", idPrefix, req.Id))
-	if err != nil && err != store.ErrNotFound {
-		return err
-	}
-	if len(records) == 0 {
-		return fmt.Errorf("Post with ID %v not found", req.Id)
-	}
-	post := &Post{}
-	err = json.Unmarshal(records[0].Value, post)
-	if err != nil {
-		return err
-	}
-
-	// Delete by ID
-	err = store.Delete(fmt.Sprintf("%v:%v", idPrefix, post.ID))
-	if err != nil {
-		return err
-	}
-	// Delete by slug
-	err = store.Delete(fmt.Sprintf("%v:%v", slugPrefix, post.Slug))
-	if err != nil {
-		return err
-	}
-	// Delete by timeStamp
-	return store.Delete(fmt.Sprintf("%v:%v", timeStampPrefix, post.CreateTimestamp))
+	return errors.BadRequest("Posts.Delete", "Not implemented yet")
 }
