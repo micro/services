@@ -190,7 +190,8 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 		logger.Infof("Reading post by id: %v", req.Id)
 		q = model.Equals("id", req.Id)
 	} else {
-		q := model.Equals("created", nil)
+		q = model.Equals("created", nil)
+		q.Desc = true
 		var limit uint
 		limit = 20
 		if req.Limit > 0 {
@@ -221,5 +222,5 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 
 func (p *Posts) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	logger.Info("Received Post.Delete request")
-	return errors.BadRequest("Posts.Delete", "Not implemented yet")
+	return p.db.Delete(model.Equals("id", req.Id))
 }

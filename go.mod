@@ -6,7 +6,7 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/google/uuid v1.1.2
 	github.com/gosimple/slug v1.9.0
-	github.com/micro/dev v0.0.0-20201020210939-c727d2c73acb
+	github.com/micro/dev v0.0.0-20201022120102-c95e054f1069
 	github.com/micro/micro/v3 v3.0.0-beta.7
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
