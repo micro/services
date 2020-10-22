@@ -45,7 +45,9 @@ func NewPosts(tagsService tags.TagsService) *Posts {
 			store.DefaultStore,
 			"posts",
 			model.Indexes(model.ByEquality("slug"), createdIndex),
-			nil,
+			&model.DBOptions{
+				Debug: false,
+			},
 		),
 	}
 }
@@ -57,7 +59,9 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 
 	// read by post
 	posts := []Post{}
-	err := p.db.List(model.Equals("id", req.Id), &posts)
+	q := model.Equals("id", req.Id)
+	q.Order.Type = model.OrderTypeUnordered
+	err := p.db.List(q, &posts)
 	if err != nil {
 		return errors.InternalServerError("posts.save.store-id-read", "Failed to read post by id: %v", err.Error())
 	}
@@ -190,6 +194,7 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 	} else if len(req.Id) > 0 {
 		logger.Infof("Reading post by id: %v", req.Id)
 		q = model.Equals("id", req.Id)
+		q.Order.Type = model.OrderTypeUnordered
 	} else {
 		q = model.Equals("created", nil)
 		q.Order.Type = model.OrderTypeDesc

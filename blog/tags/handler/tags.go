@@ -41,6 +41,7 @@ func NewTags() *Tags {
 			model.Indexes(model.ByEquality("type")),
 			&model.DBOptions{
 				IdIndex: slugIndex,
+				Debug:   false,
 			},
 		),
 	}
@@ -53,7 +54,9 @@ func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse)
 
 	tags := []Tag{}
 	tagSlug := slug.Make(req.GetTitle())
-	err := t.db.List(model.Equals("slug", tagSlug), &tags)
+	q := model.Equals("slug", tagSlug)
+	q.Order.Type = model.OrderTypeUnordered
+	err := t.db.List(q, &tags)
 	if err != nil {
 		return err
 	}
@@ -166,7 +169,7 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 		return errors.BadRequest("tags.list.input-check", "resource id or type is required")
 	}
 
-	if q.Type == "" {
+	if q.Type != "" {
 		tags := []Tag{}
 		err := t.db.List(q, &tags)
 		if err != nil {
@@ -181,6 +184,7 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 				Count: tag.Count,
 			}
 		}
+		return nil
 	}
 	records, err := store.Read("", store.Prefix(key))
 	if err != nil {
@@ -212,7 +216,9 @@ func (t *Tags) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Update
 
 	tagSlug := slug.Make(req.GetTitle())
 	tags := []Tag{}
-	err := t.db.List(model.Equals("slug", tagSlug), &tags)
+	q := model.Equals("slug", tagSlug)
+	q.Order.Type = model.OrderTypeUnordered
+	err := t.db.List(q, &tags)
 	if err != nil {
 		return err
 	}
