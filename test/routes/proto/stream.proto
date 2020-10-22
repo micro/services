@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package stream;
+option go_package = "github.com/micro/services/test/stream/proto;stream";
 
 // this service uses the grpc example as a foundation:
 // https://grpc.io/docs/languages/go/basics/

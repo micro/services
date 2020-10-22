@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package srv.test_example;
 
+option go_package = "github.com/micro/services/test/example";
+
 service Example {
 	rpc TestExpiry(Request) returns (Response) {}
 	rpc TestList(Request) returns (Response) {}

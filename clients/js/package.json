@@ -1,0 +1,11 @@
+{
+  "name": "@micro/services",
+  "version": "1.0.1",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "repository": "git://github.com/micro/services.git",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}

@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package posts;
+option go_package = "github.com/micro/services/blog/posts/proto;posts";
 
 service Posts {
 	// Query currently only supports read by slug or timestamp, no listing.

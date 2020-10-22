@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package pubsub;
+option go_package = "github.com/micro/services/test/pubsub/proto;pubsub";
 
 message Message {
 	string id = 1;
