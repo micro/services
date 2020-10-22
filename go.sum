@@ -261,17 +261,6 @@ github.com/mattn/go-runewidth v0.0.7 h1:Ei8KR0497xHyKJPAv59M1dkC+rOZCMBJ+t3fZ+tw
 github.com/mattn/go-runewidth v0.0.7/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/mattn/go-tty v0.0.0-20180219170247-931426f7535a/go.mod h1:XPvLUNfbS4fJH25nqRHfWLMa1ONC8Amw+mIA639KxkE=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/micro/dev v0.0.0-20201020210939-c727d2c73acb/go.mod h1:j/8E+ezN/ij7a9BXBHMKmLayFfUW1O4h/Owdv67B0X0=
-github.com/micro/dev v0.0.0-20201022093250-cf2568811c5a h1:pEreT+8QSpaVbKTb9mrIIbtsqoWgutqeaLMXFMLRF14=
-github.com/micro/dev v0.0.0-20201022093250-cf2568811c5a/go.mod h1:j/8E+ezN/ij7a9BXBHMKmLayFfUW1O4h/Owdv67B0X0=
-github.com/micro/dev v0.0.0-20201022112530-d4145a77ced9 h1:Q4PxQjPRDhInJw66cNqFxSLe/79c/2jHp+9+DzlN5aw=
-github.com/micro/dev v0.0.0-20201022112530-d4145a77ced9/go.mod h1:j/8E+ezN/ij7a9BXBHMKmLayFfUW1O4h/Owdv67B0X0=
-github.com/micro/dev v0.0.0-20201022120102-c95e054f1069 h1:QMQqaxA/XjtkbHpxZWGQRt/hjF8f4H2ebote9wO9DLU=
-github.com/micro/dev v0.0.0-20201022120102-c95e054f1069/go.mod h1:j/8E+ezN/ij7a9BXBHMKmLayFfUW1O4h/Owdv67B0X0=
-github.com/micro/dev v0.0.0-20201022153041-a86c7a6f18e2 h1:worYk19JVi1STdoF46RIIX3ds+VkS0mvr47qXxUfyfM=
-github.com/micro/dev v0.0.0-20201022153041-a86c7a6f18e2/go.mod h1:j/8E+ezN/ij7a9BXBHMKmLayFfUW1O4h/Owdv67B0X0=
-github.com/micro/dev v0.0.0-20201022153718-7e95c36896c6 h1:YcwGkjSFlbTgNpXu+0P9c42oqKHTTpVqirnla1Jz2Z0=
-github.com/micro/dev v0.0.0-20201022153718-7e95c36896c6/go.mod h1:j/8E+ezN/ij7a9BXBHMKmLayFfUW1O4h/Owdv67B0X0=
 github.com/micro/dev v0.0.0-20201022161742-461eaa38c096 h1:rzeONQC+ZgR5otGpJHb0N1NG9/2mzpxLkwr+bKwdZo4=
 github.com/micro/dev v0.0.0-20201022161742-461eaa38c096/go.mod h1:j/8E+ezN/ij7a9BXBHMKmLayFfUW1O4h/Owdv67B0X0=
 github.com/micro/micro/v3 v3.0.0-beta.6.0.20201016094841-ca8ffd563b2b/go.mod h1:RPJTp9meQAppzW/9jgQtfJmPpRJAySVPbz9uur4B3Ko=
