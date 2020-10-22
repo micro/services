@@ -14,7 +14,7 @@ func main() {
 	)
 
 	// Register Handler
-	srv.Handle(new(handler.Tags))
+	srv.Handle(handler.NewTags())
 
 	// Run service
 	if err := srv.Run(); err != nil {

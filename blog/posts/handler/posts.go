@@ -37,14 +37,15 @@ type Posts struct {
 
 func NewPosts(tagsService tags.TagsService) *Posts {
 	createdIndex := model.ByEquality("created")
-	createdIndex.Desc = true
+	createdIndex.Order.Type = model.OrderTypeDesc
 
 	return &Posts{
 		Tags: tagsService,
 		db: model.NewDB(
 			store.DefaultStore,
 			"posts",
-			model.Indexes(model.ByEquality("id"), model.ByEquality("slug"), createdIndex),
+			model.Indexes(model.ByEquality("slug"), createdIndex),
+			nil,
 		),
 	}
 }
@@ -191,7 +192,7 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 		q = model.Equals("id", req.Id)
 	} else {
 		q = model.Equals("created", nil)
-		q.Desc = true
+		q.Order.Type = model.OrderTypeDesc
 		var limit uint
 		limit = 20
 		if req.Limit > 0 {
