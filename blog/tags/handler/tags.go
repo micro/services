@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/gosimple/slug"
+	"github.com/micro/dev/model"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
@@ -14,9 +15,7 @@ import (
 )
 
 const (
-	slugPrefix     = "bySlug"
 	resourcePrefix = "byResource"
-	typePrefix     = "byType"
 	tagCountPrefix = "tagCount"
 	childrenByTag  = "childrenByTag"
 )
@@ -28,37 +27,50 @@ type Tag struct {
 	Count int64  `json:"count"`
 }
 
-type Tags struct{}
+type Tags struct {
+	db model.DB
+}
+
+func NewTags() *Tags {
+	slugIndex := model.ByEquality("slug")
+	slugIndex.Order.Type = model.OrderTypeUnordered
+	return &Tags{
+		db: model.NewDB(
+			store.DefaultStore,
+			"tags",
+			model.Indexes(model.ByEquality("type")),
+			&model.DBOptions{
+				IdIndex: slugIndex,
+				Debug:   false,
+			},
+		),
+	}
+}
 
 func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) error {
 	if len(req.ResourceID) == 0 || len(req.Type) == 0 {
 		return errors.BadRequest("tags.increasecount.input-check", "resource id and type is required")
 	}
 
+	tags := []Tag{}
 	tagSlug := slug.Make(req.GetTitle())
-	key := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
-
-	// read by resource ID + slug, the record is identical in boths places anyway
-	records, err := store.Read(key)
-	if err != nil && err != store.ErrNotFound {
+	q := model.Equals("slug", tagSlug)
+	q.Order.Type = model.OrderTypeUnordered
+	err := t.db.List(q, &tags)
+	if err != nil {
 		return err
 	}
 
 	var tag *Tag
 	// If no existing record is found, create a new one
-	if len(records) == 0 {
+	if len(tags) == 0 {
 		tag = &Tag{
 			Title: req.GetTitle(),
 			Type:  req.Type,
 			Slug:  tagSlug,
 		}
 	} else {
-		record := records[0]
-		tag = &Tag{}
-		err = json.Unmarshal(record.Value, tag)
-		if err != nil {
-			return err
-		}
+		tag = &tags[0]
 	}
 
 	// increase tag count
@@ -96,28 +108,8 @@ func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse)
 }
 
 func (t *Tags) saveTag(tag *Tag) error {
-	tagSlug := slug.Make(tag.Title)
-
-	key := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
-	typeKey := fmt.Sprintf("%v:%v:%v", typePrefix, tag.Type, tagSlug)
-
-	bytes, err := json.Marshal(tag)
-	if err != nil {
-		return err
-	}
-
-	// write resourceId:slug to enable prefix listing based on type
-	err = store.Write(&store.Record{
-		Key:   key,
-		Value: bytes,
-	})
-	if err != nil {
-		return err
-	}
-	return store.Write(&store.Record{
-		Key:   typeKey,
-		Value: bytes,
-	})
+	tag.Slug = slug.Make(tag.Title)
+	return t.db.Save(tag)
 }
 
 func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.RemoveResponse) error {
@@ -163,15 +155,37 @@ func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.Remove
 
 func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	logger.Info("Received Tags.List request")
+
+	// unfortunately there is a mixing of manual indexes
+	// and model here because model does not yet support
+	// many to many relations
 	key := ""
+	var q model.Query
 	if len(req.ResourceID) > 0 {
 		key = fmt.Sprintf("%v:%v", resourcePrefix, req.ResourceID)
 	} else if len(req.Type) > 0 {
-		key = fmt.Sprintf("%v:%v", typePrefix, req.Type)
+		q = model.Equals("type", req.Type)
 	} else {
 		return errors.BadRequest("tags.list.input-check", "resource id or type is required")
 	}
 
+	if q.Type != "" {
+		tags := []Tag{}
+		err := t.db.List(q, &tags)
+		if err != nil {
+			return err
+		}
+		rsp.Tags = make([]*pb.Tag, len(tags))
+		for i, tag := range tags {
+			rsp.Tags[i] = &pb.Tag{
+				Title: tag.Title,
+				Type:  tag.Type,
+				Slug:  tag.Slug,
+				Count: tag.Count,
+			}
+		}
+		return nil
+	}
 	records, err := store.Read("", store.Prefix(key))
 	if err != nil {
 		return err
@@ -201,23 +215,16 @@ func (t *Tags) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Update
 	}
 
 	tagSlug := slug.Make(req.GetTitle())
-	resourceID := fmt.Sprintf("%v:%v", slugPrefix, tagSlug)
-
-	// read by resource ID + slug, the record is identical in boths places anyway
-	records, err := store.Read(resourceID)
+	tags := []Tag{}
+	q := model.Equals("slug", tagSlug)
+	q.Order.Type = model.OrderTypeUnordered
+	err := t.db.List(q, &tags)
 	if err != nil {
 		return err
 	}
-
-	if len(records) == 0 {
-		return fmt.Errorf("Tag with slug '%v' not found, nothing to update", tagSlug)
+	if len(tags) == 0 {
+		return errors.BadRequest("tags.update.input-check", "Tag not found")
 	}
-	record := records[0]
-	tag := &Tag{}
-	err = json.Unmarshal(record.Value, tag)
-	if err != nil {
-		return err
-	}
-	tag.Title = req.Title
-	return t.saveTag(tag)
+	tags[0].Title = req.Title
+	return t.saveTag(&tags[0])
 }
