@@ -28,18 +28,18 @@ type Tag struct {
 }
 
 type Tags struct {
-	db model.DB
+	db model.Table
 }
 
 func NewTags() *Tags {
 	slugIndex := model.ByEquality("slug")
 	slugIndex.Order.Type = model.OrderTypeUnordered
 	return &Tags{
-		db: model.NewDB(
+		db: model.NewTable(
 			store.DefaultStore,
 			"tags",
 			model.Indexes(model.ByEquality("type")),
-			&model.DBOptions{
+			&model.TableOptions{
 				IdIndex: slugIndex,
 				Debug:   false,
 			},
