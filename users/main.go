@@ -1,9 +1,8 @@
 package main
 
 import (
-	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service"
-	"github.com/micro/services/users/db"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/users/handler"
 	proto "github.com/micro/services/users/proto"
 )
@@ -14,9 +13,8 @@ func main() {
 	)
 
 	service.Init()
-	db.Init()
 
-	proto.RegisterUsersHandler(service.Server(), new(handler.Users))
+	proto.RegisterUsersHandler(service.Server(), handler.NewUsers())
 
 	if err := service.Run(); err != nil {
 		logger.Fatal(err)

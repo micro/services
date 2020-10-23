@@ -6,11 +6,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/micro/dev/model"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/users/db"
+	pb "github.com/micro/services/users/proto"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
-	pb "github.com/micro/services/users/proto"
 )
 
 const (
@@ -34,6 +36,18 @@ func random(i int) string {
 }
 
 type Users struct{}
+
+func NewUsers() *Users {
+	nameIndex := model.ByEquality("name")
+	nameIndex.Unique = true
+	emailIndex := model.ByEquality("email")
+	emailIndex.Unique = true
+
+	db.Accounts = model.NewDB(store.DefaultStore, "users", model.Indexes(nameIndex, emailIndex), nil)
+	db.Sessions = model.NewDB(store.DefaultStore, "sessions", nil, nil)
+	return &Users{}
+
+}
 
 func (s *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
 	salt := random(16)
