@@ -45,6 +45,7 @@ func NewUsers() *Users {
 
 	db.Accounts = model.NewDB(store.DefaultStore, "users", model.Indexes(nameIndex, emailIndex), nil)
 	db.Sessions = model.NewDB(store.DefaultStore, "sessions", nil, nil)
+	db.Passwords = model.NewDB(store.DefaultStore, "passwords", nil, nil)
 	return &Users{}
 
 }

@@ -10,9 +10,16 @@ import (
 )
 
 var (
-	Accounts model.DB
-	Sessions model.DB
+	Accounts  model.DB
+	Sessions  model.DB
+	Passwords model.DB
 )
+
+type pw struct {
+	ID       string `json:"id"`
+	Password string `json:"password"`
+	Salt     string `json:"salt"`
+}
 
 func CreateSession(sess *user.Session) error {
 	if sess.Created == 0 {
@@ -47,7 +54,15 @@ func Create(user *user.User, salt string, password string) error {
 	user.Created = time.Now().Unix()
 	user.Updated = time.Now().Unix()
 	// @todo what to do with salt and password?
-	return Accounts.Save(user)
+	err := Accounts.Save(user)
+	if err != nil {
+		return err
+	}
+	return Passwords.Save(pw{
+		ID:       user.Id,
+		Password: password,
+		Salt:     salt,
+	})
 }
 
 func Delete(id string) error {
@@ -87,8 +102,11 @@ func Search(username, email string, limit, offset int64) ([]*user.User, error) {
 }
 
 func UpdatePassword(id string, salt string, password string) error {
-	// @todo update pass
-	return nil
+	return Passwords.Save(pw{
+		ID:       id,
+		Password: password,
+		Salt:     salt,
+	})
 }
 
 func SaltAndPassword(username, email string) (string, string, error) {
@@ -101,7 +119,6 @@ func SaltAndPassword(username, email string) (string, string, error) {
 		return "", "", errors.New("username and email cannot be blank")
 	}
 
-	var salt, pass string
 	users := []*user.User{}
 	err := Accounts.List(query, &users)
 	if err != nil {
@@ -111,5 +128,16 @@ func SaltAndPassword(username, email string) (string, string, error) {
 		return "", "", errors.New("not found")
 	}
 
-	return salt, pass, nil
+	query = model.Equals("id", users[0].Id)
+	query.Order.Type = model.OrderTypeUnordered
+
+	passwords := []pw{}
+	err = Passwords.List(query, &passwords)
+	if err != nil {
+		return "", "", err
+	}
+	if len(passwords) == 0 {
+		return "", "", errors.New("not found")
+	}
+	return passwords[0].Salt, passwords[0].Password, nil
 }
