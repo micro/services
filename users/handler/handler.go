@@ -94,32 +94,35 @@ func (s *Users) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.Searc
 func (s *Users) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest, rsp *pb.UpdatePasswordResponse) error {
 	usr, err := s.dao.Read(req.UserId)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
+	}
+	if req.NewPassword != req.ConfirmPassword {
+		return errors.InternalServerError("users.updatepassword", "Passwords don't math")
 	}
 
 	salt, hashed, err := s.dao.SaltAndPassword(usr.Username, usr.Email)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 
 	hh, err := base64.StdEncoding.DecodeString(hashed)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 
 	if err := bcrypt.CompareHashAndPassword(hh, []byte(x+salt+req.OldPassword)); err != nil {
-		return errors.Unauthorized("go.micro.srv.user.updatepassword", err.Error())
+		return errors.Unauthorized("users.updatepassword", err.Error())
 	}
 
 	salt = random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.NewPassword), 10)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
 	if err := s.dao.UpdatePassword(req.UserId, salt, pp); err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 	return nil
 }
@@ -135,11 +138,11 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 
 	hh, err := base64.StdEncoding.DecodeString(hashed)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.Login", err.Error())
+		return errors.InternalServerError("users.Login", err.Error())
 	}
 
 	if err := bcrypt.CompareHashAndPassword(hh, []byte(x+salt+req.Password)); err != nil {
-		return errors.Unauthorized("go.micro.srv.user.login", err.Error())
+		return errors.Unauthorized("users.login", err.Error())
 	}
 	// save session
 	sess := &pb.Session{
@@ -151,7 +154,7 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 	}
 
 	if err := s.dao.CreateSession(sess); err != nil {
-		return errors.InternalServerError("go.micro.srv.user.Login", err.Error())
+		return errors.InternalServerError("users.Login", err.Error())
 	}
 	rsp.Session = sess
 	return nil
