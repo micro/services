@@ -209,7 +209,7 @@ func testUsers(t *test.T) {
 		return
 	}
 
-	outp, err = cmd.Exec("users", "readSession", "--usessionId="+sessionID)
+	outp, err = cmd.Exec("users", "readSession", "--sessionId="+sessionID)
 	if err != nil {
 		t.Fatal(string(outp), err)
 		return
