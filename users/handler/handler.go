@@ -44,8 +44,8 @@ func NewUsers() *Users {
 }
 
 func (s *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
-	if req.Password == "" {
-		errors.InternalServerError("users.Create.Check", "Password is empty")
+	if len(req.Password) < 8 {
+		return errors.InternalServerError("users.Create.Check", "Password is less than 8 characters")
 	}
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.Password), 10)
@@ -145,6 +145,7 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 	sess := &pb.Session{
 		Id:       random(128),
 		Username: username,
+		Email:    email,
 		Created:  time.Now().Unix(),
 		Expires:  time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}

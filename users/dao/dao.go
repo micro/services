@@ -36,7 +36,7 @@ func New() *Dao {
 
 	// @todo there should be a better way to get the default index from model
 	// than recreating the options here
-	idIndex := model.ByEquality("eq")
+	idIndex := model.ByEquality("id")
 	idIndex.Order.Type = model.OrderTypeUnordered
 
 	return &Dao{
