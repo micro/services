@@ -1,0 +1,55 @@
+name: Blog integration tests
+on: [push]
+
+jobs:
+
+  test:
+    name: Blog integration tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Install Protoc
+      uses: arduino/setup-protoc@master
+
+    - name: Check out this code
+      uses: actions/checkout@v2
+      with:
+        path: services
+    
+    - name: Check out micro code
+      uses: actions/checkout@v2
+      with:
+        repository: 'micro/micro'
+        path: 'micro'
+
+    - name: Enable caching
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install micro
+      working-directory: micro
+      run: |
+        go run . init --profile=ci --output=profile.go
+        go mod edit -replace github.com/micro/micro/plugin/etcd/v3=./plugin/etcd
+        go mod edit -replace github.com/micro/micro/profile/ci/v3=./profile/ci
+        go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.26.0
+        go install
+
+    - name: Build container
+      run: |
+        bash services/test/image/test-docker.sh
+
+    - name: Test Blog services
+      working-directory: services/test/integration
+      run: |
+          go clean -testcache && GOMAXPROCS=4 go test -timeout 15m --tags=integration -v ./...
+        
