@@ -21,15 +21,18 @@ message User {
 }
 
 message Session {
-        string id = 1;
-        string username = 2;    
-        int64 created = 3;      // unix
-        int64 expires = 4;      // unix
+    string id = 1;
+    string username = 2;
+	string email = 3;
+    int64 created = 4;      // unix
+    int64 expires = 5;      // unix
 }
 
 message CreateRequest {
-	User user = 1;
-        string password = 2;
+	string id = 1;			// uuid
+	string username = 2;	// alphanumeric user or org
+	string email = 3;
+    string password = 4;
 }
 
 message CreateResponse {
@@ -51,17 +54,19 @@ message ReadResponse {
 }
 
 message UpdateRequest {
-	User user = 1;
+	string id = 1;			// uuid
+	string username = 2;	// alphanumeric user or org
+	string email = 3;
 }
 
 message UpdateResponse {
 }
 
 message UpdatePasswordRequest {
-        string userId = 1;
-        string oldPassword = 2;
-        string newPassword = 3;
-        string confirmPassword = 4;
+    string userId = 1;
+    string oldPassword = 2;
+    string newPassword = 3;
+    string confirm_password = 4;
 }
 
 message UpdatePasswordResponse {
@@ -79,25 +84,25 @@ message SearchResponse {
 }
 
 message ReadSessionRequest {
-        string sessionId = 1;
+    string sessionId = 1;
 }
 
 message ReadSessionResponse {
-        Session session = 1;
+    Session session = 1;
 }
 
 message LoginRequest {
-        string username = 1;
-        string email = 2;
-        string password = 3;
+    string username = 1;
+    string email = 2;
+    string password = 3;
 }
 
 message LoginResponse {
-        Session session = 1;
+    Session session = 1;
 }
 
 message LogoutRequest {
-        string sessionId = 1;
+    string sessionId = 1;
 }
 
 message LogoutResponse {

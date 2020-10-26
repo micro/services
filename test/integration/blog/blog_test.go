@@ -1,4 +1,4 @@
-// +build blog
+// +build integration
 
 package signup
 

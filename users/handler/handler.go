@@ -44,16 +44,21 @@ func NewUsers() *Users {
 }
 
 func (s *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
+	if len(req.Password) < 8 {
+		return errors.InternalServerError("users.Create.Check", "Password is less than 8 characters")
+	}
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.Password), 10)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.Create", err.Error())
+		return errors.InternalServerError("users.Create", err.Error())
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
-	req.User.Username = strings.ToLower(req.User.Username)
-	req.User.Email = strings.ToLower(req.User.Email)
-	return s.dao.Create(req.User, salt, pp)
+	return s.dao.Create(&pb.User{
+		Id:       req.Id,
+		Username: strings.ToLower(req.Username),
+		Email:    strings.ToLower(req.Email),
+	}, salt, pp)
 }
 
 func (s *Users) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
@@ -66,9 +71,11 @@ func (s *Users) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 }
 
 func (s *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
-	req.User.Username = strings.ToLower(req.User.Username)
-	req.User.Email = strings.ToLower(req.User.Email)
-	return s.dao.Update(req.User)
+	return s.dao.Update(&pb.User{
+		Id:       req.Id,
+		Username: strings.ToLower(req.Username),
+		Email:    strings.ToLower(req.Email),
+	})
 }
 
 func (s *Users) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
@@ -87,32 +94,35 @@ func (s *Users) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.Searc
 func (s *Users) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest, rsp *pb.UpdatePasswordResponse) error {
 	usr, err := s.dao.Read(req.UserId)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
+	}
+	if req.NewPassword != req.ConfirmPassword {
+		return errors.InternalServerError("users.updatepassword", "Passwords don't math")
 	}
 
 	salt, hashed, err := s.dao.SaltAndPassword(usr.Username, usr.Email)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 
 	hh, err := base64.StdEncoding.DecodeString(hashed)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 
 	if err := bcrypt.CompareHashAndPassword(hh, []byte(x+salt+req.OldPassword)); err != nil {
-		return errors.Unauthorized("go.micro.srv.user.updatepassword", err.Error())
+		return errors.Unauthorized("users.updatepassword", err.Error())
 	}
 
 	salt = random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.NewPassword), 10)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
 	if err := s.dao.UpdatePassword(req.UserId, salt, pp); err != nil {
-		return errors.InternalServerError("go.micro.srv.user.updatepassword", err.Error())
+		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 	return nil
 }
@@ -128,22 +138,23 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 
 	hh, err := base64.StdEncoding.DecodeString(hashed)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.Login", err.Error())
+		return errors.InternalServerError("users.Login", err.Error())
 	}
 
 	if err := bcrypt.CompareHashAndPassword(hh, []byte(x+salt+req.Password)); err != nil {
-		return errors.Unauthorized("go.micro.srv.user.login", err.Error())
+		return errors.Unauthorized("users.login", err.Error())
 	}
 	// save session
 	sess := &pb.Session{
 		Id:       random(128),
 		Username: username,
+		Email:    email,
 		Created:  time.Now().Unix(),
 		Expires:  time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 
 	if err := s.dao.CreateSession(sess); err != nil {
-		return errors.InternalServerError("go.micro.srv.user.Login", err.Error())
+		return errors.InternalServerError("users.Login", err.Error())
 	}
 	rsp.Session = sess
 	return nil
