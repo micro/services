@@ -26,7 +26,8 @@ jobs:
       with:
         repository: 'micro/micro'
         path: 'micro'
-        ref: 'bf049ed6c478f6920bfa1818ba9a1c875e917d2d'
+        # @todo fresher versions break with a weird vendoring error
+        ref: '20cabee1960e6abe8b59d8f178ddf66ad5da1097'
 
     - name: Enable caching
       uses: actions/cache@v2
