@@ -28,8 +28,10 @@ message Session {
 }
 
 message CreateRequest {
-	User user = 1;
-    string password = 2;
+	string id = 1;			// uuid
+	string username = 2;	// alphanumeric user or org
+	string email = 3;
+    string password = 4;
 }
 
 message CreateResponse {
@@ -51,7 +53,9 @@ message ReadResponse {
 }
 
 message UpdateRequest {
-	User user = 1;
+	string id = 1;			// uuid
+	string username = 2;	// alphanumeric user or org
+	string email = 3;
 }
 
 message UpdateResponse {

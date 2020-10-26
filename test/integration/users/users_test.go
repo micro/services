@@ -132,7 +132,7 @@ func testUsers(t *test.T) {
 		// Attention! The content must be unquoted, don't add quotes.
 		outp, err := cmd.Exec("users", "--user_email="+email, "--password="+password, "create")
 		if err != nil {
-			outp1, _ := cmd.Exec("logs", "posts")
+			outp1, _ := cmd.Exec("logs", "users")
 			return append(outp, outp1...), err
 		}
 		return outp, err

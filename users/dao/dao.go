@@ -22,7 +22,7 @@ type Dao struct {
 }
 
 func New() *Dao {
-	nameIndex := model.ByEquality("name")
+	nameIndex := model.ByEquality("username")
 	nameIndex.Unique = true
 	emailIndex := model.ByEquality("email")
 	emailIndex.Unique = true
@@ -81,13 +81,15 @@ func (dao *Dao) Update(user *user.User) error {
 
 func (dao *Dao) Read(id string) (*user.User, error) {
 	user := &user.User{}
-	return user, dao.users.Read(model.Equals("id", id), user)
+	q := model.Equals("id", id)
+	q.Order.Type = model.OrderTypeUnordered
+	return user, dao.users.Read(q, user)
 }
 
 func (dao *Dao) Search(username, email string, limit, offset int64) ([]*user.User, error) {
 	var query model.Query
 	if len(username) > 0 {
-		query = model.Equals("name", username)
+		query = model.Equals("username", username)
 	} else if len(email) > 0 {
 		query = model.Equals("email", email)
 	} else {

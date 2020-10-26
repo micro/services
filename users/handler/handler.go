@@ -44,16 +44,21 @@ func NewUsers() *Users {
 }
 
 func (s *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
+	if req.Password == "" {
+		errors.InternalServerError("users.Create.Check", "Password is empty")
+	}
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.Password), 10)
 	if err != nil {
-		return errors.InternalServerError("go.micro.srv.user.Create", err.Error())
+		return errors.InternalServerError("users.Create", err.Error())
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
-	req.User.Username = strings.ToLower(req.User.Username)
-	req.User.Email = strings.ToLower(req.User.Email)
-	return s.dao.Create(req.User, salt, pp)
+	return s.dao.Create(&pb.User{
+		Id:       req.Id,
+		Username: strings.ToLower(req.Username),
+		Email:    strings.ToLower(req.Email),
+	}, salt, pp)
 }
 
 func (s *Users) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
@@ -66,9 +71,11 @@ func (s *Users) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 }
 
 func (s *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
-	req.User.Username = strings.ToLower(req.User.Username)
-	req.User.Email = strings.ToLower(req.User.Email)
-	return s.dao.Update(req.User)
+	return s.dao.Update(&pb.User{
+		Id:       req.Id,
+		Username: strings.ToLower(req.Username),
+		Email:    strings.ToLower(req.Email),
+	})
 }
 
 func (s *Users) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
