@@ -133,7 +133,7 @@ func testUsers(t *test.T) {
 
 	if err := test.Try("Save user", t, func() ([]byte, error) {
 		// Attention! The content must be unquoted, don't add quotes.
-		outp, err := cmd.Exec("users", "create", "--id="+id, "--email="+email, "--password="+password, "--username=john", "create")
+		outp, err := cmd.Exec("users", "create", "--id="+id, "--email="+email, "--password="+password, "--username=john")
 		if err != nil {
 			outp1, _ := cmd.Exec("logs", "users")
 			return append(outp, outp1...), err
