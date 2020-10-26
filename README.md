@@ -12,6 +12,7 @@ Services provides a home for real world examples for using Micro v3.
 - [messages](messages) - A service for text messages
 - [notes](notes) - A note taking service
 - [test](test) - A set of sample test services for Micro
+- [users](users) - User management and basic auth
 
 ## Usage
 

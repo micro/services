@@ -12,5 +12,7 @@ A list of open source services to be created
   * [x] messages - store the messages for the inbox
   * [ ] notifications - holds updates and alerts
 - [x] notes - a simple note taking service
-- [ ] users - manages user accounts and login
+- [x] users - manages user accounts and login
 - [ ] books - search and read from the internet archive [open library](https://github.com/internetarchive/openlibrary)
+- [ ] feed - a news feed and aggregator
+- [ ] stream - timeline of events, news, photos
