@@ -3,6 +3,7 @@
 package signup
 
 import (
+	"encoding/json"
 	"errors"
 	"math/rand"
 
@@ -126,11 +127,13 @@ func testUsers(t *test.T) {
 	cmd := serv.Command()
 
 	email := "test@gmail.com"
-	password := "testPass"
+	password := "testPassw"
+	username := "john"
+	id := "7"
 
 	if err := test.Try("Save user", t, func() ([]byte, error) {
 		// Attention! The content must be unquoted, don't add quotes.
-		outp, err := cmd.Exec("users", "--user_email="+email, "--password="+password, "create")
+		outp, err := cmd.Exec("users", "create", "--id="+id, "--email="+email, "--password="+password, "--username=john", "create")
 		if err != nil {
 			outp1, _ := cmd.Exec("logs", "users")
 			return append(outp, outp1...), err
@@ -140,4 +143,93 @@ func testUsers(t *test.T) {
 		return
 	}
 
+	outp, err := cmd.Exec("users", "read", "--id="+id)
+	if err != nil {
+		t.Fatal(string(outp), err)
+		return
+	}
+	if !strings.Contains(string(outp), email) ||
+		!strings.Contains(string(outp), username) ||
+		!strings.Contains(string(outp), id) {
+		t.Fatal(string(outp))
+		return
+	}
+
+	// no password
+	outp, err = cmd.Exec("users", "login", "--email="+email)
+	if err == nil {
+		t.Fatal(string(outp))
+		return
+	}
+
+	// wrong password
+	outp, err = cmd.Exec("users", "login", "--email="+email, "--password=somethingincorrect")
+	if err == nil {
+		t.Fatal(string(outp))
+		return
+	}
+
+	outp, err = cmd.Exec("users", "login", "--username="+username, "--password="+password)
+	if err != nil {
+		t.Fatal(string(outp), err)
+		return
+	}
+	loginRsp := map[string]interface{}{}
+	err = json.Unmarshal(outp, &loginRsp)
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+	session, ok := loginRsp["session"].(map[string]interface{})
+	if !ok {
+		t.Fatal(string(outp))
+		return
+	}
+	sessionID := session["id"].(string)
+	sessionUsername := session["username"].(string)
+	if sessionUsername != username {
+		t.Fatal(string(outp))
+		return
+	}
+
+	if len(sessionID) == 0 {
+		t.Fatal(string(outp))
+		return
+	}
+
+	outp, err = cmd.Exec("users", "login", "--email="+email, "--password="+password)
+	if err != nil {
+		t.Fatal(string(outp), err)
+		return
+	}
+
+	outp, err = cmd.Exec("users", "login", "--email="+email, "--password="+password)
+	if err != nil {
+		t.Fatal(string(outp), err)
+		return
+	}
+
+	outp, err = cmd.Exec("users", "readSession", "--usessionId="+sessionID)
+	if err != nil {
+		t.Fatal(string(outp), err)
+		return
+	}
+
+	loginRsp = map[string]interface{}{}
+	err = json.Unmarshal(outp, &loginRsp)
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+	session, ok = loginRsp["session"].(map[string]interface{})
+	if !ok {
+		t.Fatal(string(outp))
+		return
+	}
+	sessionID = session["id"].(string)
+	sessionUsername = session["username"].(string)
+	if sessionUsername != username {
+		t.Fatal(string(outp))
+		return
+	}
 }
