@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/services/users/dao"
+	"github.com/micro/services/users/domain"
 	pb "github.com/micro/services/users/proto"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
@@ -34,12 +34,12 @@ func random(i int) string {
 }
 
 type Users struct {
-	dao *dao.Dao
+	domain *domain.Domain
 }
 
 func NewUsers() *Users {
 	return &Users{
-		dao: dao.New(),
+		domain: domain.New(),
 	}
 }
 
@@ -54,7 +54,7 @@ func (s *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
-	return s.dao.Create(&pb.User{
+	return s.domain.Create(&pb.User{
 		Id:       req.Id,
 		Username: strings.ToLower(req.Username),
 		Email:    strings.ToLower(req.Email),
@@ -62,7 +62,7 @@ func (s *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 }
 
 func (s *Users) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
-	user, err := s.dao.Read(req.Id)
+	user, err := s.domain.Read(req.Id)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (s *Users) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 }
 
 func (s *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
-	return s.dao.Update(&pb.User{
+	return s.domain.Update(&pb.User{
 		Id:       req.Id,
 		Username: strings.ToLower(req.Username),
 		Email:    strings.ToLower(req.Email),
@@ -79,11 +79,11 @@ func (s *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 }
 
 func (s *Users) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
-	return s.dao.Delete(req.Id)
+	return s.domain.Delete(req.Id)
 }
 
 func (s *Users) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.SearchResponse) error {
-	users, err := s.dao.Search(req.Username, req.Email, req.Limit, req.Offset)
+	users, err := s.domain.Search(req.Username, req.Email, req.Limit, req.Offset)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (s *Users) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.Searc
 }
 
 func (s *Users) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest, rsp *pb.UpdatePasswordResponse) error {
-	usr, err := s.dao.Read(req.UserId)
+	usr, err := s.domain.Read(req.UserId)
 	if err != nil {
 		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
@@ -100,7 +100,7 @@ func (s *Users) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordReques
 		return errors.InternalServerError("users.updatepassword", "Passwords don't math")
 	}
 
-	salt, hashed, err := s.dao.SaltAndPassword(usr.Username, usr.Email)
+	salt, hashed, err := s.domain.SaltAndPassword(usr.Username, usr.Email)
 	if err != nil {
 		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
@@ -121,7 +121,7 @@ func (s *Users) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordReques
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
-	if err := s.dao.UpdatePassword(req.UserId, salt, pp); err != nil {
+	if err := s.domain.UpdatePassword(req.UserId, salt, pp); err != nil {
 		return errors.InternalServerError("users.updatepassword", err.Error())
 	}
 	return nil
@@ -131,7 +131,7 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 	username := strings.ToLower(req.Username)
 	email := strings.ToLower(req.Email)
 
-	salt, hashed, err := s.dao.SaltAndPassword(username, email)
+	salt, hashed, err := s.domain.SaltAndPassword(username, email)
 	if err != nil {
 		return err
 	}
@@ -153,7 +153,7 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 		Expires:  time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 
-	if err := s.dao.CreateSession(sess); err != nil {
+	if err := s.domain.CreateSession(sess); err != nil {
 		return errors.InternalServerError("users.Login", err.Error())
 	}
 	rsp.Session = sess
@@ -161,11 +161,11 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 }
 
 func (s *Users) Logout(ctx context.Context, req *pb.LogoutRequest, rsp *pb.LogoutResponse) error {
-	return s.dao.DeleteSession(req.SessionId)
+	return s.domain.DeleteSession(req.SessionId)
 }
 
 func (s *Users) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp *pb.ReadSessionResponse) error {
-	sess, err := s.dao.ReadSession(req.SessionId)
+	sess, err := s.domain.ReadSession(req.SessionId)
 	if err != nil {
 		return err
 	}
