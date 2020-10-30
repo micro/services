@@ -11,8 +11,7 @@ import (
 	"github.com/micro/dev/model"
 
 	"github.com/gosimple/slug"
-	pb "github.com/micro/services/blog/posts/proto/posts"
-	posts "github.com/micro/services/blog/posts/proto/posts"
+	proto "github.com/micro/services/blog/posts/proto"
 	tags "github.com/micro/services/blog/tags/proto"
 )
 
@@ -52,9 +51,9 @@ func NewPosts(tagsService tags.TagsService) *Posts {
 	}
 }
 
-func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.SaveResponse) error {
+func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.SaveResponse) error {
 	if len(req.Id) == 0 {
-		return errors.BadRequest("posts.save.input-check", "Id is missing")
+		return errors.BadRequest("proto.save.input-check", "Id is missing")
 	}
 
 	// read by post
@@ -63,7 +62,7 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 	q.Order.Type = model.OrderTypeUnordered
 	err := p.db.List(q, &posts)
 	if err != nil {
-		return errors.InternalServerError("posts.save.store-id-read", "Failed to read post by id: %v", err.Error())
+		return errors.InternalServerError("proto.save.store-id-read", "Failed to read post by id: %v", err.Error())
 	}
 	postSlug := slug.Make(req.Title)
 	// If no existing record is found, create a new one
@@ -78,7 +77,7 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 		}
 		err := p.savePost(ctx, nil, post)
 		if err != nil {
-			return errors.InternalServerError("posts.save.post-save", "Failed to save new post: %v", err.Error())
+			return errors.InternalServerError("proto.save.post-save", "Failed to save new post: %v", err.Error())
 		}
 		return nil
 	}
@@ -115,12 +114,12 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 	postsWithThisSlug := []Post{}
 	err = p.db.List(model.Equals("slug", postSlug), &postsWithThisSlug)
 	if err != nil {
-		return errors.InternalServerError("posts.save.store-read", "Failed to read post by slug: %v", err.Error())
+		return errors.InternalServerError("proto.save.store-read", "Failed to read post by slug: %v", err.Error())
 	}
 
 	if len(postsWithThisSlug) > 0 {
 		if oldPost.ID != postsWithThisSlug[0].ID {
-			return errors.BadRequest("posts.save.slug-check", "An other post with this slug already exists")
+			return errors.BadRequest("proto.save.slug-check", "An other post with this slug already exists")
 		}
 	}
 
@@ -186,7 +185,7 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 	return nil
 }
 
-func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryResponse) error {
+func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.QueryResponse) error {
 	var q model.Query
 	if len(req.Slug) > 0 {
 		logger.Infof("Reading post by slug: %v", req.Slug)
@@ -211,11 +210,11 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 	posts := []Post{}
 	err := p.db.List(q, &posts)
 	if err != nil {
-		return errors.BadRequest("posts.query.store-read", "Failed to read from store: %v", err.Error())
+		return errors.BadRequest("proto.query.store-read", "Failed to read from store: %v", err.Error())
 	}
-	rsp.Posts = make([]*pb.Post, len(posts))
+	rsp.Posts = make([]*proto.Post, len(posts))
 	for i, post := range posts {
-		rsp.Posts[i] = &pb.Post{
+		rsp.Posts[i] = &proto.Post{
 			Id:      post.ID,
 			Title:   post.Title,
 			Slug:    post.Slug,
@@ -226,7 +225,7 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 	return nil
 }
 
-func (p *Posts) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
+func (p *Posts) Delete(ctx context.Context, req *proto.DeleteRequest, rsp *proto.DeleteResponse) error {
 	logger.Info("Received Post.Delete request")
 	return p.db.Delete(model.Equals("id", req.Id))
 }
