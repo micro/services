@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package blog;
 
-import "posts/proto/posts/posts.proto";
+import "github.com/micro/services/blog/posts/proto/posts/posts.proto";
 
 service Blog {
 	rpc Latest(LatestRequest) returns (LatestResponse) {}
