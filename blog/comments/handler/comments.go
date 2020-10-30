@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/micro/dev/model"
@@ -18,6 +19,7 @@ type Comments struct {
 func NewComments() *Comments {
 	postIndex := model.ByEquality("post")
 	postIndex.Order.Type = model.OrderTypeDesc
+	postIndex.Order.FieldName = "created"
 
 	idIndex := model.ByEquality("id")
 	idIndex.Order.Type = model.OrderTypeUnordered
@@ -35,6 +37,7 @@ func (c *Comments) New(ctx context.Context, req *pb.NewRequest, rsp *pb.NewRespo
 		Post:    req.Post,
 		Author:  req.Author,
 		Message: req.Message,
+		Created: time.Now().Unix(),
 	})
 }
 

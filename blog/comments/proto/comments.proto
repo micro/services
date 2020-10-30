@@ -12,6 +12,7 @@ message Comment {
 	string post = 2;
 	string author = 3;
 	string message = 4;
+	int64 created = 5;
 }
 
 message NewRequest {
