@@ -13,7 +13,7 @@ func main() {
 	)
 
 	// Register Handler
-	srv.Handle(new(handler.Comments))
+	srv.Handle(handler.NewComments())
 
 	// Run service
 	if err := srv.Run(); err != nil {

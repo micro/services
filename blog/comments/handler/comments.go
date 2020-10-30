@@ -39,5 +39,5 @@ func (c *Comments) New(ctx context.Context, req *pb.NewRequest, rsp *pb.NewRespo
 }
 
 func (c *Comments) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
-	return c.comments.List(c.postIndex.ToQuery(req.Post), rsp.Comments)
+	return c.comments.List(c.postIndex.ToQuery(req.Post), &rsp.Comments)
 }
