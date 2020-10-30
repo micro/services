@@ -3,15 +3,31 @@ syntax = "proto3";
 package comments;
 
 service Comments {
-	rpc Save(Request) returns (Response) {}
+	rpc New(NewRequest) returns (NewResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
 }
 
-message Request {
-	// post to comment on
-	string post_id = 1;
+message Comment {
+	string id = 1;
+	string post = 2;
+	string author = 3;
+	string message = 4;
+}
+
+message NewRequest {
+	// post id
+	string post = 1;
 	// message to leave
-	string message = 2;
-
+	string author = 2;
+	string message = 3;
 }
 
-message Response {}
+message NewResponse {}
+
+message ListRequest{
+	string post = 1;
+}
+
+message ListResponse{
+	repeated Comment comments = 1;
+}
