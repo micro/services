@@ -19,16 +19,6 @@ const (
 	tagType = "post-tag"
 )
 
-type Post struct {
-	ID      string   `json:"id"`
-	Title   string   `json:"title"`
-	Slug    string   `json:"slug"`
-	Content string   `json:"content"`
-	Created int64    `json:"created"`
-	Updated int64    `json:"updated"`
-	Tags    []string `json:"tags"`
-}
-
 type Posts struct {
 	Tags tags.TagsService
 	db   model.Model
@@ -57,7 +47,7 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 	}
 
 	// read by post
-	posts := []Post{}
+	posts := []*proto.Post{}
 	q := model.Equals("id", req.Id)
 	q.Order.Type = model.OrderTypeUnordered
 	err := p.db.List(q, &posts)
@@ -67,8 +57,8 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 	postSlug := slug.Make(req.Title)
 	// If no existing record is found, create a new one
 	if len(posts) == 0 {
-		post := &Post{
-			ID:      req.Id,
+		post := &proto.Post{
+			Id:      req.Id,
 			Title:   req.Title,
 			Content: req.Content,
 			Tags:    req.Tags,
@@ -81,10 +71,10 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 		}
 		return nil
 	}
-	oldPost := &posts[0]
+	oldPost := posts[0]
 
-	post := &Post{
-		ID:      req.Id,
+	post := &proto.Post{
+		Id:      req.Id,
 		Title:   oldPost.Title,
 		Content: oldPost.Content,
 		Slug:    oldPost.Slug,
@@ -111,14 +101,14 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 		}
 	}
 
-	postsWithThisSlug := []Post{}
+	postsWithThisSlug := []*proto.Post{}
 	err = p.db.List(model.Equals("slug", postSlug), &postsWithThisSlug)
 	if err != nil {
 		return errors.InternalServerError("proto.save.store-read", "Failed to read post by slug: %v", err.Error())
 	}
 
 	if len(postsWithThisSlug) > 0 {
-		if oldPost.ID != postsWithThisSlug[0].ID {
+		if oldPost.Id != postsWithThisSlug[0].Id {
 			return errors.BadRequest("proto.save.slug-check", "An other post with this slug already exists")
 		}
 	}
@@ -126,7 +116,7 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 	return p.savePost(ctx, oldPost, post)
 }
 
-func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
+func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
 	err := p.db.Save(post)
 	if err != nil {
 		return err
@@ -134,7 +124,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 	if oldPost == nil {
 		for _, tagName := range post.Tags {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
-				ResourceID: post.ID,
+				ResourceID: post.Id,
 				Type:       tagType,
 				Title:      tagName,
 			})
@@ -144,7 +134,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 		}
 		return nil
 	}
-	return p.diffTags(ctx, post.ID, oldPost.Tags, post.Tags)
+	return p.diffTags(ctx, post.Id, oldPost.Tags, post.Tags)
 }
 
 func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newTagNames []string) error {
@@ -207,7 +197,7 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 		logger.Infof("Listing posts, offset: %v, limit: %v", req.Offset, limit)
 	}
 
-	posts := []Post{}
+	posts := []*proto.Post{}
 	err := p.db.List(q, &posts)
 	if err != nil {
 		return errors.BadRequest("proto.query.store-read", "Failed to read from store: %v", err.Error())
@@ -215,7 +205,7 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 	rsp.Posts = make([]*proto.Post, len(posts))
 	for i, post := range posts {
 		rsp.Posts[i] = &proto.Post{
-			Id:      post.ID,
+			Id:      post.Id,
 			Title:   post.Title,
 			Slug:    post.Slug,
 			Content: post.Content,

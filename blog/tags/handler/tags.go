@@ -11,7 +11,7 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
-	pb "github.com/micro/services/blog/tags/proto"
+	proto "github.com/micro/services/blog/tags/proto"
 )
 
 const (
@@ -19,13 +19,6 @@ const (
 	tagCountPrefix = "tagCount"
 	childrenByTag  = "childrenByTag"
 )
-
-type Tag struct {
-	Title string `json:"title"`
-	Slug  string `json:"slug"`
-	Type  string `json:"type"`
-	Count int64  `json:"count"`
-}
 
 type Tags struct {
 	db model.Model
@@ -47,12 +40,12 @@ func NewTags() *Tags {
 	}
 }
 
-func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) error {
+func (t *Tags) Add(ctx context.Context, req *proto.AddRequest, rsp *proto.AddResponse) error {
 	if len(req.ResourceID) == 0 || len(req.Type) == 0 {
 		return errors.BadRequest("tags.increasecount.input-check", "resource id and type is required")
 	}
 
-	tags := []Tag{}
+	tags := []*proto.Tag{}
 	tagSlug := slug.Make(req.GetTitle())
 	q := model.Equals("slug", tagSlug)
 	q.Order.Type = model.OrderTypeUnordered
@@ -61,16 +54,16 @@ func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse)
 		return err
 	}
 
-	var tag *Tag
+	var tag *proto.Tag
 	// If no existing record is found, create a new one
 	if len(tags) == 0 {
-		tag = &Tag{
+		tag = &proto.Tag{
 			Title: req.GetTitle(),
 			Type:  req.Type,
 			Slug:  tagSlug,
 		}
 	} else {
-		tag = &tags[0]
+		tag = tags[0]
 	}
 
 	// increase tag count
@@ -107,12 +100,12 @@ func (t *Tags) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse)
 	return t.saveTag(tag)
 }
 
-func (t *Tags) saveTag(tag *Tag) error {
+func (t *Tags) saveTag(tag *proto.Tag) error {
 	tag.Slug = slug.Make(tag.Title)
 	return t.db.Save(tag)
 }
 
-func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.RemoveResponse) error {
+func (t *Tags) Remove(ctx context.Context, req *proto.RemoveRequest, rsp *proto.RemoveResponse) error {
 	if len(req.ResourceID) == 0 || len(req.Type) == 0 {
 		return errors.BadRequest("tags.decreaseecount.input-check", "resource id and type is required")
 	}
@@ -132,7 +125,7 @@ func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.Remove
 		return nil
 	}
 	record := records[0]
-	tag := &Tag{}
+	tag := &proto.Tag{}
 	err = json.Unmarshal(record.Value, tag)
 	if err != nil {
 		return err
@@ -153,7 +146,7 @@ func (t *Tags) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.Remove
 	return t.saveTag(tag)
 }
 
-func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+func (t *Tags) List(ctx context.Context, req *proto.ListRequest, rsp *proto.ListResponse) error {
 	logger.Info("Received Tags.List request")
 
 	// unfortunately there is a mixing of manual indexes
@@ -170,14 +163,14 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 	}
 
 	if q.Type != "" {
-		tags := []Tag{}
+		tags := []proto.Tag{}
 		err := t.db.List(q, &tags)
 		if err != nil {
 			return err
 		}
-		rsp.Tags = make([]*pb.Tag, len(tags))
+		rsp.Tags = make([]*proto.Tag, len(tags))
 		for i, tag := range tags {
-			rsp.Tags[i] = &pb.Tag{
+			rsp.Tags[i] = &proto.Tag{
 				Title: tag.Title,
 				Type:  tag.Type,
 				Slug:  tag.Slug,
@@ -191,14 +184,14 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 		return err
 	}
 
-	rsp.Tags = make([]*pb.Tag, len(records))
+	rsp.Tags = make([]*proto.Tag, len(records))
 	for i, record := range records {
-		tagRecord := &Tag{}
+		tagRecord := &proto.Tag{}
 		err := json.Unmarshal(record.Value, tagRecord)
 		if err != nil {
 			return err
 		}
-		rsp.Tags[i] = &pb.Tag{
+		rsp.Tags[i] = &proto.Tag{
 			Title: tagRecord.Title,
 			Type:  tagRecord.Type,
 			Slug:  tagRecord.Slug,
@@ -209,13 +202,13 @@ func (t *Tags) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 	return nil
 }
 
-func (t *Tags) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
+func (t *Tags) Update(ctx context.Context, req *proto.UpdateRequest, rsp *proto.UpdateResponse) error {
 	if len(req.Title) == 0 || len(req.Type) == 0 {
 		return errors.BadRequest("tags.update.input-check", "title and type is required")
 	}
 
 	tagSlug := slug.Make(req.GetTitle())
-	tags := []Tag{}
+	tags := []proto.Tag{}
 	q := model.Equals("slug", tagSlug)
 	q.Order.Type = model.OrderTypeUnordered
 	err := t.db.List(q, &tags)
