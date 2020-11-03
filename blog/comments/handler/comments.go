@@ -11,7 +11,7 @@ import (
 )
 
 type Comments struct {
-	comments  model.Table
+	comments  model.Model
 	idIndex   model.Index
 	postIndex model.Index
 }
@@ -25,7 +25,7 @@ func NewComments() *Comments {
 	idIndex.Order.Type = model.OrderTypeUnordered
 
 	return &Comments{
-		comments:  model.NewTable(store.DefaultStore, "users", model.Indexes(postIndex), nil),
+		comments:  model.New(store.DefaultStore, "users", model.Indexes(postIndex), nil),
 		postIndex: postIndex,
 		idIndex:   idIndex,
 	}

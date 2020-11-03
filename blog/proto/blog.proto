@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package blog;
+
+import "github.com/micro/services/blog/posts/proto/posts.proto";
+
+service Blog {
+	rpc Latest(LatestRequest) returns (LatestResponse) {}
+}
+
+message LatestRequest {}
+
+message LatestResponse{
+	posts.Post latest = 1;
+}

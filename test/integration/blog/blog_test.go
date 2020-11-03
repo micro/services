@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/test"
-	p "github.com/micro/services/blog/posts/handler"
+	p "github.com/micro/services/blog/posts/proto"
 )
 
 const (
@@ -156,7 +156,7 @@ func testPosts(t *test.T) {
 
 	expected := []p.Post{
 		{
-			ID:      "1",
+			Id:      "1",
 			Title:   "Hi",
 			Content: "Hi there",
 			Tags:    []string{"a", "b"},
@@ -172,7 +172,7 @@ func testPosts(t *test.T) {
 		return
 	}
 
-	if expected[0].ID != actual.Posts[0].ID ||
+	if expected[0].Id != actual.Posts[0].Id ||
 		expected[0].Title != actual.Posts[0].Title ||
 		expected[0].Content != actual.Posts[0].Content ||
 		len(expected[0].Tags) != len(actual.Posts[0].Tags) {

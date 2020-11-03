@@ -11,8 +11,7 @@ import (
 	"github.com/micro/dev/model"
 
 	"github.com/gosimple/slug"
-	pb "github.com/micro/services/blog/posts/proto/posts"
-	posts "github.com/micro/services/blog/posts/proto/posts"
+	proto "github.com/micro/services/blog/posts/proto"
 	tags "github.com/micro/services/blog/tags/proto"
 )
 
@@ -20,19 +19,9 @@ const (
 	tagType = "post-tag"
 )
 
-type Post struct {
-	ID      string   `json:"id"`
-	Title   string   `json:"title"`
-	Slug    string   `json:"slug"`
-	Content string   `json:"content"`
-	Created int64    `json:"created"`
-	Updated int64    `json:"updated"`
-	Tags    []string `json:"tags"`
-}
-
 type Posts struct {
 	Tags tags.TagsService
-	db   model.Table
+	db   model.Model
 }
 
 func NewPosts(tagsService tags.TagsService) *Posts {
@@ -41,35 +30,35 @@ func NewPosts(tagsService tags.TagsService) *Posts {
 
 	return &Posts{
 		Tags: tagsService,
-		db: model.NewTable(
+		db: model.New(
 			store.DefaultStore,
 			"posts",
 			model.Indexes(model.ByEquality("slug"), createdIndex),
-			&model.TableOptions{
+			&model.ModelOptions{
 				Debug: false,
 			},
 		),
 	}
 }
 
-func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.SaveResponse) error {
+func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.SaveResponse) error {
 	if len(req.Id) == 0 {
-		return errors.BadRequest("posts.save.input-check", "Id is missing")
+		return errors.BadRequest("proto.save.input-check", "Id is missing")
 	}
 
 	// read by post
-	posts := []Post{}
+	posts := []*proto.Post{}
 	q := model.Equals("id", req.Id)
 	q.Order.Type = model.OrderTypeUnordered
 	err := p.db.List(q, &posts)
 	if err != nil {
-		return errors.InternalServerError("posts.save.store-id-read", "Failed to read post by id: %v", err.Error())
+		return errors.InternalServerError("proto.save.store-id-read", "Failed to read post by id: %v", err.Error())
 	}
 	postSlug := slug.Make(req.Title)
 	// If no existing record is found, create a new one
 	if len(posts) == 0 {
-		post := &Post{
-			ID:      req.Id,
+		post := &proto.Post{
+			Id:      req.Id,
 			Title:   req.Title,
 			Content: req.Content,
 			Tags:    req.Tags,
@@ -78,14 +67,14 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 		}
 		err := p.savePost(ctx, nil, post)
 		if err != nil {
-			return errors.InternalServerError("posts.save.post-save", "Failed to save new post: %v", err.Error())
+			return errors.InternalServerError("proto.save.post-save", "Failed to save new post: %v", err.Error())
 		}
 		return nil
 	}
-	oldPost := &posts[0]
+	oldPost := posts[0]
 
-	post := &Post{
-		ID:      req.Id,
+	post := &proto.Post{
+		Id:      req.Id,
 		Title:   oldPost.Title,
 		Content: oldPost.Content,
 		Slug:    oldPost.Slug,
@@ -112,22 +101,22 @@ func (p *Posts) Save(ctx context.Context, req *posts.SaveRequest, rsp *posts.Sav
 		}
 	}
 
-	postsWithThisSlug := []Post{}
+	postsWithThisSlug := []*proto.Post{}
 	err = p.db.List(model.Equals("slug", postSlug), &postsWithThisSlug)
 	if err != nil {
-		return errors.InternalServerError("posts.save.store-read", "Failed to read post by slug: %v", err.Error())
+		return errors.InternalServerError("proto.save.store-read", "Failed to read post by slug: %v", err.Error())
 	}
 
 	if len(postsWithThisSlug) > 0 {
-		if oldPost.ID != postsWithThisSlug[0].ID {
-			return errors.BadRequest("posts.save.slug-check", "An other post with this slug already exists")
+		if oldPost.Id != postsWithThisSlug[0].Id {
+			return errors.BadRequest("proto.save.slug-check", "An other post with this slug already exists")
 		}
 	}
 
 	return p.savePost(ctx, oldPost, post)
 }
 
-func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
+func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
 	err := p.db.Save(post)
 	if err != nil {
 		return err
@@ -135,7 +124,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 	if oldPost == nil {
 		for _, tagName := range post.Tags {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
-				ResourceID: post.ID,
+				ResourceID: post.Id,
 				Type:       tagType,
 				Title:      tagName,
 			})
@@ -145,7 +134,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *Post) error {
 		}
 		return nil
 	}
-	return p.diffTags(ctx, post.ID, oldPost.Tags, post.Tags)
+	return p.diffTags(ctx, post.Id, oldPost.Tags, post.Tags)
 }
 
 func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newTagNames []string) error {
@@ -186,7 +175,7 @@ func (p *Posts) diffTags(ctx context.Context, parentID string, oldTagNames, newT
 	return nil
 }
 
-func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryResponse) error {
+func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.QueryResponse) error {
 	var q model.Query
 	if len(req.Slug) > 0 {
 		logger.Infof("Reading post by slug: %v", req.Slug)
@@ -208,15 +197,15 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 		logger.Infof("Listing posts, offset: %v, limit: %v", req.Offset, limit)
 	}
 
-	posts := []Post{}
+	posts := []*proto.Post{}
 	err := p.db.List(q, &posts)
 	if err != nil {
-		return errors.BadRequest("posts.query.store-read", "Failed to read from store: %v", err.Error())
+		return errors.BadRequest("proto.query.store-read", "Failed to read from store: %v", err.Error())
 	}
-	rsp.Posts = make([]*pb.Post, len(posts))
+	rsp.Posts = make([]*proto.Post, len(posts))
 	for i, post := range posts {
-		rsp.Posts[i] = &pb.Post{
-			Id:      post.ID,
+		rsp.Posts[i] = &proto.Post{
+			Id:      post.Id,
 			Title:   post.Title,
 			Slug:    post.Slug,
 			Content: post.Content,
@@ -226,7 +215,7 @@ func (p *Posts) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryRe
 	return nil
 }
 
-func (p *Posts) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
+func (p *Posts) Delete(ctx context.Context, req *proto.DeleteRequest, rsp *proto.DeleteResponse) error {
 	logger.Info("Received Post.Delete request")
 	return p.db.Delete(model.Equals("id", req.Id))
 }
