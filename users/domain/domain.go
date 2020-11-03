@@ -16,9 +16,9 @@ type pw struct {
 }
 
 type Domain struct {
-	users     model.Table
-	sessions  model.Table
-	passwords model.Table
+	users     model.Model
+	sessions  model.Model
+	passwords model.Model
 
 	nameIndex  model.Index
 	emailIndex model.Index
@@ -40,9 +40,9 @@ func New() *Domain {
 	idIndex.Order.Type = model.OrderTypeUnordered
 
 	return &Domain{
-		users:      model.NewTable(store.DefaultStore, "users", model.Indexes(nameIndex, emailIndex), nil),
-		sessions:   model.NewTable(store.DefaultStore, "sessions", nil, nil),
-		passwords:  model.NewTable(store.DefaultStore, "passwords", nil, nil),
+		users:      model.New(store.DefaultStore, "users", model.Indexes(nameIndex, emailIndex), nil),
+		sessions:   model.New(store.DefaultStore, "sessions", nil, nil),
+		passwords:  model.New(store.DefaultStore, "passwords", nil, nil),
 		nameIndex:  nameIndex,
 		emailIndex: emailIndex,
 		idIndex:    idIndex,
