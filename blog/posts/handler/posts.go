@@ -31,7 +31,7 @@ type Post struct {
 
 type Posts struct {
 	Tags tags.TagsService
-	db   model.Table
+	db   model.Model
 }
 
 func NewPosts(tagsService tags.TagsService) *Posts {
@@ -40,11 +40,11 @@ func NewPosts(tagsService tags.TagsService) *Posts {
 
 	return &Posts{
 		Tags: tagsService,
-		db: model.NewTable(
+		db: model.New(
 			store.DefaultStore,
 			"posts",
 			model.Indexes(model.ByEquality("slug"), createdIndex),
-			&model.TableOptions{
+			&model.ModelOptions{
 				Debug: false,
 			},
 		),
