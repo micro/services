@@ -204,5 +204,7 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 
 func (p *Posts) Delete(ctx context.Context, req *proto.DeleteRequest, rsp *proto.DeleteResponse) error {
 	logger.Info("Received Post.Delete request")
-	return p.db.Delete(model.Equals("id", req.Id))
+	q := model.Equals("id", req.Id)
+	q.Order.Type = model.OrderTypeUnordered
+	return p.db.Delete(q)
 }
