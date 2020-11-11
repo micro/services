@@ -199,8 +199,7 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 		logger.Infof("Listing posts, offset: %v, limit: %v", req.Offset, limit)
 	}
 
-	posts := []*proto.Post{}
-	return p.db.List(q, &posts)
+	return p.db.List(q, &rsp.Posts)
 }
 
 func (p *Posts) Delete(ctx context.Context, req *proto.DeleteRequest, rsp *proto.DeleteResponse) error {
