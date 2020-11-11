@@ -18,6 +18,7 @@ message Post {
 	int64 updated = 6;
 	string author = 7;
 	repeated string tags = 8;
+	map<string,string> metadata = 9;
 }
 
 // Query posts. Acts as a listing when no id or slug provided.
@@ -43,6 +44,7 @@ message SaveRequest {
 	// When updating a post and wanting to delete all tags,
 	// send a list of tags with only one member being an empty string [""]
 	repeated string tags = 6;
+	map<string,string> metadata = 7;
 }
 
 message SaveResponse {
