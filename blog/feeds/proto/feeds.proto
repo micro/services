@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package feeds;
+
+option go_package = "proto;feeds";
+
+service Feeds {
+	rpc New(NewRequest) returns (NewResponse) {}
+}
+
+message Feed {
+	// rss feed name
+	string name = 1;
+	// rss feed address
+	string address = 2;
+}
+
+message Entry {
+	string id = 1;
+	string domain = 2;
+	string url = 3;
+	string title = 4;
+	string content = 5;
+	int64 date = 6;
+}
+
+message NewRequest {
+	string name = 1;
+	string address = 2;
+}
+
+message NewResponse {
+}
