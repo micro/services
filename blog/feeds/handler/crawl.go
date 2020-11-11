@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"crypto/md5"
+	"fmt"
 
 	"net/url"
 
@@ -30,9 +32,11 @@ func (e *Feeds) fetchAll() {
 			continue
 		}
 		domain := getDomain(feed.Address)
+
 		for _, item := range fd.Items {
+			id := fmt.Sprintf("%x", md5.Sum([]byte(item.ID)))
 			err = e.entries.Save(feeds.Entry{
-				Id:      item.ID,
+				Id:      id,
 				Url:     item.Link,
 				Title:   item.Title,
 				Domain:  domain,
@@ -44,7 +48,7 @@ func (e *Feeds) fetchAll() {
 			}
 			// @todo make this optional
 			_, err := e.postsService.Save(context.TODO(), &posts.SaveRequest{
-				Id:        item.ID,
+				Id:        id,
 				Title:     item.Title,
 				Content:   item.Content,
 				Timestamp: item.Date.Unix(),

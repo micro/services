@@ -58,12 +58,13 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 	// If no existing record is found, create a new one
 	if len(posts) == 0 {
 		post := &proto.Post{
-			Id:      req.Id,
-			Title:   req.Title,
-			Content: req.Content,
-			Tags:    req.Tags,
-			Slug:    postSlug,
-			Created: time.Now().Unix(),
+			Id:       req.Id,
+			Title:    req.Title,
+			Content:  req.Content,
+			Tags:     req.Tags,
+			Slug:     postSlug,
+			Created:  time.Now().Unix(),
+			Metadata: req.Metadata,
 		}
 		err := p.savePost(ctx, nil, post)
 		if err != nil {
@@ -74,13 +75,14 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 	oldPost := posts[0]
 
 	post := &proto.Post{
-		Id:      req.Id,
-		Title:   oldPost.Title,
-		Content: oldPost.Content,
-		Slug:    oldPost.Slug,
-		Tags:    oldPost.Tags,
-		Created: oldPost.Created,
-		Updated: time.Now().Unix(),
+		Id:       req.Id,
+		Title:    oldPost.Title,
+		Content:  oldPost.Content,
+		Slug:     oldPost.Slug,
+		Tags:     oldPost.Tags,
+		Created:  oldPost.Created,
+		Updated:  time.Now().Unix(),
+		Metadata: req.Metadata,
 	}
 	if len(req.Title) > 0 {
 		post.Title = req.Title
@@ -198,21 +200,7 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 	}
 
 	posts := []*proto.Post{}
-	err := p.db.List(q, &posts)
-	if err != nil {
-		return errors.BadRequest("proto.query.store-read", "Failed to read from store: %v", err.Error())
-	}
-	rsp.Posts = make([]*proto.Post, len(posts))
-	for i, post := range posts {
-		rsp.Posts[i] = &proto.Post{
-			Id:      post.Id,
-			Title:   post.Title,
-			Slug:    post.Slug,
-			Content: post.Content,
-			Tags:    post.Tags,
-		}
-	}
-	return nil
+	return p.db.List(q, &posts)
 }
 
 func (p *Posts) Delete(ctx context.Context, req *proto.DeleteRequest, rsp *proto.DeleteResponse) error {
