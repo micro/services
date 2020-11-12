@@ -19,6 +19,7 @@ message Post {
 	string author = 7;
 	repeated string tags = 8;
 	map<string,string> metadata = 9;
+	string image = 19;
 }
 
 // Query posts. Acts as a listing when no id or slug provided.
@@ -45,6 +46,7 @@ message SaveRequest {
 	// send a list of tags with only one member being an empty string [""]
 	repeated string tags = 6;
 	map<string,string> metadata = 7;
+	string image = 8;
 }
 
 message SaveResponse {
