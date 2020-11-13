@@ -22,7 +22,7 @@ type Feeds struct {
 }
 
 func NewFeeds(postsService posts.PostsService) *Feeds {
-	idIndex := model.ByEquality("address")
+	idIndex := model.ByEquality("url")
 	idIndex.Order.Type = model.OrderTypeUnordered
 
 	nameIndex := model.ByEquality("name")
