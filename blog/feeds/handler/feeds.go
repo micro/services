@@ -62,7 +62,7 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 
 func (e *Feeds) crawl() {
 	e.fetchAll()
-	tick := time.NewTicker(1 * time.Hour)
+	tick := time.NewTicker(1 * time.Minute)
 	for _ = range tick.C {
 		e.fetchAll()
 	}
