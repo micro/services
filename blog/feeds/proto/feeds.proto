@@ -11,8 +11,8 @@ service Feeds {
 message Feed {
 	// rss feed name
 	string name = 1;
-	// rss feed address
-	string address = 2;
+	// rss feed url
+	string url = 2;
 }
 
 message Entry {
@@ -26,7 +26,7 @@ message Entry {
 
 message NewRequest {
 	string name = 1;
-	string address = 2;
+	string url = 2;
 }
 
 message NewResponse {

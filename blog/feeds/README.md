@@ -12,7 +12,7 @@ micro new feeds
 
 
 ```
-micro feeds new --name="az" --address=http://a16z.com/feed/
+micro feeds new --name="a16z" --url=http://a16z.com/feed/
 ```
 
 ```

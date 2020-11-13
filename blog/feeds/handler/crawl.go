@@ -25,13 +25,13 @@ func (e *Feeds) fetchAll() {
 		return
 	}
 	for _, feed := range fs {
-		log.Infof("Fetching address %v", feed.Address)
-		fd, err := rss.Fetch(feed.Address)
+		log.Infof("Fetching address %v", feed.Url)
+		fd, err := rss.Fetch(feed.Url)
 		if err != nil {
-			log.Errorf("Error fetching address %v: %v", feed.Address, err)
+			log.Errorf("Error fetching address %v: %v", feed.Url, err)
 			continue
 		}
-		domain := getDomain(feed.Address)
+		domain := getDomain(feed.Url)
 
 		for _, item := range fd.Items {
 			id := fmt.Sprintf("%x", md5.Sum([]byte(item.ID)))

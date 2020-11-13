@@ -71,8 +71,8 @@ func (e *Feeds) crawl() {
 func (e *Feeds) New(ctx context.Context, req *feeds.NewRequest, rsp *feeds.NewResponse) error {
 	log.Info("Received Feeds.New request")
 	e.feeds.Save(feeds.Feed{
-		Name:    req.Name,
-		Address: req.Address,
+		Name: req.Name,
+		Url:  req.Url,
 	})
 	return nil
 }
