@@ -64,7 +64,9 @@ func (e *Feeds) fetch(url string) error {
 				"link":   item.Link,
 			},
 		})
-		return err
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
