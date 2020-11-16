@@ -34,7 +34,7 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 	dateIndex.Order.Type = model.OrderTypeDesc
 
 	entriesURLIndex := model.ByEquality("url")
-	entriesURLIndex.Order.Type = model.OrderTypeUnordered
+	entriesURLIndex.Order.Type = model.OrderTypeDesc
 	entriesURLIndex.Order.FieldName = "date"
 
 	f := &Feeds{
