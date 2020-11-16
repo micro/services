@@ -6,6 +6,7 @@ option go_package = "proto;feeds";
 
 service Feeds {
 	rpc New(NewRequest) returns (NewResponse) {}
+	rpc Entries(EntriesRequest) returns (EntriesResponse) {}
 }
 
 message Feed {
@@ -30,4 +31,12 @@ message NewRequest {
 }
 
 message NewResponse {
+}
+
+message EntriesRequest {
+	string url = 1;
+}
+
+message EntriesResponse {
+	repeated Entry entries = 1;
 }
