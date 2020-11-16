@@ -59,6 +59,7 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 		feedsIdIndex:     idIndex,
 		feedsNameIndex:   nameIndex,
 		entriesDateIndex: dateIndex,
+		entriesURLIndex:  entriesURLIndex,
 	}
 
 	go f.crawl()
@@ -84,6 +85,9 @@ func (e *Feeds) New(ctx context.Context, req *feeds.NewRequest, rsp *feeds.NewRe
 
 func (e *Feeds) Entries(ctx context.Context, req *feeds.EntriesRequest, rsp *feeds.EntriesResponse) error {
 	log.Info("Received Feeds.New request")
-	e.fetch(req.Url)
+	err := e.fetch(req.Url)
+	if err != nil {
+		return err
+	}
 	return e.entries.List(e.entriesURLIndex.ToQuery(req.Url), &rsp.Entries)
 }
