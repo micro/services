@@ -27,7 +27,7 @@ Users
 ### Create
 
 ```shell
-micro call users Users.Create '{"user":{"id": "ff3c06de-9e43-41c7-9bab-578f6b4ad32b", "username": "asim", "email": "asim@example.com"}, "password": "password1"}'
+micro call users Users.Create '{"id": "ff3c06de-9e43-41c7-9bab-578f6b4ad32b", "username": "asim", "email": "asim@example.com", "password": "password1"}'
 ```
 
 ### Read
@@ -39,7 +39,7 @@ micro call users Users.Read '{"id": "ff3c06de-9e43-41c7-9bab-578f6b4ad32b"}'
 ### Update
 
 ```shell
-micro call users Users.Update '{"user":{"id": "ff3c06de-9e43-41c7-9bab-578f6b4ad32b", "username": "asim", "email": "asim+update@example.com"}}'
+micro call users Users.Update '{"id": "ff3c06de-9e43-41c7-9bab-578f6b4ad32b", "username": "asim", "email": "asim+update@example.com"}'
 ```
 
 ### Update Password
