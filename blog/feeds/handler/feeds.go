@@ -19,6 +19,7 @@ type Feeds struct {
 	feedsIdIndex     model.Index
 	feedsNameIndex   model.Index
 	entriesDateIndex model.Index
+	entriesURLIndex  model.Index
 }
 
 func NewFeeds(postsService posts.PostsService) *Feeds {
@@ -31,6 +32,10 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 
 	dateIndex := model.ByEquality("date")
 	dateIndex.Order.Type = model.OrderTypeDesc
+
+	entriesURLIndex := model.ByEquality("url")
+	entriesURLIndex.Order.Type = model.OrderTypeDesc
+	entriesURLIndex.Order.FieldName = "date"
 
 	f := &Feeds{
 		feeds: model.New(
@@ -45,7 +50,7 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 		entries: model.New(
 			store.DefaultStore,
 			"entries",
-			model.Indexes(dateIndex),
+			model.Indexes(dateIndex, entriesURLIndex),
 			&model.ModelOptions{
 				Debug: false,
 			},
@@ -54,6 +59,7 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 		feedsIdIndex:     idIndex,
 		feedsNameIndex:   nameIndex,
 		entriesDateIndex: dateIndex,
+		entriesURLIndex:  entriesURLIndex,
 	}
 
 	go f.crawl()
@@ -75,4 +81,13 @@ func (e *Feeds) New(ctx context.Context, req *feeds.NewRequest, rsp *feeds.NewRe
 		Url:  req.Url,
 	})
 	return nil
+}
+
+func (e *Feeds) Entries(ctx context.Context, req *feeds.EntriesRequest, rsp *feeds.EntriesResponse) error {
+	log.Info("Received Feeds.New request")
+	err := e.fetch(req.Url)
+	if err != nil {
+		return err
+	}
+	return e.entries.List(e.entriesURLIndex.ToQuery(req.Url), &rsp.Entries)
 }

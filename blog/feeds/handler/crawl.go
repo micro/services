@@ -25,43 +25,50 @@ func (e *Feeds) fetchAll() {
 		return
 	}
 	for _, feed := range fs {
-		log.Infof("Fetching address %v", feed.Url)
-		fd, err := rss.Fetch(feed.Url)
+		err = e.fetch(feed.Url)
 		if err != nil {
-			log.Errorf("Error fetching address %v: %v", feed.Url, err)
-			continue
-		}
-		domain := getDomain(feed.Url)
-
-		for _, item := range fd.Items {
-			id := fmt.Sprintf("%x", md5.Sum([]byte(item.ID)))
-			err = e.entries.Save(feeds.Entry{
-				Id:      id,
-				Url:     item.Link,
-				Title:   item.Title,
-				Domain:  domain,
-				Content: item.Summary,
-				Date:    item.Date.Unix(),
-			})
-			if err != nil {
-				log.Errorf("Error saving item: %v", err)
-			}
-			// @todo make this optional
-			_, err := e.postsService.Save(context.TODO(), &posts.SaveRequest{
-				Id:        id,
-				Title:     item.Title,
-				Content:   item.Content,
-				Timestamp: item.Date.Unix(),
-				Metadata: map[string]string{
-					"domain": domain,
-					"link":   item.Link,
-				},
-			})
-			if err != nil {
-				log.Errorf("Error saving post: %v", err)
-			}
+			log.Errorf("Error saving post: %v", err)
 		}
 	}
+}
+
+func (e *Feeds) fetch(url string) error {
+	log.Infof("Fetching address %v", url)
+	fd, err := rss.Fetch(url)
+	if err != nil {
+		return fmt.Errorf("Error fetching address %v: %v", url, err)
+	}
+	domain := getDomain(url)
+
+	for _, item := range fd.Items {
+		id := fmt.Sprintf("%x", md5.Sum([]byte(item.ID)))
+		err = e.entries.Save(feeds.Entry{
+			Id:      id,
+			Url:     item.Link,
+			Title:   item.Title,
+			Domain:  domain,
+			Content: item.Summary,
+			Date:    item.Date.Unix(),
+		})
+		if err != nil {
+			return fmt.Errorf("Error saving item: %v", err)
+		}
+		// @todo make this optional
+		_, err := e.postsService.Save(context.TODO(), &posts.SaveRequest{
+			Id:        id,
+			Title:     item.Title,
+			Content:   item.Content,
+			Timestamp: item.Date.Unix(),
+			Metadata: map[string]string{
+				"domain": domain,
+				"link":   item.Link,
+			},
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func getDomain(address string) string {

@@ -43,6 +43,7 @@ func NewFeedsEndpoints() []*api.Endpoint {
 
 type FeedsService interface {
 	New(ctx context.Context, in *NewRequest, opts ...client.CallOption) (*NewResponse, error)
+	Entries(ctx context.Context, in *EntriesRequest, opts ...client.CallOption) (*EntriesResponse, error)
 }
 
 type feedsService struct {
@@ -67,15 +68,27 @@ func (c *feedsService) New(ctx context.Context, in *NewRequest, opts ...client.C
 	return out, nil
 }
 
+func (c *feedsService) Entries(ctx context.Context, in *EntriesRequest, opts ...client.CallOption) (*EntriesResponse, error) {
+	req := c.c.NewRequest(c.name, "Feeds.Entries", in)
+	out := new(EntriesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Feeds service
 
 type FeedsHandler interface {
 	New(context.Context, *NewRequest, *NewResponse) error
+	Entries(context.Context, *EntriesRequest, *EntriesResponse) error
 }
 
 func RegisterFeedsHandler(s server.Server, hdlr FeedsHandler, opts ...server.HandlerOption) error {
 	type feeds interface {
 		New(ctx context.Context, in *NewRequest, out *NewResponse) error
+		Entries(ctx context.Context, in *EntriesRequest, out *EntriesResponse) error
 	}
 	type Feeds struct {
 		feeds
@@ -90,4 +103,8 @@ type feedsHandler struct {
 
 func (h *feedsHandler) New(ctx context.Context, in *NewRequest, out *NewResponse) error {
 	return h.FeedsHandler.New(ctx, in, out)
+}
+
+func (h *feedsHandler) Entries(ctx context.Context, in *EntriesRequest, out *EntriesResponse) error {
+	return h.FeedsHandler.Entries(ctx, in, out)
 }
