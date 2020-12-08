@@ -16,18 +16,30 @@ Services provides a home for real world examples for using Micro v3.
 
 ## Usage
 
-Pull the service directly from github
+Install Micro
 
 ```
 # install micro
 go get github.com/micro/micro/v3
+```
 
+Run Micro
+
+```
 # run the server
 micro server
+```
 
+Login as an admin
+
+```
 # login with user: admin pass: micro
 micro login
+```
 
+Run a service from source
+
+```
 # run the service
 micro run github.com/micro/services/helloworld
 ```
