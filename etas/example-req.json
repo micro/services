@@ -1,0 +1,19 @@
+{
+  "pickup": {
+    "id": "shenfield-station",
+    "latitude": 51.6308,
+    "longitude": 0.3295
+  },
+  "waypoints": [
+    {
+      "id": "nandos",
+      "latitude": 51.6199,
+      "longitude": 0.2999
+    },
+    {
+      "id": "brentwood-station",
+      "latitude": 51.6136,
+      "longitude": 0.2996
+    }
+  ]
+}
