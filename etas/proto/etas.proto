@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package etas;
+option go_package = "github.com/micro/services/etas/proto;etas";
+
+import "google/protobuf/timestamp.proto";
+
+service ETAs {
+	rpc Calculate(Route) returns (Response);
+}
+
+message Point {
+	// id for the point, this is returned in the response with additional information such as estimated
+	// arrival time and estimated departure time.
+	string id = 1;
+	// the latitude for the point
+	double latitude = 2;
+	// the longitude for the point
+	double longitude = 3;
+	// the estimated time the vehicle will spend at the point between arrival and departure (unit 
+	// minutes).
+	int32 wait_time = 4;
+}
+
+message Route {
+	// pickup is where the route must start, e.g. a depot
+	Point pickup = 1;
+	// waypoints are points the vehicle must pass on their route
+	repeated Point waypoints = 2;
+	// start time specifies the time the vehicle will arrive at the pickup. If no value is provided,
+	// the current time will be used
+	google.protobuf.Timestamp start_time = 3;
+}
+
+message Response {
+	// points contains the ETAs for each point. The first point will be the pickup and the subsequent
+	// points are the waypoints
+	map<string,ETA> points = 1;
+}
+
+message ETA {
+	google.protobuf.Timestamp estimated_arrival_time = 1;
+	google.protobuf.Timestamp estimated_departure_time = 2;
+}
