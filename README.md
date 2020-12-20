@@ -16,18 +16,6 @@ Services provides a home for real world examples for using Micro v3.
 
 ## Usage
 
-Run Micro
-
-```
-micro server
-```
-
-Login (user: admin pass: micro)
-
-```
-micro login
-```
-
 Run a service from source
 
 ```
