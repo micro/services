@@ -8,10 +8,16 @@ Current limitations:
 
 ## Usage
 
-There is one required config value: `google.maps.apikey`. Once you have set this config value, run the service using `micro run`.
+The ETA service depends on the Google Maps API. Ensure you set the "google.maps.apikey" config value to your API key.
+
+```
+micro config set google.maps.apikey YOUR_API_KEY
+```
+
+Once set, run the service using `micro run github.com/micro/services/etas`.
 
 ```bash
-micro@Bens-MBP-3 etas % micro call etas ETAs.Calculate $(cat example-req.json)
+$ micro call etas ETAs.Calculate $(cat example-req.json)
 {
 	"points": {
 		"brentwood-station": {
