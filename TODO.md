@@ -17,3 +17,43 @@ A list of open source services to be created
 - [ ] feed - a news feed and aggregator
 - [ ] stream - timeline of events, news, photos
 - [ ] contacts - store your contacts whether email, phone, etc
+
+A non-comprehensive list of high-level services:
+
+- Alerting
+- Audio
+- Backups
+- Broadcast
+- Checkout
+- Customer
+- Database
+- Email
+- Event
+- Food (markets)
+- Fraud/Risk
+- Gamify (scores / leaderboard)
+- geocoding
+- i18n
+- Image
+- Location
+- Maps
+- Message
+- Monitoring
+- Notes / todo / lists
+- Notification
+- Payment
+- Personalisation
+- Place
+- Popup (locations)
+- Review (hyper local ephemeral reviews)
+- Reward (points / tokens)
+- Search
+- Secrets
+- Status
+- Stream
+- Support
+- Timeline
+- translation
+- User
+- Video
+- Voice
