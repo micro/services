@@ -4,9 +4,9 @@ A list of open source services to be created
 
 ## Services
 
-- [ ] blog - a simple blogging service
+- [x] blog - a simple blogging service
   - [x] posts
-  - [ ] comments
+  - [x] comments
   - [x] tags
 - inbox - a simple inbox for mail and private messages
   * [x] messages - store the messages for the inbox
@@ -16,3 +16,4 @@ A list of open source services to be created
 - [ ] books - search and read from the internet archive [open library](https://github.com/internetarchive/openlibrary)
 - [ ] feed - a news feed and aggregator
 - [ ] stream - timeline of events, news, photos
+- [ ] contacts - store your contacts whether email, phone, etc
