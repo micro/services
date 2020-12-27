@@ -2,7 +2,7 @@
 
 A list of open source services to be created
 
-## Services
+## Current
 
 - [x] blog - a simple blogging service
   - [x] posts
@@ -18,7 +18,9 @@ A list of open source services to be created
 - [ ] stream - timeline of events, news, photos
 - [ ] contacts - store your contacts whether email, phone, etc
 
-A non-comprehensive list of high-level services:
+## Services
+
+A non-comprehensive list of additional high-level value add services:
 
 - Alerting
 - Audio
