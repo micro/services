@@ -17,6 +17,7 @@ A list of open source services to be created
 - [ ] feed - a news feed and aggregator
 - [ ] stream - timeline of events, news, photos
 - [ ] contacts - store your contacts whether email, phone, etc
+- [ ] teams - staying in sync in a distributed team 
 
 ## Services
 
