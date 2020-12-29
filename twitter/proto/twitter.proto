@@ -1,0 +1,247 @@
+syntax = "proto3";
+
+package twitter;
+
+option go_package = "proto;twitter";
+
+service Api {
+	rpc Tweet(TweetRequest) returns (TweetResponse) {}
+}
+
+message Point {
+	double lat = 1;
+	double lng = 2;
+}
+
+message Contributor {
+	int64 id = 1;
+	string id_str = 2;
+	string screen_name = 3;
+}
+
+message Coordinates {
+	repeated double coordinates = 1;
+	string type = 2;
+}
+
+message Hashtag {
+	repeated int64 indices = 1;
+	string text = 2;
+}
+
+message Url {
+        repeated int64 indices = 1;
+	string url = 2;
+	string display_url = 3;
+	string expanded_url = 4;
+}
+
+message Mention {
+        string name = 1;
+	repeated int64 indices = 2;
+	string screen_name = 3;
+	int64 id = 4;
+	string id_str = 5;
+}
+
+message MediaSize {
+	int64 w = 1;
+	int64 h = 2;
+	string resize = 3;
+}
+
+message Sizes {
+	MediaSize medium = 1;
+	MediaSize thumb = 2;
+	MediaSize small = 3;
+	MediaSize large = 4;
+}
+
+message Variant {
+	int64 bitrate = 1;
+	string content_type = 2;
+	string url = 3;
+}
+
+message VideoInfo {
+	repeated int64 aspect_ratio = 1;
+	int64 duration_millis = 2;
+	repeated Variant variants = 3;
+}
+
+message Media {
+	int64 id = 1;
+	string id_str = 2;
+	string media_url = 3;
+	string media_url_https = 4;
+	string url = 5;
+	string display_url = 6;	
+	string expanded_url = 7;
+	Sizes sizes = 8;
+	int64 source_status_id = 9;
+	string source_status_id_str = 10;
+	string type = 11;
+	repeated int64 indices = 12;
+	VideoInfo video_info = 13;
+}
+
+message Entities {
+	repeated Hashtag hashtags = 1;
+	repeated Url urls = 2;
+	Url url = 3;
+	repeated Mention user_mentions = 4;
+	repeated Media media = 5;
+}
+
+message BoundingBox {
+	repeated Coordinates coordinates = 1;
+	string type = 2;
+}
+
+message ContainedWithin {
+	map<string,string> attributes = 1;
+	BoundingBox bounding_box = 2;
+	string country = 3;
+	string country_code = 4;
+	string full_name = 5;
+	string id = 6;
+	string name = 7;
+	string place_type = 8;
+	string url = 9;
+}
+
+message Place {
+	map<string,string> attributes = 1;
+	BoundingBox bounding_box = 2;
+	repeated ContainedWithin contained_within = 3;
+	string country = 4;
+	string country_code = 5;
+	string full_name = 6;
+	BoundingBox geometry = 7;
+	string id = 8;
+	string name = 9;
+	string place_type = 10;
+	repeated string polylines = 11;
+	string url = 12;
+}
+
+message Tweet {
+	repeated Contributor contributors = 1;
+	Coordinates coordinates = 2;
+	string created_at = 3;
+	Entities entities = 4;
+	Entities extended_entities = 5;
+	int64 favorite_count = 6;
+	bool favorited = 7;
+	string filter_level = 8;
+	int64 id = 9;
+	string id_str = 10;
+	string in_reply_to_screen_name = 11;
+	int64 in_reply_to_status_id = 12;
+	string in_reply_to_status_id_str = 13;
+	int64 in_reply_to_user_id = 14;
+	string in_reply_to_user_id_str = 15;
+	string lang = 16;
+	Place place = 17;
+	bool possibly_sensitive = 18;
+	int64 retweet_count = 19;
+	bool retweeted = 20;
+	Tweet retweeted_status = 21;
+	string source = 22;
+	map<string,string> scopes = 23;
+	string text = 24;
+	bool truncated = 25;
+	User user = 26;
+	bool withheld_copyright = 27;
+	repeated string withheld_in_countries = 28;
+	string withheld_scope = 29;
+}
+
+message User {
+	bool contributors_enabled = 1; 
+	string created_at = 2; 
+	bool default_profile = 3; 
+	bool default_profile_image = 4; 
+	string description = 5; 
+	Entities entities = 6; 
+	int64 favourites_count = 7; 
+	bool follow_request_sent = 8; 
+	int64 followers_count = 9; 
+	bool following = 10; 
+	int64 friends_count = 11; 
+	bool geo_enabled = 12; 
+	int64 id = 13; 
+	string id_str = 14; 
+	bool is_translator = 15; 
+	string lang = 16; 
+	int64 listed_count = 17; 
+	string location = 18; 
+	string name = 19; 
+	bool notifications = 20; 
+	string profile_background_color = 21; 
+	string profile_background_image_url = 22; 
+	string profile_background_image_url_https = 23; 
+	bool profile_background_tile = 24; 
+	string profile_banner_url = 25; 
+	string profile_image_url = 26; 
+	string profile_image_url_https = 27; 
+	string profile_link_color = 28; 
+	string profile_sidebar_border_color = 29; 
+	string profile_sidebar_fill_color = 30; 
+	string profile_text_color = 31; 
+	bool profile_use_background_image = 32; 
+	bool protected = 33; 
+	string screen_name = 34; 
+	bool show_all_inline_media = 35; 
+	Tweet status = 36; 
+	int64 statuses_count = 37; 
+	string time_zone = 38; 
+	string url = 39; 
+	int64 utc_offset = 40; 
+	bool verified = 41; 
+	repeated string withheld_in_countries = 42; 
+	string withheld_scope = 43; 
+}
+
+message TweetRequest {
+	string status = 1;
+	uint64 in_reply_to_status_id = 2;
+	bool possibly_sensitive = 3;
+	Point lat_lng = 4;
+	string place_id = 5;
+	bool display_coordinates = 6;
+	bool trim_user = 7;
+	repeated uint64 media_ids = 8;
+}
+
+message TweetResponse {
+	repeated Contributor contributors = 1;
+	Coordinates coordinates = 2;
+	string created_at = 3;
+	Entities entities = 4;
+	Entities extended_entities = 5;
+	int64 favorite_count = 6;
+	bool favorited = 7;
+	string filter_level = 8;
+	int64 id = 9;
+	string id_str = 10;
+	string in_reply_to_screen_name = 11;
+	int64 in_reply_to_status_id = 12;
+	string in_reply_to_status_id_str = 13;
+	int64 in_reply_to_user_id = 14;
+	string in_reply_to_user_id_str = 15;
+	string lang = 16;
+	Place place = 17;
+	bool possibly_sensitive = 18;
+	int64 retweet_count = 19;
+	bool retweeted = 20;
+	Tweet retweeted_status = 21;
+	string source = 22;
+	map<string,string> scopes = 23;
+	string text = 24;
+	bool truncated = 25;
+	User user = 26;
+	bool withheld_copyright = 27;
+	repeated string withheld_in_countries = 28;
+	string withheld_scope = 29;
+}
