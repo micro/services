@@ -1,12 +1,6 @@
 # Twitter Service
 
-This is the Twitter service
-
-Generated with
-
-```
-micro new twitter
-```
+This is the Twitter service. It let's you write tweets via the service using the twitter api.
 
 ## Usage
 
