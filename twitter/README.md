@@ -18,7 +18,5 @@ micro config set twitter.consumer_secret xxxx
 Now tweet stuff
 
 ```
-micro twitter api tweet --status "Tweeting via a microservice"
+micro twitter api tweet --status "Tweeting via a micro service"
 ```
-
-
