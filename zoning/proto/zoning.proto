@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+service Zoning {
+	Create(Zone) returns (Empty) {};
+	Delete(Zone) returns (Empty) {};
+	Search(Query) returns (Result) {};
+	Subscribe(Point) returns (stream Event) {};
+}
+
+message Empty {}
+
+message Point {
+	double lat = 1;
+	double long = 2;
+}
+
+message Event {
+	string id = 1;
+	int64 timestamp = 2;
+	Point point = 3;
+	Zone zone = 4;
+	string type = 5;
+	string info = 6;
+}
+
+message Query {
+	// filters
+	string id = 1;
+	string type = 2;
+	repeated Point points = 3;
+}
+
+message Result {
+	repeated Zone zones = 1;
+}
+
+message Zone {
+	string id = 1;
+	string type = 2;
+	repeated Point points = 3;
+	
+}

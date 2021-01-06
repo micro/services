@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+service Routes {
+	Guide(Query) returns (Route) {};
+	Record(Journey) returns (Empty) {};
+	Retrieve(Request) returns (Journey) {};
+}
+
+message Point {
+	double lat = 1;
+	double long = 2;
+}
+
+message Query {
+	Point from = 1;
+	Point to = 2;
+}
+
+message Route {
+	repeated Point = points;
+}
+
+message Journey {
+	string id = 1
+	Route route = 2;	
+}
+
+message Request {
+	string id = 1
+}

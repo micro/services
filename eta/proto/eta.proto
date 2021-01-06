@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+service ETA {
+	rpc Calculate(Route) returns (Result);
+}
+
+message Point {
+	double lat = 1;
+	double long = 2;
+}
+
+message Route {
+	Point start = 1;
+	Point finish = 2;
+	repeated Point waypoints = 3;
+	int64 start_at = 1;
+}
+
+message Result {
+	int64 arrival_time = 1;
+	int64 departure_time = 2;
+}

@@ -3,15 +3,16 @@ syntax = "proto3";
 package location;
 
 service Location {
-	rpc Read(ReadRequest) returns (ReadResponse) {}
-	rpc Save(SaveRequest) returns (SaveResponse) {}
-	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc Read(Request) returns (Response) {}
+	rpc Save(Entity) returns (Empty) {}
+	rpc Search(Query) returns (Result) {}
 }
 
+message Empty {}
 
 message Point {
-        double latitude = 1;
-        double longitude = 2;
+        double lat = 1;
+        double long = 2;
         int64 timestamp = 3;
 }
 
@@ -21,28 +22,21 @@ message Entity {
         Point location = 3;
 }
 
-message ReadRequest {
+message Request {
 	string id = 1;
 }
 
-message ReadResponse {
+message Response {
 	Entity entity = 1;
 }
 
-message SaveRequest {
-	Entity entity = 1;
-}
-
-message SaveResponse {
-}
-
-message SearchRequest {
+message Query {
 	Point center = 1;
 	double radius = 2; // in meters
 	string type = 3;
 	int64 numEntities = 4;
 }
 
-message SearchResponse {
+message Result {
 	repeated Entity entities = 1;
 }

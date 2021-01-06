@@ -1,23 +1,4 @@
 # Location Service
 
-A realtime GPS location tracking and search service
+The location service provides real time GPS location tracking and search
 
-Generated with
-
-```
-micro new location
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+service Geocoding {
+	Geocode(Address) returns (Result) {};
+	Reverse(Point) returns (Result) {};
+}
+
+
+message Address {
+	string street = 1;
+	string postcode = 2;
+}
+
+message Point {
+	double lat = 1;
+	double lng = 2;
+}
+
+message Result {
+	Address address = 1;
+	Point point = 2;
+}

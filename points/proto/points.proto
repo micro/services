@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+service Points {
+	Ingest(Batch) returns (Empty) {};
+	Record(Point) returns (Empty) {};
+}
+
+message Point {
+	double lat = 1;
+	double long = 2;
+	int64 timestamp = 3;
+}
+
+message Batch {
+	repeated Point points = 1;
+}
