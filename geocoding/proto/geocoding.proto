@@ -13,7 +13,7 @@ message Address {
 
 message Point {
 	double lat = 1;
-	double lng = 2;
+	double long = 2;
 }
 
 message Result {
