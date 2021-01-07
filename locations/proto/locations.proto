@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package locations;
+option go_package = "github.com/micro/services/locations/proto;locations";
+import "google/protobuf/timestamp.proto";
+
+service Locations {
+	// Save a set of locations
+	rpc Save(SaveRequest) returns (SaveResponse) {}
+	// Last locations for a set of users
+	rpc Last(LastRequest) returns (LastResponse) {}
+	// Near returns the locations near a point at a given time
+	rpc Near(NearRequest) returns (NearResponse) {}	
+}
+
+message Location {
+	double latitude = 1;
+	double longitude = 2;
+	string user_id = 3;
+	google.protobuf.Timestamp timestamp = 4;
+}
+
+message SaveRequest {
+	repeated Location locations = 1;
+}
+
+message SaveResponse {}
+
+message LastRequest {
+	repeated string user_ids = 1;
+}
+
+message LastResponse {
+	repeated Location locations = 1;
+}
+
+message NearRequest {
+	double latitude = 1;
+	double longitude = 2;
+	// the point in time at which you wish to search the dataset. defaults to the current time
+	google.protobuf.Timestamp timestamp = 3;
+	// within how many minutes of the timestamp, defaults to 5
+	int32 within_minutes = 4;
+}
+
+message NearResponse {
+	repeated Location locations = 1;
+}
