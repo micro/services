@@ -46,9 +46,11 @@ type LocationsService interface {
 	// Save a set of locations
 	Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error)
 	// Last locations for a set of users
-	Last(ctx context.Context, in *LastRequest, opts ...client.CallOption) (*LastResponse, error)
+	Last(ctx context.Context, in *LastRequest, opts ...client.CallOption) (*ListResponse, error)
 	// Near returns the locations near a point at a given time
-	Near(ctx context.Context, in *NearRequest, opts ...client.CallOption) (*NearResponse, error)
+	Near(ctx context.Context, in *NearRequest, opts ...client.CallOption) (*ListResponse, error)
+	// Read locations for a group of users between two points in time
+	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ListResponse, error)
 }
 
 type locationsService struct {
@@ -73,9 +75,9 @@ func (c *locationsService) Save(ctx context.Context, in *SaveRequest, opts ...cl
 	return out, nil
 }
 
-func (c *locationsService) Last(ctx context.Context, in *LastRequest, opts ...client.CallOption) (*LastResponse, error) {
+func (c *locationsService) Last(ctx context.Context, in *LastRequest, opts ...client.CallOption) (*ListResponse, error) {
 	req := c.c.NewRequest(c.name, "Locations.Last", in)
-	out := new(LastResponse)
+	out := new(ListResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -83,9 +85,19 @@ func (c *locationsService) Last(ctx context.Context, in *LastRequest, opts ...cl
 	return out, nil
 }
 
-func (c *locationsService) Near(ctx context.Context, in *NearRequest, opts ...client.CallOption) (*NearResponse, error) {
+func (c *locationsService) Near(ctx context.Context, in *NearRequest, opts ...client.CallOption) (*ListResponse, error) {
 	req := c.c.NewRequest(c.name, "Locations.Near", in)
-	out := new(NearResponse)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *locationsService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "Locations.Read", in)
+	out := new(ListResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -99,16 +111,19 @@ type LocationsHandler interface {
 	// Save a set of locations
 	Save(context.Context, *SaveRequest, *SaveResponse) error
 	// Last locations for a set of users
-	Last(context.Context, *LastRequest, *LastResponse) error
+	Last(context.Context, *LastRequest, *ListResponse) error
 	// Near returns the locations near a point at a given time
-	Near(context.Context, *NearRequest, *NearResponse) error
+	Near(context.Context, *NearRequest, *ListResponse) error
+	// Read locations for a group of users between two points in time
+	Read(context.Context, *ReadRequest, *ListResponse) error
 }
 
 func RegisterLocationsHandler(s server.Server, hdlr LocationsHandler, opts ...server.HandlerOption) error {
 	type locations interface {
 		Save(ctx context.Context, in *SaveRequest, out *SaveResponse) error
-		Last(ctx context.Context, in *LastRequest, out *LastResponse) error
-		Near(ctx context.Context, in *NearRequest, out *NearResponse) error
+		Last(ctx context.Context, in *LastRequest, out *ListResponse) error
+		Near(ctx context.Context, in *NearRequest, out *ListResponse) error
+		Read(ctx context.Context, in *ReadRequest, out *ListResponse) error
 	}
 	type Locations struct {
 		locations
@@ -125,10 +140,14 @@ func (h *locationsHandler) Save(ctx context.Context, in *SaveRequest, out *SaveR
 	return h.LocationsHandler.Save(ctx, in, out)
 }
 
-func (h *locationsHandler) Last(ctx context.Context, in *LastRequest, out *LastResponse) error {
+func (h *locationsHandler) Last(ctx context.Context, in *LastRequest, out *ListResponse) error {
 	return h.LocationsHandler.Last(ctx, in, out)
 }
 
-func (h *locationsHandler) Near(ctx context.Context, in *NearRequest, out *NearResponse) error {
+func (h *locationsHandler) Near(ctx context.Context, in *NearRequest, out *ListResponse) error {
 	return h.LocationsHandler.Near(ctx, in, out)
+}
+
+func (h *locationsHandler) Read(ctx context.Context, in *ReadRequest, out *ListResponse) error {
+	return h.LocationsHandler.Read(ctx, in, out)
 }
