@@ -119,10 +119,12 @@ func (l *Locations) Near(ctx context.Context, req *pb.NearRequest, rsp *pb.ListR
 	}
 
 	// query the geoindex
+	l.RLock()
 	p := geo.NewGeoPoint("query", req.Latitude.Value, req.Longitude.Value)
 	result := l.Geoindex.PointsWithin(p, geo.Km(req.Radius.Value), func(p geo.Point) bool {
 		return true
 	})
+	l.RUnlock()
 
 	// serialize the result
 	locs := make([]*model.Location, len(result))
