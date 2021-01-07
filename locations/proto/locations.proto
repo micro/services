@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package locations;
 option go_package = "github.com/micro/services/locations/proto;locations";
+
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 service Locations {
 	// Save a set of locations
@@ -16,10 +18,10 @@ service Locations {
 }
 
 message Location {
-	double latitude = 1;
-	double longitude = 2;
-	string user_id = 3;
-	google.protobuf.Timestamp timestamp = 4;
+	string user_id = 1;
+	google.protobuf.Timestamp timestamp = 2;
+	google.protobuf.DoubleValue latitude = 3;
+	google.protobuf.DoubleValue longitude = 4;
 }
 
 message SaveRequest {
@@ -37,12 +39,10 @@ message ListResponse {
 }
 
 message NearRequest {
-	double latitude = 1;
-	double longitude = 2;
-	// the point in time at which you wish to search the dataset. defaults to the current time
-	google.protobuf.Timestamp timestamp = 3;
-	// within how many minutes of the timestamp, defaults to 5
-	int32 within_minutes = 4;
+	google.protobuf.DoubleValue latitude = 1;
+	google.protobuf.DoubleValue longitude = 2;
+	// radius to search within, units km
+	google.protobuf.DoubleValue radius = 3;
 }
 
 message ReadRequest {
