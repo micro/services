@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package locations;
+option go_package = "github.com/micro/services/locations/proto;locations";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+service Locations {
+	// Save a set of locations
+	rpc Save(SaveRequest) returns (SaveResponse) {}
+	// Last locations for a set of users
+	rpc Last(LastRequest) returns (ListResponse) {}
+	// Near returns the locations near a point at a given time
+	rpc Near(NearRequest) returns (ListResponse) {}	
+	// Read locations for a group of users between two points in time
+	rpc Read(ReadRequest) returns (ListResponse) {}
+}
+
+message Location {
+	string user_id = 1;
+	google.protobuf.Timestamp timestamp = 2;
+	google.protobuf.DoubleValue latitude = 3;
+	google.protobuf.DoubleValue longitude = 4;
+}
+
+message SaveRequest {
+	repeated Location locations = 1;
+}
+
+message SaveResponse {}
+
+message LastRequest {
+	repeated string user_ids = 1;
+}
+
+message ListResponse {
+	repeated Location locations = 1;
+}
+
+message NearRequest {
+	google.protobuf.DoubleValue latitude = 1;
+	google.protobuf.DoubleValue longitude = 2;
+	// radius to search within, units km
+	google.protobuf.DoubleValue radius = 3;
+}
+
+message ReadRequest {
+	repeated string user_ids = 1;
+	google.protobuf.Timestamp after = 2;
+	google.protobuf.Timestamp before = 3;
+}
