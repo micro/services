@@ -20,6 +20,7 @@ require (
 	google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 // indirect
 	google.golang.org/grpc v1.32.0 // indirect
 	google.golang.org/protobuf v1.25.0
+	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/postgres v1.0.6
 	gorm.io/gorm v1.20.9
