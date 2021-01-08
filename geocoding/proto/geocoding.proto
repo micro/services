@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package geocoding;
+
+import "google/protobuf/wrappers.proto";
+
+service Geocoding {
+	// Geocode an address, the result will be the normalized address which contains coordinates
+	rpc Geocode(Address) returns (Address) {};
+	// Reverse geocode coordinates to an address
+	rpc Reverse(Coordinates) returns (Address) {};
+}
+
+message Address {
+  string line_one = 1;
+  string line_two = 2;
+  string city = 3;
+  string country = 4;
+  string postcode = 5;
+  double latitude = 6;
+  double longitude = 7;
+}
+
+message Coordinates {
+	google.protobuf.DoubleValue latitude = 1;
+	google.protobuf.DoubleValue longitude = 2;
+}
