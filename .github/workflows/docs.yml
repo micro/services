@@ -39,7 +39,7 @@ jobs:
     - name: Install openapi plugin
       working-directory: micro
       run: |
-        cd cd cmd/protoc-gen-openapi/
+        cd cmd/protoc-gen-openapi/
         go install
 
     - name: Gen one
