@@ -39,6 +39,7 @@ jobs:
     - name: Install openapi plugin
       working-directory: micro
       run: |
+        ls
         cd cmd/protoc-gen-openapi/
         go install
 
