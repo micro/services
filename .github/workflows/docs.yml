@@ -44,7 +44,8 @@ jobs:
 
     - name: Install redoc cli
       run: |
-        npm install -g redoc-cli
+        # https://github.com/actions/virtual-environments/issues/599
+        sudo npm install -g redoc-cli
 
     - name: Install openapi plugin
       working-directory: micro/cmd/protoc-gen-openapi
