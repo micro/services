@@ -54,13 +54,14 @@ jobs:
 
     - name: Gen one
       working-directory: services
+      continue-on-error: true
       run: |
         mkdir docs
         for d in */; do
           echo $d
           cd $d
-          make proto || true
-          cp redoc-static.html ../docs/$d.html || true
+          make proto
+          cp redoc-static.html ../docs/$d.html
         done
 
     - name: Deploy
