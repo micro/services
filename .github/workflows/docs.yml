@@ -36,6 +36,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
+    - name: Install protoc gen micro plugin
+      working-directory: micro/cmd/protoc-gen-micro
+      run: |
+        go install
+
     - name: Install openapi plugin
       working-directory: micro/cmd/protoc-gen-openapi
       run: |
