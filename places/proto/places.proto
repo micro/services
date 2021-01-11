@@ -1,19 +1,18 @@
 syntax = "proto3";
 
-package locations;
-option go_package = "github.com/micro/services/locations/proto;locations";
+package places;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
-service Locations {
-	// Save a set of locations
+service Places {
+	// Save a set of places
 	rpc Save(SaveRequest) returns (SaveResponse) {}
-	// Last locations for a set of users
+	// Last places for a set of users
 	rpc Last(LastRequest) returns (ListResponse) {}
-	// Near returns the locations near a point at a given time
+	// Near returns the places near a point at a given time
 	rpc Near(NearRequest) returns (ListResponse) {}	
-	// Read locations for a group of users between two points in time
+	// Read places for a group of users between two points in time
 	rpc Read(ReadRequest) returns (ListResponse) {}
 }
 
@@ -25,7 +24,7 @@ message Location {
 }
 
 message SaveRequest {
-	repeated Location locations = 1;
+	repeated Location places = 1;
 }
 
 message SaveResponse {}
@@ -35,7 +34,7 @@ message LastRequest {
 }
 
 message ListResponse {
-	repeated Location locations = 1;
+	repeated Location places = 1;
 }
 
 message NearRequest {
