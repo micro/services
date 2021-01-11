@@ -39,6 +39,7 @@ jobs:
     - name: Install protoc gen micro plugin
       working-directory: micro/cmd/protoc-gen-micro
       run: |
+        go get -u github.com/golang/protobuf/protoc-gen-go
         go install
 
     - name: Install openapi plugin
