@@ -56,15 +56,7 @@ jobs:
       working-directory: services
       continue-on-error: true
       run: |
-        mkdir docs
-        for d in */; do
-          echo $d
-          cd $d
-          make proto
-          cp redoc-static.html ../docs/$d.html
-          cd ..
-        done
-        ls docs
+        bash scripts/generate-docs.sh
 
     - name: Deploy
       uses: s0/git-publish-subdir-action@develop
