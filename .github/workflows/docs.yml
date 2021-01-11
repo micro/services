@@ -1,0 +1,50 @@
+name: Generate docs
+on: [push]
+
+jobs:
+
+  test:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Install Protoc
+      uses: arduino/setup-protoc@master
+
+    - name: Check out this code
+      uses: actions/checkout@v2
+      with:
+        path: services
+    
+    - name: Check out micro code
+      uses: actions/checkout@v2
+      with:
+        repository: 'micro/micro'
+        path: 'micro'
+        ref: 'v3.0.0-beta.7'
+
+    - name: Enable caching
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install openapi plugin
+      working-directory: micro
+      run: |
+        cd cd cmd/protoc-gen-openapi/
+        go install
+
+    - name: Gen one
+      working-directory: location
+      run: |
+          make proto
+          cat location-api.json
+        
