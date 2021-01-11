@@ -62,7 +62,9 @@ jobs:
           cd $d
           make proto
           cp redoc-static.html ../docs/$d.html
+          cd ..
         done
+        ls docs
 
     - name: Deploy
       uses: s0/git-publish-subdir-action@develop
