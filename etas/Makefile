@@ -8,7 +8,7 @@ init:
 
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/etas.proto
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/etas.proto
 	
 .PHONY: build
 build:
