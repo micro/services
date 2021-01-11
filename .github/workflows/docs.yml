@@ -41,6 +41,9 @@ jobs:
       run: |
         go install
 
+    - name: Install make
+      run: sudo apt-get install build-essential
+
     - name: Gen one
       working-directory: location
       run: |
