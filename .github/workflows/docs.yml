@@ -58,6 +58,7 @@ jobs:
         mkdir docs
         for d in *; do
           echo $d
+          cd $d
           make proto
           cp redoc-static.html ../docs/$d.html
         done
