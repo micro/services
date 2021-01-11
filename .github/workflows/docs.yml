@@ -59,8 +59,8 @@ jobs:
         for d in */; do
           echo $d
           cd $d
-          make proto
-          cp redoc-static.html ../docs/$d.html
+          make proto || true
+          cp redoc-static.html ../docs/$d.html || true
         done
 
     - name: Deploy
