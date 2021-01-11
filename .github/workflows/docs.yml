@@ -44,6 +44,8 @@ jobs:
     - name: Gen one
       working-directory: location
       run: |
+        pwd
+        ls
         cat Makefile
         which make
         make proto
