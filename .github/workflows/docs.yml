@@ -42,7 +42,7 @@ jobs:
         go install
 
     - name: Gen one
-      working-directory: locations
+      working-directory: services/locations
       run: |
         pwd
         ls
@@ -51,7 +51,7 @@ jobs:
         make proto
 
     - name: Test
-      working-directory: locations
+      working-directory: services/locations
       run: |
         cat api-location.json
         
