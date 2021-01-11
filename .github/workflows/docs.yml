@@ -26,7 +26,7 @@ jobs:
       with:
         repository: 'micro/micro'
         path: 'micro'
-        ref: 'v3.0.0-beta.7'
+        ref: 'v3.0.4'
 
     - name: Enable caching
       uses: actions/cache@v2
@@ -37,10 +37,8 @@ jobs:
           ${{ runner.os }}-go-
 
     - name: Install openapi plugin
-      working-directory: micro
+      working-directory: micro/cmd/protoc-gen-openapi
       run: |
-        ls
-        cd cmd/protoc-gen-openapi/
         go install
 
     - name: Gen one
