@@ -45,5 +45,5 @@ jobs:
       working-directory: location
       run: |
           make proto
-          cat location-api.json
+          cat api-location.json
         
