@@ -41,16 +41,15 @@ jobs:
       run: |
         go install
 
-    - name: Install make
-      run: sudo apt-get install build-essential
-
     - name: Gen one
       working-directory: location
       run: |
-          make proto
+        cat Makefile
+        which make
+        make proto
 
     - name: Test
       working-directory: location
       run: |
-          cat api-location.json
+        cat api-location.json
         
