@@ -18,11 +18,11 @@ import (
 )
 
 var (
-	ErrMissingPlaces = errors.BadRequest("MISSING_LOCATIONS", "One or more places are required")
+	ErrMissingPlaces    = errors.BadRequest("MISSING_LOCATIONS", "One or more places are required")
 	ErrMissingLatitude  = errors.BadRequest("MISSING_LATITUDE", "Latitude is required")
 	ErrMissingLongitude = errors.BadRequest("MISSING_LONGITUDE", "Longitude is required")
-	ErrMissingUserID    = errors.BadRequest("MISSING_USER_ID", "UserID is required")
-	ErrMissingUserIDs   = errors.BadRequest("MISSING_USER_IDS", "One or more UserIDs are required")
+	ErrMissingID        = errors.BadRequest("MISSING_ID", "Place ID is required")
+	ErrMissingIDs       = errors.BadRequest("MISSING_IDS", "One or more Place IDs are required")
 	ErrMissingBefore    = errors.BadRequest("MISSING_BEFORE", "Before timestamp is required")
 	ErrMissingAfter     = errors.BadRequest("MISSING_AFTER", "After timestamp is required")
 	ErrMissingRadius    = errors.BadRequest("MISSING_RADIUS", "Radius is required")
@@ -48,8 +48,8 @@ func (l *Places) Save(ctx context.Context, req *pb.SaveRequest, rsp *pb.SaveResp
 		if l.Longitude == nil {
 			return ErrMissingLongitude
 		}
-		if len(l.UserId) == 0 {
-			return ErrMissingUserID
+		if len(l.Id) == 0 {
+			return ErrMissingID
 		}
 	}
 
@@ -58,7 +58,7 @@ func (l *Places) Save(ctx context.Context, req *pb.SaveRequest, rsp *pb.SaveResp
 	for i, lc := range req.Places {
 		loc := &model.Location{
 			ID:        uuid.New().String(),
-			UserID:    lc.UserId,
+			PlaceID:   lc.Id,
 			Latitude:  lc.Latitude.Value,
 			Longitude: lc.Longitude.Value,
 		}
@@ -88,12 +88,12 @@ func (l *Places) Save(ctx context.Context, req *pb.SaveRequest, rsp *pb.SaveResp
 // Last places for a set of users
 func (l *Places) Last(ctx context.Context, req *pb.LastRequest, rsp *pb.ListResponse) error {
 	// validate the request
-	if req.UserIds == nil {
-		return ErrMissingUserIDs
+	if req.Ids == nil {
+		return ErrMissingIDs
 	}
 
 	// query the database
-	q := l.DB.Raw("SELECT DISTINCT ON (user_id) user_id, timestamp, latitude, longitude FROM places WHERE user_id IN (?) ORDER BY user_id, timestamp DESC", req.UserIds)
+	q := l.DB.Raw("SELECT DISTINCT ON (place_id) place_id, timestamp, latitude, longitude FROM places WHERE place_id IN (?) ORDER BY place_id, timestamp DESC", req.Ids)
 	var locs []*model.Location
 	if err := q.Find(&locs).Error; err != nil {
 		logger.Errorf("Error reading from the database: %v", err)
@@ -138,8 +138,8 @@ func (l *Places) Near(ctx context.Context, req *pb.NearRequest, rsp *pb.ListResp
 // Read places for a group of users between two points in time
 func (l *Places) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ListResponse) error {
 	// validate the request
-	if len(req.UserIds) == 0 {
-		return ErrMissingUserIDs
+	if len(req.Ids) == 0 {
+		return ErrMissingIDs
 	}
 	if req.Before == nil {
 		return ErrMissingBefore
@@ -151,7 +151,7 @@ func (l *Places) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ListResp
 	// construct the request
 	q := l.DB.Model(&model.Location{})
 	q = q.Order("timestamp ASC")
-	q = q.Where("user_id IN (?) AND timestamp > ? AND timestamp < ?", req.UserIds, req.After.AsTime(), req.Before.AsTime())
+	q = q.Where("place_id IN (?) AND timestamp > ? AND timestamp < ?", req.Ids, req.After.AsTime(), req.Before.AsTime())
 	var locs []*model.Location
 	if err := q.Find(&locs).Error; err != nil {
 		logger.Errorf("Error reading from the database: %v", err)
@@ -167,7 +167,7 @@ func serializePlaces(locs []*model.Location) []*pb.Location {
 	rsp := make([]*pb.Location, len(locs))
 	for i, l := range locs {
 		rsp[i] = &pb.Location{
-			UserId:    l.UserID,
+			Id:        l.PlaceID,
 			Latitude:  &wrapperspb.DoubleValue{Value: l.Latitude},
 			Longitude: &wrapperspb.DoubleValue{Value: l.Longitude},
 			Timestamp: timestamppb.New(l.Timestamp),
