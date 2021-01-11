@@ -56,7 +56,7 @@ jobs:
       working-directory: services
       run: |
         mkdir docs
-        for d in *; do
+        for d in */; do
           echo $d
           cd $d
           make proto
