@@ -1,0 +1,179 @@
+/* Scaffolding */
+
+html {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Roboto',
+        Roboto, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    color: var(--font-color);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+body {
+    background: var(--background);
+    margin: 0;
+    padding: 0;
+}
+
+section {
+    margin: 2rem 0;
+
+    &:first-of-type {
+        margin-top: 0;
+    }
+
+    >h2 {
+        display: flex;
+        align-items: center;
+        font-size: 1.6rem;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    section>h2 {
+        margin-bottom: 2rem;
+    }
+}
+
+.index h2,
+section>h2 {
+    border-bottom-width: 0;
+}
+
+@media screen and (min-width: 800px) {
+
+    .index h2,
+    section>h2 {
+        border-bottom-width: 4px;
+    }
+}
+
+a.section-button {
+    font-weight: 500;
+    background: var(--light-background);
+    color: var(--dark-font-color);
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 0.3rem;
+    border-width: 0 !important;
+    white-space: nowrap;
+    line-height: 1;
+    margin-left: 2rem;
+    margin-top: 0.5rem;
+
+    &:hover {
+        background: var(--light-background-hover);
+        color: var(--heading-color);
+    }
+}
+
+@media screen and (min-width: 800px) {
+    section {
+        margin: 3.5rem 0;
+
+        >h2 {
+            font-size: 2rem;
+            margin: 0 0 1rem;
+        }
+    }
+}
+
+.container {
+    max-width: 825px;
+    padding: 0 1.5rem;
+    margin-left: auto;
+    margin-right: auto;
+
+    &.page p {
+        max-width: 600px;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .container {
+        padding: 0 2rem;
+    }
+}
+
+img {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+}
+
+p,
+ol,
+ul,
+dl,
+table,
+blockquote {
+    font-size: 1.05rem;
+    margin: 0 0 1.5rem 0;
+}
+
+ul {
+    padding: 0 1rem;
+}
+
+@media screen and (min-width: 800px) {
+
+    p,
+    ol,
+    ul,
+    dl,
+    table,
+    blockquote {
+        font-size: 1.125rem;
+    }
+
+    ul {
+        padding: 0 2rem;
+    }
+}
+
+ul li p {
+    margin: 0;
+}
+
+ul li ul {
+    padding-left: 1rem;
+    margin: 0;
+}
+
+ul li ul li {
+    margin: 0;
+}
+
+ol li ol {
+    margin-bottom: 0;
+}
+
+.task-list-item [type='checkbox'] {
+    margin-right: 0.5rem;
+}
+
+blockquote {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: var(--blockquote);
+    font-weight: 400;
+    border-left: 5px solid var(--blockquote-left);
+}
+
+blockquote :not(pre)>code[class*='language-'] {
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+@media screen and (min-width: 800px) {
+    blockquote {
+        padding: 2rem 0 2rem 2rem;
+    }
+}
+
+::selection {
+    background: #3b5bdb;
+    color: white;
+}

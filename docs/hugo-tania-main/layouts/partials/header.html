@@ -1,0 +1,22 @@
+<nav class="navbar">
+    <div class="container">
+        <div class="flex">
+            <div>
+                <a class="brand" href="{{ relURL "/" }}">
+                    {{ if .Site.Params.titleEmoji }}
+                    <span class="emoji">
+                        {{ .Site.Params.titleEmoji }}
+                    </span>
+                    {{ end }}
+                    {{ .Site.Title }}
+                    </a>
+            </div>
+            <div class="flex">
+                {{ range .Site.Menus.header }}
+                <a href="{{ .URL | relURL }}"{{ if eq .URL $.RelPermalink }} aria-current="page"{{ end }}>{{ .Pre }}{{ .Name }}{{ .Post }}</a>
+                {{ end }}
+                <button id="dark-mode-button"></button>
+            </div>
+            </div>
+    </div>
+</nav>

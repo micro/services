@@ -1,0 +1,46 @@
+/* Suggested */
+
+.suggested {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding: 0;
+
+    span {
+        font-weight: 400;
+        display: block;
+        font-size: 0.9rem;
+        color: var(--transparent-text);
+    }
+
+    a {
+        background: none;
+        margin: 0.5rem 1rem;
+        border-bottom: none;
+        transition: all 0.2s ease;
+        padding: 1.5rem;
+        border-radius: 0.35rem;
+        background: var(--light-background);
+        color: var(--heading-color);
+
+        &:hover {
+            transform: translate3D(0, -1px, 0);
+            background: var(--light-background-hover);
+        }
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .suggested {
+        flex-direction: row;
+
+        a {
+            flex: 0 0 calc(50% - 2rem);
+
+            &:first-of-type {
+                text-align: right;
+            }
+        }
+    }
+}

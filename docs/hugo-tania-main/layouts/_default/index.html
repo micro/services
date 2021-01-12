@@ -1,0 +1,70 @@
+{{ define "main" }}
+
+<div class="container">
+    <section class="my">
+        <div class="content">
+            {{ with .Content }}
+            {{ . }}
+            {{ end }}
+            <div class="bio-social">
+                {{ range $name, $path := $.Param "socialOptions" }}
+                {{ if (and $path (ne $name "email")) }}
+                <a href="{{ $path | safeURL }}" target="_blank" rel="noreferrer" title="{{ $name }}"
+                    aria-label="{{ $name }}">
+                    {{ partial (print "svgs/social/" $name ".svg") (dict "width" 25 "height" 25) }}
+                </a>
+                {{ end }}
+                {{ end }}
+            </div>
+        </div>
+    </section>
+</div>
+
+{{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
+{{ $projects := where .Site.RegularPages "Section" "projects" }}
+{{ $pages = first (default 6 .Site.Params.homePosts) (sort (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) "Date" "desc") }}
+
+<div class="container">
+    <section>
+        <h2>
+            Latest Articles
+            <a class="section-button" href="/articles">View all</a>
+        </h2>
+        <div class="posts">
+            {{ range $pages }}
+            <div class="post">
+                <a href="{{ .RelPermalink }}">
+                    <div class="post-row">
+                        <time>{{ .Date.Format "Jan 02" }}</time>
+                        <h3>{{ .Title }}</h3>
+                    </div>
+                    <!--<div class="new-post">New!</div>-->
+                </a>
+            </div>
+            {{ end }}
+        </div>
+    </section>
+    {{ if gt (len $projects) 0}}
+    <section>
+        <h2>Projects</h2>
+        <div class="projects">
+            {{ range $projects.ByWeight }}
+            <div class="project">
+                <div>
+                    <a href="{{ .Params.link }}" target="_blank" rel="noreferrer">
+                        <div class="icon">{{ .Params.icon }}</div>
+                        <h3>{{ .Title }}</h3>
+                    </a>
+                    <div class="description">{{ .Params.description }}</div>
+                </div>
+                <div class="flex">
+                    <a href="{{ .Params.repo }}" class="button" target="_blank" rel="noreferrer">Source</a>
+                </div>
+            </div>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+</div>
+
+{{ end }}

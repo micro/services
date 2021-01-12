@@ -1,0 +1,50 @@
+{{ define "main" }}
+
+<div class="container">
+    <article>
+        <header class="article-header">
+            <div class="thumb">
+                <div>
+                    <h1>{{ .Title }}</h1>
+                    <div class="post-meta">
+                        <div>
+                            By {{ .Params.author }} on <time>{{ .Date.Format "January 02, 2006" }}</time>
+                        </div>
+                        <div class="tags">
+                            {{ range (.GetTerms "tags") }}
+                            <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                            {{ end }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </article>
+
+    <div class="article-post">
+    {{ .Content }}
+    </div>
+</div>
+
+<div class="container">
+    {{ if .Section }}
+    <nav class="flex container suggested">
+        {{ with .PrevInSection }}
+        <a rel="prev" href="{{ .RelPermalink }}" title="Previous post (older)">
+            <span>Previous</span>
+            {{ .Title }}
+            </a>
+        {{ end }}
+        
+        {{ with .NextInSection }}
+        <a rel="next" href="{{ .RelPermalink }}" title="Next post (newer)">
+            <span>Next</span>
+            {{ .Title }}
+            </a> 
+        {{ end }}
+    </nav>
+    {{ end }}
+</div>
+</main>
+
+{{ end }}
