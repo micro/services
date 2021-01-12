@@ -11,5 +11,8 @@ for d in */; do
     echo "---\ntitle: $servicename\n---\n"../docs/hugo-tania/exampleSite/content/post/$serviceName.md || continue
     cat README.md > ../docs/hugo-tania/exampleSite/content/post/$serviceName.md || continue
 done
+pwd
 cd ../docs/hugo-tania/exampleSite; hugo -D -d=../../
-ls docs
+cd ../../
+pwd
+ls
