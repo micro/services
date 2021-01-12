@@ -52,7 +52,7 @@ jobs:
           go install
 
       - name: Install hugo
-        run: sudo apt-get install hugo
+        run: snap install hugo --channel=extended
 
       - name: Gen one
         working-directory: services
