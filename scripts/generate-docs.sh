@@ -8,13 +8,14 @@ for d in */; do
     serviceName=${d//\//}
     timeout 3s make proto || continue
     echo "Copying html for $serviceName"
-    cp redoc-static.html ../docs/$serviceName-api.html || continue
     contentFolder=../docs/hugo-tania/exampleSite/content/post
-    echo "---\ntitle: $servicename\n---\n" > $contentFolder/$serviceName.md || continue
+    echo "---\ntitle: $servicename\n---\n" > $contentFolder/$serviceName.md
     cat README.md > $contentFolder/$serviceName.md || continue
+    cp redoc-static.html ../docs/$serviceName-api.html || continue
 done
 pwd
 cd ../docs/hugo-tania/exampleSite; hugo -D -d=../../
 cd ../../
 pwd
 ls
+ls articles
