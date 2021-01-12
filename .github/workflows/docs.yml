@@ -2,67 +2,68 @@ name: Generate docs
 on: [push]
 
 jobs:
-
   test:
     name: Integration tests
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go 1.13
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.13
-      id: go
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.13
+        id: go
 
-    - name: Install Protoc
-      uses: arduino/setup-protoc@master
+      - name: Install Protoc
+        uses: arduino/setup-protoc@master
 
-    - name: Check out this code
-      uses: actions/checkout@v2
-      with:
-        path: services
-    
-    - name: Check out micro code
-      uses: actions/checkout@v2
-      with:
-        repository: 'micro/micro'
-        path: 'micro'
-        ref: 'v3.0.4'
+      - name: Check out this code
+        uses: actions/checkout@v2
+        with:
+          path: services
 
-    - name: Enable caching
-      uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+      - name: Check out micro code
+        uses: actions/checkout@v2
+        with:
+          repository: 'micro/micro'
+          path: 'micro'
+          ref: 'v3.0.4'
 
-    - name: Install protoc gen micro plugin
-      working-directory: micro/cmd/protoc-gen-micro
-      run: |
-        go get -u github.com/golang/protobuf/protoc-gen-go
-        go install
+      - name: Enable caching
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
-    - name: Install redoc cli
-      run: |
-        # https://github.com/actions/virtual-environments/issues/599
-        sudo npm install -g redoc-cli
+      - name: Install protoc gen micro plugin
+        working-directory: micro/cmd/protoc-gen-micro
+        run: |
+          go get -u github.com/golang/protobuf/protoc-gen-go
+          go install
 
-    - name: Install openapi plugin
-      working-directory: micro/cmd/protoc-gen-openapi
-      run: |
-        go install
+      - name: Install redoc cli
+        run: |
+          # https://github.com/actions/virtual-environments/issues/599
+          sudo npm install -g redoc-cli
 
-    - name: Gen one
-      working-directory: services
-      continue-on-error: true
-      run: |
-        bash scripts/generate-docs.sh
+      - name: Install openapi plugin
+        working-directory: micro/cmd/protoc-gen-openapi
+        run: |
+          go install
 
-    - name: Deploy
-      uses: s0/git-publish-subdir-action@develop
-      env:
-        REPO: self
-        BRANCH: gh-pages
-        FOLDER: services/docs
-        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-        
+      - name: Install hugo
+        run: sudo apt-get install hugo
+
+      - name: Gen one
+        working-directory: services
+        continue-on-error: true
+        run: |
+          bash scripts/generate-docs.sh
+
+      - name: Deploy
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: gh-pages
+          FOLDER: services/docs
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
