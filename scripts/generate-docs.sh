@@ -8,7 +8,8 @@ for d in */; do
     timeout 3s make proto || continue
     echo "Copying html for $serviceName"
     cp redoc-static.html ../docs/$serviceName-api.html || continue
-    echo "---\ntitle: $servicename\n---\n"../docs/hugo-tania/exampleSite/content/post/$serviceName.md
+    echo "---\ntitle: $servicename\n---\n"../docs/hugo-tania/exampleSite/content/post/$serviceName.md || continue
     cat README.md > ../docs/hugo-tania/exampleSite/content/post/$serviceName.md || continue
 done
+cd ../docs/hugo-tania/exampleSite; hugo -D -p ../../
 ls docs
