@@ -21,4 +21,3 @@ cd ../docs/hugo-tania/exampleSite; hugo -D -d=../../
 cd ../../
 pwd
 ls
-ls articles
