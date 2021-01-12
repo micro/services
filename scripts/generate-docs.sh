@@ -9,8 +9,9 @@ for d in */; do
     timeout 3s make proto || continue
     echo "Copying html for $serviceName"
     cp redoc-static.html ../docs/$serviceName-api.html || continue
-    echo "---\ntitle: $servicename\n---\n"../docs/hugo-tania/exampleSite/content/post/$serviceName.md || continue
-    cat README.md > ../docs/hugo-tania/exampleSite/content/post/$serviceName.md || continue
+    contentFolder=../docs/hugo-tania/exampleSite/content/post
+    echo "---\ntitle: $servicename\n---\n" > $contentFolder/$serviceName.md || continue
+    cat README.md > $contentFolder/$serviceName.md || continue
 done
 pwd
 cd ../docs/hugo-tania/exampleSite; hugo -D -d=../../
