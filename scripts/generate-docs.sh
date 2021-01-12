@@ -4,9 +4,11 @@ for d in */; do
     cd $dir
     echo $d
     cd $d
+    serviceName=${d//\//}
     timeout 3s make proto || continue
-    echo "Copying html for $d"
-    cp redoc-static.html ../docs/${d//\//}-api.html || continue
-    cp README.md ../docs/hugo-tania/exampleSite/content/post/${d//\//}.md || continue
+    echo "Copying html for $serviceName"
+    cp redoc-static.html ../docs/$serviceName-api.html || continue
+    echo "---\ntitle: $servicename\n---\n"../docs/hugo-tania/exampleSite/content/post/$serviceName.md
+    cat README.md > ../docs/hugo-tania/exampleSite/content/post/$serviceName.md || continue
 done
 ls docs
