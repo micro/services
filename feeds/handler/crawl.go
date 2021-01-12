@@ -9,8 +9,8 @@ import (
 
 	"github.com/SlyMarbo/rss"
 	log "github.com/micro/micro/v3/service/logger"
-	feeds "github.com/micro/services/blog/feeds/proto"
-	posts "github.com/micro/services/blog/posts/proto"
+	feeds "github.com/micro/services/feeds/proto"
+	posts "github.com/micro/services/posts/proto"
 )
 
 func (e *Feeds) fetchAll() {

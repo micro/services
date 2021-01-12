@@ -8,7 +8,7 @@ init:
 .PHONY: proto
 proto:
 	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/feeds.proto
-	@redoc-cli bundle api-protobuf.json
+	@redoc-cli bundle api-feeds.json
 
 .PHONY: build
 build:

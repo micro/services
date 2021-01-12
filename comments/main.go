@@ -3,20 +3,17 @@ package main
 import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
-	"github.com/micro/services/blog/posts/handler"
-	tags "github.com/micro/services/blog/tags/proto"
+	"github.com/micro/services/comments/handler"
 )
 
 func main() {
 	// Create the service
 	srv := service.New(
-		service.Name("posts"),
+		service.Name("comments"),
 	)
 
 	// Register Handler
-	srv.Handle(handler.NewPosts(
-		tags.NewTagsService("tags", srv.Client()),
-	))
+	srv.Handle(handler.NewComments())
 
 	// Run service
 	if err := srv.Run(); err != nil {

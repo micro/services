@@ -8,7 +8,7 @@ package blog
 
 import (
 	proto "github.com/golang/protobuf/proto"
-	proto1 "github.com/micro/services/blog/posts/proto"
+	proto1 "github.com/micro/services/posts/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

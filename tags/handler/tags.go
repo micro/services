@@ -11,7 +11,7 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
-	proto "github.com/micro/services/blog/tags/proto"
+	proto "github.com/micro/services/tags/proto"
 )
 
 const (

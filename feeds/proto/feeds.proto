@@ -2,8 +2,7 @@ syntax = "proto3";
 
 package feeds;
 
-option go_package = "proto;feeds";
-option go_package = "github.com/micro/services/blog/feeds/proto;feeds";
+option go_package = "github.com/micro/services/feeds/proto;feeds";
 
 service Feeds {
 	rpc New(NewRequest) returns (NewResponse) {}

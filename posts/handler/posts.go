@@ -11,8 +11,8 @@ import (
 	"github.com/micro/dev/model"
 
 	"github.com/gosimple/slug"
-	proto "github.com/micro/services/blog/posts/proto"
-	tags "github.com/micro/services/blog/tags/proto"
+	proto "github.com/micro/services/posts/proto"
+	tags "github.com/micro/services/tags/proto"
 )
 
 const (

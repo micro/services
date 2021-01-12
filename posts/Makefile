@@ -5,13 +5,13 @@ MODIFY=Mgithub.com/micro/micro/proto/api/api.proto=github.com/micro/micro/v3/pro
 .PHONY: proto
 proto:
     
-	protoc --openapi_out=. --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/comments.proto
-    @redoc-cli bundle api-protobuf.json
+	protoc --openapi_out=. --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/posts.proto
+	@redoc-cli bundle api-posts.json
 
 .PHONY: build
 build: proto
 
-	go build -o comments-service *.go
+	go build -o post-service *.go
 
 .PHONY: test
 test:
@@ -19,4 +19,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t comments-service:latest
+	docker build . -t post-service:latest
