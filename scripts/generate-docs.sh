@@ -1,4 +1,5 @@
 mkdir docs
+echo "services.m3o.com" > docs/CNAME
 dir=$(pwd)
 for d in */; do
     cd $dir
