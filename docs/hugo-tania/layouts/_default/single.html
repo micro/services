@@ -6,6 +6,7 @@
             <div class="thumb">
                 <div>
                     <h1>{{ .Title }}</h1>
+                    <div><a href="/{{ .Title }}-api.html">OpenAPI docs</a></div>
                     <div class="post-meta">
                         <div>
                             By {{ .Params.author }} on <time>{{ .Date.Format "January 02, 2006" }}</time>
