@@ -1,4 +1,6 @@
 mkdir docs
+contentFolder=../docs/hugo-tania/exampleSite/content/post
+mkdir $contentFolder
 echo "services.m3o.com" > docs/CNAME
 dir=$(pwd)
 for d in */; do
@@ -8,7 +10,6 @@ for d in */; do
     serviceName=${d//\//}
     timeout 3s make proto || continue
     echo "Copying html for $serviceName"
-    contentFolder=../docs/hugo-tania/exampleSite/content/post
     echo "---\ntitle: $servicename\n---\n" > $contentFolder/$serviceName.md
     cat README.md > $contentFolder/$serviceName.md || continue
     cp redoc-static.html ../docs/$serviceName-api.html || continue
