@@ -1,1 +1,1 @@
-Here is a example blog.
+Explore reusable real world Micro Services.
