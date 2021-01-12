@@ -12,7 +12,7 @@ for d in */; do
     echo "Copying html for $serviceName"
     pwd
     touch $contentFolder/$serviceName.md
-    echo "---\ntitle: $servicename\n---\n" > $contentFolder/$serviceName.md
+    echo -e "---\ntitle: $serviceName\n---\n" > $contentFolder/$serviceName.md
     cat README.md >> $contentFolder/$serviceName.md || continue
     cp redoc-static.html ../docs/$serviceName-api.html || continue
 done
