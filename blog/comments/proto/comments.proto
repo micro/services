@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package comments;
+option go_package = "github.com/micro/services/blog/comments/proto;comments";
 
 service Comments {
 	rpc New(NewRequest) returns (NewResponse) {}

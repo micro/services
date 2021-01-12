@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package helloworld;
+option go_package = "github.com/micro/services/helloworld/proto;helloworld";
 
 service Helloworld {
 	rpc Call(Request) returns (Response) {}

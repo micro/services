@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package blog;
+option go_package = "github.com/micro/services/blog/proto;blog";
 
 import "github.com/micro/services/blog/posts/proto/posts.proto";
 
