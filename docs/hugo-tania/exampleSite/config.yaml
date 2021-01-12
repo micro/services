@@ -1,0 +1,27 @@
+baseurl: 'https://services.m3o.com'
+languageCode: 'en-us'
+title: 'Micro Services'
+themesDir: '../..'
+theme: 'hugo-tania'
+
+params:
+  titleEmoji: ''
+  socialOptions:
+    github:
+    twitter:
+
+menu:
+  header:
+    - name: Services
+      url: '/services/'
+  footer:
+    - name: RSS
+      url: '/index.xml'
+
+markup:
+  highlight:
+    noClasses: false
+    lineNos: true
+  goldmark:
+    renderer:
+      unsafe: true
