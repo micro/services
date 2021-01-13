@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"context"
+	"os"
 	"sort"
 	"testing"
 	"time"
@@ -40,6 +41,10 @@ func testHandler(t *testing.T) pb.PlacesHandler {
 }
 
 func TestSave(t *testing.T) {
+	if v := os.Getenv("IN_TRAVIS_CI"); v == "yes" {
+		return
+	}
+
 	tt := []struct {
 		Name   string
 		Places []*pb.Location
@@ -111,6 +116,9 @@ func TestSave(t *testing.T) {
 }
 
 func TestLast(t *testing.T) {
+	if v := os.Getenv("IN_TRAVIS_CI"); v == "yes" {
+		return
+	}
 	h := testHandler(t)
 
 	t.Run("MissingIDs", func(t *testing.T) {
@@ -195,6 +203,9 @@ func TestLast(t *testing.T) {
 }
 
 func TestNear(t *testing.T) {
+	if v := os.Getenv("IN_TRAVIS_CI"); v == "yes" {
+		return
+	}
 	lat := &wrapperspb.DoubleValue{Value: 51.510357}
 	lng := &wrapperspb.DoubleValue{Value: -0.116773}
 	rad := &wrapperspb.DoubleValue{Value: 2.0}
@@ -390,6 +401,9 @@ func TestNear(t *testing.T) {
 }
 
 func TestRead(t *testing.T) {
+	if v := os.Getenv("IN_TRAVIS_CI"); v == "yes" {
+		return
+	}
 	h := testHandler(t)
 
 	baseTime := time.Now().Add(time.Hour * -24)
