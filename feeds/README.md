@@ -1,21 +1,28 @@
+Designed to populate the posts service with RSS feeds from other blogs. Useful for migration or just to get outside content into the posts service.
+
 # Feeds Service
 
-This is the Feeds service
+## Creating a feeed
 
-Generated with
+### cURL
 
+```bash
+> curl 'https://api.m3o.com/feeds/New' \
+  -H 'micro-namespace: $yourNamespace' \
+  -H 'authorization: Bearer $yourToken' \
+  -d '{"name":"a16z", "url": "http://a16z.com/feed/"}';
+{}
 ```
-micro new feeds
-```
 
-## Usage
+### CLI
 
-
-```
+```shell
 micro feeds new --name="a16z" --url=http://a16z.com/feed/
 ```
 
-```
+## Querying feeded posts
+
+```shell
 $ micro posts query
 {
 	"posts": [
