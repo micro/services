@@ -25,7 +25,7 @@ jobs:
         with:
           repository: 'micro/micro'
           path: 'micro'
-          ref: 'v3.0.4'
+          ref: 'master'
 
       - name: Enable caching
         uses: actions/cache@v2
