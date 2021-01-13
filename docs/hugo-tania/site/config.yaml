@@ -26,3 +26,6 @@ markup:
   goldmark:
     renderer:
       unsafe: true
+
+permalinks:
+  post: /:filename
