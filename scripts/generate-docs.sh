@@ -13,8 +13,8 @@ for d in */; do
     pwd
     touch $contentFolder/$serviceName.md
     echo -e "---\ntitle: $serviceName\n---\n" > $contentFolder/$serviceName.md
-    cat README.md >> $contentFolder/$serviceName.md || continue
-    cp redoc-static.html ../docs/$serviceName-api.html || continue
+    cat README.md >> $contentFolder/$serviceName.md
+    cp redoc-static.html ../docs/$serviceName-api.html
 done
 pwd
 cd ../docs/hugo-tania/exampleSite; hugo -D -d=../../

@@ -7,12 +7,12 @@ init:
 	go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 .PHONY: proto
 proto:
-	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/twitter.proto
-	@redoc-cli bundle api-protobuf.json
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/chat.proto
+	@redoc-cli bundle api-chat.json
 
 .PHONY: build
 build:
-	go build -o twitter *.go
+	go build -o chat *.go
 
 .PHONY: test
 test:
@@ -20,4 +20,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t twitter:latest
+	docker build . -t chat:latest
