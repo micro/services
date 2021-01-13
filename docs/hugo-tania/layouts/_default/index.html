@@ -41,10 +41,16 @@
         <a href="{{ .RelPermalink }}">
           <div class="post-row">
             <!-- <time>{{ .Date.Format "Jan 02" }}</time> -->
-            <h3>{{ .Title }}</h3>
+            <h3>
+              {{ .Title }}
+            </h3>
           </div>
+
           <!--<div class="new-post">New!</div>-->
         </a>
+        <div style="padding-left: 1em; margin-bottom: 2em;">
+          <span style="color: #444">{{ .Summary }}</span>
+        </div>
       </div>
       {{ end }}
     </div>
