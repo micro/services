@@ -8,7 +8,7 @@ A list of open source services to be created
   - [x] posts
   - [x] comments
   - [x] tags
-  - [ ] feed - rss feed aggregator
+  - [x] feed - rss feed aggregator
 - [ ] inbox - a simple inbox for mail and private messages
   * [x] messages - store the messages for the inbox
   * [ ] notifications - holds updates and alerts

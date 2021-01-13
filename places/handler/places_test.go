@@ -14,14 +14,14 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/micro/services/locations/handler"
-	"github.com/micro/services/locations/model"
-	pb "github.com/micro/services/locations/proto"
+	"github.com/micro/services/places/handler"
+	"github.com/micro/services/places/model"
+	pb "github.com/micro/services/places/proto"
 )
 
-func testHandler(t *testing.T) pb.LocationsHandler {
+func testHandler(t *testing.T) pb.PlacesHandler {
 	// connect to the database
-	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5432/locations?sslmode=disable"), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5432/places?sslmode=disable"), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
 	}
@@ -32,67 +32,67 @@ func testHandler(t *testing.T) pb.LocationsHandler {
 	}
 
 	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE locations CASCADE").Error; err != nil {
+	if err := db.Exec("TRUNCATE TABLE places CASCADE").Error; err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	return &handler.Locations{DB: db, Geoindex: geo.NewPointsIndex(geo.Km(0.1))}
+	return &handler.Places{DB: db, Geoindex: geo.NewPointsIndex(geo.Km(0.1))}
 }
 
 func TestSave(t *testing.T) {
 	tt := []struct {
-		Name      string
-		Locations []*pb.Location
-		Error     error
+		Name   string
+		Places []*pb.Location
+		Error  error
 	}{
 		{
-			Name:  "NoLocations",
-			Error: handler.ErrMissingLocations,
+			Name:  "NoPlaces",
+			Error: handler.ErrMissingPlaces,
 		},
 		{
 			Name: "NoLatitude",
-			Locations: []*pb.Location{
+			Places: []*pb.Location{
 				{
 					Longitude: &wrapperspb.DoubleValue{Value: -0.1246},
-					UserId:    uuid.New().String(),
+					Id:        uuid.New().String(),
 				},
 			},
 			Error: handler.ErrMissingLatitude,
 		},
 		{
 			Name: "NoLongitude",
-			Locations: []*pb.Location{
+			Places: []*pb.Location{
 				{
 					Latitude: &wrapperspb.DoubleValue{Value: -0.1246},
-					UserId:   uuid.New().String(),
+					Id:       uuid.New().String(),
 				},
 			},
 			Error: handler.ErrMissingLongitude,
 		},
 		{
 			Name: "OneLocation",
-			Locations: []*pb.Location{
+			Places: []*pb.Location{
 				{
 					Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
 					Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
 					Timestamp: timestamppb.New(time.Now()),
-					UserId:    uuid.New().String(),
+					Id:        uuid.New().String(),
 				},
 			},
 		},
 		{
-			Name: "ManyLocations",
-			Locations: []*pb.Location{
+			Name: "ManyPlaces",
+			Places: []*pb.Location{
 				{
 					Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
 					Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
 					Timestamp: timestamppb.New(time.Now()),
-					UserId:    uuid.New().String(),
+					Id:        uuid.New().String(),
 				},
 				{
 					Latitude:  &wrapperspb.DoubleValue{Value: 51.003},
 					Longitude: &wrapperspb.DoubleValue{Value: -0.1246},
-					UserId:    uuid.New().String(),
+					Id:        uuid.New().String(),
 				},
 			},
 		},
@@ -103,7 +103,7 @@ func TestSave(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			err := h.Save(context.Background(), &pb.SaveRequest{
-				Locations: tc.Locations,
+				Places: tc.Places,
 			}, &pb.SaveResponse{})
 			assert.Equal(t, tc.Error, err)
 		})
@@ -113,18 +113,18 @@ func TestSave(t *testing.T) {
 func TestLast(t *testing.T) {
 	h := testHandler(t)
 
-	t.Run("MissingUserIDs", func(t *testing.T) {
+	t.Run("MissingIDs", func(t *testing.T) {
 		err := h.Last(context.Background(), &pb.LastRequest{}, &pb.ListResponse{})
-		assert.Equal(t, handler.ErrMissingUserIDs, err)
+		assert.Equal(t, handler.ErrMissingIDs, err)
 	})
 
 	t.Run("NoMatches", func(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Last(context.Background(), &pb.LastRequest{
-			UserIds: []string{uuid.New().String()},
+			Ids: []string{uuid.New().String()},
 		}, &rsp)
 		assert.NoError(t, err)
-		assert.Empty(t, rsp.Locations)
+		assert.Empty(t, rsp.Places)
 	})
 
 	// generate some example data to work with
@@ -132,65 +132,65 @@ func TestLast(t *testing.T) {
 		Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
 		Timestamp: timestamppb.New(time.Now()),
-		UserId:    "a",
+		Id:        "a",
 	}
 	loc2 := &pb.Location{
 		Latitude:  &wrapperspb.DoubleValue{Value: 51.6007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.1546},
 		Timestamp: timestamppb.New(time.Now()),
-		UserId:    "b",
+		Id:        "b",
 	}
 	loc3 := &pb.Location{
 		Latitude:  &wrapperspb.DoubleValue{Value: 52.6007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.2546},
 		Timestamp: timestamppb.New(time.Now()),
-		UserId:    loc2.UserId,
+		Id:        loc2.Id,
 	}
 	err := h.Save(context.TODO(), &pb.SaveRequest{
-		Locations: []*pb.Location{loc1, loc2, loc3},
+		Places: []*pb.Location{loc1, loc2, loc3},
 	}, &pb.SaveResponse{})
 	assert.NoError(t, err)
 
 	t.Run("OneUser", func(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Last(context.Background(), &pb.LastRequest{
-			UserIds: []string{loc2.UserId},
+			Ids: []string{loc2.Id},
 		}, &rsp)
 		assert.NoError(t, err)
 
-		if len(rsp.Locations) != 1 {
+		if len(rsp.Places) != 1 {
 			t.Fatalf("One location should be returned")
 		}
-		assert.Equal(t, loc3.UserId, rsp.Locations[0].UserId)
-		assert.Equal(t, loc3.Latitude.Value, rsp.Locations[0].Latitude.Value)
-		assert.Equal(t, loc3.Longitude.Value, rsp.Locations[0].Longitude.Value)
-		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Locations[0].Timestamp.AsTime())
+		assert.Equal(t, loc3.Id, rsp.Places[0].Id)
+		assert.Equal(t, loc3.Latitude.Value, rsp.Places[0].Latitude.Value)
+		assert.Equal(t, loc3.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
 	})
 	t.Run("ManyUser", func(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Last(context.Background(), &pb.LastRequest{
-			UserIds: []string{loc1.UserId, loc2.UserId},
+			Ids: []string{loc1.Id, loc2.Id},
 		}, &rsp)
 		assert.NoError(t, err)
 
-		if len(rsp.Locations) != 2 {
-			t.Fatalf("Two locations should be returned")
+		if len(rsp.Places) != 2 {
+			t.Fatalf("Two places should be returned")
 		}
 
 		// sort using user_id so we can hardcode the index
-		sort.Slice(rsp.Locations, func(i, j int) bool {
-			return rsp.Locations[i].UserId > rsp.Locations[j].UserId
+		sort.Slice(rsp.Places, func(i, j int) bool {
+			return rsp.Places[i].Id > rsp.Places[j].Id
 		})
 
-		assert.Equal(t, loc1.UserId, rsp.Locations[1].UserId)
-		assert.Equal(t, loc1.Latitude.Value, rsp.Locations[1].Latitude.Value)
-		assert.Equal(t, loc1.Longitude.Value, rsp.Locations[1].Longitude.Value)
-		assert.Equal(t, loc1.Timestamp.AsTime(), rsp.Locations[1].Timestamp.AsTime())
+		assert.Equal(t, loc1.Id, rsp.Places[1].Id)
+		assert.Equal(t, loc1.Latitude.Value, rsp.Places[1].Latitude.Value)
+		assert.Equal(t, loc1.Longitude.Value, rsp.Places[1].Longitude.Value)
+		assert.Equal(t, loc1.Timestamp.AsTime(), rsp.Places[1].Timestamp.AsTime())
 
-		assert.Equal(t, loc3.UserId, rsp.Locations[0].UserId)
-		assert.Equal(t, loc3.Latitude.Value, rsp.Locations[0].Latitude.Value)
-		assert.Equal(t, loc3.Longitude.Value, rsp.Locations[0].Longitude.Value)
-		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Locations[0].Timestamp.AsTime())
+		assert.Equal(t, loc3.Id, rsp.Places[0].Id)
+		assert.Equal(t, loc3.Latitude.Value, rsp.Places[0].Latitude.Value)
+		assert.Equal(t, loc3.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
 	})
 }
 
@@ -207,7 +207,7 @@ func TestNear(t *testing.T) {
 
 	tt := []struct {
 		Name           string
-		Locations      []*pb.Location
+		Places         []*pb.Location
 		Results        []*pb.Location
 		QueryLatitude  *wrapperspb.DoubleValue
 		QueryLongitude *wrapperspb.DoubleValue
@@ -233,7 +233,7 @@ func TestNear(t *testing.T) {
 			Error:          handler.ErrMissingRadius,
 		},
 		{
-			Name:           "NoLocations",
+			Name:           "NoPlaces",
 			QueryLatitude:  lat,
 			QueryLongitude: lng,
 			QueryRadius:    rad,
@@ -243,23 +243,23 @@ func TestNear(t *testing.T) {
 			QueryLatitude:  lat,
 			QueryLongitude: lng,
 			QueryRadius:    rad,
-			Locations: []*pb.Location{
+			Places: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "in",
+					Id:        "in",
 				},
 				&pb.Location{
 					Latitude:  outOfBoundsLat,
 					Longitude: outOfBoundsLng,
-					UserId:    "out",
+					Id:        "out",
 				},
 			},
 			Results: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "in",
+					Id:        "in",
 				},
 			},
 		},
@@ -268,51 +268,51 @@ func TestNear(t *testing.T) {
 			QueryLatitude:  lat,
 			QueryLongitude: lng,
 			QueryRadius:    &wrapperspb.DoubleValue{Value: 0.01},
-			Locations: []*pb.Location{
+			Places: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "in",
+					Id:        "in",
 				},
 				&pb.Location{
 					Latitude:  outOfBoundsLat,
 					Longitude: outOfBoundsLng,
-					UserId:    "out",
+					Id:        "out",
 				},
 			},
 		},
 		{
-			Name:           "TwoLocationsForUser",
+			Name:           "TwoPlacesForUser",
 			QueryLatitude:  lat,
 			QueryLongitude: lng,
 			QueryRadius:    rad,
-			Locations: []*pb.Location{
+			Places: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "in",
+					Id:        "in",
 				},
 				&pb.Location{
 					Latitude:  outOfBoundsLat,
 					Longitude: outOfBoundsLng,
-					UserId:    "out",
+					Id:        "out",
 				},
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "out",
+					Id:        "out",
 				},
 			},
 			Results: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "in",
+					Id:        "in",
 				},
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "out",
+					Id:        "out",
 				},
 			},
 		},
@@ -321,28 +321,28 @@ func TestNear(t *testing.T) {
 			QueryLatitude:  lat,
 			QueryLongitude: lng,
 			QueryRadius:    &wrapperspb.DoubleValue{Value: 20},
-			Locations: []*pb.Location{
+			Places: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "in",
+					Id:        "in",
 				},
 				&pb.Location{
 					Latitude:  outOfBoundsLat,
 					Longitude: outOfBoundsLng,
-					UserId:    "out",
+					Id:        "out",
 				},
 			},
 			Results: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
 					Longitude: inBoundsLng,
-					UserId:    "in",
+					Id:        "in",
 				},
 				&pb.Location{
 					Latitude:  outOfBoundsLat,
 					Longitude: outOfBoundsLng,
-					UserId:    "out",
+					Id:        "out",
 				},
 			},
 		},
@@ -352,13 +352,13 @@ func TestNear(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			h := testHandler(t)
 
-			// create the locations
-			if len(tc.Locations) > 0 {
-				err := h.Save(context.TODO(), &pb.SaveRequest{Locations: tc.Locations}, &pb.SaveResponse{})
+			// create the places
+			if len(tc.Places) > 0 {
+				err := h.Save(context.TODO(), &pb.SaveRequest{Places: tc.Places}, &pb.SaveResponse{})
 				assert.NoError(t, err)
 			}
 
-			// find near locations
+			// find near places
 			var rsp pb.ListResponse
 			err := h.Near(context.TODO(), &pb.NearRequest{
 				Latitude:  tc.QueryLatitude,
@@ -368,20 +368,20 @@ func TestNear(t *testing.T) {
 			assert.Equal(t, tc.Error, err)
 
 			// check the count of the results matches
-			if len(tc.Results) != len(rsp.Locations) {
-				t.Errorf("Incorrect number of results returned. Expected %v, got %v", len(tc.Results), len(rsp.Locations))
+			if len(tc.Results) != len(rsp.Places) {
+				t.Errorf("Incorrect number of results returned. Expected %v, got %v", len(tc.Results), len(rsp.Places))
 			}
 
 			// validate the results match
-			sort.Slice(rsp.Locations, func(i, j int) bool {
-				return rsp.Locations[i].UserId > rsp.Locations[j].UserId
+			sort.Slice(rsp.Places, func(i, j int) bool {
+				return rsp.Places[i].Id > rsp.Places[j].Id
 			})
 			sort.Slice(tc.Results, func(i, j int) bool {
-				return tc.Results[i].UserId > tc.Results[j].UserId
+				return tc.Results[i].Id > tc.Results[j].Id
 			})
 			for i, r := range tc.Results {
-				l := rsp.Locations[i]
-				assert.Equal(t, r.UserId, l.UserId)
+				l := rsp.Places[i]
+				assert.Equal(t, r.Id, l.Id)
 				assert.Equal(t, r.Latitude.Value, l.Latitude.Value)
 				assert.Equal(t, r.Longitude.Value, l.Longitude.Value)
 			}
@@ -394,26 +394,26 @@ func TestRead(t *testing.T) {
 
 	baseTime := time.Now().Add(time.Hour * -24)
 
-	t.Run("MissingUserIDs", func(t *testing.T) {
+	t.Run("MissingIDs", func(t *testing.T) {
 		err := h.Read(context.Background(), &pb.ReadRequest{
 			After:  timestamppb.New(baseTime),
 			Before: timestamppb.New(baseTime),
 		}, &pb.ListResponse{})
-		assert.Equal(t, handler.ErrMissingUserIDs, err)
+		assert.Equal(t, handler.ErrMissingIDs, err)
 	})
 
 	t.Run("MissingAfter", func(t *testing.T) {
 		err := h.Read(context.Background(), &pb.ReadRequest{
-			UserIds: []string{uuid.New().String()},
-			Before:  timestamppb.New(baseTime),
+			Ids:    []string{uuid.New().String()},
+			Before: timestamppb.New(baseTime),
 		}, &pb.ListResponse{})
 		assert.Equal(t, handler.ErrMissingAfter, err)
 	})
 
 	t.Run("MissingBefore", func(t *testing.T) {
 		err := h.Read(context.Background(), &pb.ReadRequest{
-			UserIds: []string{uuid.New().String()},
-			After:   timestamppb.New(baseTime),
+			Ids:   []string{uuid.New().String()},
+			After: timestamppb.New(baseTime),
 		}, &pb.ListResponse{})
 		assert.Equal(t, handler.ErrMissingBefore, err)
 	})
@@ -423,97 +423,97 @@ func TestRead(t *testing.T) {
 		Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
 		Timestamp: timestamppb.New(baseTime.Add(time.Minute * 10)),
-		UserId:    "a",
+		Id:        "a",
 	}
 	loc2 := &pb.Location{
 		Latitude:  &wrapperspb.DoubleValue{Value: 51.6007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.1546},
 		Timestamp: timestamppb.New(baseTime.Add(time.Minute * 20)),
-		UserId:    "b",
+		Id:        "b",
 	}
 	loc3 := &pb.Location{
 		Latitude:  &wrapperspb.DoubleValue{Value: 52.6007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.2546},
 		Timestamp: timestamppb.New(baseTime.Add(time.Minute * 40)),
-		UserId:    loc2.UserId,
+		Id:        loc2.Id,
 	}
 	err := h.Save(context.TODO(), &pb.SaveRequest{
-		Locations: []*pb.Location{loc1, loc2, loc3},
+		Places: []*pb.Location{loc1, loc2, loc3},
 	}, &pb.SaveResponse{})
 	assert.NoError(t, err)
 
 	t.Run("NoMatches", func(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Read(context.Background(), &pb.ReadRequest{
-			UserIds: []string{uuid.New().String()},
-			After:   timestamppb.New(baseTime),
-			Before:  timestamppb.New(baseTime.Add(time.Hour)),
+			Ids:    []string{uuid.New().String()},
+			After:  timestamppb.New(baseTime),
+			Before: timestamppb.New(baseTime.Add(time.Hour)),
 		}, &rsp)
 		assert.NoError(t, err)
-		assert.Empty(t, rsp.Locations)
+		assert.Empty(t, rsp.Places)
 	})
 
-	t.Run("OneUserID", func(t *testing.T) {
+	t.Run("OnePlaceID", func(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Read(context.Background(), &pb.ReadRequest{
-			UserIds: []string{loc2.UserId},
-			After:   timestamppb.New(baseTime),
-			Before:  timestamppb.New(baseTime.Add(time.Hour)),
+			Ids:    []string{loc2.Id},
+			After:  timestamppb.New(baseTime),
+			Before: timestamppb.New(baseTime.Add(time.Hour)),
 		}, &rsp)
 		assert.NoError(t, err)
 
-		if len(rsp.Locations) != 2 {
-			t.Fatalf("Two locations should be returned")
+		if len(rsp.Places) != 2 {
+			t.Fatalf("Two places should be returned")
 		}
-		assert.Equal(t, loc2.UserId, rsp.Locations[0].UserId)
-		assert.Equal(t, loc2.Latitude.Value, rsp.Locations[0].Latitude.Value)
-		assert.Equal(t, loc2.Longitude.Value, rsp.Locations[0].Longitude.Value)
-		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Locations[0].Timestamp.AsTime())
+		assert.Equal(t, loc2.Id, rsp.Places[0].Id)
+		assert.Equal(t, loc2.Latitude.Value, rsp.Places[0].Latitude.Value)
+		assert.Equal(t, loc2.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
 
-		assert.Equal(t, loc3.UserId, rsp.Locations[1].UserId)
-		assert.Equal(t, loc3.Latitude.Value, rsp.Locations[1].Latitude.Value)
-		assert.Equal(t, loc3.Longitude.Value, rsp.Locations[1].Longitude.Value)
-		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Locations[1].Timestamp.AsTime())
+		assert.Equal(t, loc3.Id, rsp.Places[1].Id)
+		assert.Equal(t, loc3.Latitude.Value, rsp.Places[1].Latitude.Value)
+		assert.Equal(t, loc3.Longitude.Value, rsp.Places[1].Longitude.Value)
+		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Places[1].Timestamp.AsTime())
 	})
 
-	t.Run("OneUserIDReducedTime", func(t *testing.T) {
+	t.Run("OnePlaceIDReducedTime", func(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Read(context.Background(), &pb.ReadRequest{
-			UserIds: []string{loc2.UserId},
-			After:   timestamppb.New(baseTime),
-			Before:  timestamppb.New(baseTime.Add(time.Minute * 30)),
+			Ids:    []string{loc2.Id},
+			After:  timestamppb.New(baseTime),
+			Before: timestamppb.New(baseTime.Add(time.Minute * 30)),
 		}, &rsp)
 		assert.NoError(t, err)
 
-		if len(rsp.Locations) != 1 {
+		if len(rsp.Places) != 1 {
 			t.Fatalf("One location should be returned")
 		}
-		assert.Equal(t, loc2.UserId, rsp.Locations[0].UserId)
-		assert.Equal(t, loc2.Latitude.Value, rsp.Locations[0].Latitude.Value)
-		assert.Equal(t, loc2.Longitude.Value, rsp.Locations[0].Longitude.Value)
-		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Locations[0].Timestamp.AsTime())
+		assert.Equal(t, loc2.Id, rsp.Places[0].Id)
+		assert.Equal(t, loc2.Latitude.Value, rsp.Places[0].Latitude.Value)
+		assert.Equal(t, loc2.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
 	})
 
-	t.Run("TwoUserIDs", func(t *testing.T) {
+	t.Run("TwoPlaceIDs", func(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Read(context.Background(), &pb.ReadRequest{
-			UserIds: []string{loc1.UserId, loc2.UserId},
-			After:   timestamppb.New(baseTime),
-			Before:  timestamppb.New(baseTime.Add(time.Minute * 30)),
+			Ids:    []string{loc1.Id, loc2.Id},
+			After:  timestamppb.New(baseTime),
+			Before: timestamppb.New(baseTime.Add(time.Minute * 30)),
 		}, &rsp)
 		assert.NoError(t, err)
 
-		if len(rsp.Locations) != 2 {
-			t.Fatalf("Two locations should be returned")
+		if len(rsp.Places) != 2 {
+			t.Fatalf("Two places should be returned")
 		}
-		assert.Equal(t, loc1.UserId, rsp.Locations[0].UserId)
-		assert.Equal(t, loc1.Latitude.Value, rsp.Locations[0].Latitude.Value)
-		assert.Equal(t, loc1.Longitude.Value, rsp.Locations[0].Longitude.Value)
-		assert.Equal(t, loc1.Timestamp.AsTime(), rsp.Locations[0].Timestamp.AsTime())
+		assert.Equal(t, loc1.Id, rsp.Places[0].Id)
+		assert.Equal(t, loc1.Latitude.Value, rsp.Places[0].Latitude.Value)
+		assert.Equal(t, loc1.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc1.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
 
-		assert.Equal(t, loc2.UserId, rsp.Locations[1].UserId)
-		assert.Equal(t, loc2.Latitude.Value, rsp.Locations[1].Latitude.Value)
-		assert.Equal(t, loc2.Longitude.Value, rsp.Locations[1].Longitude.Value)
-		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Locations[1].Timestamp.AsTime())
+		assert.Equal(t, loc2.Id, rsp.Places[1].Id)
+		assert.Equal(t, loc2.Latitude.Value, rsp.Places[1].Latitude.Value)
+		assert.Equal(t, loc2.Longitude.Value, rsp.Places[1].Longitude.Value)
+		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Places[1].Timestamp.AsTime())
 	})
 }
