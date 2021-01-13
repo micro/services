@@ -27,7 +27,7 @@
 
 {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
 {{ $projects := where .Site.RegularPages "Section" "projects" }}
-{{ $pages = first (default 6 .Site.Params.homePosts) (sort (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) "Date" "desc") }}
+{{ $pages = first (default 20 .Site.Params.homePosts) (sort (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) "Date" "desc") }}
 
 <div class="container">
   <section>
@@ -40,7 +40,7 @@
       <div class="post">
         <a href="{{ .RelPermalink }}">
           <div class="post-row">
-            <time>{{ .Date.Format "Jan 02" }}</time>
+            <!-- <time>{{ .Date.Format "Jan 02" }}</time> -->
             <h3>{{ .Title }}</h3>
           </div>
           <!--<div class="new-post">New!</div>-->
