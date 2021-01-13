@@ -13,8 +13,8 @@ params:
 
 menu:
   header:
-    - name: Services
-      url: '/services/'
+    - name: Explore
+      url: '/explore/'
   footer:
     - name: '© 2020 Micro Services, Inc.'
       url: 'https://m3o.com'
