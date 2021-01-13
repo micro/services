@@ -1,1 +1,1 @@
-Explore reusable real world Micro Services.
+Explore, discover and use Micro Services.
