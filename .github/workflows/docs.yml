@@ -56,7 +56,6 @@ jobs:
 
       - name: Generate openapi spec and html
         working-directory: services
-        continue-on-error: true
         run: |
           bash scripts/generate-docs.sh
 
