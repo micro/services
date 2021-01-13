@@ -5,6 +5,8 @@ themesDir: '../..'
 theme: 'hugo-tania'
 summaryLength: 10
 
+source: "https://github.com/micro/services"
+
 params:
   titleEmoji: ''
   socialOptions:
