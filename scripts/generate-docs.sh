@@ -17,7 +17,8 @@ for d in */; do
     touch $contentFolder/$serviceName.md
     echo -e "---\ntitle: $serviceName\n---\n" > $contentFolder/$serviceName.md
     cat README.md >> $contentFolder/$serviceName.md
-    cp redoc-static.html ../docs/$serviceName-api.html
+    mkdir -p ../docs/$serviceName/api
+    cp redoc-static.html ../docs/$serviceName/api/index.html
 done
 pwd
 cd ../docs/hugo-tania/exampleSite; hugo -D -d=../../
