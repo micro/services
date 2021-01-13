@@ -1,6 +1,6 @@
-# Users Service
-
 A user service for storing accounts and simple auth.
+
+# Users Service
 
 ## Getting started
 
