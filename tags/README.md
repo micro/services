@@ -1,6 +1,6 @@
-# Tag Service
+Tag any resource by savin a tag associated with their ID in the tag service.
 
-This is the Tag service
+# Tag Service
 
 ## Query tags
 
@@ -16,9 +16,12 @@ micro new --namespace=go.micro --type=service tag
 
 ## Getting Started
 
-- [Configuration](#configuration)
-- [Dependencies](#dependencies)
-- [Usage](#usage)
+- [Tag Service](#tag-service)
+  - [Query tags](#query-tags)
+  - [Getting Started](#getting-started)
+  - [Configuration](#configuration)
+  - [Dependencies](#dependencies)
+  - [Usage](#usage)
 
 ## Configuration
 
