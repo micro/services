@@ -1,19 +1,19 @@
-# Locations Service
+# Places Service
 
-This is the Locations service
+The places service stores places of interest by geolocation
 
 Generated with
 
 ```
-micro new locations
+micro new places
 ```
 
 ## Usage
 
-Locations makes use of postgres. Set the config for the database
+Places makes use of postgres. Set the config for the database
 
 ```
-micro user config set locations.database "postgresql://postgres@localhost:5432/locations?sslmode=disable"
+micro user config set places.database "postgresql://postgres@localhost:5432/locations?sslmode=disable"
 ```
 
 Run the service
