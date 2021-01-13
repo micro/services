@@ -2,8 +2,8 @@ name: Generate docs
 on: [push]
 
 jobs:
-  test:
-    name: Integration tests
+  docs:
+    name: Generate docs
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.13
@@ -54,7 +54,7 @@ jobs:
       - name: Install hugo
         run: sudo snap install hugo --channel=extended
 
-      - name: Gen one
+      - name: Generate openapi spec and html
         working-directory: services
         continue-on-error: true
         run: |

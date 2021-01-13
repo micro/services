@@ -1,41 +1,42 @@
 syntax = "proto3";
 
-package locations;
-option go_package = "github.com/micro/services/locations/proto;locations";
+package places;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
-service Locations {
-	// Save a set of locations
+service Places {
+	// Save a set of places
 	rpc Save(SaveRequest) returns (SaveResponse) {}
-	// Last locations for a set of users
+	// Last places for a set of users
 	rpc Last(LastRequest) returns (ListResponse) {}
-	// Near returns the locations near a point at a given time
+	// Near returns the places near a point at a given time
 	rpc Near(NearRequest) returns (ListResponse) {}	
-	// Read locations for a group of users between two points in time
+	// Read places for a group of users between two points in time
 	rpc Read(ReadRequest) returns (ListResponse) {}
 }
 
 message Location {
-	string user_id = 1;
-	google.protobuf.Timestamp timestamp = 2;
-	google.protobuf.DoubleValue latitude = 3;
-	google.protobuf.DoubleValue longitude = 4;
+	string id = 1;
+	string name = 2;
+	map<string,string> metadata = 3;
+	google.protobuf.Timestamp timestamp = 4;
+	google.protobuf.DoubleValue latitude = 5;
+	google.protobuf.DoubleValue longitude = 6;
 }
 
 message SaveRequest {
-	repeated Location locations = 1;
+	repeated Location places = 1;
 }
 
 message SaveResponse {}
 
 message LastRequest {
-	repeated string user_ids = 1;
+	repeated string ids = 1;
 }
 
 message ListResponse {
-	repeated Location locations = 1;
+	repeated Location places = 1;
 }
 
 message NearRequest {
@@ -46,7 +47,7 @@ message NearRequest {
 }
 
 message ReadRequest {
-	repeated string user_ids = 1;
+	repeated string ids = 1;
 	google.protobuf.Timestamp after = 2;
 	google.protobuf.Timestamp before = 3;
 }
