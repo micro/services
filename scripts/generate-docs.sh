@@ -1,5 +1,5 @@
 mkdir docs
-mkdir ./docs/hugo-tania/exampleSite/content/post
+mkdir ./docs/hugo-tania/site/content/post
 echo "services.m3o.com" > docs/CNAME
 dir=$(pwd)
 for d in */; do
@@ -10,7 +10,7 @@ for d in */; do
         continue
     fi
     serviceName=${d//\//}
-    contentFolder=../docs/hugo-tania/exampleSite/content/post
+    contentFolder=../docs/hugo-tania/site/content/post
     timeout 3s make proto || continue
     echo "Copying html for $serviceName"
     pwd
@@ -21,7 +21,7 @@ for d in */; do
     cp redoc-static.html ../docs/$serviceName/api/index.html
 done
 pwd
-cd ../docs/hugo-tania/exampleSite; hugo -D -d=../../
+cd ../docs/hugo-tania/site; hugo -D -d=../../
 cd ../../
 pwd
 ls
