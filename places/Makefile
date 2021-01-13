@@ -7,11 +7,11 @@ init:
 
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/locations.proto
+	protoc --proto_path=. --micro_out=. --go_out=:. proto/places.proto
 	
 .PHONY: build
 build:
-	go build -o locations *.go
+	go build -o places *.go
 
 .PHONY: test
 test:

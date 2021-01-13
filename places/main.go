@@ -5,26 +5,26 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/micro/services/locations/handler"
-	"github.com/micro/services/locations/model"
-	pb "github.com/micro/services/locations/proto"
+	"github.com/micro/services/places/handler"
+	"github.com/micro/services/places/model"
+	pb "github.com/micro/services/places/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
 )
 
-var dbAddress = "postgresql://postgres@localhost:5432/locations?sslmode=disable"
+var dbAddress = "postgresql://postgres@localhost:5432/places?sslmode=disable"
 
 func main() {
 	// Create service
 	srv := service.New(
-		service.Name("locations"),
+		service.Name("places"),
 		service.Version("latest"),
 	)
 
 	// Connect to the database
-	cfg, err := config.Get("locations.database")
+	cfg, err := config.Get("places.database")
 	if err != nil {
 		logger.Fatalf("Error loading config: %v", err)
 	}
@@ -40,7 +40,7 @@ func main() {
 	}
 
 	// Register handler
-	pb.RegisterLocationsHandler(srv.Server(), &handler.Locations{
+	pb.RegisterPlacesHandler(srv.Server(), &handler.Places{
 		DB: db, Geoindex: geo.NewPointsIndex(geo.Km(0.1)),
 	})
 
