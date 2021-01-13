@@ -32,7 +32,7 @@ In your site's root dir
 git submodule add https://github.com/WingLim/hugo-tania themes/hugo-tania
 ```
 
-Edit your site config following `exampleSite/config.yaml`.
+Edit your site config following `site/config.yaml`.
 
 ### Params
 
