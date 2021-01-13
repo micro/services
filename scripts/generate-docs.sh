@@ -10,7 +10,7 @@ for d in */; do
         continue
     fi
     serviceName=${d//\//}
-    contentFolder=../docs/hugo-tania/exampleSite/content
+    contentFolder=../docs/hugo-tania/exampleSite/content/post
     timeout 3s make proto || continue
     echo "Copying html for $serviceName"
     pwd
