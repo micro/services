@@ -16,7 +16,7 @@ menu:
     - name: Services
       url: '/services/'
   footer:
-    - name: &copy; 2020 Micro Services, Inc.
+    - name: '© 2020 Micro Services, Inc.'
       url: 'https://m3o.com'
 
 markup:
