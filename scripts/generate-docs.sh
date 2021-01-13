@@ -6,6 +6,9 @@ for d in */; do
     cd $dir
     echo $d
     cd $d
+    if test -f "./skip"; then
+        continue
+    fi
     serviceName=${d//\//}
     contentFolder=../docs/hugo-tania/exampleSite/content/post
     timeout 3s make proto || continue
