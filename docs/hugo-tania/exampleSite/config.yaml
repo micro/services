@@ -16,8 +16,8 @@ menu:
     - name: Services
       url: '/services/'
   footer:
-    - name: RSS
-      url: '/index.xml'
+    - name: &copy; 2020 Micro Services, Inc.
+      url: 'https://m3o.com'
 
 markup:
   highlight:
