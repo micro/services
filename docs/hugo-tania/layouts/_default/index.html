@@ -32,26 +32,30 @@
 <div class="container">
   <section>
     <div class="posts">
-      {{ range $pages }}
+      {{ range $i,$e := $pages }}
+
+      {{if modBool $i 2}}
       <div class="container">
-        {{ if .Section }}
         <nav class="flex container suggested">
-          {{ with.PrevInSection }}
-          <a rel="prev" href="{{ .RelPermalink }}" title="{{ .Title }}">
-            <span style="font-size: 1.5em; font-weight: bold;">{{ .Title }}</span>
-            <span style="color: #777">{{ .Summary }}</span>
+          <a rel="prev" href="{{ .RelPermalink }}" title="{{ $e.Title }}">
+            <span style="font-size: 1.5em; font-weight: bold;">
+              {{ $e.Title }}</span
+            >
+            <span style="color: #777">{{ $e.Summary }}</span>
           </a>
           {{ end }}
 
-          {{ with.NextInSection }}
-          <a rel="next" href="{{ .RelPermalink }}" title="{{ .Title }}">
-            <span style="font-size: 1.5em; font-weight: bold;">{{ .Title }}</span>
-            <span style="color: #777">{{ .Summary }}</span>
+          {{if not (modBool $i 2)}}
+
+          <a rel="next" href="{{ .RelPermalink }}" title="{{ $e.Title }}">
+            <span style="font-size: 1.5em; font-weight: bold;">
+              {{ $e.Title }}</span
+            >
+            <span style="color: #777">{{ $e.Summary }}</span>
           </a>
-          {{ end }}
         </nav>
-        {{ end }}
       </div>
+      {{ end }}
 
       {{ end }}
     </div>
