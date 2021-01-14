@@ -18,12 +18,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	workDir, _ := os.Getwd()
 
-	docPath := filepath.Join(os.Args[1], "docs")
+	docPath := filepath.Join(workDir, "docs")
 
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
-			serviceDir := filepath.Join(os.Args[1], f.Name())
+			serviceDir := filepath.Join(workDir, f.Name())
 			serviceFiles, err := ioutil.ReadDir(serviceDir)
 			if err != nil {
 				fmt.Println("Failed to read service dir", err)
@@ -42,13 +43,12 @@ func main() {
 			fmt.Println("Processing folder", serviceDir)
 			makeProto := exec.Command("make", "proto")
 			makeProto.Dir = serviceDir
-
+			fmt.Println(serviceDir)
 			outp, err := makeProto.CombinedOutput()
 			if err != nil {
 				fmt.Println("Failed to make proto", string(outp))
 				os.Exit(1)
 			}
-
 			serviceName := f.Name()
 			dat, err := ioutil.ReadFile(filepath.Join(serviceDir, "README.md"))
 			if err != nil {
@@ -56,9 +56,17 @@ func main() {
 				os.Exit(1)
 			}
 
-			err = ioutil.WriteFile(filepath.Join(postContentPath, serviceName+".md"), append([]byte("---\ntitle: $serviceName\n---\n"), dat...), 0777)
+			contentDir := filepath.Join(workDir, postContentPath)
+			err = os.MkdirAll(contentDir, 0777)
 			if err != nil {
-				fmt.Println("Failed to write post content", string(outp))
+				fmt.Println("Failed to create content dir", string(outp))
+				os.Exit(1)
+			}
+
+			contentFile := filepath.Join(workDir, postContentPath, serviceName+".md")
+			err = ioutil.WriteFile(contentFile, append([]byte("---\ntitle: $serviceName\n---\n"), dat...), 0777)
+			if err != nil {
+				fmt.Printf("Failed to write post content to %v:\n%v\n", contentFile, string(outp))
 				os.Exit(1)
 			}
 
