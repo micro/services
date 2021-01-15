@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service/model"
-	"github.com/micro/micro/v3/service/store/file"
+	"github.com/micro/micro/v3/service/store"
 )
 
 // Seen is the object which represents a user seeing a resource
@@ -26,8 +26,8 @@ var (
 	resourceTypeIndex = model.ByEquality("ResourceType")
 )
 
-func New() *Domain {
-	db := model.New(file.NewStore(), Seen{}, []model.Index{
+func New(store store.Store) *Domain {
+	db := model.New(store, Seen{}, []model.Index{
 		userIDIndex, resourceIDIndex, resourceTypeIndex,
 	}, &model.ModelOptions{})
 
@@ -55,7 +55,7 @@ func (d *Domain) Delete(s Seen) error {
 			continue
 		}
 
-		q := model.Equals("ID", s.ID)
+		q := model.Equals("ID", a.ID)
 		q.Order.Type = model.OrderTypeUnordered
 		if err := d.db.Delete(q); err != nil {
 			return err

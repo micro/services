@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/store/memory"
 	"github.com/micro/services/seen/domain"
 	"github.com/micro/services/seen/handler"
 	pb "github.com/micro/services/seen/proto"
@@ -16,7 +17,7 @@ import (
 
 func newHandler() *handler.Seen {
 	return &handler.Seen{
-		Domain: domain.New(),
+		Domain: domain.New(memory.NewStore()),
 	}
 }
 
