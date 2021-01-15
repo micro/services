@@ -7,7 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/micro/services/seen/domain"
 
-	"github.com/micro/go-micro/errors"
+	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/seen/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -51,6 +52,7 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 		Timestamp:    req.Timestamp.AsTime(),
 	})
 	if err != nil {
+		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
 
@@ -72,12 +74,13 @@ func (s *Seen) Unset(ctx context.Context, req *pb.UnsetRequest, rsp *pb.UnsetRes
 	}
 
 	// delete the object from the store
-	err := s.Domain.Create(domain.Seen{
+	err := s.Domain.Delete(domain.Seen{
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
 	})
 	if err != nil {
+		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
 
@@ -102,6 +105,7 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 	// query the store
 	data, err := s.Domain.Read(req.UserId, req.ResourceType, req.ResourceIds)
 	if err != nil {
+		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
 
