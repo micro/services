@@ -20,7 +20,9 @@ var (
 	ErrStore               = errors.InternalServerError("STORE_ERROR", "Error connecting to the store")
 )
 
-type Seen struct{}
+type Seen struct {
+	Domain *domain.Domain
+}
 
 // Set a resource as seen by a user. If no timestamp is provided, the current time is used.
 func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse) error {
@@ -41,7 +43,7 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 	}
 
 	// write the object to the store
-	err := domain.Create(&domain.Seen{
+	err := s.Domain.Create(domain.Seen{
 		ID:           uuid.New().String(),
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
@@ -70,7 +72,7 @@ func (s *Seen) Unset(ctx context.Context, req *pb.UnsetRequest, rsp *pb.UnsetRes
 	}
 
 	// delete the object from the store
-	err := domain.Create(&domain.Seen{
+	err := s.Domain.Create(domain.Seen{
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
@@ -98,7 +100,7 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 	}
 
 	// query the store
-	data, err := domain.Read(req.UserId, req.ResourceType, req.ResourceIds)
+	data, err := s.Domain.Read(req.UserId, req.ResourceType, req.ResourceIds)
 	if err != nil {
 		return ErrStore
 	}

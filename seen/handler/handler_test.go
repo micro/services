@@ -8,10 +8,17 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/google/uuid"
+	"github.com/micro/services/seen/domain"
 	"github.com/micro/services/seen/handler"
 	pb "github.com/micro/services/seen/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func newHandler() *handler.Seen {
+	return &handler.Seen{
+		Domain: domain.New(),
+	}
+}
 
 func TestSet(t *testing.T) {
 	tt := []struct {
@@ -55,7 +62,7 @@ func TestSet(t *testing.T) {
 		},
 	}
 
-	h := new(handler.Seen)
+	h := newHandler()
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			err := h.Set(context.TODO(), &pb.SetRequest{
@@ -71,7 +78,7 @@ func TestSet(t *testing.T) {
 }
 func TestUnset(t *testing.T) {
 	// seed some test data
-	h := new(handler.Seen)
+	h := newHandler()
 	seed := &pb.SetRequest{
 		UserId:       uuid.New().String(),
 		ResourceId:   uuid.New().String(),
@@ -134,7 +141,7 @@ func TestUnset(t *testing.T) {
 
 func TestRead(t *testing.T) {
 	tn := time.Now()
-	h := new(handler.Seen)
+	h := newHandler()
 
 	// seed some test data
 	td := []struct {
