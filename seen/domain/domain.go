@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	model "github.com/micro/dev/model"
+	"github.com/micro/micro/v3/service/model"
 	"github.com/micro/micro/v3/service/store/file"
 )
 
@@ -34,7 +34,7 @@ func New() *Domain {
 
 // Create a seen object in the store
 func (d *Domain) Create(s Seen) error {
-	return d.db.Save(s)
+	return d.db.Create(s)
 }
 
 // Delete a seen object from the store
