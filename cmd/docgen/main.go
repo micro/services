@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -9,6 +10,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/getkin/kin-openapi/openapi3"
 )
 
 const postContentPath = "docs/hugo-tania/site/content/post"
@@ -70,6 +73,28 @@ func main() {
 				os.Exit(1)
 			}
 
+			apiJSON := filepath.Join(serviceDir, "api-"+serviceName+".json")
+			js, err := ioutil.ReadFile(apiJSON)
+			if err != nil {
+				apiJSON := filepath.Join(serviceDir, "api-protobuf.json")
+				js, err = ioutil.ReadFile(apiJSON)
+				if err != nil {
+					fmt.Println("Failed to read json spec", err)
+					os.Exit(1)
+				}
+			}
+			spec := &openapi3.Swagger{}
+			err = json.Unmarshal(js, &spec)
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			err = saveSpec(contentFile, spec)
+			if err != nil {
+				fmt.Println("Failed to save to spec file", err)
+				os.Exit(1)
+			}
+
 			openAPIDir := filepath.Join(docPath, serviceName, "api")
 			err = os.MkdirAll(openAPIDir, 0777)
 			if err != nil {
@@ -93,6 +118,14 @@ func main() {
 		}
 	}
 }
+
+func saveSpec(filepath string, spec *openapi3.Swagger) error {
+
+}
+
+const template = `
+
+`
 
 // CopyFile copies a file from src to dst. If src and dst files exist, and are
 // the same, then return success. Otherise, attempt to create a hard link
