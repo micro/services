@@ -57,7 +57,7 @@ jobs:
       - name: Generate openapi spec and html
         working-directory: services
         run: |
-          bash scripts/generate-docs.sh
+          go run cmd/docgen/main.go .
 
       - name: Deploy
         uses: s0/git-publish-subdir-action@develop

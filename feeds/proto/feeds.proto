@@ -11,8 +11,10 @@ service Feeds {
 
 message Feed {
 	// rss feed name
+	// eg. a16z
 	string name = 1;
 	// rss feed url
+	// eg. http://a16z.com/feed/
 	string url = 2;
 }
 
@@ -26,7 +28,11 @@ message Entry {
 }
 
 message NewRequest {
+	// rss feed name
+	// eg. a16z
 	string name = 1;
+	// rss feed url
+	// eg. http://a16z.com/feed/
 	string url = 2;
 }
 
@@ -34,6 +40,8 @@ message NewResponse {
 }
 
 message EntriesRequest {
+	// rss feed url
+	// eg. http://a16z.com/feed/
 	string url = 1;
 }
 

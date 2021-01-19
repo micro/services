@@ -11,6 +11,7 @@ require (
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
 	github.com/micro/micro/v3 v3.0.5-0.20201219085254-c8ea24387d19
 	github.com/miekg/dns v1.1.31 // indirect
+	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	golang.org/x/crypto v0.0.0-20201002094018-c90954cbb977
