@@ -1,11 +1,19 @@
+The messages service is a simplified service for sending messages, much like email.
+
 # Messages Service
 
-The messages service is a simplified service for sending messages, much like email. You can send a message using the CLI:
+## Send a message
+
+### CLI
+
 ```bash
 > micro messages send --to=John --from=Barry --subject=HelloWorld --text="Hello John"
 ```
 
-And then list the messages a user has recieved:
+## List the messages a user has received
+
+### CLI
+
 ```bash
 > micro messages list --user=John
 {
@@ -22,7 +30,10 @@ And then list the messages a user has recieved:
 }
 ```
 
-Or lookup an individual email by ID:
+## Lookup an individual email by ID
+
+### CLI
+
 ```bash
 > micro messages read --id=78efd836-ca51-4163-af43-65985f7c6587
 {

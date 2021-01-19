@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 package routing;
+option go_package = "proto;routing";
+
 import "google/protobuf/wrappers.proto";
 
 service Routing {

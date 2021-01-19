@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package messages;
-option go_package = "github.com/micro/services/messages/proto;messages";
+option go_package = "proto;messages";
 
 service Messages {
   rpc Send(SendRequest) returns (SendResponse);

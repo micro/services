@@ -1,0 +1,173 @@
+/* Post */
+
+header {
+    padding: 1.5rem 0;
+
+    h1 {
+        font-size: 2rem;
+        display: inline-block;
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+
+    u {
+        display: inline-block;
+        text-decoration: none;
+        padding: 0.4rem 0;
+    }
+}
+
+.article-header {
+    padding-top: 2rem;
+    margin-bottom: 0.5rem;
+
+    .container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .thumb {
+        display: flex;
+        flex-direction: column;
+    }
+
+    h1 {
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin: 0;
+    }
+
+    .description {
+        font-size: 1.2rem;
+        color: var(--light-font-color);
+        font-weight: 300;
+        margin-top: 2rem;
+        margin-bottom: 0;
+    }
+}
+
+.post-meta {
+    margin-top: 1rem;
+    padding: 0;
+    color: var(--light-font-color);
+    font-size: 0.9rem;
+
+    a {
+        color: var(--font-color);
+        border-width: 0;
+    }
+
+    time {
+        margin-top: 0.2rem;
+        font-size: 0.9rem;
+    }
+
+    .tags {
+        margin-top: 0.5rem;
+
+        a {
+            text-decoration: none;
+        }
+    }
+}
+
+.article-post {
+    margin-bottom: 2rem;
+
+    a {
+        box-shadow: 0px -2px 0px rgba(189, 195, 199, 0.5) inset;
+        transition: all .3s ease;
+
+        &:hover {
+            box-shadow: 0px -10px 0px rgba(189, 195, 199, 0.7) inset;
+        }
+    }
+
+    @for $i from 1 through 6 {
+        h#{$i} {
+            .anchor {
+                stroke: var(--link-color);
+                stroke-width: 1px;
+                fill: var(--link-color);
+                font-weight: 700;
+                left: -0.25rem;
+                border-width: 0;
+                float: left;
+                line-height: 1;
+                margin-left: -20px;
+                padding-right: 4px;
+                box-shadow: none;
+                transition: none;
+            
+                .icon {
+                    visibility: hidden;
+                }
+            }
+    
+            &:hover {
+                .anchor {
+                    box-shadow: none;
+                    .icon {
+                        visibility: visible;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .article-post {
+        margin-bottom: 3rem;
+    }
+
+    .article-post h1,
+    .article-post h2,
+    .article-post h3,
+    .article-post h4,
+    .article-post h5 {
+        padding-top: 1rem;
+    }
+
+    .post-meta {
+        margin-top: 1.5rem;
+        padding: 1rem 0;
+    }
+
+    header h1 {
+        font-size: 3rem;
+        margin-top: 2rem;
+    }
+
+    header u {
+        background: linear-gradient(transparent 85%, #bac8ff 0);
+    }
+
+    .article-header {
+        padding-top: 3rem;
+
+        h1 {
+            padding-top: 0;
+            font-size: 2.5rem;
+        }
+
+        .thumb {
+            flex-direction: row;
+        }
+
+        .description {
+            font-size: 1.8rem;
+            line-height: 1.5;
+        }
+    }
+}
+
+@media screen and (min-width: 1100px) {
+    .article-header h1 {
+        font-size: 2.5rem;
+    }
+}
+
+.post-thumbnail {
+    display: block !important;
+}

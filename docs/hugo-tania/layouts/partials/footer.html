@@ -1,0 +1,21 @@
+<footer class="footer flex">
+    <section class="container">
+        <nav class="footer-links">
+            {{ range .Site.Menus.footer }}
+            <a href="{{ .URL | relURL }}">{{ .Name }}</a>
+            {{ end }}
+        </nav>
+    </section>
+    {{- if and (or .Params.mathjax (and .Site.Params.mathjax (ne .Params.mathjax false))) (or .IsPage .IsHome) }}
+    <script type="text/javascript">
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+            }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js" integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin="anonymous"></script>
+    {{- end }}
+    {{ $features := resources.Get "js/features.js" | minify | fingerprint }}
+    <script async src="{{ $features.RelPermalink }}"></script>
+</footer>

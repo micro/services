@@ -7,8 +7,13 @@ init:
 	go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/location.proto
-	
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/location.proto
+
+.PHONY: docs
+docs:
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/location.proto
+	@redoc-cli bundle api-location.json
+
 .PHONY: build
 build:
 	go build -o location *.go

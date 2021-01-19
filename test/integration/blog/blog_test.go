@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/test"
-	p "github.com/micro/services/blog/posts/proto"
+	p "github.com/micro/services/posts/proto"
 )
 
 const (
@@ -58,8 +58,8 @@ func setupBlogTests(serv test.Server, t *test.T) {
 		envVar string
 		deflt  string
 	}{
-		{envVar: "POSTS_SVC", deflt: "../../../blog/posts"},
-		{envVar: "TAGS_SVC", deflt: "../../../blog/tags"},
+		{envVar: "POSTS_SVC", deflt: "../../../posts"},
+		{envVar: "TAGS_SVC", deflt: "../../../tags"},
 	}
 
 	for _, v := range services {
