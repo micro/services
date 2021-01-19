@@ -16,7 +16,10 @@ import (
 	"github.com/stoewer/go-strcase"
 )
 
-const postContentPath = "docs/hugo-tania/site/content/post"
+const (
+	postContentPath = "docs/hugo-tania/site/content/post"
+	docsURL = "services.m3o.com"
+)
 
 func main() {
 	files, err := ioutil.ReadDir(os.Args[1])
@@ -26,7 +29,7 @@ func main() {
 	workDir, _ := os.Getwd()
 
 	docPath := filepath.Join(workDir, "docs")
-	err = ioutil.WriteFile(filepath.Join(docPath, "CNAME"), []byte("services.m3o.com"), 0777)
+	err = ioutil.WriteFile(filepath.Join(docPath, "CNAME"), []byte(docsURL), 0777)
 	if err != nil {
 		fmt.Printf("Failed to CNAME")
 		os.Exit(1)
