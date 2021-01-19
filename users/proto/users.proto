@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package users;
-option go_package = "github.com/micro/services/users/proto;users";
+option go_package = "proto;users";
 
 service Users {
 	rpc Create(CreateRequest) returns (CreateResponse) {}

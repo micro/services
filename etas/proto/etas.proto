@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package etas;
-option go_package = "github.com/micro/services/etas/proto;etas";
+option go_package = "proto;etas";
 
 import "google/protobuf/timestamp.proto";
 
