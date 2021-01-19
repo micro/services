@@ -6,6 +6,11 @@ MODIFY=Mgithub.com/micro/micro/proto/api/api.proto=github.com/micro/micro/v3/pro
 proto:
     
 	protoc --openapi_out=. --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/posts.proto
+
+.PHONY: docs
+docs:
+    
+	protoc --openapi_out=. --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/posts.proto
 	@redoc-cli bundle api-posts.json
 
 .PHONY: build

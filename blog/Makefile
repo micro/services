@@ -8,6 +8,10 @@ init:
 .PHONY: proto
 proto:
 	protoc --openapi_out=. --proto_path=$$GOPATH/src:. --micro_out=. --go_out=:. proto/blog.proto
+
+.PHONY: docs
+docs:
+	protoc --openapi_out=. --proto_path=$$GOPATH/src:. --micro_out=. --go_out=:. proto/blog.proto
 	@redoc-cli bundle api-protobuf.json
 
 .PHONY: build

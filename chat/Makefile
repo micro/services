@@ -8,6 +8,10 @@ init:
 .PHONY: proto
 proto:
 	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/chat.proto
+
+.PHONY: docs
+docs:
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/chat.proto
 	@redoc-cli bundle api-chat.json
 
 .PHONY: build

@@ -4,7 +4,7 @@
 // The location service stores GPS points for tracking purposes
 // and provides endpoints to query those points.
 
-package locations
+package location
 
 import (
 	fmt "fmt"
@@ -45,8 +45,9 @@ func NewLocationEndpoints() []*api.Endpoint {
 // Client API for Location service
 
 type LocationService interface {
-	// Read something something
+	// Read locations
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
+	// Save locations
 	Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
 }
@@ -96,8 +97,9 @@ func (c *locationService) Search(ctx context.Context, in *SearchRequest, opts ..
 // Server API for Location service
 
 type LocationHandler interface {
-	// Read something something
+	// Read locations
 	Read(context.Context, *ReadRequest, *ReadResponse) error
+	// Save locations
 	Save(context.Context, *SaveRequest, *SaveResponse) error
 	Search(context.Context, *SearchRequest, *SearchResponse) error
 }

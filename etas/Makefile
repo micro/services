@@ -11,6 +11,11 @@ proto:
 	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/etas.proto
 	@redoc-cli bundle api-protobuf.json
 
+.PHONY: docs
+docs:
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/etas.proto
+	@redoc-cli bundle api-protobuf.json
+
 .PHONY: build
 build:
 	go build -o etas *.go
