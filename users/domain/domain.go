@@ -4,8 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/micro/dev/model"
-	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/micro/v3/service/model"
 	user "github.com/micro/services/users/proto"
 )
 
@@ -40,9 +39,11 @@ func New() *Domain {
 	idIndex.Order.Type = model.OrderTypeUnordered
 
 	return &Domain{
-		users:      model.New(store.DefaultStore, "users", model.Indexes(nameIndex, emailIndex), nil),
-		sessions:   model.New(store.DefaultStore, "sessions", nil, nil),
-		passwords:  model.New(store.DefaultStore, "passwords", nil, nil),
+		users: model.New(user.User{}, &model.Options{
+			Indexes: []model.Index{nameIndex, emailIndex},
+		}),
+		sessions:   model.New(user.Session{}, nil),
+		passwords:  model.New(pw{}, nil),
 		nameIndex:  nameIndex,
 		emailIndex: emailIndex,
 		idIndex:    idIndex,
@@ -58,7 +59,7 @@ func (domain *Domain) CreateSession(sess *user.Session) error {
 		sess.Expires = time.Now().Add(time.Hour * 24 * 7).Unix()
 	}
 
-	return domain.sessions.Save(sess)
+	return domain.sessions.Create(sess)
 }
 
 func (domain *Domain) DeleteSession(id string) error {
@@ -74,11 +75,11 @@ func (domain *Domain) ReadSession(id string) (*user.Session, error) {
 func (domain *Domain) Create(user *user.User, salt string, password string) error {
 	user.Created = time.Now().Unix()
 	user.Updated = time.Now().Unix()
-	err := domain.users.Save(user)
+	err := domain.users.Create(user)
 	if err != nil {
 		return err
 	}
-	return domain.passwords.Save(pw{
+	return domain.passwords.Create(pw{
 		ID:       user.Id,
 		Password: password,
 		Salt:     salt,
@@ -91,7 +92,7 @@ func (domain *Domain) Delete(id string) error {
 
 func (domain *Domain) Update(user *user.User) error {
 	user.Updated = time.Now().Unix()
-	return domain.users.Save(user)
+	return domain.users.Update(user)
 }
 
 func (domain *Domain) Read(id string) (*user.User, error) {
@@ -110,11 +111,11 @@ func (domain *Domain) Search(username, email string, limit, offset int64) ([]*us
 	}
 
 	users := []*user.User{}
-	return users, domain.users.List(query, &users)
+	return users, domain.users.Read(query, &users)
 }
 
 func (domain *Domain) UpdatePassword(id string, salt string, password string) error {
-	return domain.passwords.Save(pw{
+	return domain.passwords.Update(pw{
 		ID:       id,
 		Password: password,
 		Salt:     salt,
