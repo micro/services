@@ -26,6 +26,11 @@ func main() {
 	workDir, _ := os.Getwd()
 
 	docPath := filepath.Join(workDir, "docs")
+	err = ioutil.WriteFile(filepath.Join(docPath, "CNAME"), []byte("services.m3o.com"), 0777)
+	if err != nil {
+		fmt.Printf("Failed to CNAME")
+		os.Exit(1)
+	}
 
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
