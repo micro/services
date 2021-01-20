@@ -1,5 +1,5 @@
-The routing service provides point to point directions.
+Point to point routing directions
 
 # Routing Service
 
-Readme coming soon. For more info see the [proto](https://github.com/micro/services/blob/master/routing/proto/routing.proto).
+The routing service provides point to point directions

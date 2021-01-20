@@ -2,6 +2,9 @@ A user service for storing accounts and simple auth.
 
 # Users Service
 
+The users service provides user management and authentication so you can easily add them to your own apps 
+without having to build the entire thing from scratch.
+
 ## Getting started
 
 ```
