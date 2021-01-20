@@ -1,12 +1,9 @@
-The places service stores places of interest by geolocation.
+Store and search for points of interest
 
 # Places Service
 
-Generated with
+The places API stores points of interest and enables you to search for places nearby or last visited.
 
-```
-micro new places
-```
 
 ## Usage
 
