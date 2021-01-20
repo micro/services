@@ -1,6 +1,8 @@
-This is the ETAs service. It provides ETAs for single-pickup, multi-dropoff routes. It takes into account time and traffic.
+ETAs as a service. Provides single-pickup and multi-dropoff routes. Takes into account time and traffic.
 
 # ETAs Service
+
+Add accurate estimated time of arrival to apps for delivery tracking, routing directions and much more.
 
 Current limitations:
 • Only supports "Driving" (not walking, cycling)
