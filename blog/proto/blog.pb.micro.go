@@ -6,7 +6,7 @@ package blog
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/micro/services/blog/posts/proto"
+	_ "github.com/micro/services/posts/proto"
 	math "math"
 )
 

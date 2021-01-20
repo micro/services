@@ -1,14 +1,20 @@
 syntax = "proto3";
 
+option go_package = "proto;location";
+
+// The location service stores GPS points for tracking purposes
+// and provides endpoints to query those points.
 package location;
 
 service Location {
+	// Read locations
 	rpc Read(ReadRequest) returns (ReadResponse) {}
+	// Save locations
 	rpc Save(SaveRequest) returns (SaveResponse) {}
 	rpc Search(SearchRequest) returns (SearchResponse) {}
 }
 
-
+// A point is a GPS coordinate.
 message Point {
         double latitude = 1;
         double longitude = 2;
@@ -38,7 +44,8 @@ message SaveResponse {
 
 message SearchRequest {
 	Point center = 1;
-	double radius = 2; // in meters
+	// in meters
+	double radius = 2;
 	string type = 3;
 	int64 numEntities = 4;
 }

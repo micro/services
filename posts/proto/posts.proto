@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package posts;
+option go_package = "proto;posts";
+
+service Posts {
+	// Query currently only supports read by slug or timestamp, no listing.
+	rpc Query(QueryRequest) returns (QueryResponse) {}
+	rpc Save(SaveRequest) returns (SaveResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+}
+
+message Post {
+	string id = 1;
+	string title = 2;
+	string slug = 3;
+	string content = 4;
+	int64 created = 5;
+	int64 updated = 6;
+	string author = 7;
+	repeated string tags = 8;
+	map<string,string> metadata = 9;
+	string image = 19;
+}
+
+// Query posts. Acts as a listing when no id or slug provided.
+// Gets a single post by id or slug if any of them provided.
+message QueryRequest {
+	string id = 1;
+	string slug = 2;
+	string tag = 3;
+	int64 offset = 4;
+	int64 limit = 5;
+}
+
+message QueryResponse {
+	repeated Post posts = 1;
+}
+
+message SaveRequest {
+	string id = 1;
+	string title = 2;
+	string slug = 3;
+	string content = 4;
+	int64 timestamp = 5;
+	// When updating a post and wanting to delete all tags,
+	// send a list of tags with only one member being an empty string [""]
+	repeated string tags = 6;
+	map<string,string> metadata = 7;
+	string image = 8;
+}
+
+message SaveResponse {
+	string id = 1;
+}
+
+message DeleteRequest {
+	string id = 1;
+}
+
+message DeleteResponse {}
+

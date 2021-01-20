@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package feeds;
+
+option go_package = "proto;feeds";
+
+service Feeds {
+	rpc New(NewRequest) returns (NewResponse) {}
+	rpc Entries(EntriesRequest) returns (EntriesResponse) {}
+}
+
+message Feed {
+	// rss feed name
+	// eg. a16z
+	string name = 1;
+	// rss feed url
+	// eg. http://a16z.com/feed/
+	string url = 2;
+}
+
+message Entry {
+	string id = 1;
+	string domain = 2;
+	string url = 3;
+	string title = 4;
+	string content = 5;
+	int64 date = 6;
+}
+
+message NewRequest {
+	// rss feed name
+	// eg. a16z
+	string name = 1;
+	// rss feed url
+	// eg. http://a16z.com/feed/
+	string url = 2;
+}
+
+message NewResponse {
+}
+
+message EntriesRequest {
+	// rss feed url
+	// eg. http://a16z.com/feed/
+	string url = 1;
+}
+
+message EntriesResponse {
+	repeated Entry entries = 1;
+}

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package chat;
-option go_package = "github.com/micro/services/chat/proto;chat";
+option go_package = "proto;chat";
 
 service Chat {
   // New creates a chat for a group of users. The RPC is idempotent so if it's called multiple times

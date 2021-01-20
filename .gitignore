@@ -1,0 +1,4 @@
+api-protobuf.json
+api-*.json
+redoc-static.html
+!docs

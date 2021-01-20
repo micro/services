@@ -3,10 +3,10 @@ package handler
 import (
 	"context"
 
-	comments "github.com/micro/services/blog/comments/proto"
-	posts "github.com/micro/services/blog/posts/proto"
+	comments "github.com/micro/services/comments/proto"
+	posts "github.com/micro/services/posts/proto"
 	proto "github.com/micro/services/blog/proto"
-	tags "github.com/micro/services/blog/tags/proto"
+	tags "github.com/micro/services/tags/proto"
 )
 
 type Blog struct {

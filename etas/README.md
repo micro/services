@@ -1,6 +1,8 @@
+ETAs as a service. Provides single-pickup and multi-dropoff routes. Takes into account time and traffic.
+
 # ETAs Service
 
-This is the ETAs service. It provides ETAs for single-pickup, multi-dropoff routes. It takes into account time and traffic.
+Add accurate estimated time of arrival to apps for delivery tracking, routing directions and much more.
 
 Current limitations:
 • Only supports "Driving" (not walking, cycling)
@@ -10,13 +12,13 @@ Current limitations:
 
 The ETA service depends on the Google Maps API. Ensure you set the "google.maps.apikey" config value to your API key.
 
-```
+```shell
 micro config set google.maps.apikey YOUR_API_KEY
 ```
 
 Once set, run the service using `micro run github.com/micro/services/etas`.
 
-```bash
+```shell
 $ micro call etas ETAs.Calculate $(cat example-req.json)
 {
 	"points": {

@@ -1,8 +1,9 @@
 syntax = "proto3";
 
 package blog;
+option go_package = "proto;blog";
 
-import "github.com/micro/services/blog/posts/proto/posts.proto";
+import "github.com/micro/services/posts/proto/posts.proto";
 
 service Blog {
 	rpc Latest(LatestRequest) returns (LatestResponse) {}
