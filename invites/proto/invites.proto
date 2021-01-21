@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package invites;
+option go_package = "proto;invites";
+import "google/protobuf/wrappers.proto";
+
+service Invites {
+	// Create an invite
+	rpc Create(CreateRequest) returns (CreateResponse);
+	// Read an invite using ID or code
+	rpc Read(ReadRequest) returns (ReadResponse);
+	// List invited for a group or specific email
+	rpc List(ListRequest) returns (ListResponse);
+	// Delete an invite
+	rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message Invite {
+	string id = 1;
+	string group_id = 2;
+	string email = 3;
+	string code = 4;
+}
+
+message CreateRequest {
+	string group_id = 1;
+	string email = 2;
+}
+
+message CreateResponse {
+	Invite invite = 1;
+}
+
+message ReadRequest {
+	google.protobuf.StringValue id = 1;
+	google.protobuf.StringValue code = 2;
+}
+
+message ReadResponse {
+	Invite invite = 1;
+}
+
+message ListRequest {
+	google.protobuf.StringValue group_id = 1;
+	google.protobuf.StringValue email = 2;
+}
+
+message ListResponse {
+	repeated Invite invites = 1;
+}
+
+message DeleteRequest {
+	string id = 1;
+}
+
+message DeleteResponse {}
