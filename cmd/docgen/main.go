@@ -186,6 +186,10 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 						bs, _ := json.MarshalIndent(schemaToMap(v, spec.Components.Schemas), "", strings.Repeat(" ", prepend)+"  ")
 						// last line wont get prepended so we fix that here
 						parts := strings.Split(string(bs), "\n")
+						// skip if it's only 1 line, ie it's '{}'
+						if len(parts) <= 1 {
+							return string(bs)
+						}
 						parts[len(parts)-1] = strings.Repeat(" ", prepend) + parts[len(parts)-1]
 						return strings.Join(parts, "\n")
 					}
@@ -294,7 +298,7 @@ being lifted correctly from the proto by the openapi spec generator -->
 <script src="https://web.m3o.com/assets/micro.js"></script>
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function (event) {
-    # Login is only required for endpoints doing authorization
+    <!-- Login is only required for endpoints doing authorization -->
     Micro.requireLogin(function () {
       Micro.post(
         "{{ $key }}",
