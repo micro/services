@@ -27,7 +27,7 @@
 
 {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
 {{ $projects := where .Site.RegularPages "Section" "projects" }}
-{{ $pages = first (default 100 .Site.Params.homePosts) (sort (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) "Date" "desc") }}
+{{ $pages = default 100 .Site.Taxonomies.tags.def }}
 
 <div class="container">
   <section>

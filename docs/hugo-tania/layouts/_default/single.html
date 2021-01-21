@@ -7,9 +7,11 @@
                 <div>
                     <h1>{{ .Title }}</h1>
                     <div>
-                        <a href="/{{ .Title }}/api"><u>API Spec</u></a>
+                        <a href="/{{ .Params.servicename }}/api"><u>API Spec</u></a>
                         &nbsp;
-                        <a href="{{ $.Site.Params.source }}/tree/master/{{ .Title }}"><u>Source</u></a>
+                        <a href="/{{ .Params.servicename }}-microjs"><u>Micro.js</u></a>
+                        &nbsp;
+                        <a href="{{ $.Site.Params.source }}/tree/master/{{ .Params.servicename }}"><u>Source</u></a>
                     </div>
                     <div class="post-meta">
                         <!-- <div>
