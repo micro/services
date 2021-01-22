@@ -134,19 +134,36 @@ type specType struct {
 var specTypes = []specType{
 	{
 		name:          "default markdown",
-		tag:           "def",
+		tag:           "Readme",
 		filePostFix:   ".md",
 		template:      defTempl,
 		includeReadme: true,
 	},
 	{
 		name:          "microjs markdown",
-		tag:           "microjs",
+		tag:           "Micro.js",
 		filePostFix:   "-microjs.md",
 		titlePostFix:  " Micro.js",
 		template:      microJSTempl,
 		includeReadme: false,
 	},
+}
+
+var servicesToTags = map[string][]string{
+	"users":      []string{"Backend"},
+	"helloworld": []string{"Backend"},
+	"emails":     []string{"Communications"},
+	"sms":        []string{"Communications"},
+	"posts":      []string{"Headless CMS"},
+	"tags":       []string{"Headless CMS"},
+	"feeds":      []string{"Headless CMS"},
+	"chat":       []string{"Communications"},
+	"geocoding":  []string{"Logistics"},
+	"places":     []string{"Logistics"},
+	"routing":    []string{"Logistics"},
+	"etas":       []string{"Logistics"},
+	"notes":      []string{"Misc"},
+	"messages":   []string{"Misc"},
 }
 
 func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *openapi3.Swagger) error {
@@ -157,7 +174,13 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 		if v.includeReadme {
 			app = originalMarkDown
 		}
-		err := ioutil.WriteFile(contentFile, append([]byte("---\ntitle: "+serviceName+v.titlePostFix+"\nservicename: "+serviceName+"\ntags: "+v.tag+"\n---\n"), app...), 0777)
+		tags := []string{v.tag}
+		serviceTags, ok := servicesToTags[serviceName]
+		if ok {
+			tags = append(tags, serviceTags...)
+		}
+		tagsString := "\n- " + strings.Join(tags, "\n- ")
+		err := ioutil.WriteFile(contentFile, append([]byte("---\ntitle: "+serviceName+v.titlePostFix+"\nservicename: "+serviceName+"\ntags: "+tagsString+"\n---\n"), app...), 0777)
 		if err != nil {
 			fmt.Printf("Failed to write post content to %v:\n%v\n", err)
 			os.Exit(1)
@@ -298,7 +321,7 @@ being lifted correctly from the proto by the openapi spec generator -->
 <script src="https://web.m3o.com/assets/micro.js"></script>
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function (event) {
-    <!-- Login is only required for endpoints doing authorization -->
+    // Login is only required for endpoints doing authorization
     Micro.requireLogin(function () {
       Micro.post(
         "{{ $key }}",

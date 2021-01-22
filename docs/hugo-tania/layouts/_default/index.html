@@ -27,12 +27,13 @@
 
 {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
 {{ $projects := where .Site.RegularPages "Section" "projects" }}
-{{ $pages = default 100 .Site.Taxonomies.tags.def }}
 
 <div class="container">
   <section>
     <div class="posts">
+      {{ $pages = .Site.Taxonomies.tags.readme }}
       {{ range $i,$e := $pages }}
+      {{ if in $e.Params.tags "Readme" }}
 
       {{if modBool $i 2}}
       <div class="container">
@@ -56,8 +57,11 @@
         </nav>
       </div>
       {{ end }}
+      {{ end }}
 
       {{ end }}
+
+      <!-- todo: do not copypaste it all -->
     </div>
   </section>
   {{ if gt (len $projects) 0}}

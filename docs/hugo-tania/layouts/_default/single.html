@@ -5,9 +5,9 @@
         <header class="article-header">
             <div class="thumb">
                 <div>
-                    <h1>{{ .Title }}</h1>
+                    <h1><a href="/{{ .Params.servicename }}">{{ .Params.servicename }}</a></h1>
                     <div>
-                        <a href="/{{ .Params.servicename }}"><u>Service home</u></a>
+                        <a href="/{{ .Params.servicename }}"><u>Readme</u></a>
                         &nbsp;
                         <a href="/{{ .Params.servicename }}-microjs"><u>Micro.js</u></a>
                         &nbsp;
@@ -18,7 +18,8 @@
                     <div class="post-meta">
                         <!-- <div>
                             By {{ .Params.author }} on <time>{{ .Date.Format "January 02, 2006" }}</time>
-                        </div> -->
+                        </div>
+                        -->
                         <div class="tags">
                             {{ range (.GetTerms "tags") }}
                             <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
