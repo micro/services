@@ -6,7 +6,7 @@ import (
 
 	"github.com/micro/dev/model"
 	"github.com/micro/micro/v3/service/store"
-	user "github.com/micro/services/users-old/proto"
+	user "github.com/micro/services/test/users/proto"
 )
 
 type pw struct {

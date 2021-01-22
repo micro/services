@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/services/users-old/domain"
-	pb "github.com/micro/services/users-old/proto"
+	"github.com/micro/services/test/users/domain"
+	pb "github.com/micro/services/test/users/proto"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 )
