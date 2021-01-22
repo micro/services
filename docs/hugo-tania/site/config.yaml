@@ -32,4 +32,4 @@ permalinks:
   post: /:filename
 
 taxonomies:
-tag: "labels"
+  tag: "labels"

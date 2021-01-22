@@ -31,9 +31,8 @@
 <div class="container">
   <section>
     <div class="posts">
-      {{ $pages = .Site.Taxonomies.tags.readme }}
+      {{ $pages = .Site.Taxonomies.labels.readme }}
       {{ range $i,$e := $pages }}
-      {{ if in $e.Params.tags "Readme" }}
 
       {{if modBool $i 2}}
       <div class="container">
@@ -56,7 +55,6 @@
           </a>
         </nav>
       </div>
-      {{ end }}
       {{ end }}
 
       {{ end }}
