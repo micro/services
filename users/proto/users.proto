@@ -2,112 +2,93 @@ syntax = "proto3";
 
 package users;
 option go_package = "proto;users";
+import "google/protobuf/wrappers.proto";
 
 service Users {
 	rpc Create(CreateRequest) returns (CreateResponse) {}
 	rpc Read(ReadRequest) returns (ReadResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
-	rpc Search(SearchRequest) returns (SearchResponse) {}
-	rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+
+	// Login using email and password returns the users profile and a token
 	rpc Login(LoginRequest) returns (LoginResponse) {}
+	// Logout expires all tokens for the user
 	rpc Logout(LogoutRequest) returns (LogoutResponse) {}
-	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
+	// Validate a token, each time a token is validated it extends its lifetime for another week
+	rpc Validate(ValidateRequest) returns (ValidateResponse) {}
 }
 
 message User {
-	string id = 1;		// uuid
-	string username = 2;	// alphanumeric user or org
-	string email = 3;
-	int64 created = 4;	// unix
-	int64 updated = 5;	// unix
-}
-
-message Session {
-    string id = 1;
-    string username = 2;
-	string email = 3;
-    int64 created = 4;      // unix
-    int64 expires = 5;      // unix
+	string id = 1;
+	string first_name = 2;
+	string last_name = 3;
+	string email = 4;
 }
 
 message CreateRequest {
-	string id = 1;			// uuid
-	string username = 2;	// alphanumeric user or org
+	string first_name = 1;
+	string last_name = 2;
 	string email = 3;
-    string password = 4;
+	string password = 4;
 }
 
 message CreateResponse {
+	User user = 1;
+	string token = 2;
+}
+
+message ReadRequest {
+	repeated string ids = 1;
+}
+
+message ReadResponse {
+	map<string,User> users = 1;
+}
+
+message UpdateRequest {
+	string id = 1;
+	google.protobuf.StringValue first_name = 2;
+	google.protobuf.StringValue last_name = 3;
+	google.protobuf.StringValue email = 4;
+}
+
+message UpdateResponse {
+	User user = 1;
 }
 
 message DeleteRequest {
 	string id = 1;
 }
 
-message DeleteResponse {
-}
+message DeleteResponse {}
 
-message ReadRequest {
-	string id = 1;
-}
+message ListRequest {}
 
-message ReadResponse {
-	User user = 1;
-}
-
-message UpdateRequest {
-	string id = 1;			// uuid
-	string username = 2;	// alphanumeric user or org
-	string email = 3;
-}
-
-message UpdateResponse {
-}
-
-message UpdatePasswordRequest {
-    string userId = 1;
-    string oldPassword = 2;
-    string newPassword = 3;
-    string confirm_password = 4;
-}
-
-message UpdatePasswordResponse {
-}
-
-message SearchRequest {
-	string username = 1; 
-	string email = 2; 
-	int64 limit = 3;
-	int64 offset = 4;
-}
-
-message SearchResponse {
+message ListResponse {
 	repeated User users = 1;
 }
 
-message ReadSessionRequest {
-    string sessionId = 1;
-}
-
-message ReadSessionResponse {
-    Session session = 1;
-}
-
 message LoginRequest {
-    string username = 1;
-    string email = 2;
-    string password = 3;
+	string email = 1;
+	string password = 2;
 }
 
 message LoginResponse {
-    Session session = 1;
+	User user = 1;
+	string token = 2;
 }
 
 message LogoutRequest {
-    string sessionId = 1;
+	string id = 1;
 }
 
-message LogoutResponse {
+message LogoutResponse {}
+
+message ValidateRequest {
+	string token = 1;
 }
 
+message ValidateResponse {
+	User user = 1;
+}
