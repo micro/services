@@ -22,7 +22,7 @@ service Streams {
 	// offset as older messages need to be loaded
 	rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
 	// RecentMessages returns the most recent messages in a group of conversations. By default the 
-	// most messages retrieved per conversation is 10, however this can be overriden using the 
+	// most messages retrieved per conversation is 25, however this can be overriden using the 
 	// limit_per_conversation option
 	rpc RecentMessages(RecentMessagesRequest) returns (RecentMessagesResponse);
 }

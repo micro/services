@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -55,7 +54,6 @@ func assertConversationsMatch(t *testing.T, exp, act *pb.Conversation) {
 		return
 	}
 
-	fmt.Println(exp.CreatedAt, act.CreatedAt)
 	assert.True(t, exp.CreatedAt.AsTime().Equal(act.CreatedAt.AsTime()))
 }
 
@@ -82,6 +80,5 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 		return
 	}
 
-	fmt.Println(exp.SentAt, act.SentAt)
 	assert.True(t, exp.SentAt.AsTime().Equal(act.SentAt.AsTime()))
 }

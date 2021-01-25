@@ -10,13 +10,14 @@ import (
 )
 
 var (
-	ErrMissingID             = errors.BadRequest("MISSING_ID", "Missing ID")
-	ErrMissingGroupID        = errors.BadRequest("MISSING_GROUP_ID", "Missing GroupID")
-	ErrMissingTopic          = errors.BadRequest("MISSING_TOPIC", "Missing Topic")
-	ErrMissingAuthorID       = errors.BadRequest("MISSING_AUTHOR_ID", "Missing Author ID")
-	ErrMissingText           = errors.BadRequest("MISSING_TEXT", "Missing text")
-	ErrMissingConversationID = errors.BadRequest("MISSING_CONVERSATION_ID", "Missing Conversation ID")
-	ErrNotFound              = errors.NotFound("NOT_FOUND", "Conversation not found")
+	ErrMissingID              = errors.BadRequest("MISSING_ID", "Missing ID")
+	ErrMissingGroupID         = errors.BadRequest("MISSING_GROUP_ID", "Missing GroupID")
+	ErrMissingTopic           = errors.BadRequest("MISSING_TOPIC", "Missing Topic")
+	ErrMissingAuthorID        = errors.BadRequest("MISSING_AUTHOR_ID", "Missing Author ID")
+	ErrMissingText            = errors.BadRequest("MISSING_TEXT", "Missing text")
+	ErrMissingConversationID  = errors.BadRequest("MISSING_CONVERSATION_ID", "Missing Conversation ID")
+	ErrMissingConversationIDs = errors.BadRequest("MISSING_CONVERSATION_IDS", "One or more Conversation IDs are required")
+	ErrNotFound               = errors.NotFound("NOT_FOUND", "Conversation not found")
 )
 
 type Streams struct {
