@@ -15,7 +15,7 @@ import (
 
 func (e *Feeds) fetchAll() {
 	fs := []*feeds.Feed{}
-	err := e.feeds.List(e.feedsNameIndex.ToQuery(nil), &fs)
+	err := e.feeds.Read(e.feedsNameIndex.ToQuery(nil), &fs)
 	if err != nil {
 		log.Errorf("Error listing feeds: %v", err)
 		return
@@ -42,7 +42,7 @@ func (e *Feeds) fetch(url string) error {
 
 	for _, item := range fd.Items {
 		id := fmt.Sprintf("%x", md5.Sum([]byte(item.ID)))
-		err = e.entries.Save(feeds.Entry{
+		err = e.entries.Create(feeds.Entry{
 			Id:      id,
 			Url:     item.Link,
 			Title:   item.Title,

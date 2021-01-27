@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 
+	proto "github.com/micro/services/blog/proto"
 	comments "github.com/micro/services/comments/proto"
 	posts "github.com/micro/services/posts/proto"
-	proto "github.com/micro/services/blog/proto"
 	tags "github.com/micro/services/tags/proto"
 )
 

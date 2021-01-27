@@ -77,7 +77,7 @@ func (t *Tags) Add(ctx context.Context, req *proto.AddRequest, rsp *proto.AddRes
 
 	oldTagCount := tag.Count
 	// get tag count
-	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", tagCountPrefix, tag.Slug)), store.Limit(1000))
+	recs, err := store.List(store.ListPrefix(fmt.Sprintf("%v:%v", tagCountPrefix, tag.Slug)), store.ListLimit(1000))
 	if err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func (t *Tags) Remove(ctx context.Context, req *proto.RemoveRequest, rsp *proto.
 	}
 
 	// get tag count
-	recs, err := store.List(store.Prefix(fmt.Sprintf("%v:%v", tagCountPrefix, tag.Slug)), store.Limit(1000))
+	recs, err := store.List(store.ListPrefix(fmt.Sprintf("%v:%v", tagCountPrefix, tag.Slug)), store.ListLimit(1000))
 	if err != nil {
 		return err
 	}
@@ -179,7 +179,7 @@ func (t *Tags) List(ctx context.Context, req *proto.ListRequest, rsp *proto.List
 		}
 		return nil
 	}
-	records, err := store.Read("", store.Prefix(key))
+	records, err := store.Read(key, store.ReadPrefix())
 	if err != nil {
 		return err
 	}
