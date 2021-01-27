@@ -4,6 +4,7 @@ import (
 	"context"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/context/metadata"
@@ -11,6 +12,7 @@ import (
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	// it's standard to import the services own proto under the alias pb
 	pb "github.com/micro/services/chat/proto"
@@ -54,7 +56,7 @@ func (c *Chat) New(ctx context.Context, req *pb.NewRequest, rsp *pb.NewResponse)
 	sort.Strings(sortedIDs)
 
 	// key to lookup the chat in the store using, e.g. "chat/usera-userb-userc"
-	key := chatStoreKeyPrefix + strings.Join(sortedIDs, "-")
+	key := chatStoreKeyPrefix + strings.Join(sortedIDs, "_")
 
 	// read from the store to check if a chat with these users already exists
 	recs, err := store.Read(key)
@@ -76,9 +78,12 @@ func (c *Chat) New(ctx context.Context, req *pb.NewRequest, rsp *pb.NewResponse)
 	// no chat id was returned so we'll generate one, write it to the store and then return it to the
 	// client
 	chatID := uuid.New().String()
-	record := store.Record{Key: chatStoreKeyPrefix + chatID, Value: []byte(chatID)}
-	if err := store.Write(&record); err != nil {
-		logger.Errorf("Error writing to the store. Key: %v. Error: %v", record.Key, err)
+	if err := store.Write(&store.Record{Key: key, Value: []byte(chatID)}); err != nil {
+		logger.Errorf("Error writing to the store. Key: %v. Error: %v", key, err)
+		return errors.InternalServerError("chat.New.Unknown", "Error writing to the store")
+	}
+	if err := store.Write(&store.Record{Key: chatStoreKeyPrefix + chatID}); err != nil {
+		logger.Errorf("Error writing to the store. Key: %v. Error: %v", chatStoreKeyPrefix+chatID, err)
 		return errors.InternalServerError("chat.New.Unknown", "Error writing to the store")
 	}
 
@@ -153,6 +158,7 @@ func (c *Chat) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespon
 		UserId:   req.UserId,
 		Subject:  req.Subject,
 		Text:     req.Text,
+		SentAt:   timestamppb.New(time.Now()),
 	}
 
 	// default the client id if not provided
@@ -161,7 +167,13 @@ func (c *Chat) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespon
 	}
 
 	// create the message
-	return c.createMessage(msg)
+	if err := c.createMessage(msg); err != nil {
+		return err
+	}
+
+	// return the response
+	rsp.Message = msg
+	return nil
 }
 
 // Connect to a chat using a bidirectional stream enabling the client to send and recieve messages

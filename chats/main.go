@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"github.com/micro/services/streams/handler"
-	pb "github.com/micro/services/streams/proto"
+	"github.com/micro/services/chats/handler"
+	pb "github.com/micro/services/chats/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
@@ -13,17 +13,17 @@ import (
 	"gorm.io/gorm"
 )
 
-var dbAddress = "postgresql://postgres@localhost:5432/streams?sslmode=disable"
+var dbAddress = "postgresql://postgres@localhost:5432/chats?sslmode=disable"
 
 func main() {
 	// Create service
 	srv := service.New(
-		service.Name("streams"),
+		service.Name("chats"),
 		service.Version("latest"),
 	)
 
 	// Connect to the database
-	cfg, err := config.Get("streams.database")
+	cfg, err := config.Get("chats.database")
 	if err != nil {
 		logger.Fatalf("Error loading config: %v", err)
 	}
@@ -34,7 +34,7 @@ func main() {
 	}
 
 	// Register handler
-	pb.RegisterStreamsHandler(srv.Server(), &handler.Streams{DB: db, Time: time.Now})
+	pb.RegisterChatsHandler(srv.Server(), &handler.Chats{DB: db, Time: time.Now})
 
 	// Run service
 	if err := srv.Run(); err != nil {
