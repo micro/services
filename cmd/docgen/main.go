@@ -18,7 +18,7 @@ import (
 
 const (
 	postContentPath = "docs/hugo-tania/site/content/post"
-	docsURL = "services.m3o.com"
+	docsURL         = "services.m3o.com"
 )
 
 func main() {
