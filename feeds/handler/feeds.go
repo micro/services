@@ -52,6 +52,10 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 		entriesURLIndex:  entriesURLIndex,
 	}
 
+	// register model instances
+	f.feeds.Register(new(feeds.Feed))
+	f.entries.Register(new(feeds.Entry))
+
 	go f.crawl()
 	return f
 }
