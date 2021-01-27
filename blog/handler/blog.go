@@ -26,5 +26,16 @@ func NewBlog(ps posts.PostsService,
 }
 
 func (e *Blog) Latest(ctx context.Context, req *proto.LatestRequest, rsp *proto.LatestResponse) error {
+	resp, err := e.ps.Query(ctx, &posts.QueryRequest{Limit: 1})
+	if err != nil {
+		return err
+	}
+
+	if len(resp.Posts) == 0 {
+		return nil
+	}
+
+	rsp.Latest = resp.Posts[0]
+
 	return nil
 }
