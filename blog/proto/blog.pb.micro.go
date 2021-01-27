@@ -43,7 +43,10 @@ func NewBlogEndpoints() []*api.Endpoint {
 // Client API for Blog service
 
 type BlogService interface {
+	// Latest returns the latest blog post
 	Latest(ctx context.Context, in *LatestRequest, opts ...client.CallOption) (*LatestResponse, error)
+	// Posts returns all the posts
+	Posts(ctx context.Context, in *PostsRequest, opts ...client.CallOption) (*PostsResponse, error)
 }
 
 type blogService struct {
@@ -68,15 +71,29 @@ func (c *blogService) Latest(ctx context.Context, in *LatestRequest, opts ...cli
 	return out, nil
 }
 
+func (c *blogService) Posts(ctx context.Context, in *PostsRequest, opts ...client.CallOption) (*PostsResponse, error) {
+	req := c.c.NewRequest(c.name, "Blog.Posts", in)
+	out := new(PostsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Blog service
 
 type BlogHandler interface {
+	// Latest returns the latest blog post
 	Latest(context.Context, *LatestRequest, *LatestResponse) error
+	// Posts returns all the posts
+	Posts(context.Context, *PostsRequest, *PostsResponse) error
 }
 
 func RegisterBlogHandler(s server.Server, hdlr BlogHandler, opts ...server.HandlerOption) error {
 	type blog interface {
 		Latest(ctx context.Context, in *LatestRequest, out *LatestResponse) error
+		Posts(ctx context.Context, in *PostsRequest, out *PostsResponse) error
 	}
 	type Blog struct {
 		blog
@@ -91,4 +108,8 @@ type blogHandler struct {
 
 func (h *blogHandler) Latest(ctx context.Context, in *LatestRequest, out *LatestResponse) error {
 	return h.BlogHandler.Latest(ctx, in, out)
+}
+
+func (h *blogHandler) Posts(ctx context.Context, in *PostsRequest, out *PostsResponse) error {
+	return h.BlogHandler.Posts(ctx, in, out)
 }

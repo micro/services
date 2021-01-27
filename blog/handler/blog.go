@@ -39,3 +39,17 @@ func (e *Blog) Latest(ctx context.Context, req *proto.LatestRequest, rsp *proto.
 
 	return nil
 }
+
+func (e *Blog) Posts(ctx context.Context, req *proto.PostsRequest, rsp *proto.PostsResponse) error {
+	resp, err := e.ps.Query(ctx, &posts.QueryRequest{
+		Limit:  req.Limit,
+		Offset: req.Offset,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	rsp.Posts = resp.Posts
+	return nil
+}
