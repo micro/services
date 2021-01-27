@@ -38,6 +38,7 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 
 	f := &Feeds{
 		feeds: model.NewModel(
+			model.WithKey("Name"),
 			model.WithNamespace("feeds"),
 			model.WithIndexes(nameIndex),
 		),
