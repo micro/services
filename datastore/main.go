@@ -1,8 +1,8 @@
 package main
 
 import (
-	"datastore/handler"
-	pb "datastore/proto"
+	"github.com/micro/services/datastore/handler"
+	pb "github.com/micro/services/datastore/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"

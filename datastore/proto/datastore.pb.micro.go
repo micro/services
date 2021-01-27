@@ -42,7 +42,12 @@ func NewDatastoreEndpoints() []*api.Endpoint {
 // Client API for Datastore service
 
 type DatastoreService interface {
-	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
+	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
+	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...client.CallOption) (*CreateIndexResponse, error)
 }
 
 type datastoreService struct {
@@ -57,9 +62,59 @@ func NewDatastoreService(name string, c client.Client) DatastoreService {
 	}
 }
 
-func (c *datastoreService) Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.name, "Datastore.Call", in)
-	out := new(Response)
+func (c *datastoreService) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
+	req := c.c.NewRequest(c.name, "Datastore.Create", in)
+	out := new(CreateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreService) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error) {
+	req := c.c.NewRequest(c.name, "Datastore.Update", in)
+	out := new(UpdateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
+	req := c.c.NewRequest(c.name, "Datastore.Read", in)
+	out := new(ReadResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "Datastore.List", in)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+	req := c.c.NewRequest(c.name, "Datastore.Delete", in)
+	out := new(DeleteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datastoreService) CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...client.CallOption) (*CreateIndexResponse, error) {
+	req := c.c.NewRequest(c.name, "Datastore.CreateIndex", in)
+	out := new(CreateIndexResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +125,22 @@ func (c *datastoreService) Call(ctx context.Context, in *Request, opts ...client
 // Server API for Datastore service
 
 type DatastoreHandler interface {
-	Call(context.Context, *Request, *Response) error
+	Create(context.Context, *CreateRequest, *CreateResponse) error
+	Update(context.Context, *UpdateRequest, *UpdateResponse) error
+	Read(context.Context, *ReadRequest, *ReadResponse) error
+	List(context.Context, *ListRequest, *ListResponse) error
+	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
+	CreateIndex(context.Context, *CreateIndexRequest, *CreateIndexResponse) error
 }
 
 func RegisterDatastoreHandler(s server.Server, hdlr DatastoreHandler, opts ...server.HandlerOption) error {
 	type datastore interface {
-		Call(ctx context.Context, in *Request, out *Response) error
+		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
+		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
+		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
+		List(ctx context.Context, in *ListRequest, out *ListResponse) error
+		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
+		CreateIndex(ctx context.Context, in *CreateIndexRequest, out *CreateIndexResponse) error
 	}
 	type Datastore struct {
 		datastore
@@ -88,6 +153,26 @@ type datastoreHandler struct {
 	DatastoreHandler
 }
 
-func (h *datastoreHandler) Call(ctx context.Context, in *Request, out *Response) error {
-	return h.DatastoreHandler.Call(ctx, in, out)
+func (h *datastoreHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
+	return h.DatastoreHandler.Create(ctx, in, out)
+}
+
+func (h *datastoreHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {
+	return h.DatastoreHandler.Update(ctx, in, out)
+}
+
+func (h *datastoreHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
+	return h.DatastoreHandler.Read(ctx, in, out)
+}
+
+func (h *datastoreHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
+	return h.DatastoreHandler.List(ctx, in, out)
+}
+
+func (h *datastoreHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
+	return h.DatastoreHandler.Delete(ctx, in, out)
+}
+
+func (h *datastoreHandler) CreateIndex(ctx context.Context, in *CreateIndexRequest, out *CreateIndexResponse) error {
+	return h.DatastoreHandler.CreateIndex(ctx, in, out)
 }

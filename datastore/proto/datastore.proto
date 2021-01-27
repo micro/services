@@ -4,15 +4,23 @@ package datastore;
 
 option go_package = "proto;datastore";
 
+// These endpoints are experimental and will likely change,
+// especially related to indexes.
 service Datastore {
-	rpc Call(Request) returns (Response) {}
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc CreateIndex(CreateIndexRequest) returns (CreateIndexResponse) {}
 }
 
 message Query {
-	Order  order = 1;
-	string value = 2;
-	int64 offset = 3;
-	int64 limit = 4;
+	Index index = 1;
+	Order  order = 2;
+	string value = 3;
+	int64 offset = 4;
+	int64 limit = 5;
 }
 
 // Order is the order of the index
@@ -56,15 +64,54 @@ message Index {
 	float Float32Max = 9;
 }
 
-message Message {
-	string say = 1;
+
+message CreateRequest {
+	// JSON marshalled record to save
+	string value = 1;
 }
 
-
-message Request {
-	string name = 1;
+message CreateResponse {
 }
 
-message Response {
-	string msg = 1;
+message UpdateRequest {
+	// JSON marshalled record to save
+	string value = 1;
+}
+
+message UpdateResponse {
+
+}
+
+message ReadRequest {
+	Query query = 1;
+}
+
+message ReadResponse {
+	// JSON marshalled record found
+	string value = 1;
+}
+
+message ListRequest {
+	Query query = 1;
+}
+
+message ListResponse {
+	// JSON marshalled records found.
+	// It is a JSON array.
+	string values = 1;
+}
+
+message DeleteRequest {
+	Query query = 1;
+}
+
+message DeleteResponse {
+}
+
+message CreateIndexRequest {
+	Index index = 1;
+}
+
+message CreateIndexResponse {
+
 }
