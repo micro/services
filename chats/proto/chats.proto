@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package chats;
+option go_package = "proto;chats";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+service Chats {
+	// Create a chat between two or more users, if a chat already exists for these users, the existing
+	// chat will be returned
+	rpc CreateChat(CreateChatRequest) returns (CreateChatResponse);
+	// Create a message within a chat
+	rpc CreateMessage(CreateMessageRequest) returns (CreateMessageResponse);
+	// List the messages within a chat in reverse chronological order, using sent_before to
+	// offset as older messages need to be loaded
+	rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
+}
+
+message Chat {
+	string id = 1;
+	repeated string user_ids = 2;
+	google.protobuf.Timestamp created_at = 3;
+}
+
+message Message {
+	string id = 1;
+	string author_id = 2;
+	string chat_id = 3;
+	string text = 4;
+	google.protobuf.Timestamp sent_at = 5;
+}
+
+message CreateChatRequest {
+	repeated string user_ids = 1;
+}
+
+message CreateChatResponse {
+	Chat Chat = 1;
+}
+
+message CreateMessageRequest {
+	string chat_id = 1;
+	string author_id = 2;
+	string text = 3;
+}
+
+message CreateMessageResponse {
+	Message message = 1;
+}
+
+message ListMessagesRequest {
+	string chat_id = 1;
+	google.protobuf.Timestamp sent_before = 2;
+	google.protobuf.Int32Value limit = 3;
+}
+
+message ListMessagesResponse {
+	repeated Message messages = 1;
+}
