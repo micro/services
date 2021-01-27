@@ -6,9 +6,7 @@ import (
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
-
-	"github.com/micro/dev/model"
+	"github.com/micro/micro/v3/service/model"
 
 	"github.com/gosimple/slug"
 	proto "github.com/micro/services/posts/proto"
@@ -28,16 +26,16 @@ func NewPosts(tagsService tags.TagsService) *Posts {
 	createdIndex := model.ByEquality("created")
 	createdIndex.Order.Type = model.OrderTypeDesc
 
+	// create a new model
+	db := model.NewModel(
+		model.WithIndexes(model.ByEquality("slug"), createdIndex),
+	)
+	// register the post instance
+	db.Register(new(proto.Post))
+
 	return &Posts{
 		Tags: tagsService,
-		db: model.New(
-			store.DefaultStore,
-			"posts",
-			model.Indexes(model.ByEquality("slug"), createdIndex),
-			&model.ModelOptions{
-				Debug: false,
-			},
-		),
+		db:   db,
 	}
 }
 
@@ -48,9 +46,9 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 
 	// read by post
 	posts := []*proto.Post{}
-	q := model.Equals("id", req.Id)
+	q := model.QueryEquals("id", req.Id)
 	q.Order.Type = model.OrderTypeUnordered
-	err := p.db.List(q, &posts)
+	err := p.db.Read(q, &posts)
 	if err != nil {
 		return errors.InternalServerError("proto.save.store-id-read", "Failed to read post by id: %v", err.Error())
 	}
@@ -106,7 +104,7 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 	}
 
 	postsWithThisSlug := []*proto.Post{}
-	err = p.db.List(model.Equals("slug", postSlug), &postsWithThisSlug)
+	err = p.db.Read(model.QueryEquals("slug", postSlug), &postsWithThisSlug)
 	if err != nil {
 		return errors.InternalServerError("proto.save.store-read", "Failed to read post by slug: %v", err.Error())
 	}
@@ -121,7 +119,7 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 }
 
 func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
-	err := p.db.Save(post)
+	err := p.db.Create(post)
 	if err != nil {
 		return err
 	}
@@ -183,13 +181,13 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 	var q model.Query
 	if len(req.Slug) > 0 {
 		logger.Infof("Reading post by slug: %v", req.Slug)
-		q = model.Equals("slug", req.Slug)
+		q = model.QueryEquals("slug", req.Slug)
 	} else if len(req.Id) > 0 {
 		logger.Infof("Reading post by id: %v", req.Id)
-		q = model.Equals("id", req.Id)
+		q = model.QueryEquals("id", req.Id)
 		q.Order.Type = model.OrderTypeUnordered
 	} else {
-		q = model.Equals("created", nil)
+		q = model.QueryEquals("created", nil)
 		q.Order.Type = model.OrderTypeDesc
 		var limit uint
 		limit = 20
@@ -201,12 +199,12 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 		logger.Infof("Listing posts, offset: %v, limit: %v", req.Offset, limit)
 	}
 
-	return p.db.List(q, &rsp.Posts)
+	return p.db.Read(q, &rsp.Posts)
 }
 
 func (p *Posts) Delete(ctx context.Context, req *proto.DeleteRequest, rsp *proto.DeleteResponse) error {
 	logger.Info("Received Post.Delete request")
-	q := model.Equals("id", req.Id)
+	q := model.QueryEquals("id", req.Id)
 	q.Order.Type = model.OrderTypeUnordered
 	return p.db.Delete(q)
 }
