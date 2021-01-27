@@ -93,7 +93,7 @@ func (l *Places) Last(ctx context.Context, req *pb.LastRequest, rsp *pb.ListResp
 	}
 
 	// query the database
-	q := l.DB.Raw("SELECT DISTINCT ON (place_id) place_id, timestamp, latitude, longitude FROM places WHERE place_id IN (?) ORDER BY place_id, timestamp DESC", req.Ids)
+	q := l.DB.Raw("SELECT DISTINCT ON (place_id) place_id, timestamp, latitude, longitude FROM locations WHERE place_id IN (?) ORDER BY place_id, timestamp DESC", req.Ids)
 	var locs []*model.Location
 	if err := q.Find(&locs).Error; err != nil {
 		logger.Errorf("Error reading from the database: %v", err)
