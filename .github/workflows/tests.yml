@@ -8,7 +8,7 @@ jobs:
     container: node:10.18-jessie
     services:
       postgres:
-        image: postgres
+        image: postgres:12.4
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
