@@ -61,9 +61,12 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 			Content:  req.Content,
 			Tags:     req.Tags,
 			Slug:     postSlug,
-			Created:  time.Now().Unix(),
+			Created:  req.Timestamp,
 			Metadata: req.Metadata,
 			Image:    req.Image,
+		}
+		if post.Created == 0 {
+			post.Created = time.Now().Unix()
 		}
 		err := p.savePost(ctx, nil, post)
 		if err != nil {
@@ -80,9 +83,12 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 		Slug:     oldPost.Slug,
 		Tags:     oldPost.Tags,
 		Created:  oldPost.Created,
-		Updated:  time.Now().Unix(),
+		Updated:  req.Timestamp,
 		Metadata: req.Metadata,
 		Image:    req.Image,
+	}
+	if post.Created == 0 {
+		post.Created = time.Now().Unix()
 	}
 	if len(req.Title) > 0 {
 		post.Title = req.Title
