@@ -35,7 +35,7 @@ message CreateChatRequest {
 }
 
 message CreateChatResponse {
-	Chat Chat = 1;
+	Chat chat = 1;
 }
 
 message CreateMessageRequest {
