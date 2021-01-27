@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -14,7 +15,11 @@ import (
 
 func testHandler(t *testing.T) *handler.Streams {
 	// connect to the database
-	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5432/postgres?sslmode=disable"), &gorm.Config{})
+	addr := os.Getenv("POSTGRES_URL")
+	if len(addr) == 0 {
+		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
+	}
+	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
 	}
