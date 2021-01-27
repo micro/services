@@ -42,8 +42,10 @@ func NewFeedsEndpoints() []*api.Endpoint {
 // Client API for Feeds service
 
 type FeedsService interface {
-	New(ctx context.Context, in *NewRequest, opts ...client.CallOption) (*NewResponse, error)
+	Add(ctx context.Context, in *AddRequest, opts ...client.CallOption) (*AddResponse, error)
+	Remove(ctx context.Context, in *RemoveRequest, opts ...client.CallOption) (*RemoveResponse, error)
 	Entries(ctx context.Context, in *EntriesRequest, opts ...client.CallOption) (*EntriesResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 }
 
 type feedsService struct {
@@ -58,9 +60,19 @@ func NewFeedsService(name string, c client.Client) FeedsService {
 	}
 }
 
-func (c *feedsService) New(ctx context.Context, in *NewRequest, opts ...client.CallOption) (*NewResponse, error) {
-	req := c.c.NewRequest(c.name, "Feeds.New", in)
-	out := new(NewResponse)
+func (c *feedsService) Add(ctx context.Context, in *AddRequest, opts ...client.CallOption) (*AddResponse, error) {
+	req := c.c.NewRequest(c.name, "Feeds.Add", in)
+	out := new(AddResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *feedsService) Remove(ctx context.Context, in *RemoveRequest, opts ...client.CallOption) (*RemoveResponse, error) {
+	req := c.c.NewRequest(c.name, "Feeds.Remove", in)
+	out := new(RemoveResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -78,17 +90,31 @@ func (c *feedsService) Entries(ctx context.Context, in *EntriesRequest, opts ...
 	return out, nil
 }
 
+func (c *feedsService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "Feeds.List", in)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Feeds service
 
 type FeedsHandler interface {
-	New(context.Context, *NewRequest, *NewResponse) error
+	Add(context.Context, *AddRequest, *AddResponse) error
+	Remove(context.Context, *RemoveRequest, *RemoveResponse) error
 	Entries(context.Context, *EntriesRequest, *EntriesResponse) error
+	List(context.Context, *ListRequest, *ListResponse) error
 }
 
 func RegisterFeedsHandler(s server.Server, hdlr FeedsHandler, opts ...server.HandlerOption) error {
 	type feeds interface {
-		New(ctx context.Context, in *NewRequest, out *NewResponse) error
+		Add(ctx context.Context, in *AddRequest, out *AddResponse) error
+		Remove(ctx context.Context, in *RemoveRequest, out *RemoveResponse) error
 		Entries(ctx context.Context, in *EntriesRequest, out *EntriesResponse) error
+		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 	}
 	type Feeds struct {
 		feeds
@@ -101,10 +127,18 @@ type feedsHandler struct {
 	FeedsHandler
 }
 
-func (h *feedsHandler) New(ctx context.Context, in *NewRequest, out *NewResponse) error {
-	return h.FeedsHandler.New(ctx, in, out)
+func (h *feedsHandler) Add(ctx context.Context, in *AddRequest, out *AddResponse) error {
+	return h.FeedsHandler.Add(ctx, in, out)
+}
+
+func (h *feedsHandler) Remove(ctx context.Context, in *RemoveRequest, out *RemoveResponse) error {
+	return h.FeedsHandler.Remove(ctx, in, out)
 }
 
 func (h *feedsHandler) Entries(ctx context.Context, in *EntriesRequest, out *EntriesResponse) error {
 	return h.FeedsHandler.Entries(ctx, in, out)
+}
+
+func (h *feedsHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
+	return h.FeedsHandler.List(ctx, in, out)
 }

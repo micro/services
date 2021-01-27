@@ -5,8 +5,10 @@ package feeds;
 option go_package = "proto;feeds";
 
 service Feeds {
-	rpc New(NewRequest) returns (NewResponse) {}
+	rpc Add(AddRequest) returns (AddResponse) {}
+	rpc Remove(RemoveRequest) returns (RemoveResponse) {}
 	rpc Entries(EntriesRequest) returns (EntriesResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
 }
 
 message Feed {
@@ -27,7 +29,7 @@ message Entry {
 	int64 date = 6;
 }
 
-message NewRequest {
+message AddRequest {
 	// rss feed name
 	// eg. a16z
 	string name = 1;
@@ -36,7 +38,7 @@ message NewRequest {
 	string url = 2;
 }
 
-message NewResponse {
+message AddResponse {
 }
 
 message EntriesRequest {
@@ -48,3 +50,19 @@ message EntriesRequest {
 message EntriesResponse {
 	repeated Entry entries = 1;
 }
+
+message ListRequest {}
+
+message ListResponse {
+	repeated Feed feeds = 1;
+}
+
+message RemoveRequest {
+	// rss feed name
+	// eg. a16z
+	string name = 1;
+}
+
+message RemoveResponse {
+}
+

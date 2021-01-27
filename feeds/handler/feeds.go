@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/model"
 
@@ -69,7 +70,7 @@ func (e *Feeds) crawl() {
 	}
 }
 
-func (e *Feeds) New(ctx context.Context, req *feeds.NewRequest, rsp *feeds.NewResponse) error {
+func (e *Feeds) Add(ctx context.Context, req *feeds.AddRequest, rsp *feeds.AddResponse) error {
 	log.Info("Received Feeds.New request")
 	e.feeds.Create(feeds.Feed{
 		Name: req.Name,
@@ -85,4 +86,25 @@ func (e *Feeds) Entries(ctx context.Context, req *feeds.EntriesRequest, rsp *fee
 		return err
 	}
 	return e.entries.Read(e.entriesURLIndex.ToQuery(req.Url), &rsp.Entries)
+}
+
+func (e *Feeds) List(ctx context.Context, req *feeds.ListRequest, rsp *feeds.ListResponse) error {
+	var feeds []*feeds.Feed
+
+	err := e.feeds.Read(model.QueryAll(), &feeds)
+	if err != nil {
+		return errors.InternalServerError("feeds.list", "failed to read list of feeds: %v", err)
+	}
+
+	rsp.Feeds = feeds
+	return nil
+}
+
+func (e *Feeds) Remove(ctx context.Context, req *feeds.RemoveRequest, rsp *feeds.RemoveResponse) error {
+	if len(req.Name) == 0 {
+		return errors.BadRequest("feeds.remove", "blank name provided")
+	}
+
+	e.feeds.Delete(model.QueryEquals("name", req.Name))
+	return nil
 }
