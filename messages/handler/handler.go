@@ -71,7 +71,7 @@ func (m *Messages) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRe
 
 	// query the store for any messages sent to the user
 	prefix := strings.Join([]string{messagePrefix, req.User}, joinKey)
-	recs, err := store.Read("", store.Prefix(prefix))
+	recs, err := store.Read(prefix, store.ReadPrefix())
 	if err != nil {
 		return errors.BadRequest("messages.List.Unknown", "Error reading from the store")
 	}

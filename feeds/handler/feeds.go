@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/micro/dev/model"
 	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/micro/v3/service/model"
 
 	feeds "github.com/micro/services/feeds/proto"
 	posts "github.com/micro/services/posts/proto"
@@ -38,22 +37,13 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 	entriesURLIndex.Order.FieldName = "date"
 
 	f := &Feeds{
-		feeds: model.New(
-			store.DefaultStore,
-			"feeds",
-			model.Indexes(nameIndex),
-			&model.ModelOptions{
-				Debug:   false,
-				IdIndex: idIndex,
-			},
+		feeds: model.NewModel(
+			model.WithNamespace("feeds"),
+			model.WithIndexes(nameIndex),
 		),
-		entries: model.New(
-			store.DefaultStore,
-			"entries",
-			model.Indexes(dateIndex, entriesURLIndex),
-			&model.ModelOptions{
-				Debug: false,
-			},
+		entries: model.NewModel(
+			model.WithNamespace("entries"),
+			model.WithIndexes(dateIndex, entriesURLIndex),
 		),
 		postsService:     postsService,
 		feedsIdIndex:     idIndex,
@@ -76,7 +66,7 @@ func (e *Feeds) crawl() {
 
 func (e *Feeds) New(ctx context.Context, req *feeds.NewRequest, rsp *feeds.NewResponse) error {
 	log.Info("Received Feeds.New request")
-	e.feeds.Save(feeds.Feed{
+	e.feeds.Create(feeds.Feed{
 		Name: req.Name,
 		Url:  req.Url,
 	})
@@ -89,5 +79,5 @@ func (e *Feeds) Entries(ctx context.Context, req *feeds.EntriesRequest, rsp *fee
 	if err != nil {
 		return err
 	}
-	return e.entries.List(e.entriesURLIndex.ToQuery(req.Url), &rsp.Entries)
+	return e.entries.Read(e.entriesURLIndex.ToQuery(req.Url), &rsp.Entries)
 }

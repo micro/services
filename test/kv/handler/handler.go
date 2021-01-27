@@ -81,7 +81,7 @@ func (e *Example) TestList(ctx context.Context, req *pb.Request, rsp *pb.Respons
 		}
 	}
 
-	recs, err := store.List(store.Prefix("TestList"))
+	recs, err := store.List(store.ListPrefix("TestList"))
 	if err != nil {
 		return fmt.Errorf("Error listing from store %s", err)
 	}
@@ -100,7 +100,7 @@ func (e *Example) TestListLimit(ctx context.Context, req *pb.Request, rsp *pb.Re
 		}
 	}
 
-	recs, err := store.List(store.Prefix("TestLimit"), store.Limit(2))
+	recs, err := store.List(store.ListPrefix("TestLimit"), store.ListLimit(2))
 	if err != nil {
 		return fmt.Errorf("Error listing from store %s", err)
 	}
@@ -119,7 +119,7 @@ func (e *Example) TestListOffset(ctx context.Context, req *pb.Request, rsp *pb.R
 		}
 	}
 
-	recs, err := store.List(store.Prefix("TestOffset"), store.Offset(5))
+	recs, err := store.List(store.ListPrefix("TestOffset"), store.ListOffset(5))
 	if err != nil {
 		return fmt.Errorf("Error listing from store %s", err)
 	}

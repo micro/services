@@ -25,7 +25,7 @@ type handler struct{}
 // List all the notes
 func (h *handler) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	// query the store
-	recs, err := store.Read("", store.Prefix(storePrefix))
+	recs, err := store.Read(storePrefix, store.ReadPrefix())
 	if err != nil {
 		logger.Errorf("Error reading notes from the store: %v", err)
 		return errors.InternalServerError("notes.List.Unknown", "Error reading from the store")
