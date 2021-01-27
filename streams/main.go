@@ -32,6 +32,9 @@ func main() {
 	if err != nil {
 		logger.Fatalf("Error connecting to database: %v", err)
 	}
+	if err := db.AutoMigrate(&handler.Conversation{}, &handler.Message{}); err != nil {
+		logger.Fatalf("Error migrating database: %v", err)
+	}
 
 	// Register handler
 	pb.RegisterStreamsHandler(srv.Server(), &handler.Streams{DB: db, Time: time.Now})

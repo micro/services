@@ -30,6 +30,9 @@ func main() {
 	if err != nil {
 		logger.Fatalf("Error connecting to database: %v", err)
 	}
+	if err := db.AutoMigrate(&handler.Invite{}); err != nil {
+		logger.Fatalf("Error migrating database: %v", err)
+	}
 
 	// Register handler
 	pb.RegisterInvitesHandler(srv.Server(), &handler.Invites{DB: db})

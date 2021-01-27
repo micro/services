@@ -30,8 +30,6 @@ func main() {
 	if err != nil {
 		logger.Fatalf("Error connecting to database: %v", err)
 	}
-
-	// Migrate the database
 	if err := db.AutoMigrate(&handler.Group{}, &handler.Membership{}); err != nil {
 		logger.Fatalf("Error migrating database: %v", err)
 	}
