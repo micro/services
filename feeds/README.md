@@ -19,7 +19,7 @@ Designed to populate the posts service with RSS feeds from other blogs. Useful f
 ### CLI
 
 ```shell
-micro feeds new --name="a16z" --url=http://a16z.com/feed/
+micro feeds add --name="a16z" --url=http://a16z.com/feed/
 ```
 
 ## Querying feeded posts
