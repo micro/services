@@ -13,7 +13,7 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/logger"
-	chat "github.com/micro/services/chat/proto"
+	chat "github.com/micro/services/test/chat/proto"
 )
 
 var (

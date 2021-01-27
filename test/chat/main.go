@@ -4,8 +4,8 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 
-	"github.com/micro/services/chat/handler"
-	pb "github.com/micro/services/chat/proto"
+	"github.com/micro/services/test/chat/handler"
+	pb "github.com/micro/services/test/chat/proto"
 )
 
 func main() {
