@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package chat;
+option go_package = "proto;chat";
+import "google/protobuf/timestamp.proto";
+
+service Chat {
+  // New creates a chat for a group of users. The RPC is idempotent so if it's called multiple times
+  // for the same users, the same response will be returned. It's good practice to design APIs as
+  // idempotent since this enables safe retries.
+  rpc New(NewRequest) returns (NewResponse);
+  // History returns the historical messages in a chat
+  rpc History(HistoryRequest) returns (HistoryResponse);
+  // Send a single message to the chat
+  rpc Send(SendRequest) returns (SendResponse);
+  // Connect to a chat using a bidirectional stream enabling the client to send and recieve messages
+  // over a single RPC. When a message is sent on the stream, it will be added to the chat history 
+  // and sent to the other connected users. When opening the connection, the client should provide
+  // the chat_id and user_id in the context so the server knows which messages to stream.
+  rpc Connect(stream Message) returns (stream Message);
+}
+
+// NewRequest contains the infromation needed to create a new chat
+message NewRequest {
+  repeated string user_ids = 1;
+}
+
+// NewResponse contains the chat id for the users
+message NewResponse {
+  string chat_id = 1;
+}
+
+// HistoryRequest contains the id of the chat we want the history for. This RPC will return all 
+// historical messages, however in a real life application we'd introduce some form of pagination
+// here, only loading the older messages when required.
+message HistoryRequest {
+  string chat_id = 1;
+}
+
+// HistoryResponse contains the historical messages in a chat
+message HistoryResponse {
+  repeated Message messages = 1;
+}
+
+// SendRequest contains a single message to send to a chat
+message SendRequest {
+  // a client side id, should be validated by the server to make the request retry safe
+  string client_id = 1;
+  // id of the chat the message is being sent to / from
+  string chat_id = 2;
+  // id of the user who sent the message
+  string user_id = 3;
+  // subject of the message
+  string subject = 4;
+  // text of the message
+  string text = 5;
+}
+
+// SendResponse is a blank message returned when a message is successfully created
+message SendResponse {
+  Message message = 1;
+}
+
+// Message sent to a chat
+message Message {
+  // id of the message, allocated by the server
+  string id = 1;
+  // a client side id, should be validated by the server to make the request retry safe
+  string client_id = 2;
+  // id of the chat the message is being sent to / from
+  string chat_id = 3;
+  // id of the user who sent the message
+  string user_id = 4;
+  // time time the message was sent in unix format 
+  google.protobuf.Timestamp sent_at = 5;
+  // subject of the message
+  string subject = 6;
+  // text of the message
+  string text = 7;
+}

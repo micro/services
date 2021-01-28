@@ -27,11 +27,11 @@
 
 {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
 {{ $projects := where .Site.RegularPages "Section" "projects" }}
-{{ $pages = first (default 100 .Site.Params.homePosts) (sort (where .Site.RegularPages "Type" "in" .Site.Params.mainSections) "Date" "desc") }}
 
 <div class="container">
   <section>
     <div class="posts">
+      {{ $pages = .Site.Taxonomies.labels.readme }}
       {{ range $i,$e := $pages }}
 
       {{if modBool $i 2}}
@@ -58,6 +58,8 @@
       {{ end }}
 
       {{ end }}
+
+      <!-- todo: do not copypaste it all -->
     </div>
   </section>
   {{ if gt (len $projects) 0}}

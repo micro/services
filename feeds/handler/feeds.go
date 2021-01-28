@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/micro/dev/model"
+	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/micro/v3/service/model"
 
 	feeds "github.com/micro/services/feeds/proto"
 	posts "github.com/micro/services/posts/proto"
@@ -38,22 +38,14 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 	entriesURLIndex.Order.FieldName = "date"
 
 	f := &Feeds{
-		feeds: model.New(
-			store.DefaultStore,
-			"feeds",
-			model.Indexes(nameIndex),
-			&model.ModelOptions{
-				Debug:   false,
-				IdIndex: idIndex,
-			},
+		feeds: model.NewModel(
+			model.WithKey("Name"),
+			model.WithNamespace("feeds"),
+			model.WithIndexes(nameIndex),
 		),
-		entries: model.New(
-			store.DefaultStore,
-			"entries",
-			model.Indexes(dateIndex, entriesURLIndex),
-			&model.ModelOptions{
-				Debug: false,
-			},
+		entries: model.NewModel(
+			model.WithNamespace("entries"),
+			model.WithIndexes(dateIndex, entriesURLIndex),
 		),
 		postsService:     postsService,
 		feedsIdIndex:     idIndex,
@@ -61,6 +53,10 @@ func NewFeeds(postsService posts.PostsService) *Feeds {
 		entriesDateIndex: dateIndex,
 		entriesURLIndex:  entriesURLIndex,
 	}
+
+	// register model instances
+	f.feeds.Register(new(feeds.Feed))
+	f.entries.Register(new(feeds.Entry))
 
 	go f.crawl()
 	return f
@@ -74,9 +70,9 @@ func (e *Feeds) crawl() {
 	}
 }
 
-func (e *Feeds) New(ctx context.Context, req *feeds.NewRequest, rsp *feeds.NewResponse) error {
+func (e *Feeds) Add(ctx context.Context, req *feeds.AddRequest, rsp *feeds.AddResponse) error {
 	log.Info("Received Feeds.New request")
-	e.feeds.Save(feeds.Feed{
+	e.feeds.Create(feeds.Feed{
 		Name: req.Name,
 		Url:  req.Url,
 	})
@@ -89,5 +85,26 @@ func (e *Feeds) Entries(ctx context.Context, req *feeds.EntriesRequest, rsp *fee
 	if err != nil {
 		return err
 	}
-	return e.entries.List(e.entriesURLIndex.ToQuery(req.Url), &rsp.Entries)
+	return e.entries.Read(e.entriesURLIndex.ToQuery(req.Url), &rsp.Entries)
+}
+
+func (e *Feeds) List(ctx context.Context, req *feeds.ListRequest, rsp *feeds.ListResponse) error {
+	var feeds []*feeds.Feed
+
+	err := e.feeds.Read(model.QueryAll(), &feeds)
+	if err != nil {
+		return errors.InternalServerError("feeds.list", "failed to read list of feeds: %v", err)
+	}
+
+	rsp.Feeds = feeds
+	return nil
+}
+
+func (e *Feeds) Remove(ctx context.Context, req *feeds.RemoveRequest, rsp *feeds.RemoveResponse) error {
+	if len(req.Name) == 0 {
+		return errors.BadRequest("feeds.remove", "blank name provided")
+	}
+
+	e.feeds.Delete(model.QueryEquals("name", req.Name))
+	return nil
 }
