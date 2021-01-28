@@ -72,20 +72,46 @@ func (e *Feeds) crawl() {
 
 func (e *Feeds) Add(ctx context.Context, req *feeds.AddRequest, rsp *feeds.AddResponse) error {
 	log.Info("Received Feeds.New request")
-	e.feeds.Create(feeds.Feed{
-		Name: req.Name,
-		Url:  req.Url,
-	})
+
+	f := feeds.Feed{
+		Name:     req.Name,
+		Url:      req.Url,
+		Category: req.Category,
+	}
+
+	// create the feed
+	e.feeds.Create(f)
+
+	// schedule immediate fetch
+	go e.fetch(&f)
+
 	return nil
 }
 
 func (e *Feeds) Entries(ctx context.Context, req *feeds.EntriesRequest, rsp *feeds.EntriesResponse) error {
-	log.Info("Received Feeds.New request")
-	err := e.fetch(req.Url)
-	if err != nil {
-		return err
-	}
+	log.Info("Received Feeds.Entries request")
 	return e.entries.Read(e.entriesURLIndex.ToQuery(req.Url), &rsp.Entries)
+}
+
+func (e *Feeds) List(ctx context.Context, req *feeds.ListRequest, rsp *feeds.ListResponse) error {
+	var feeds []*feeds.Feed
+
+	err := e.feeds.Read(model.QueryAll(), &feeds)
+	if err != nil {
+		return errors.InternalServerError("feeds.list", "failed to read list of feeds: %v", err)
+	}
+
+	rsp.Feeds = feeds
+	return nil
+}
+
+func (e *Feeds) Remove(ctx context.Context, req *feeds.RemoveRequest, rsp *feeds.RemoveResponse) error {
+	if len(req.Name) == 0 {
+		return errors.BadRequest("feeds.remove", "blank name provided")
+	}
+
+	e.feeds.Delete(model.QueryEquals("name", req.Name))
+	return nil
 }
 
 func (e *Feeds) List(ctx context.Context, req *feeds.ListRequest, rsp *feeds.ListResponse) error {

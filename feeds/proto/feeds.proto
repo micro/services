@@ -18,6 +18,8 @@ message Feed {
 	// rss feed url
 	// eg. http://a16z.com/feed/
 	string url = 2;
+	// category of the feed
+	string category = 3;
 }
 
 message Entry {
@@ -27,6 +29,7 @@ message Entry {
 	string title = 4;
 	string content = 5;
 	int64 date = 6;
+	string category = 7;
 }
 
 message AddRequest {
@@ -36,6 +39,8 @@ message AddRequest {
 	// rss feed url
 	// eg. http://a16z.com/feed/
 	string url = 2;
+	// category to add
+	string category = 3;
 }
 
 message AddResponse {
