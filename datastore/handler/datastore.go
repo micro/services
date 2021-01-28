@@ -78,7 +78,14 @@ func (e *Datastore) Read(ctx context.Context, req *datastore.ReadRequest, rsp *d
 	log.Info("Received Datastore.Read request")
 	q := toQuery(req.Query)
 	result := []map[string]interface{}{}
-	err := model.New(map[string]interface{}{}, nil).Context(ctx).Read(q, &result)
+	indexes, err := e.getIndexes(ctx)
+	if err != nil {
+		return err
+	}
+	db := model.New(map[string]interface{}{}, &model.Options{
+		Indexes: indexes,
+	})
+	err = db.Context(ctx).Read(q, &result)
 	if err != nil {
 		return err
 	}
