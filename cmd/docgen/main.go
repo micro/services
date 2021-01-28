@@ -157,7 +157,7 @@ var servicesToTags = map[string][]string{
 	"posts":      []string{"Headless CMS"},
 	"tags":       []string{"Headless CMS"},
 	"feeds":      []string{"Headless CMS"},
-	"chat":       []string{"Communications"},
+	"datastore":  []string{"Backend"},
 	"geocoding":  []string{"Logistics"},
 	"places":     []string{"Logistics"},
 	"routing":    []string{"Logistics"},

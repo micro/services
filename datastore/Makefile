@@ -7,8 +7,13 @@ init:
 	go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/datastore.proto
-	
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/datastore.proto
+
+.PHONY: docs
+docs:
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/datastore.proto
+	@redoc-cli bundle api-datastore.json
+
 .PHONY: build
 build:
 	go build -o datastore *.go
