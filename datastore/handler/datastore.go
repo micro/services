@@ -94,26 +94,6 @@ func (e *Datastore) Read(ctx context.Context, req *datastore.ReadRequest, rsp *d
 	return err
 }
 
-func (e *Datastore) List(ctx context.Context, req *datastore.ListRequest, rsp *datastore.ListResponse) error {
-	log.Info("Received Datastore.List request")
-	q := toQuery(req.Query)
-	result := []map[string]interface{}{}
-	indexes, err := e.getIndexes(ctx)
-	if err != nil {
-		return err
-	}
-	db := model.New(map[string]interface{}{}, &model.Options{
-		Indexes: indexes,
-	})
-	err = db.Context(ctx).Read(q, &result)
-	if err != nil {
-		return err
-	}
-	js, err := json.Marshal(result)
-	rsp.Values = string(js)
-	return err
-}
-
 func (e *Datastore) CreateIndex(ctx context.Context, req *datastore.CreateIndexRequest, rsp *datastore.CreateIndexResponse) error {
 	log.Info("Received Datastore.Index request")
 
