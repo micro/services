@@ -116,7 +116,7 @@ func (e *Datastore) CreateIndex(ctx context.Context, req *datastore.CreateIndexR
 		Index:  index,
 		TypeOf: "_index",
 	}
-	db := model.New(map[string]interface{}{}, &model.Options{
+	db := model.New(IndexRecord{}, &model.Options{
 		Indexes: []model.Index{indexIndex},
 	})
 	return db.Context(ctx).Create(indexRecord)
