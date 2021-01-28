@@ -60,7 +60,7 @@ type StreamsService interface {
 	// offset as older messages need to be loaded
 	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...client.CallOption) (*ListMessagesResponse, error)
 	// RecentMessages returns the most recent messages in a group of conversations. By default the
-	// most messages retrieved per conversation is 10, however this can be overriden using the
+	// most messages retrieved per conversation is 25, however this can be overriden using the
 	// limit_per_conversation option
 	RecentMessages(ctx context.Context, in *RecentMessagesRequest, opts ...client.CallOption) (*RecentMessagesResponse, error)
 }
@@ -176,7 +176,7 @@ type StreamsHandler interface {
 	// offset as older messages need to be loaded
 	ListMessages(context.Context, *ListMessagesRequest, *ListMessagesResponse) error
 	// RecentMessages returns the most recent messages in a group of conversations. By default the
-	// most messages retrieved per conversation is 10, however this can be overriden using the
+	// most messages retrieved per conversation is 25, however this can be overriden using the
 	// limit_per_conversation option
 	RecentMessages(context.Context, *RecentMessagesRequest, *RecentMessagesResponse) error
 }

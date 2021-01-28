@@ -10,7 +10,6 @@ service Datastore {
 	rpc Create(CreateRequest) returns (CreateResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Read(ReadRequest) returns (ReadResponse) {}
-	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc CreateIndex(CreateIndexRequest) returns (CreateIndexResponse) {}
 }
@@ -96,16 +95,6 @@ message ReadRequest {
 message ReadResponse {
 	// JSON marshalled record found
 	string value = 1;
-}
-
-message ListRequest {
-	Query query = 1;
-}
-
-message ListResponse {
-	// JSON marshalled records found.
-	// It is a JSON array.
-	string values = 1;
 }
 
 message DeleteRequest {

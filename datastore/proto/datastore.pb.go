@@ -162,7 +162,11 @@ type Order struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	FieldName string          `protobuf:"bytes,1,opt,name=fieldName,proto3" json:"fieldName,omitempty"`
+	// Field to order on
+	// eg. age
+	FieldName string `protobuf:"bytes,1,opt,name=fieldName,proto3" json:"fieldName,omitempty"`
+	// Type of the ordering
+	// eg. ascending, descending, unordered
 	OrderType Order_OrderType `protobuf:"varint,2,opt,name=orderType,proto3,enum=datastore.Order_OrderType" json:"orderType,omitempty"`
 }
 
@@ -217,8 +221,11 @@ type Index struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Field to index on.
+	// eg. email
 	FieldName string `protobuf:"bytes,1,opt,name=fieldName,proto3" json:"fieldName,omitempty"`
-	// Type of index, eg. equality
+	// Type of index
+	// eg. eq
 	Type  string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
 	Order *Order `protobuf:"bytes,3,opt,name=order,proto3" json:"order,omitempty"`
 	// Do not allow duplicate values of this field in the index.
