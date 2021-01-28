@@ -113,3 +113,24 @@ func (e *Feeds) Remove(ctx context.Context, req *feeds.RemoveRequest, rsp *feeds
 	e.feeds.Delete(model.QueryEquals("name", req.Name))
 	return nil
 }
+
+func (e *Feeds) List(ctx context.Context, req *feeds.ListRequest, rsp *feeds.ListResponse) error {
+	var feeds []*feeds.Feed
+
+	err := e.feeds.Read(model.QueryAll(), &feeds)
+	if err != nil {
+		return errors.InternalServerError("feeds.list", "failed to read list of feeds: %v", err)
+	}
+
+	rsp.Feeds = feeds
+	return nil
+}
+
+func (e *Feeds) Remove(ctx context.Context, req *feeds.RemoveRequest, rsp *feeds.RemoveResponse) error {
+	if len(req.Name) == 0 {
+		return errors.BadRequest("feeds.remove", "blank name provided")
+	}
+
+	e.feeds.Delete(model.QueryEquals("name", req.Name))
+	return nil
+}

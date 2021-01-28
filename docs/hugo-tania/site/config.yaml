@@ -30,3 +30,6 @@ markup:
 
 permalinks:
   post: /:filename
+
+taxonomies:
+  tag: "labels"
