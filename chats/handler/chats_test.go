@@ -16,19 +16,23 @@ import (
 
 func testHandler(t *testing.T) *handler.Chats {
 	// connect to the database
-	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5432/chats?sslmode=disable"), &gorm.Config{})
+	addr := os.Getenv("POSTGRES_URL")
+	if len(addr) == 0 {
+		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
+	}
+	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
+	}
+
+	// clean any data from a previous run
+	if err := db.Exec("DROP TABLE IF EXISTS chats, messages CASCADE").Error; err != nil {
+		t.Fatalf("Error cleaning database: %v", err)
 	}
 
 	// migrate the database
 	if err := db.AutoMigrate(&handler.Chat{}, &handler.Message{}); err != nil {
 		t.Fatalf("Error migrating database: %v", err)
-	}
-
-	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE chats, messages CASCADE").Error; err != nil {
-		t.Fatalf("Error cleaning database: %v", err)
 	}
 
 	return &handler.Chats{DB: db, Time: func() time.Time { return time.Unix(1611327673, 0) }}
