@@ -45,7 +45,6 @@ type DatastoreService interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
-	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...client.CallOption) (*CreateIndexResponse, error)
 }
@@ -92,16 +91,6 @@ func (c *datastoreService) Read(ctx context.Context, in *ReadRequest, opts ...cl
 	return out, nil
 }
 
-func (c *datastoreService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
-	req := c.c.NewRequest(c.name, "Datastore.List", in)
-	out := new(ListResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *datastoreService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
 	req := c.c.NewRequest(c.name, "Datastore.Delete", in)
 	out := new(DeleteResponse)
@@ -128,7 +117,6 @@ type DatastoreHandler interface {
 	Create(context.Context, *CreateRequest, *CreateResponse) error
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Read(context.Context, *ReadRequest, *ReadResponse) error
-	List(context.Context, *ListRequest, *ListResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	CreateIndex(context.Context, *CreateIndexRequest, *CreateIndexResponse) error
 }
@@ -138,7 +126,6 @@ func RegisterDatastoreHandler(s server.Server, hdlr DatastoreHandler, opts ...se
 		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
-		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		CreateIndex(ctx context.Context, in *CreateIndexRequest, out *CreateIndexResponse) error
 	}
@@ -163,10 +150,6 @@ func (h *datastoreHandler) Update(ctx context.Context, in *UpdateRequest, out *U
 
 func (h *datastoreHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
 	return h.DatastoreHandler.Read(ctx, in, out)
-}
-
-func (h *datastoreHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
-	return h.DatastoreHandler.List(ctx, in, out)
 }
 
 func (h *datastoreHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
