@@ -5,14 +5,14 @@ import (
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/streams/proto"
+	pb "github.com/micro/services/threads/proto"
 	"gorm.io/gorm"
 )
 
 // RecentMessages returns the most recent messages in a group of conversations. By default the
 // most messages retrieved per conversation is 25, however this can be overriden using the
 // limit_per_conversation option
-func (s *Streams) RecentMessages(ctx context.Context, req *pb.RecentMessagesRequest, rsp *pb.RecentMessagesResponse) error {
+func (s *Threads) RecentMessages(ctx context.Context, req *pb.RecentMessagesRequest, rsp *pb.RecentMessagesResponse) error {
 	// validate the request
 	if len(req.ConversationIds) == 0 {
 		return ErrMissingConversationIDs

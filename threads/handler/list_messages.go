@@ -5,14 +5,14 @@ import (
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/streams/proto"
+	pb "github.com/micro/services/threads/proto"
 )
 
 const DefaultLimit = 25
 
 // List the messages within a conversation in reverse chronological order, using sent_before to
 // offset as older messages need to be loaded
-func (s *Streams) ListMessages(ctx context.Context, req *pb.ListMessagesRequest, rsp *pb.ListMessagesResponse) error {
+func (s *Threads) ListMessages(ctx context.Context, req *pb.ListMessagesRequest, rsp *pb.ListMessagesResponse) error {
 	// validate the request
 	if len(req.ConversationId) == 0 {
 		return ErrMissingConversationID

@@ -6,11 +6,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/streams/proto"
+	pb "github.com/micro/services/threads/proto"
 )
 
 // Create a conversation
-func (s *Streams) CreateConversation(ctx context.Context, req *pb.CreateConversationRequest, rsp *pb.CreateConversationResponse) error {
+func (s *Threads) CreateConversation(ctx context.Context, req *pb.CreateConversationRequest, rsp *pb.CreateConversationResponse) error {
 	// validate the request
 	if len(req.GroupId) == 0 {
 		return ErrMissingGroupID

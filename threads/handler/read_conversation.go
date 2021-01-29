@@ -7,11 +7,11 @@ import (
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/streams/proto"
+	pb "github.com/micro/services/threads/proto"
 )
 
 // Read a conversation using its ID, can filter using group ID if provided
-func (s *Streams) ReadConversation(ctx context.Context, req *pb.ReadConversationRequest, rsp *pb.ReadConversationResponse) error {
+func (s *Threads) ReadConversation(ctx context.Context, req *pb.ReadConversationRequest, rsp *pb.ReadConversationResponse) error {
 	// validate the request
 	if len(req.Id) == 0 {
 		return ErrMissingID

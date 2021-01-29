@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"github.com/micro/services/streams/handler"
-	pb "github.com/micro/services/streams/proto"
+	"github.com/micro/services/threads/handler"
+	pb "github.com/micro/services/threads/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
@@ -13,17 +13,17 @@ import (
 	"gorm.io/gorm"
 )
 
-var dbAddress = "postgresql://postgres@localhost:5432/streams?sslmode=disable"
+var dbAddress = "postgresql://postgres@localhost:5432/threads?sslmode=disable"
 
 func main() {
 	// Create service
 	srv := service.New(
-		service.Name("streams"),
+		service.Name("threads"),
 		service.Version("latest"),
 	)
 
 	// Connect to the database
-	cfg, err := config.Get("streams.database")
+	cfg, err := config.Get("threads.database")
 	if err != nil {
 		logger.Fatalf("Error loading config: %v", err)
 	}
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// Register handler
-	pb.RegisterStreamsHandler(srv.Server(), &handler.Streams{DB: db, Time: time.Now})
+	pb.RegisterThreadsHandler(srv.Server(), &handler.Threads{DB: db, Time: time.Now})
 
 	// Run service
 	if err := srv.Run(); err != nil {

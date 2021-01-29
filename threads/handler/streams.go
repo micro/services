@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
-	pb "github.com/micro/services/streams/proto"
+	pb "github.com/micro/services/threads/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
@@ -20,7 +20,7 @@ var (
 	ErrNotFound               = errors.NotFound("NOT_FOUND", "Conversation not found")
 )
 
-type Streams struct {
+type Threads struct {
 	DB   *gorm.DB
 	Time func() time.Time
 }

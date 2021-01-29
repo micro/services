@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package streams;
-option go_package = "proto;streams";
+package threads;
+option go_package = "proto;threads";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
-service Streams {
+service Threads {
 	// Create a conversation
 	rpc CreateConversation(CreateConversationRequest) returns (CreateConversationResponse);
 	// Read a conversation using its ID, can filter using group ID if provided

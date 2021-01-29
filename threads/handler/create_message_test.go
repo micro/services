@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/micro/services/streams/handler"
-	pb "github.com/micro/services/streams/proto"
+	"github.com/micro/services/threads/handler"
+	pb "github.com/micro/services/threads/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/google/uuid"

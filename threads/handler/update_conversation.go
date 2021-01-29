@@ -5,12 +5,12 @@ import (
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/streams/proto"
+	pb "github.com/micro/services/threads/proto"
 	"gorm.io/gorm"
 )
 
 // Update a conversations topic
-func (s *Streams) UpdateConversation(ctx context.Context, req *pb.UpdateConversationRequest, rsp *pb.UpdateConversationResponse) error {
+func (s *Threads) UpdateConversation(ctx context.Context, req *pb.UpdateConversationRequest, rsp *pb.UpdateConversationResponse) error {
 	// validate the request
 	if len(req.Id) == 0 {
 		return ErrMissingID
