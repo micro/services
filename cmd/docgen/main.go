@@ -214,7 +214,7 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 						if len(parts) <= 1 {
 							return string(bs)
 						}
-						parts[len(parts)-1] = strings.Repeat(" ", prepend) + parts[len(parts)-1]
+						parts[len(parts)-1] = parts[len(parts)-1]
 						return strings.Join(parts, "\n")
 					}
 				}
