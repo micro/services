@@ -268,6 +268,13 @@ func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRe
 				// @todo identify what is a slice and what is not!
 				// currently the openapi converter messes this up
 				// see redoc html output
+				ret[k] = recurse(v.Value.Properties)
+				continue
+			}
+			if v.Value.Type == "array" {
+				// @todo identify what is a slice and what is not!
+				// currently the openapi converter messes this up
+				// see redoc html output
 				ret[k] = []interface{}{recurse(v.Value.Properties)}
 				continue
 			}
