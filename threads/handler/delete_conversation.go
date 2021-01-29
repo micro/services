@@ -5,12 +5,12 @@ import (
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/streams/proto"
+	pb "github.com/micro/services/threads/proto"
 	"gorm.io/gorm"
 )
 
 // Delete a conversation and all the messages within
-func (s *Streams) DeleteConversation(ctx context.Context, req *pb.DeleteConversationRequest, rsp *pb.DeleteConversationResponse) error {
+func (s *Threads) DeleteConversation(ctx context.Context, req *pb.DeleteConversationRequest, rsp *pb.DeleteConversationResponse) error {
 	// validate the request
 	if len(req.Id) == 0 {
 		return ErrMissingID

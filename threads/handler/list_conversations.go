@@ -5,11 +5,11 @@ import (
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/streams/proto"
+	pb "github.com/micro/services/threads/proto"
 )
 
 // List all the conversations for a group
-func (s *Streams) ListConversations(ctx context.Context, req *pb.ListConversationsRequest, rsp *pb.ListConversationsResponse) error {
+func (s *Threads) ListConversations(ctx context.Context, req *pb.ListConversationsRequest, rsp *pb.ListConversationsResponse) error {
 	// validate the request
 	if len(req.GroupId) == 0 {
 		return ErrMissingGroupID
