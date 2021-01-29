@@ -66,3 +66,13 @@ jobs:
           BRANCH: gh-pages
           FOLDER: services/docs
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      
+      - name: Generate package
+        working-directory: services
+        run: |
+          go run cmd/tsgen/main.go .
+
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          package: services/clients/ts/package.json
+          token: ${{ secrets.NPM_TOKEN }}

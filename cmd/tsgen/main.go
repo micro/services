@@ -33,7 +33,7 @@ func main() {
 
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
-
+			serviceName := f.Name()
 			serviceDir := filepath.Join(workDir, f.Name())
 			serviceFiles, err := ioutil.ReadDir(serviceDir)
 			if err != nil {
@@ -60,51 +60,59 @@ func main() {
 			fmt.Println("Processing folder", serviceDir)
 
 			// generate typescript files from openapi json
-			//gents := exec.Command("npx", "openapi-typescript", apiJSON, "--output", "schema.ts")
-			//gents.Dir = serviceDir
-			//fmt.Println(serviceDir)
-			//outp, err := gents.CombinedOutput()
-			//if err != nil {
-			//	fmt.Println("Failed to make docs", string(outp))
-			//	os.Exit(1)
-			//}
-
-			// get latest version from github
-			getVersions := exec.Command("npm", "show", "@micro/services", "time", "--json")
-			getVersions.Dir = serviceDir
+			gents := exec.Command("npx", "openapi-typescript", apiJSON, "--output", serviceName+".ts")
+			gents.Dir = serviceDir
 			fmt.Println(serviceDir)
-			outp, err := getVersions.CombinedOutput()
+			outp, err := gents.CombinedOutput()
 			if err != nil {
 				fmt.Println("Failed to make docs", string(outp))
 				os.Exit(1)
 			}
-			versions := map[string]interface{}{}
-			json.Unmarshal(outp, versions)
-			var latest *semver.Version
-			for version, _ := range versions {
-				v, err := semver.NewVersion(version)
-				if err != nil {
-					fmt.Println("Failed to parse semver", err)
-					os.Exit(1)
-				}
-				if latest == nil {
-					latest = v
-				}
-				if v.GreaterThan(latest) {
-					latest = v
-				}
-			}
-			latest.IncPatch()
 
-			// bump package to latest version
-			repl := exec.Command("sed", "-i", "-e", "'s/0.0.1/"+latest.String()+"/g'", "package.json")
-			repl.Dir = tsPath
-			outp, err = repl.CombinedOutput()
-			if err != nil {
-				fmt.Println("Failed to make docs", string(outp))
-				os.Exit(1)
-			}
+			// copy generated file to folder
+			copyFileContents(filepath.Join(serviceDir, serviceName+".ts"), filepath.Join(tsPath, serviceName+".json"))
 		}
+	}
+	// get latest version from github
+	getVersions := exec.Command("npm", "show", "@micro/services", "time", "--json")
+	getVersions.Dir = tsPath
+
+	outp, err := getVersions.CombinedOutput()
+	if err != nil {
+		fmt.Println("Failed to make docs", string(outp))
+		os.Exit(1)
+	}
+	versions := map[string]interface{}{}
+	err = json.Unmarshal(outp, &versions)
+	if err != nil {
+		fmt.Println("Failed to unmarshal versions", string(outp))
+		os.Exit(1)
+	}
+
+	var latest *semver.Version
+	for version, _ := range versions {
+		v, err := semver.NewVersion(version)
+		if err != nil {
+			fmt.Println("Failed to parse semver", err)
+			os.Exit(1)
+		}
+		if latest == nil {
+			latest = v
+		}
+		if v.GreaterThan(latest) {
+			latest = v
+		}
+	}
+	newV := latest.IncPatch()
+
+	// bump package to latest version
+	fmt.Println("Bumping to ", newV.String())
+	repl := exec.Command("sed", "-i", "-e", "s/1.0.1/"+newV.String()+"/g", "package.json")
+	repl.Dir = tsPath
+	outp, err = repl.CombinedOutput()
+	if err != nil {
+		fmt.Println("Failed to make docs", string(outp))
+		os.Exit(1)
 	}
 }
 
