@@ -63,11 +63,17 @@ func (e *Feeds) fetch(f *feeds.Feed) error {
 			tags = append(tags, f.Category)
 		}
 
+		// check if content exists
+		content := item.Content
+		if len(content) == 0 && len(item.Summary) > 0 {
+			content = item.Summary
+		}
+
 		// @todo make this optional
 		_, err := e.postsService.Save(context.TODO(), &posts.SaveRequest{
 			Id:        id,
 			Title:     item.Title,
-			Content:   item.Content,
+			Content:   content,
 			Timestamp: item.Date.Unix(),
 			Metadata: map[string]string{
 				"domain": domain,
