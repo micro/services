@@ -1,4 +1,4 @@
-Threads conversations
+Threaded conversations
 
 # Threads Service
 
