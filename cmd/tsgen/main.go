@@ -46,7 +46,7 @@ func main() {
 			apiJSON := ""
 			for _, serviceFile := range serviceFiles {
 				if strings.Contains(serviceFile.Name(), "api") && strings.HasSuffix(serviceFile.Name(), ".json") {
-					apiJSON = serviceFile.Name()
+					apiJSON = filepath.Join(serviceDir, serviceFile.Name())
 				}
 				if serviceFile.Name() == "skip" {
 					skip = true
@@ -70,7 +70,36 @@ func main() {
 			}
 
 			// copy generated file to folder
-			copyFileContents(filepath.Join(serviceDir, serviceName+".ts"), filepath.Join(tsPath, serviceName+".ts"))
+			copyFileContents(filepath.Join(serviceDir, serviceName+".ts"), filepath.Join(tsPath, serviceName+"_schema.ts"))
+
+			f, err := os.OpenFile(filepath.Join(serviceDir, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			if err != nil {
+				fmt.Println("Failed to open npmrc", err)
+				os.Exit(1)
+			}
+			_, err = f.Write([]byte("export { default as " + strings.Title(serviceName) + " } from \"./" + serviceName + "\";\n"))
+			if err != nil {
+				fmt.Println("Failed to append to index file", err)
+				os.Exit(1)
+			}
+
+			js, err := ioutil.ReadFile(apiJSON)
+
+			if err != nil {
+				fmt.Println("Failed to read json spec", err)
+				os.Exit(1)
+			}
+			spec := &openapi3.Swagger{}
+			err = json.Unmarshal(js, &spec)
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			err = saveFile(tsPath, serviceName, spec)
+			if err != nil {
+				fmt.Println("Failed to generate app", err)
+				os.Exit(1)
+			}
 		}
 	}
 	// login to NPM
@@ -150,58 +179,20 @@ var specTypes = []specType{
 		template:      defTempl,
 		includeReadme: true,
 	},
-	{
-		name:          "microjs markdown",
-		tag:           "Micro.js",
-		filePostFix:   "-microjs.md",
-		titlePostFix:  " Micro.js",
-		template:      microJSTempl,
-		includeReadme: false,
-	},
 }
 
-var servicesToTags = map[string][]string{
-	"users":      []string{"Backend"},
-	"helloworld": []string{"Backend"},
-	"emails":     []string{"Communications"},
-	"sms":        []string{"Communications"},
-	"posts":      []string{"Headless CMS"},
-	"tags":       []string{"Headless CMS"},
-	"feeds":      []string{"Headless CMS"},
-	"datastore":  []string{"Backend"},
-	"geocoding":  []string{"Logistics"},
-	"places":     []string{"Logistics"},
-	"routing":    []string{"Logistics"},
-	"etas":       []string{"Logistics"},
-	"notes":      []string{"Misc"},
-	"messages":   []string{"Misc"},
-}
-
-func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *openapi3.Swagger) error {
+func saveFile(tsDir string, serviceName string, spec *openapi3.Swagger) error {
 	for _, v := range specTypes {
 		fmt.Println("Processing ", v.name)
-		contentFile := filepath.Join(contentDir, serviceName+v.filePostFix)
-		var app []byte
-		if v.includeReadme {
-			app = originalMarkDown
-		}
-		tags := []string{v.tag}
-		serviceTags, ok := servicesToTags[serviceName]
-		if ok {
-			tags = append(tags, serviceTags...)
-		}
-		tagsString := "\n- " + strings.Join(tags, "\n- ")
-
-		err := ioutil.WriteFile(contentFile, append([]byte("---\ntitle: "+serviceName+v.titlePostFix+"\nservicename: "+serviceName+"\nlabels: "+tagsString+"\n---\n"), app...), 0777)
-		if err != nil {
-			fmt.Printf("Failed to write post content to %v:\n%v\n", err)
-			os.Exit(1)
-		}
+		contentFile := filepath.Join(tsDir, serviceName+".ts")
 		fi, err := os.OpenFile(contentFile, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 		if err != nil {
 			return err
 		}
 		tmpl, err := template.New("test").Funcs(template.FuncMap{
+			"toLower": func(s string) string {
+				return strings.ToLower(s)
+			},
 			"params": func(p openapi3.Parameters) string {
 				ls := ""
 				for _, v := range p {
@@ -309,52 +300,10 @@ func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRe
 }
 
 const defTempl = `
-## cURL
+import * as "{{ .Info.Title | toLower }}" from './{{ .Info.Title | toLower }}_schema';
 
-{{ range $key, $value := .Paths }}
-### {{ $key | titleize }}
-<!-- We use the request body description here as endpoint descriptions are not
-being lifted correctly from the proto by the openapi spec generator -->
-{{ $value.Post.RequestBody.Ref | schemaDescription }}
-` + "```" + `shell
-> curl 'https://api.m3o.com{{ $key }}' \
-  -H 'micro-namespace: $yourNamespace' \
-  -H 'authorization: Bearer $yourToken' \
-  -d {{ $value.Post.RequestBody.Ref | schemaJSON 0 }};
-# Response
-{{ $value.Post.Responses | firstResponseRef | schemaJSON 0 }}
-` + "```" + `
-
-{{ end }}
-`
-
-const microJSTempl = `
-## Micro.js
-
-{{ range $key, $value := .Paths }}
-### {{ $key | titleize }}
-<!-- We use the request body description here as endpoint descriptions are not
-being lifted correctly from the proto by the openapi spec generator -->
-{{ $value.Post.RequestBody.Ref | schemaDescription }}
-` + "```" + `html
-<script src="https://web.m3o.com/assets/micro.js"></script>
-<script type="text/javascript">
-  document.addEventListener("DOMContentLoaded", function (event) {
-    // Login is only required for endpoints doing authorization
-    Micro.requireLogin(function () {
-      Micro.post(
-        "{{ $key }}",
-        "micro",
-        {{ $value.Post.RequestBody.Ref | schemaJSON 8 }},
-        function (data) {
-          console.log("Success.");
-        }
-      );
-    });
-  });
-</script>
-` + "```" + `
-
+{{ range $key, $value := .Schemas }}
+export type {{ $key }} {{ .Info.Title | toLower }}.schemas.{{ $key }};
 {{ end }}
 `
 
