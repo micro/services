@@ -10,9 +10,9 @@
   },
   "author": "",
   "license": "ISC",
-  "prepublish": "tsc",
   "scripts": {
     "build": "tsc",
+    "prepublish": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
