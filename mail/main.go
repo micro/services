@@ -4,19 +4,19 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 
-	"github.com/micro/services/messages/handler"
-	pb "github.com/micro/services/messages/proto"
+	"github.com/micro/services/mail/handler"
+	pb "github.com/micro/services/mail/proto"
 )
 
 func main() {
 	// Create the service
 	srv := service.New(
-		service.Name("messages"),
+		service.Name("mail"),
 		service.Version("latest"),
 	)
 
 	// Register the handler against the server
-	pb.RegisterMessagesHandler(srv.Server(), new(handler.Messages))
+	pb.RegisterMailHandler(srv.Server(), new(handler.Mail))
 
 	// Run the service
 	if err := srv.Run(); err != nil {

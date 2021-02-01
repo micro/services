@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package messages;
-option go_package = "proto;messages";
+package mail;
+option go_package = "proto;mail";
 
-service Messages {
+service Mail {
   rpc Send(SendRequest) returns (SendResponse);
   rpc List(ListRequest) returns (ListResponse);
   rpc Read(ReadRequest) returns (ReadResponse);
@@ -32,7 +32,7 @@ message ListRequest {
 }
 
 message ListResponse {
-  repeated Message messages = 1;
+  repeated Message mail = 1;
 }
 
 message ReadRequest {
