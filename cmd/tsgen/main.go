@@ -81,7 +81,10 @@ func main() {
 	}
 
 	defer f.Close()
-
+	if len(os.Getenv("NPM_TOKEN")) == 0 {
+		fmt.Println("No NPM_TOKEN env found")
+		os.Exit(1)
+	}
 	if _, err = f.WriteString(":_authToken=" + os.Getenv("NPM_TOKEN")); err != nil {
 		fmt.Println("Failed to open npmrc", err)
 		os.Exit(1)
