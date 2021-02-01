@@ -96,7 +96,7 @@ func main() {
 
 	outp, err := getVersions.CombinedOutput()
 	if err != nil {
-		fmt.Println("Failed to make docs", string(outp))
+		fmt.Println("Failed to get versions of NPM package", string(outp))
 		os.Exit(1)
 	}
 	versions := map[string]interface{}{}
