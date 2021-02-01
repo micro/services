@@ -73,6 +73,20 @@ func main() {
 			copyFileContents(filepath.Join(serviceDir, serviceName+".ts"), filepath.Join(tsPath, serviceName+".json"))
 		}
 	}
+	// login to NPM
+	f, err := os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		fmt.Println("Failed to open npmrc", err)
+		os.Exit(1)
+	}
+
+	defer f.Close()
+
+	if _, err = f.WriteString(":_authToken=" + os.Getenv("NPM_TOKEN")); err != nil {
+		fmt.Println("Failed to open npmrc", err)
+		os.Exit(1)
+	}
+
 	// get latest version from github
 	getVersions := exec.Command("npm", "show", "@micro/services", "time", "--json")
 	getVersions.Dir = tsPath

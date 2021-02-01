@@ -69,6 +69,8 @@ jobs:
       
       - name: Generate package
         working-directory: services
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           go run cmd/tsgen/main.go .
 
