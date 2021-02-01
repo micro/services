@@ -1,23 +1,23 @@
-The messages service is a simplified service for sending messages, much like email.
+The mail service is a simplified service for sending mail, much like email.
 
-# Messages Service
+# Mail Service
 
 ## Send a message
 
 ### CLI
 
 ```bash
-> micro messages send --to=John --from=Barry --subject=HelloWorld --text="Hello John"
+> micro mail send --to=John --from=Barry --subject=HelloWorld --text="Hello John"
 ```
 
-## List the messages a user has received
+## List the mail a user has received
 
 ### CLI
 
 ```bash
-> micro messages list --user=John
+> micro mail list --user=John
 {
-	"messages": [
+	"mail": [
 		{
 			"id": "78efd836-ca51-4163-af43-65985f7c6587",
 			"to": "John",
@@ -35,7 +35,7 @@ The messages service is a simplified service for sending messages, much like ema
 ### CLI
 
 ```bash
-> micro messages read --id=78efd836-ca51-4163-af43-65985f7c6587
+> micro mail read --id=78efd836-ca51-4163-af43-65985f7c6587
 {
 	"message": {
 		"id": "78efd836-ca51-4163-af43-65985f7c6587",
