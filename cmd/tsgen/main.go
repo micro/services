@@ -70,7 +70,7 @@ func main() {
 			}
 
 			// copy generated file to folder
-			copyFileContents(filepath.Join(serviceDir, serviceName+".ts"), filepath.Join(tsPath, serviceName+".json"))
+			copyFileContents(filepath.Join(serviceDir, serviceName+".ts"), filepath.Join(tsPath, serviceName+".ts"))
 		}
 	}
 	// login to NPM
