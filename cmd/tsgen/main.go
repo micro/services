@@ -77,7 +77,7 @@ func main() {
 				fmt.Println("Failed to open npmrc", err)
 				os.Exit(1)
 			}
-			_, err = f.Write([]byte("export { default as " + strings.Title(serviceName) + " } from \"./" + serviceName + "\";\n"))
+			_, err = f.Write([]byte("export { default as " + strings.Title(serviceName) + " } from './" + serviceName + "';\n"))
 			if err != nil {
 				fmt.Println("Failed to append to index file", err)
 				os.Exit(1)
@@ -185,7 +185,7 @@ func saveFile(tsDir string, serviceName string, spec *openapi3.Swagger) error {
 	for _, v := range specTypes {
 		fmt.Println("Processing ", v.name)
 		contentFile := filepath.Join(tsDir, serviceName+".ts")
-		fi, err := os.OpenFile(contentFile, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+		fi, err := os.OpenFile(contentFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0777)
 		if err != nil {
 			return err
 		}
@@ -261,6 +261,7 @@ func saveFile(tsDir string, serviceName string, spec *openapi3.Swagger) error {
 
 func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRef) map[string]interface{} {
 	var recurse func(props map[string]*openapi3.SchemaRef) map[string]interface{}
+
 	recurse = func(props map[string]*openapi3.SchemaRef) map[string]interface{} {
 		ret := map[string]interface{}{}
 		for k, v := range props {
@@ -300,11 +301,9 @@ func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRe
 }
 
 const defTempl = `
-import * as "{{ .Info.Title | toLower }}" from './{{ .Info.Title | toLower }}_schema';
+import { components } from './{{ .Info.Title | toLower }}_schema';
 
-{{ range $key, $value := .Schemas }}
-export type {{ $key }} {{ .Info.Title | toLower }}.schemas.{{ $key }};
-{{ end }}
+export interface types extends components {};
 `
 
 // CopyFile copies a file from src to dst. If src and dst files exist, and are
