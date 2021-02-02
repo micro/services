@@ -86,7 +86,7 @@ jobs:
         working-directory: services
         run: |
           rm clients/ts/.npmrc
-          sed 's/micro/m3o/g' clients/ts/package.json
+          sed -i 's/micro/m3o/g' clients/ts/package.json
 
       - uses: JS-DevTools/npm-publish@v1
         with:
