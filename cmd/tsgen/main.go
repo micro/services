@@ -82,8 +82,10 @@ func main() {
 			}
 
 			tsContent := ""
+			typeNames := []string{}
 			for k, v := range spec.Components.Schemas {
 				tsContent += schemaToTs(k, v) + "\n\n"
+				typeNames = append(typeNames, k)
 			}
 			f, err := os.OpenFile(filepath.Join(tsPath, serviceName+".ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 			if err != nil {
@@ -101,7 +103,8 @@ func main() {
 				fmt.Println("Failed to open index.ts", err)
 				os.Exit(1)
 			}
-			_, err = f.Write([]byte("export { default as " + strings.Title(serviceName) + " } from './" + serviceName + "';\n"))
+			// @todo there is a possibility of colliding type names here
+			_, err = f.Write([]byte(fmt.Sprintf("import {%v} from './%v';\nexport {%v};", strings.Join(typeNames, ", "), serviceName, strings.Join(typeNames, ", "))))
 			if err != nil {
 				fmt.Println("Failed to append to index file", err)
 				os.Exit(1)
