@@ -205,7 +205,23 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 		logger.Infof("Listing posts, offset: %v, limit: %v", req.Offset, limit)
 	}
 
-	return p.db.Read(q, &rsp.Posts)
+	var posts []*proto.Post
+
+	if err := p.db.Read(q, &posts); err != nil {
+		return err
+	}
+
+	if len(posts) <= int(req.Limit) {
+		rsp.Posts = posts
+		return nil
+	}
+
+	// TODO: deal with offset or let model handle it.
+	for i := 0; i < int(req.Limit); i++ {
+		rsp.Posts = append(rsp.Posts, posts[i])
+	}
+
+	return nil
 }
 
 func (p *Posts) Delete(ctx context.Context, req *proto.DeleteRequest, rsp *proto.DeleteResponse) error {
