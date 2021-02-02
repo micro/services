@@ -74,7 +74,21 @@ jobs:
         run: |
           go run cmd/tsgen/main.go .
 
+      # publish to github first under micro/services
+      # .npmrc has settings for it
       - uses: JS-DevTools/npm-publish@v1
         with:
           package: services/clients/ts/package.json
           token: ${{ secrets.NPM_TOKEN }}
+
+      # publish to npm m3o/services
+      - name: Change npm settings
+        working-directory: services
+        run: |
+          rm clients/ts/.npmrc
+          sed 's/micro/m3o/g' clients/ts/package.json
+
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          package: services/clients/ts/package.json
+          token: ${{ secrets.NPM_SITE_TOKEN }}
