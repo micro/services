@@ -68,21 +68,6 @@ func main() {
 			//	fmt.Println("Failed to make docs", string(outp))
 			//	os.Exit(1)
 			//}
-
-			// copy generated file to folder
-			copyFileContents(filepath.Join(serviceDir, serviceName+".ts"), filepath.Join(tsPath, serviceName+"_schema.ts"))
-
-			f, err := os.OpenFile(filepath.Join(serviceDir, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			if err != nil {
-				fmt.Println("Failed to open npmrc", err)
-				os.Exit(1)
-			}
-			_, err = f.Write([]byte("export { default as " + strings.Title(serviceName) + " } from './" + serviceName + "';\n"))
-			if err != nil {
-				fmt.Println("Failed to append to index file", err)
-				os.Exit(1)
-			}
-
 			js, err := ioutil.ReadFile(apiJSON)
 
 			if err != nil {
@@ -95,9 +80,30 @@ func main() {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
-			err = saveFile(tsPath, serviceName, spec)
+
+			tsContent := ""
+			for k, v := range spec.Components.Schemas {
+				tsContent += schemaToTs(k, v) + "\n"
+			}
+			f, err := os.OpenFile(filepath.Join(tsPath, serviceName+"_schema.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 			if err != nil {
-				fmt.Println("Failed to generate app", err)
+				fmt.Println("Failed to open schema file", err)
+				os.Exit(1)
+			}
+			_, err = f.Write([]byte(tsContent))
+			if err != nil {
+				fmt.Println("Failed to append to schema file", err)
+				os.Exit(1)
+			}
+
+			f, err = os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			if err != nil {
+				fmt.Println("Failed to open index.ts", err)
+				os.Exit(1)
+			}
+			_, err = f.Write([]byte("export { default as " + strings.Title(serviceName) + " } from './" + serviceName + "';\n"))
+			if err != nil {
+				fmt.Println("Failed to append to index file", err)
 				os.Exit(1)
 			}
 		}
