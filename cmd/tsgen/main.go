@@ -83,9 +83,9 @@ func main() {
 
 			tsContent := ""
 			for k, v := range spec.Components.Schemas {
-				tsContent += schemaToTs(k, v) + "\n"
+				tsContent += schemaToTs(k, v) + "\n\n"
 			}
-			f, err := os.OpenFile(filepath.Join(tsPath, serviceName+"_schema.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			f, err := os.OpenFile(filepath.Join(tsPath, serviceName+".ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
 				os.Exit(1)
