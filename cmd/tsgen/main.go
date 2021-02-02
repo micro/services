@@ -60,14 +60,14 @@ func main() {
 			fmt.Println("Processing folder", serviceDir)
 
 			// generate typescript files from openapi json
-			gents := exec.Command("npx", "openapi-typescript", apiJSON, "--output", serviceName+".ts")
-			gents.Dir = serviceDir
-			fmt.Println(serviceDir)
-			outp, err := gents.CombinedOutput()
-			if err != nil {
-				fmt.Println("Failed to make docs", string(outp))
-				os.Exit(1)
-			}
+			//gents := exec.Command("npx", "openapi-typescript", apiJSON, "--output", serviceName+".ts")
+			//gents.Dir = serviceDir
+			//fmt.Println(serviceDir)
+			//outp, err := gents.CombinedOutput()
+			//if err != nil {
+			//	fmt.Println("Failed to make docs", string(outp))
+			//	os.Exit(1)
+			//}
 
 			// copy generated file to folder
 			copyFileContents(filepath.Join(serviceDir, serviceName+".ts"), filepath.Join(tsPath, serviceName+"_schema.ts"))
@@ -298,6 +298,51 @@ func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRe
 		return ret
 	}
 	return recurse(spec.Value.Properties)
+}
+
+func schemaToTs(title string, spec *openapi3.SchemaRef) string {
+	var recurse func(props map[string]*openapi3.SchemaRef, level int) string
+
+	recurse = func(props map[string]*openapi3.SchemaRef, level int) string {
+		ret := ""
+
+		i := 0
+		for k, v := range props {
+			ret += strings.Repeat("  ", level)
+			k = strcase.SnakeCase(k)
+			//v.Value.
+			if v.Value.Type == "object" {
+				// @todo identify what is a slice and what is not!
+				// currently the openapi converter messes this up
+				// see redoc html output
+				ret += recurse(v.Value.Properties, level+1)
+				continue
+			}
+			if v.Value.Type == "array" {
+				// @todo identify what is a slice and what is not!
+				// currently the openapi converter messes this up
+				// see redoc html output
+				ret += recurse(v.Value.Properties, level+1) + "[];"
+				continue
+			}
+			switch v.Value.Type {
+			case "string":
+				ret += k + "?: " + "number;"
+			case "number":
+				ret += k + "?: " + "number;"
+			case "boolean":
+				ret += k + "?: " + "boolean;"
+			}
+
+			if i < len(props) {
+				ret += "\n"
+			}
+			i++
+
+		}
+		return ret
+	}
+	return "export interface " + title + " {\n" + recurse(spec.Value.Properties, 1) + "}"
 }
 
 const defTempl = `
