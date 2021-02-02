@@ -311,23 +311,24 @@ func schemaToTs(title string, spec *openapi3.SchemaRef) string {
 			ret += strings.Repeat("  ", level)
 			k = strcase.SnakeCase(k)
 			//v.Value.
-			if v.Value.Type == "object" {
-				// @todo identify what is a slice and what is not!
-				// currently the openapi converter messes this up
-				// see redoc html output
-				ret += recurse(v.Value.Properties, level+1)
-				continue
-			}
-			if v.Value.Type == "array" {
-				// @todo identify what is a slice and what is not!
-				// currently the openapi converter messes this up
-				// see redoc html output
-				ret += recurse(v.Value.Properties, level+1) + "[];"
-				continue
-			}
 			switch v.Value.Type {
+			case "object":
+				// @todo identify what is a slice and what is not!
+				// currently the openapi converter messes this up
+				// see redoc html output
+				ret += k + "?: {\n" + recurse(v.Value.Properties, level+1) + strings.Repeat("  ", level) + "};"
+
+			case "array":
+				if len(v.Value.Items.Value.Properties) == 0 {
+					ret += k + "?: " + v.Value.Items.Value.Type + "[];"
+				} else {
+					// @todo identify what is a slice and what is not!
+					// currently the openapi converter messes this up
+					// see redoc html output
+					ret += k + "?: {\n" + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + "}[];"
+				}
 			case "string":
-				ret += k + "?: " + "number;"
+				ret += k + "?: " + "string;"
 			case "number":
 				ret += k + "?: " + "number;"
 			case "boolean":
