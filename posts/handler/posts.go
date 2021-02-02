@@ -211,13 +211,16 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 		return err
 	}
 
-	if len(posts) <= int(req.Limit) {
-		rsp.Posts = posts
-		return nil
+	// model does not deal with limits yet
+	limit := int(req.Limit)
+
+	// set the limit to length of posts
+	if v := len(posts); v < limit {
+		limit = v
 	}
 
-	// TODO: deal with offset or let model handle it.
-	for i := 0; i < int(req.Limit); i++ {
+	// iterate and add
+	for i := 0; i <= limit; i++ {
 		rsp.Posts = append(rsp.Posts, posts[i])
 	}
 
