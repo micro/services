@@ -78,6 +78,7 @@ jobs:
       # .npmrc has settings for it
       - uses: JS-DevTools/npm-publish@v1
         with:
+          access: public
           package: services/clients/ts/package.json
           token: ${{ secrets.NPM_TOKEN }}
 
@@ -90,5 +91,6 @@ jobs:
 
       - uses: JS-DevTools/npm-publish@v1
         with:
+          access: public
           package: services/clients/ts/package.json
           token: ${{ secrets.NPM_SITE_TOKEN }}
