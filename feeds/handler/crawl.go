@@ -25,14 +25,16 @@ func (e *Feeds) fetchAll() {
 		return
 	}
 	for _, feed := range fs {
-		err = e.fetch(feed.Url)
+		err = e.fetch(feed)
 		if err != nil {
 			log.Errorf("Error saving post: %v", err)
 		}
 	}
 }
 
-func (e *Feeds) fetch(url string) error {
+func (e *Feeds) fetch(f *feeds.Feed) error {
+	url := f.Url
+
 	log.Infof("Fetching address %v", url)
 	fd, err := rss.Fetch(url)
 	if err != nil {
@@ -42,32 +44,48 @@ func (e *Feeds) fetch(url string) error {
 
 	for _, item := range fd.Items {
 		id := fmt.Sprintf("%x", md5.Sum([]byte(item.ID)))
+
 		err = e.entries.Create(feeds.Entry{
-			Id:      id,
-			Url:     item.Link,
-			Title:   item.Title,
-			Domain:  domain,
-			Content: item.Summary,
-			Date:    item.Date.Unix(),
+			Id:       id,
+			Url:      item.Link,
+			Title:    item.Title,
+			Domain:   domain,
+			Content:  item.Summary,
+			Date:     item.Date.Unix(),
+			Category: f.Category,
 		})
 		if err != nil {
 			return fmt.Errorf("Error saving item: %v", err)
 		}
+
+		var tags []string
+		if len(f.Category) > 0 {
+			tags = append(tags, f.Category)
+		}
+
+		// check if content exists
+		content := item.Content
+		if len(content) == 0 && len(item.Summary) > 0 {
+			content = item.Summary
+		}
+
 		// @todo make this optional
 		_, err := e.postsService.Save(context.TODO(), &posts.SaveRequest{
 			Id:        id,
 			Title:     item.Title,
-			Content:   item.Content,
+			Content:   content,
 			Timestamp: item.Date.Unix(),
 			Metadata: map[string]string{
 				"domain": domain,
 				"link":   item.Link,
 			},
+			Tags: tags,
 		})
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 

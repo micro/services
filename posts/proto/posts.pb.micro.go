@@ -42,6 +42,8 @@ func NewPostsEndpoints() []*api.Endpoint {
 // Client API for Posts service
 
 type PostsService interface {
+	// Index returns the posts index without content
+	Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error)
 	// Query currently only supports read by slug or timestamp, no listing.
 	Query(ctx context.Context, in *QueryRequest, opts ...client.CallOption) (*QueryResponse, error)
 	Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error)
@@ -58,6 +60,16 @@ func NewPostsService(name string, c client.Client) PostsService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *postsService) Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error) {
+	req := c.c.NewRequest(c.name, "Posts.Index", in)
+	out := new(IndexResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *postsService) Query(ctx context.Context, in *QueryRequest, opts ...client.CallOption) (*QueryResponse, error) {
@@ -93,6 +105,8 @@ func (c *postsService) Delete(ctx context.Context, in *DeleteRequest, opts ...cl
 // Server API for Posts service
 
 type PostsHandler interface {
+	// Index returns the posts index without content
+	Index(context.Context, *IndexRequest, *IndexResponse) error
 	// Query currently only supports read by slug or timestamp, no listing.
 	Query(context.Context, *QueryRequest, *QueryResponse) error
 	Save(context.Context, *SaveRequest, *SaveResponse) error
@@ -101,6 +115,7 @@ type PostsHandler interface {
 
 func RegisterPostsHandler(s server.Server, hdlr PostsHandler, opts ...server.HandlerOption) error {
 	type posts interface {
+		Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error
 		Query(ctx context.Context, in *QueryRequest, out *QueryResponse) error
 		Save(ctx context.Context, in *SaveRequest, out *SaveResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
@@ -114,6 +129,10 @@ func RegisterPostsHandler(s server.Server, hdlr PostsHandler, opts ...server.Han
 
 type postsHandler struct {
 	PostsHandler
+}
+
+func (h *postsHandler) Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error {
+	return h.PostsHandler.Index(ctx, in, out)
 }
 
 func (h *postsHandler) Query(ctx context.Context, in *QueryRequest, out *QueryResponse) error {

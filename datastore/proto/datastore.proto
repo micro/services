@@ -34,7 +34,7 @@ message Order {
     	option allow_alias = true;
     	UNORDERED = 0;
     	ASCENDING = 1;
-    	DESCENDING = 1;
+    	DESCENDING = 2;
   	}
 	// Type of the ordering
 	// eg. ascending, descending, unordered

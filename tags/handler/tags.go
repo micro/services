@@ -7,9 +7,9 @@ import (
 	"fmt"
 
 	"github.com/gosimple/slug"
-	"github.com/micro/dev/model"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/model"
 	"github.com/micro/micro/v3/service/store"
 	proto "github.com/micro/services/tags/proto"
 )
@@ -27,17 +27,15 @@ type Tags struct {
 func NewTags() *Tags {
 	slugIndex := model.ByEquality("slug")
 	slugIndex.Order.Type = model.OrderTypeUnordered
-	return &Tags{
-		db: model.New(
-			store.DefaultStore,
-			"tags",
-			model.Indexes(model.ByEquality("type")),
-			&model.ModelOptions{
-				IdIndex: slugIndex,
-				Debug:   false,
-			},
+	tags := &Tags{
+		db: model.NewModel(
+			model.WithKey("slug"),
+			model.WithIndexes(model.ByEquality("type"), slugIndex),
 		),
 	}
+
+	tags.db.Register(proto.Tag{})
+	return tags
 }
 
 func (t *Tags) Add(ctx context.Context, req *proto.AddRequest, rsp *proto.AddResponse) error {
@@ -47,9 +45,9 @@ func (t *Tags) Add(ctx context.Context, req *proto.AddRequest, rsp *proto.AddRes
 
 	tags := []*proto.Tag{}
 	tagSlug := slug.Make(req.GetTitle())
-	q := model.Equals("slug", tagSlug)
+	q := model.QueryEquals("slug", tagSlug)
 	q.Order.Type = model.OrderTypeUnordered
-	err := t.db.List(q, &tags)
+	err := t.db.Read(q, &tags)
 	if err != nil {
 		return err
 	}
@@ -102,7 +100,7 @@ func (t *Tags) Add(ctx context.Context, req *proto.AddRequest, rsp *proto.AddRes
 
 func (t *Tags) saveTag(tag *proto.Tag) error {
 	tag.Slug = slug.Make(tag.Title)
-	return t.db.Save(tag)
+	return t.db.Create(tag)
 }
 
 func (t *Tags) Remove(ctx context.Context, req *proto.RemoveRequest, rsp *proto.RemoveResponse) error {
@@ -157,14 +155,14 @@ func (t *Tags) List(ctx context.Context, req *proto.ListRequest, rsp *proto.List
 	if len(req.ResourceID) > 0 {
 		key = fmt.Sprintf("%v:%v", resourcePrefix, req.ResourceID)
 	} else if len(req.Type) > 0 {
-		q = model.Equals("type", req.Type)
+		q = model.QueryEquals("type", req.Type)
 	} else {
 		return errors.BadRequest("tags.list.input-check", "resource id or type is required")
 	}
 
 	if q.Type != "" {
 		tags := []proto.Tag{}
-		err := t.db.List(q, &tags)
+		err := t.db.Read(q, &tags)
 		if err != nil {
 			return err
 		}
@@ -209,9 +207,9 @@ func (t *Tags) Update(ctx context.Context, req *proto.UpdateRequest, rsp *proto.
 
 	tagSlug := slug.Make(req.GetTitle())
 	tags := []proto.Tag{}
-	q := model.Equals("slug", tagSlug)
+	q := model.QueryEquals("slug", tagSlug)
 	q.Order.Type = model.OrderTypeUnordered
-	err := t.db.List(q, &tags)
+	err := t.db.Read(q, &tags)
 	if err != nil {
 		return err
 	}
