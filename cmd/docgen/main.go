@@ -284,7 +284,6 @@ func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRe
 				continue
 			}
 			if v.Value.Type == "array" {
-				fmt.Println(k, v.Value.Items.Value.Type)
 				if v.Value.Items.Value.Type != "object" {
 					ret[k] = []interface{}{getAtomic(v.Value.Items)}
 				} else {
