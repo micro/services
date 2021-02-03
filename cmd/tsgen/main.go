@@ -269,47 +269,6 @@ func saveFile(tsDir string, serviceName string, spec *openapi3.Swagger) error {
 	return nil
 }
 
-func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRef) map[string]interface{} {
-	var recurse func(props map[string]*openapi3.SchemaRef) map[string]interface{}
-
-	recurse = func(props map[string]*openapi3.SchemaRef) map[string]interface{} {
-		ret := map[string]interface{}{}
-		for k, v := range props {
-			k = strcase.SnakeCase(k)
-			//v.Value.
-			if v.Value.Type == "object" {
-				// @todo identify what is a slice and what is not!
-				// currently the openapi converter messes this up
-				// see redoc html output
-				ret[k] = recurse(v.Value.Properties)
-				continue
-			}
-			if v.Value.Type == "array" {
-				// @todo identify what is a slice and what is not!
-				// currently the openapi converter messes this up
-				// see redoc html output
-				ret[k] = []interface{}{recurse(v.Value.Properties)}
-				continue
-			}
-			switch v.Value.Type {
-			case "string":
-				if len(v.Value.Description) > 0 {
-					ret[k] = strings.Replace(v.Value.Description, "\n", ".", -1)
-				} else {
-					ret[k] = v.Value.Type
-				}
-			case "number":
-				ret[k] = 1
-			case "boolean":
-				ret[k] = true
-			}
-
-		}
-		return ret
-	}
-	return recurse(spec.Value.Properties)
-}
-
 func schemaToTs(title string, spec *openapi3.SchemaRef) string {
 	var recurse func(props map[string]*openapi3.SchemaRef, level int) string
 
