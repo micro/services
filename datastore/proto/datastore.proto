@@ -31,7 +31,6 @@ message Order {
 	// Default is true. This option only exists for strings, where ordering
 	// comes at the cost of having rather long padded keys.
 	enum OrderType {
-    	option allow_alias = true;
     	UNORDERED = 0;
     	ASCENDING = 1;
     	DESCENDING = 2;
