@@ -8,7 +8,12 @@ init:
 .PHONY: proto
 proto:
 	protoc --proto_path=. --micro_out=. --go_out=:. proto/threads.proto
-	
+
+.PHONY: docs
+docs:
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/threads.proto
+	@redoc-cli bundle api-protobuf.json
+
 .PHONY: build
 build:
 	go build -o threads *.go

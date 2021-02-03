@@ -1,5 +1,10 @@
 name: Generate docs
-on: [push]
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - master
 
 jobs:
   docs:
@@ -66,3 +71,31 @@ jobs:
           BRANCH: gh-pages
           FOLDER: services/docs
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      
+      - name: Generate package
+        working-directory: services
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          go run cmd/tsgen/main.go .
+
+      # publish to github first under micro/services
+      # .npmrc has settings for it
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          access: public
+          package: services/clients/ts/package.json
+          token: ${{ secrets.NPM_TOKEN }}
+
+      # publish to npm m3o/services
+      - name: Change npm settings
+        working-directory: services
+        run: |
+          rm clients/ts/.npmrc
+          sed -i 's/micro/m3o/g' clients/ts/package.json
+
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          access: public
+          package: services/clients/ts/package.json
+          token: ${{ secrets.NPM_SITE_TOKEN }}

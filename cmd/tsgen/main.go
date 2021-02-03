@@ -12,6 +12,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stoewer/go-strcase"
 )
@@ -28,15 +29,11 @@ func main() {
 	}
 	workDir, _ := os.Getwd()
 
-	docPath := filepath.Join(workDir, "docs")
-	err = ioutil.WriteFile(filepath.Join(docPath, "CNAME"), []byte(docsURL), 0777)
-	if err != nil {
-		fmt.Printf("Failed to CNAME")
-		os.Exit(1)
-	}
+	tsPath := filepath.Join(workDir, "clients", "ts")
 
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
+			serviceName := f.Name()
 			serviceDir := filepath.Join(workDir, f.Name())
 			serviceFiles, err := ioutil.ReadDir(serviceDir)
 			if err != nil {
@@ -44,7 +41,13 @@ func main() {
 				os.Exit(1)
 			}
 			skip := false
+
+			// detect openapi json file
+			apiJSON := ""
 			for _, serviceFile := range serviceFiles {
+				if strings.Contains(serviceFile.Name(), "api") && strings.HasSuffix(serviceFile.Name(), ".json") {
+					apiJSON = filepath.Join(serviceDir, serviceFile.Name())
+				}
 				if serviceFile.Name() == "skip" {
 					skip = true
 				}
@@ -52,39 +55,24 @@ func main() {
 			if skip {
 				continue
 			}
+			fmt.Println(apiJSON)
 
 			fmt.Println("Processing folder", serviceDir)
-			makeProto := exec.Command("make", "docs")
-			makeProto.Dir = serviceDir
-			fmt.Println(serviceDir)
-			outp, err := makeProto.CombinedOutput()
-			if err != nil {
-				fmt.Println("Failed to make docs", string(outp))
-				os.Exit(1)
-			}
-			serviceName := f.Name()
-			dat, err := ioutil.ReadFile(filepath.Join(serviceDir, "README.md"))
-			if err != nil {
-				fmt.Println("Failed to read readme", string(outp))
-				os.Exit(1)
-			}
 
-			contentDir := filepath.Join(workDir, postContentPath)
-			err = os.MkdirAll(contentDir, 0777)
-			if err != nil {
-				fmt.Println("Failed to create content dir", string(outp))
-				os.Exit(1)
-			}
-
-			apiJSON := filepath.Join(serviceDir, "api-"+serviceName+".json")
+			// generate typescript files from openapi json
+			//gents := exec.Command("npx", "openapi-typescript", apiJSON, "--output", serviceName+".ts")
+			//gents.Dir = serviceDir
+			//fmt.Println(serviceDir)
+			//outp, err := gents.CombinedOutput()
+			//if err != nil {
+			//	fmt.Println("Failed to make docs", string(outp))
+			//	os.Exit(1)
+			//}
 			js, err := ioutil.ReadFile(apiJSON)
+
 			if err != nil {
-				apiJSON := filepath.Join(serviceDir, "api-protobuf.json")
-				js, err = ioutil.ReadFile(apiJSON)
-				if err != nil {
-					fmt.Println("Failed to read json spec", err)
-					os.Exit(1)
-				}
+				fmt.Println("Failed to read json spec", err)
+				os.Exit(1)
 			}
 			spec := &openapi3.Swagger{}
 			err = json.Unmarshal(js, &spec)
@@ -92,33 +80,95 @@ func main() {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
-			err = saveSpec(dat, contentDir, serviceName, spec)
+
+			tsContent := ""
+			typeNames := []string{}
+			for k, v := range spec.Components.Schemas {
+				tsContent += schemaToTs(k, v) + "\n\n"
+				typeNames = append(typeNames, k)
+			}
+			os.MkdirAll(filepath.Join(tsPath, serviceName), 0777)
+			f, err := os.OpenFile(filepath.Join(tsPath, serviceName, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 			if err != nil {
-				fmt.Println("Failed to save to spec file", err)
+				fmt.Println("Failed to open schema file", err)
+				os.Exit(1)
+			}
+			_, err = f.Write([]byte(tsContent))
+			if err != nil {
+				fmt.Println("Failed to append to schema file", err)
 				os.Exit(1)
 			}
 
-			openAPIDir := filepath.Join(docPath, serviceName, "api")
-			err = os.MkdirAll(openAPIDir, 0777)
+			f, err = os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 			if err != nil {
-				fmt.Println("Failed to create api folder", string(outp))
+				fmt.Println("Failed to open index.ts", err)
 				os.Exit(1)
 			}
 
-			err = CopyFile(filepath.Join(serviceDir, "redoc-static.html"), filepath.Join(docPath, serviceName, "api", "index.html"))
+			_, err = f.Write([]byte(""))
 			if err != nil {
-				fmt.Println("Failed to copy redoc", string(outp))
-				os.Exit(1)
-			}
-
-			cmd := exec.Command("hugo", "-D", "-d", "../../")
-			cmd.Dir = filepath.Join(docPath, "hugo-tania", "site")
-			outp, err = cmd.CombinedOutput()
-			if err != nil {
-				fmt.Println("Build hugo site", string(outp))
+				fmt.Println("Failed to append to index file", err)
 				os.Exit(1)
 			}
 		}
+	}
+	// login to NPM
+	f, err := os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		fmt.Println("Failed to open npmrc", err)
+		os.Exit(1)
+	}
+
+	defer f.Close()
+	if len(os.Getenv("NPM_TOKEN")) == 0 {
+		fmt.Println("No NPM_TOKEN env found")
+		os.Exit(1)
+	}
+	if _, err = f.WriteString("\n//npm.pkg.github.com/:_authToken=" + os.Getenv("NPM_TOKEN")); err != nil {
+		fmt.Println("Failed to open npmrc", err)
+		os.Exit(1)
+	}
+
+	// get latest version from github
+	getVersions := exec.Command("npm", "show", "@micro/services", "time", "--json")
+	getVersions.Dir = tsPath
+
+	outp, err := getVersions.CombinedOutput()
+	if err != nil {
+		fmt.Println("Failed to get versions of NPM package", string(outp))
+		os.Exit(1)
+	}
+	versions := map[string]interface{}{}
+	err = json.Unmarshal(outp, &versions)
+	if err != nil {
+		fmt.Println("Failed to unmarshal versions", string(outp))
+		os.Exit(1)
+	}
+
+	var latest *semver.Version
+	for version, _ := range versions {
+		v, err := semver.NewVersion(version)
+		if err != nil {
+			fmt.Println("Failed to parse semver", err)
+			os.Exit(1)
+		}
+		if latest == nil {
+			latest = v
+		}
+		if v.GreaterThan(latest) {
+			latest = v
+		}
+	}
+	newV := latest.IncPatch()
+
+	// bump package to latest version
+	fmt.Println("Bumping to ", newV.String())
+	repl := exec.Command("sed", "-i", "-e", "s/1.0.1/"+newV.String()+"/g", "package.json")
+	repl.Dir = tsPath
+	outp, err = repl.CombinedOutput()
+	if err != nil {
+		fmt.Println("Failed to make docs", string(outp))
+		os.Exit(1)
 	}
 }
 
@@ -139,58 +189,20 @@ var specTypes = []specType{
 		template:      defTempl,
 		includeReadme: true,
 	},
-	{
-		name:          "microjs markdown",
-		tag:           "Micro.js",
-		filePostFix:   "-microjs.md",
-		titlePostFix:  " Micro.js",
-		template:      microJSTempl,
-		includeReadme: false,
-	},
 }
 
-var servicesToTags = map[string][]string{
-	"users":      []string{"Backend"},
-	"helloworld": []string{"Backend"},
-	"emails":     []string{"Communications"},
-	"sms":        []string{"Communications"},
-	"posts":      []string{"Headless CMS"},
-	"tags":       []string{"Headless CMS"},
-	"feeds":      []string{"Headless CMS"},
-	"datastore":  []string{"Backend"},
-	"geocoding":  []string{"Logistics"},
-	"places":     []string{"Logistics"},
-	"routing":    []string{"Logistics"},
-	"etas":       []string{"Logistics"},
-	"notes":      []string{"Misc"},
-	"messages":   []string{"Misc"},
-}
-
-func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *openapi3.Swagger) error {
+func saveFile(tsDir string, serviceName string, spec *openapi3.Swagger) error {
 	for _, v := range specTypes {
 		fmt.Println("Processing ", v.name)
-		contentFile := filepath.Join(contentDir, serviceName+v.filePostFix)
-		var app []byte
-		if v.includeReadme {
-			app = originalMarkDown
-		}
-		tags := []string{v.tag}
-		serviceTags, ok := servicesToTags[serviceName]
-		if ok {
-			tags = append(tags, serviceTags...)
-		}
-		tagsString := "\n- " + strings.Join(tags, "\n- ")
-
-		err := ioutil.WriteFile(contentFile, append([]byte("---\ntitle: "+serviceName+v.titlePostFix+"\nservicename: "+serviceName+"\nlabels: "+tagsString+"\n---\n"), app...), 0777)
-		if err != nil {
-			fmt.Printf("Failed to write post content to %v:\n%v\n", err)
-			os.Exit(1)
-		}
-		fi, err := os.OpenFile(contentFile, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+		contentFile := filepath.Join(tsDir, serviceName+".ts")
+		fi, err := os.OpenFile(contentFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0777)
 		if err != nil {
 			return err
 		}
 		tmpl, err := template.New("test").Funcs(template.FuncMap{
+			"toLower": func(s string) string {
+				return strings.ToLower(s)
+			},
 			"params": func(p openapi3.Parameters) string {
 				ls := ""
 				for _, v := range p {
@@ -259,6 +271,7 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 
 func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRef) map[string]interface{} {
 	var recurse func(props map[string]*openapi3.SchemaRef) map[string]interface{}
+
 	recurse = func(props map[string]*openapi3.SchemaRef) map[string]interface{} {
 		ret := map[string]interface{}{}
 		for k, v := range props {
@@ -297,54 +310,56 @@ func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRe
 	return recurse(spec.Value.Properties)
 }
 
+func schemaToTs(title string, spec *openapi3.SchemaRef) string {
+	var recurse func(props map[string]*openapi3.SchemaRef, level int) string
+
+	recurse = func(props map[string]*openapi3.SchemaRef, level int) string {
+		ret := ""
+
+		i := 0
+		for k, v := range props {
+			ret += strings.Repeat("  ", level)
+			k = strcase.SnakeCase(k)
+			//v.Value.
+			switch v.Value.Type {
+			case "object":
+				// @todo identify what is a slice and what is not!
+				// currently the openapi converter messes this up
+				// see redoc html output
+				ret += k + "?: {\n" + recurse(v.Value.Properties, level+1) + strings.Repeat("  ", level) + "};"
+
+			case "array":
+				if len(v.Value.Items.Value.Properties) == 0 {
+					ret += k + "?: " + v.Value.Items.Value.Type + "[];"
+				} else {
+					// @todo identify what is a slice and what is not!
+					// currently the openapi converter messes this up
+					// see redoc html output
+					ret += k + "?: {\n" + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + "}[];"
+				}
+			case "string":
+				ret += k + "?: " + "string;"
+			case "number":
+				ret += k + "?: " + "number;"
+			case "boolean":
+				ret += k + "?: " + "boolean;"
+			}
+
+			if i < len(props) {
+				ret += "\n"
+			}
+			i++
+
+		}
+		return ret
+	}
+	return "export interface " + title + " {\n" + recurse(spec.Value.Properties, 1) + "}"
+}
+
 const defTempl = `
-## cURL
+import { components } from './{{ .Info.Title | toLower }}_schema';
 
-{{ range $key, $value := .Paths }}
-### {{ $key | titleize }}
-<!-- We use the request body description here as endpoint descriptions are not
-being lifted correctly from the proto by the openapi spec generator -->
-{{ $value.Post.RequestBody.Ref | schemaDescription }}
-` + "```" + `shell
-> curl 'https://api.m3o.com{{ $key }}' \
-  -H 'micro-namespace: $yourNamespace' \
-  -H 'authorization: Bearer $yourToken' \
-  -d {{ $value.Post.RequestBody.Ref | schemaJSON 0 }};
-# Response
-{{ $value.Post.Responses | firstResponseRef | schemaJSON 0 }}
-` + "```" + `
-
-{{ end }}
-`
-
-const microJSTempl = `
-## Micro.js
-
-{{ range $key, $value := .Paths }}
-### {{ $key | titleize }}
-<!-- We use the request body description here as endpoint descriptions are not
-being lifted correctly from the proto by the openapi spec generator -->
-{{ $value.Post.RequestBody.Ref | schemaDescription }}
-` + "```" + `html
-<script src="https://web.m3o.com/assets/micro.js"></script>
-<script type="text/javascript">
-  document.addEventListener("DOMContentLoaded", function (event) {
-    // Login is only required for endpoints doing authorization
-    Micro.requireLogin(function () {
-      Micro.post(
-        "{{ $key }}",
-        "micro",
-        {{ $value.Post.RequestBody.Ref | schemaJSON 8 }},
-        function (data) {
-          console.log("Success.");
-        }
-      );
-    });
-  });
-</script>
-` + "```" + `
-
-{{ end }}
+export interface types extends components {};
 `
 
 // CopyFile copies a file from src to dst. If src and dst files exist, and are
