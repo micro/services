@@ -1,10 +1,5 @@
 name: Generate docs
-on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
-  push:
-    branches:
-      - master
+on: [push]
 
 jobs:
   docs:
@@ -65,6 +60,7 @@ jobs:
           go run cmd/docgen/main.go .
 
       - name: Deploy
+        if: github.ref == 'refs/heads/master'
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
@@ -82,6 +78,7 @@ jobs:
       # publish to github first under micro/services
       # .npmrc has settings for it
       - uses: JS-DevTools/npm-publish@v1
+        if: github.ref == 'refs/heads/master'
         with:
           access: public
           package: services/clients/ts/package.json
@@ -95,6 +92,7 @@ jobs:
           sed -i 's/micro/m3o/g' clients/ts/package.json
 
       - uses: JS-DevTools/npm-publish@v1
+        if: github.ref == 'refs/heads/master'
         with:
           access: public
           package: services/clients/ts/package.json
