@@ -10,7 +10,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -172,103 +171,6 @@ func main() {
 	}
 }
 
-type specType struct {
-	name          string
-	tag           string
-	includeReadme bool
-	filePostFix   string
-	titlePostFix  string
-	template      string
-}
-
-var specTypes = []specType{
-	{
-		name:          "default markdown",
-		tag:           "Readme",
-		filePostFix:   ".md",
-		template:      defTempl,
-		includeReadme: true,
-	},
-}
-
-func saveFile(tsDir string, serviceName string, spec *openapi3.Swagger) error {
-	for _, v := range specTypes {
-		fmt.Println("Processing ", v.name)
-		contentFile := filepath.Join(tsDir, serviceName+".ts")
-		fi, err := os.OpenFile(contentFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0777)
-		if err != nil {
-			return err
-		}
-		tmpl, err := template.New("test").Funcs(template.FuncMap{
-			"toLower": func(s string) string {
-				return strings.ToLower(s)
-			},
-			"params": func(p openapi3.Parameters) string {
-				ls := ""
-				for _, v := range p {
-					//if v.Value.In == "body" {
-					bs, _ := v.MarshalJSON()
-					ls += string(bs) + ", "
-					//}
-				}
-				return ls
-			},
-			// @todo should take SpecRef here not RequestBodyRef
-			"schemaJSON": func(prepend int, ref string) string {
-				for k, v := range spec.Components.Schemas {
-					// ie. #/components/requestBodies/PostsSaveRequest contains
-					// SaveRequest, can't see any other way to correlate
-					if strings.HasSuffix(ref, k) {
-						bs, _ := json.MarshalIndent(schemaToMap(v, spec.Components.Schemas), "", strings.Repeat(" ", prepend)+"  ")
-						// last line wont get prepended so we fix that here
-						parts := strings.Split(string(bs), "\n")
-						// skip if it's only 1 line, ie it's '{}'
-						if len(parts) <= 1 {
-							return string(bs)
-						}
-						parts[len(parts)-1] = parts[len(parts)-1]
-						return strings.Join(parts, "\n")
-					}
-				}
-
-				return "Schema related to " + ref + " not found"
-
-			},
-			"schemaDescription": func(ref string) string {
-				for k, v := range spec.Components.Schemas {
-					// ie. #/components/requestBodies/PostsSaveRequest contains
-					// SaveRequest, can't see any other way to correlate
-					if strings.HasSuffix(ref, k) {
-						return v.Value.Description
-					}
-				}
-
-				return "Schema related to " + ref + " not found"
-			},
-			// turn chat/Chat/History
-			// to Chat History
-			"titleize": func(s string) string {
-				parts := strings.Split(s, "/")
-				if len(parts) > 2 {
-					return strings.Join(parts[2:], " ")
-				}
-				return strings.Join(parts, " ")
-			},
-			"firstResponseRef": func(rs openapi3.Responses) string {
-				return rs.Get(200).Ref
-			},
-		}).Parse(v.template)
-		if err != nil {
-			panic(err)
-		}
-		err = tmpl.Execute(fi, spec)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func schemaToTs(title string, spec *openapi3.SchemaRef) string {
 	var recurse func(props map[string]*openapi3.SchemaRef, level int) string
 
@@ -314,12 +216,6 @@ func schemaToTs(title string, spec *openapi3.SchemaRef) string {
 	}
 	return "export interface " + title + " {\n" + recurse(spec.Value.Properties, 1) + "}"
 }
-
-const defTempl = `
-import { components } from './{{ .Info.Title | toLower }}_schema';
-
-export interface types extends components {};
-`
 
 // CopyFile copies a file from src to dst. If src and dst files exist, and are
 // the same, then return success. Otherise, attempt to create a hard link
