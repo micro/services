@@ -259,37 +259,39 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 
 func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRef) map[string]interface{} {
 	var recurse func(props map[string]*openapi3.SchemaRef) map[string]interface{}
+	getAtomic := func(v *openapi3.SchemaRef) interface{} {
+		switch v.Value.Type {
+		case "string":
+			if len(v.Value.Description) > 0 {
+				return strings.Replace(v.Value.Description, "\n", ".", -1)
+			} else {
+				return v.Value.Type
+			}
+		case "number":
+			return 1
+		case "boolean":
+			return true
+		}
+		return "UNKOWN TYPE " + v.Value.Type
+	}
 	recurse = func(props map[string]*openapi3.SchemaRef) map[string]interface{} {
 		ret := map[string]interface{}{}
 		for k, v := range props {
 			k = strcase.SnakeCase(k)
-			//v.Value.
+
 			if v.Value.Type == "object" {
-				// @todo identify what is a slice and what is not!
-				// currently the openapi converter messes this up
-				// see redoc html output
 				ret[k] = recurse(v.Value.Properties)
 				continue
 			}
 			if v.Value.Type == "array" {
-				// @todo identify what is a slice and what is not!
-				// currently the openapi converter messes this up
-				// see redoc html output
-				ret[k] = []interface{}{recurse(v.Value.Properties)}
+				if v.Value.Items.Value.Type != "object" {
+					ret[k] = []interface{}{getAtomic(v.Value.Items)}
+				} else {
+					ret[k] = []interface{}{recurse(v.Value.Items.Value.Properties)}
+				}
 				continue
 			}
-			switch v.Value.Type {
-			case "string":
-				if len(v.Value.Description) > 0 {
-					ret[k] = strings.Replace(v.Value.Description, "\n", ".", -1)
-				} else {
-					ret[k] = v.Value.Type
-				}
-			case "number":
-				ret[k] = 1
-			case "boolean":
-				ret[k] = true
-			}
+			ret[k] = getAtomic(v)
 
 		}
 		return ret
