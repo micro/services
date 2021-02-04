@@ -5,20 +5,33 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/google/uuid"
-	"github.com/micro/micro/v3/service/store/memory"
-	"github.com/micro/services/seen/domain"
 	"github.com/micro/services/seen/handler"
 	pb "github.com/micro/services/seen/proto"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func newHandler() *handler.Seen {
-	return &handler.Seen{
-		Domain: domain.New(memory.NewStore()),
+func testHandler(t *testing.T) *handler.Seen {
+	// connect to the database
+	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5433/postgres?sslmode=disable"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("Error connecting to database: %v", err)
 	}
+
+	// migrate the database
+	if err := db.AutoMigrate(&handler.SeenInstance{}); err != nil {
+		t.Fatalf("Error migrating database: %v", err)
+	}
+
+	// clean any data from a previous run
+	if err := db.Exec("TRUNCATE TABLE seen_instances CASCADE").Error; err != nil {
+		t.Fatalf("Error cleaning database: %v", err)
+	}
+
+	return &handler.Seen{DB: db}
 }
 
 func TestSet(t *testing.T) {
@@ -63,7 +76,7 @@ func TestSet(t *testing.T) {
 		},
 	}
 
-	h := newHandler()
+	h := testHandler(t)
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			err := h.Set(context.TODO(), &pb.SetRequest{
@@ -79,7 +92,7 @@ func TestSet(t *testing.T) {
 }
 func TestUnset(t *testing.T) {
 	// seed some test data
-	h := newHandler()
+	h := testHandler(t)
 	seed := &pb.SetRequest{
 		UserId:       uuid.New().String(),
 		ResourceId:   uuid.New().String(),
@@ -142,7 +155,7 @@ func TestUnset(t *testing.T) {
 
 func TestRead(t *testing.T) {
 	tn := time.Now()
-	h := newHandler()
+	h := testHandler(t)
 
 	// seed some test data
 	td := []struct {

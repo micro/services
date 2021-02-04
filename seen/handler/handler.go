@@ -4,8 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/micro/services/seen/domain"
+	"gorm.io/gorm"
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
@@ -22,7 +21,14 @@ var (
 )
 
 type Seen struct {
-	Domain *domain.Domain
+	DB *gorm.DB
+}
+
+type SeenInstance struct {
+	UserID       string `gorm:"uniqueIndex:user_resource"`
+	ResourceID   string `gorm:"uniqueIndex:user_resource"`
+	ResourceType string `gorm:"uniqueIndex:user_resource"`
+	Timestamp    time.Time
 }
 
 // Set a resource as seen by a user. If no timestamp is provided, the current time is used.
@@ -44,13 +50,12 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 	}
 
 	// write the object to the store
-	err := s.Domain.Create(domain.Seen{
-		ID:           uuid.New().String(),
+	err := s.DB.Create(SeenInstance{
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
 		Timestamp:    req.Timestamp.AsTime(),
-	})
+	}).Error
 	if err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
@@ -74,11 +79,11 @@ func (s *Seen) Unset(ctx context.Context, req *pb.UnsetRequest, rsp *pb.UnsetRes
 	}
 
 	// delete the object from the store
-	err := s.Domain.Delete(domain.Seen{
+	err := s.DB.Delete(SeenInstance{}, SeenInstance{
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
-	})
+	}).Error
 	if err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
@@ -103,16 +108,18 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 	}
 
 	// query the store
-	data, err := s.Domain.Read(req.UserId, req.ResourceType, req.ResourceIds)
-	if err != nil {
+	q := s.DB.Where(SeenInstance{UserID: req.UserId, ResourceType: req.ResourceType})
+	q = q.Where("resource_id IN (?)", req.ResourceIds)
+	var data []SeenInstance
+	if err := q.Find(&data).Error; err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
 
 	// serialize the response
 	rsp.Timestamps = make(map[string]*timestamppb.Timestamp, len(data))
-	for uid, ts := range data {
-		rsp.Timestamps[uid] = timestamppb.New(ts)
+	for _, i := range data {
+		rsp.Timestamps[i.ResourceID] = timestamppb.New(i.Timestamp)
 	}
 
 	return nil
