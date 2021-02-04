@@ -1,0 +1,68 @@
+/* Posts */
+
+.post-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    time {
+        display: block;
+        flex: 0 0 65px;
+    }
+
+    h3 {
+        flex: 1;
+    }
+}
+
+.posts .post:last-of-type a {
+    border-bottom-width: 0;
+}
+
+.post {
+    a {
+        display: flex;
+        align-items: center;
+        justify-content: stretch;
+        padding: 1rem 0;
+        border-bottom: 2px solid var(--light-background);
+
+        &:hover {
+            border-radius: 0.3rem;
+        }
+    }
+
+    h3 {
+        margin-top: 0.1rem;
+        margin-bottom: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+}
+
+
+@media screen and (min-width: 800px) {
+    .posts {
+        margin-left: -1rem;
+        margin-right: -1rem;
+    }
+
+    .post {
+        a {
+            padding: 0.75rem 1rem;
+            border-bottom-color: transparent;
+
+            &:hover {
+                background: var(--light-background);
+            }
+        }
+
+        h3 {
+            font-size: 1.3rem;
+        }
+    }
+
+    .post-row time {
+        flex: 0 0 80px;
+    }
+}

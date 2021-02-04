@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package groups;
+option go_package = "proto;groups";
+
+service Groups {
+	// Create a group
+	rpc Create(CreateRequest) returns (CreateResponse);
+	// Read a group using ID
+	rpc Read(ReadRequest) returns (ReadResponse);
+	// Update a groups name
+	rpc Update(UpdateRequest) returns (UpdateResponse);
+	// Delete a group
+	rpc Delete(DeleteRequest) returns (DeleteResponse);
+	// List all groups
+	rpc List(ListRequest) returns (ListResponse);
+	// AddMember to a group
+	rpc AddMember(AddMemberRequest) returns (AddMemberResponse);
+	// RemoveMember from a group
+	rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse);
+}
+
+message Group {
+	string id = 1;
+	string name = 2;
+	repeated string member_ids = 3;
+}
+
+message CreateRequest {
+	string name = 1;
+}
+
+message CreateResponse {
+	Group group = 1;
+}
+
+message ReadRequest {
+	repeated string ids = 1;
+}
+
+message ReadResponse {
+	map<string, Group> groups = 1;
+}
+
+message UpdateRequest {
+	string id = 1;
+	string name = 2;
+}
+
+message UpdateResponse {
+	Group group = 1;
+}
+
+message DeleteRequest {
+	string id = 1;
+}
+
+message DeleteResponse {}
+
+message ListRequest {
+	// passing a member id will restrict the groups to that which the member is part of
+	string member_id = 1;
+}
+
+message ListResponse {
+	repeated Group groups = 1;
+}
+
+message AddMemberRequest {
+	string group_id = 1;
+	string member_id = 2;
+}
+
+message AddMemberResponse {}
+
+message RemoveMemberRequest {
+	string group_id = 1;
+	string member_id = 2;
+}
+
+message RemoveMemberResponse {}

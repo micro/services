@@ -1,0 +1,19 @@
+/* Links */
+
+a {
+    color: inherit;
+    text-decoration: none;
+
+    &.image-link {
+        border-width: 0;
+    }
+
+    code[class*='language-'] {
+        color: var(--link-color) !important;
+
+        &:hover {
+            background: var(--link-color) !important;
+            color: white !important;
+        }
+    }
+}

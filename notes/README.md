@@ -1,8 +1,8 @@
+Notes service is an RPC service which offers CRUD for notes. It demonstrates usage of the store, errors and logger pacakges.
+
 # Notes Service
 
-Notes service is an RPC service which offers CRUD for notes. It demonstrates usage of the store, errors and logger pacakges. Example usage:
-
-Create a note
+## Create a note
 
 ```bash
 micro notes create --title="HelloWorld" --text="MyFirstNote"
@@ -11,14 +11,14 @@ micro notes create --title="HelloWorld" --text="MyFirstNote"
 }
 ```
 
-Update a note
+## Update a note
 
 ```bash
 micro notes update --id=6d3fa5c0-6e79-4418-a72a-c1650efb65d2 --title="HelloWorld" --text="MyFirstNote (v2)"
 {}
 ```
 
-List notes
+## List notes
 
 ```bash
 micro notes list
@@ -34,7 +34,7 @@ micro notes list
 }
 ```
 
-Delete a note
+## Delete a note
 
 ```bash
 micro notes delete --id=6d3fa5c0-6e79-4418-a72a-c1650efb65d2

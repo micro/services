@@ -1,3 +1,3 @@
-FROM alpine:3.2
+FROM alpine
 ADD users /users
 ENTRYPOINT [ "/users" ]

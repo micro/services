@@ -1,0 +1,166 @@
+/* Navbar */
+
+main {
+    margin-top: 50px;
+}
+
+@media screen and (min-width: 800px) {
+    main {
+        margin-top: 0;
+    }
+}
+
+.emoji {
+    margin: 0 0.4rem 0 0.1rem;
+}
+
+.navbar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: var(--navbar-color);
+    box-shadow: 0 3px 13px rgba(100, 110, 140, 0.1),
+        0 2px 4px rgba(100, 110, 140, 0.15);
+    z-index: 2;
+    padding: 0.5rem;
+
+    .flex {
+        justify-content: space-between;
+    }
+
+    a {
+        border-radius: 0.35rem;
+        margin: 0 0.05rem;
+        color: rgba(255, 255, 255, 0.65);
+        font-weight: 400;
+        font-size: 0.85rem;
+        border: 1px solid transparent;
+        padding: 0 0.3rem;
+        background: transparent;
+
+        &:first-of-type {
+            margin-left: -1rem;
+        }
+
+        .emoji {
+            display: none;
+        }
+
+        &.brand {
+            font-weight: 500;
+            color: white;
+            white-space: nowrap;
+            border: none;
+            display: flex;
+            align-items: center;
+            line-height: 1;
+            background: transparent;
+
+            .emoji {
+                display: inline-block !important;
+            }
+
+            img {
+                height: 22px;
+                width: 22px;
+            }
+        }
+    }
+
+    button {
+        font-size: 1rem;
+        margin-right: -1rem;
+    }
+}
+
+@media screen and (min-width: 500px) {
+    .navbar a {
+        font-size: 0.95rem;
+        padding: 0.5rem;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .emoji {
+        margin: 0 0.5rem 0 0.1rem;
+    }
+
+    .navbar {
+        position: static;
+        padding: 1.5rem 0;
+        background: transparent;
+        box-shadow: none;
+
+        .flex {
+            justify-content: space-between;
+        }
+
+        a {
+            padding: 0.75rem 1.25rem;
+            margin: 0 0.25rem;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: var(--font-color);
+
+            &:first-of-type {
+                margin-left: -1.5rem;
+            }
+
+            &:hover, &[aria-current='page'] {
+                background: var(--light-background);
+                color: var(--dark-font-color);
+            }
+
+            &.brand {
+                font-size: 1.3rem;
+                margin-right: 3rem;
+                border: none;
+                background: transparent !important;
+                color: var(--dark-font-color);
+
+                &:hover {
+                    background: var(--light-background) !important;
+                }
+
+                img {
+                    height: 26px;
+                    width: 26px;
+                    margin-right: 0.25rem;
+                }
+            }
+        }
+    }
+
+    #dark-mode-button:hover {
+        background: var(--light-background);
+    }
+}
+
+@media print {
+    .navbar {
+        display: none;
+    }
+}
+
+#dark-mode-button {
+    display: flex;
+    border: none;
+    padding: 0.2rem 0.7rem 0.2rem 0.5rem;
+    border-radius: 0.35rem;
+    box-sizing: content-box;
+    cursor: pointer;
+    font-size: 1.1rem;
+    background: transparent;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    #dark-mode-button {
+        padding: 0.95rem 0.75rem;
+        font-size: 1.2rem;
+    }
+}
