@@ -35,7 +35,7 @@ func main() {
 	}
 
 	// Register handler
-	pb.RegisterSeenHandler(srv.Server(), &handler.Seen{DB: db})
+	pb.RegisterSeenHandler(srv.Server(), &handler.Seen{DB: db.Debug()})
 
 	// Run service
 	if err := srv.Run(); err != nil {

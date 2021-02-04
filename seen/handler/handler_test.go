@@ -74,6 +74,13 @@ func TestSet(t *testing.T) {
 			ResourceID:   uuid.New().String(),
 			ResourceType: "message",
 		},
+		{
+			Name:         "WithUpdatedTimetamp",
+			UserID:       uuid.New().String(),
+			ResourceID:   uuid.New().String(),
+			ResourceType: "message",
+			Timestamp:    timestamppb.New(time.Now().Add(time.Minute * -3)),
+		},
 	}
 
 	h := testHandler(t)
@@ -164,6 +171,12 @@ func TestRead(t *testing.T) {
 		ResourceType string
 		Timestamp    *timestamppb.Timestamp
 	}{
+		{
+			UserID:       "user-1",
+			ResourceID:   "message-1",
+			ResourceType: "message",
+			Timestamp:    timestamppb.New(tn.Add(time.Minute * -10)),
+		},
 		{
 			UserID:       "user-1",
 			ResourceID:   "message-1",

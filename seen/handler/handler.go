@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/seen/proto"
@@ -25,6 +26,7 @@ type Seen struct {
 }
 
 type SeenInstance struct {
+	ID           string
 	UserID       string `gorm:"uniqueIndex:user_resource"`
 	ResourceID   string `gorm:"uniqueIndex:user_resource"`
 	ResourceType string `gorm:"uniqueIndex:user_resource"`
@@ -49,14 +51,22 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 		req.Timestamp = timestamppb.New(time.Now())
 	}
 
-	// write the object to the store
-	err := s.DB.Create(SeenInstance{
+	// find the resource
+	instance := SeenInstance{
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
-		Timestamp:    req.Timestamp.AsTime(),
-	}).Error
-	if err != nil {
+	}
+	if err := s.DB.Where(&instance).First(&instance).Error; err == gorm.ErrRecordNotFound {
+		instance.ID = uuid.New().String()
+	} else if err != nil {
+		logger.Errorf("Error with store: %v", err)
+		return ErrStore
+	}
+
+	// update the resource
+	instance.Timestamp = req.Timestamp.AsTime()
+	if err := s.DB.Save(&instance).Error; err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
