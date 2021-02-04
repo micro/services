@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package seen;
+option go_package = "proto;seen";
+import "google/protobuf/timestamp.proto";
+
+// Seen is a service to keep track of which resources a user has seen (read). For example, it can
+// be used to keep track of what notifications have been seen by a user, or what messages they've 
+// read in a chat.
+service Seen {
+	// Set a resource as seen by a user. If no timestamp is provided, the current time is used.
+	rpc Set(SetRequest) returns (SetResponse);
+	// Unset a resource as seen, used in cases where a user viewed a resource but wants to override
+	// this so they remember to action it in the future, e.g. "Mark this as unread".
+	rpc Unset(UnsetRequest) returns (UnsetResponse);
+	// Read returns the timestamps at which various resources were seen by a user. If no timestamp
+	// is returned for a given resource_id, it indicates that resource has not yet been seen by the 
+	// user. 
+	rpc Read(ReadRequest) returns (ReadResponse);
+}
+
+message Resource {
+	string type = 1;
+	string id = 2;
+}
+
+message SetRequest {
+	string user_id = 1;
+	string resource_type = 2;
+	string resource_id = 3;
+	google.protobuf.Timestamp timestamp = 4;
+}
+
+message SetResponse {}
+
+message UnsetRequest {
+	string user_id = 1;
+	string resource_type = 2;
+	string resource_id = 3;
+}
+
+message UnsetResponse {}
+
+message ReadRequest {
+	string user_id = 1;
+	string resource_type = 2;
+	repeated string resource_ids = 3;
+}
+
+message ReadResponse {
+	map<string, google.protobuf.Timestamp> timestamps = 1;
+}
