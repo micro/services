@@ -187,6 +187,8 @@ func (p *Posts) Index(ctx context.Context, req *proto.IndexRequest, rsp *proto.I
 	// create a simple descending order query
 	q := model.QueryEquals("created", nil)
 	q.Order.Type = model.OrderTypeDesc
+	q.Offset = req.Offset
+	q.Limit = req.Limit
 
 	var posts []*proto.Post
 
