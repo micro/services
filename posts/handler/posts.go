@@ -229,9 +229,7 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 		logger.Infof("Listing posts, offset: %v, limit: %v", req.Offset, limit)
 	}
 
-	var posts []*proto.Post
-
-	if err := p.db.Read(q, &posts); err != nil {
+	if err := p.db.Read(q, &rsp.Posts); err != nil {
 		return err
 	}
 
