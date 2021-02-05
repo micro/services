@@ -30,7 +30,6 @@ type Message struct {
 	AuthorID       string
 	ConversationID string
 	Text           string
-	IdempotentID   string `gorm:"uniqueIndex:idempotent_id"`
 	SentAt         time.Time
 }
 
@@ -40,7 +39,6 @@ func (m *Message) Serialize() *pb.Message {
 		AuthorId:       m.AuthorID,
 		ConversationId: m.ConversationID,
 		Text:           m.Text,
-		IdempotentId:   m.IdempotentID,
 		SentAt:         timestamppb.New(m.SentAt),
 	}
 }

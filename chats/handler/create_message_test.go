@@ -27,12 +27,12 @@ func TestCreateMessage(t *testing.T) {
 
 	iid := uuid.New().String()
 	tt := []struct {
-		Name         string
-		AuthorID     string
-		ChatID       string
-		Text         string
-		Error        error
-		IdempotentID string
+		Name     string
+		AuthorID string
+		ChatID   string
+		Text     string
+		Error    error
+		ID       string
 	}{
 		{
 			Name:     "MissingChatID",
@@ -60,24 +60,24 @@ func TestCreateMessage(t *testing.T) {
 			Error:    handler.ErrNotFound,
 		},
 		{
-			Name:     "WithoutIdempotentID",
+			Name:     "WithoutID",
 			ChatID:   cRsp.Chat.Id,
 			AuthorID: uuid.New().String(),
 			Text:     "HelloWorld",
 		},
 		{
-			Name:         "WithIdempotentID",
-			ChatID:       cRsp.Chat.Id,
-			AuthorID:     "johndoe",
-			Text:         "HelloWorld",
-			IdempotentID: iid,
+			Name:     "WithID",
+			ChatID:   cRsp.Chat.Id,
+			AuthorID: "johndoe",
+			Text:     "HelloWorld",
+			ID:       iid,
 		},
 		{
-			Name:         "RepeatIdempotentID",
-			ChatID:       cRsp.Chat.Id,
-			AuthorID:     "johndoe",
-			Text:         "HelloWorld",
-			IdempotentID: iid,
+			Name:     "RepeatID",
+			ChatID:   cRsp.Chat.Id,
+			AuthorID: "johndoe",
+			Text:     "HelloWorld",
+			ID:       iid,
 		},
 	}
 
@@ -85,10 +85,10 @@ func TestCreateMessage(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.CreateMessageResponse
 			err := h.CreateMessage(context.TODO(), &pb.CreateMessageRequest{
-				AuthorId:     tc.AuthorID,
-				ChatId:       tc.ChatID,
-				Text:         tc.Text,
-				IdempotentId: tc.IdempotentID,
+				AuthorId: tc.AuthorID,
+				ChatId:   tc.ChatID,
+				Text:     tc.Text,
+				Id:       tc.ID,
 			}, &rsp)
 
 			assert.Equal(t, tc.Error, err)
@@ -98,11 +98,11 @@ func TestCreateMessage(t *testing.T) {
 			}
 
 			assertMessagesMatch(t, &pb.Message{
-				AuthorId:     tc.AuthorID,
-				ChatId:       tc.ChatID,
-				SentAt:       timestamppb.New(h.Time()),
-				Text:         tc.Text,
-				IdempotentId: tc.IdempotentID,
+				AuthorId: tc.AuthorID,
+				ChatId:   tc.ChatID,
+				SentAt:   timestamppb.New(h.Time()),
+				Text:     tc.Text,
+				Id:       tc.ID,
 			}, rsp.Message)
 		})
 	}

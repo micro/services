@@ -69,12 +69,6 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 	} else {
 		assert.NotEmpty(t, act.Id)
 	}
-	if len(exp.IdempotentId) > 0 {
-		assert.Equal(t, exp.IdempotentId, act.IdempotentId)
-	} else {
-		assert.NotEmpty(t, act.IdempotentId)
-	}
-
 	assert.Equal(t, exp.Text, act.Text)
 	assert.Equal(t, exp.AuthorId, act.AuthorId)
 	assert.Equal(t, exp.ChatId, act.ChatId)

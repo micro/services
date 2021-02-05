@@ -35,27 +35,26 @@ func (s *Threads) CreateMessage(ctx context.Context, req *pb.CreateMessageReques
 
 	// create the message
 	msg := &Message{
-		ID:             uuid.New().String(),
+		ID:             req.Id,
 		SentAt:         s.Time(),
 		Text:           req.Text,
 		AuthorID:       req.AuthorId,
 		ConversationID: req.ConversationId,
-		IdempotentID:   req.IdempotentId,
 	}
-	if len(msg.IdempotentID) == 0 {
-		msg.IdempotentID = uuid.New().String()
+	if len(msg.ID) == 0 {
+		msg.ID = uuid.New().String()
 	}
 	if err := s.DB.Create(msg).Error; err == nil {
 		rsp.Message = msg.Serialize()
 		return nil
-	} else if !strings.Contains(err.Error(), "idempotent_id") {
+	} else if !strings.Contains(err.Error(), "messages_pkey") {
 		logger.Errorf("Error creating message: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
 
-	// a message already exists with this idempotent_id
+	// a message already exists with this id
 	var existing Message
-	if err := s.DB.Where(&Message{IdempotentID: msg.IdempotentID}).First(&existing).Error; err != nil {
+	if err := s.DB.Where(&Message{ID: msg.ID}).First(&existing).Error; err != nil {
 		logger.Errorf("Error creating message: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}

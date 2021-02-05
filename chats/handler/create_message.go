@@ -23,9 +23,6 @@ func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest,
 	if len(req.Text) == 0 {
 		return ErrMissingText
 	}
-	if len(req.IdempotentId) == 0 {
-		req.IdempotentId = uuid.New().String()
-	}
 
 	// lookup the chat
 	var conv Chat
@@ -38,27 +35,26 @@ func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest,
 
 	// create the message
 	msg := &Message{
-		ID:           uuid.New().String(),
-		SentAt:       c.Time(),
-		Text:         req.Text,
-		AuthorID:     req.AuthorId,
-		ChatID:       req.ChatId,
-		IdempotentID: req.IdempotentId,
+		ID:       req.Id,
+		SentAt:   c.Time(),
+		Text:     req.Text,
+		AuthorID: req.AuthorId,
+		ChatID:   req.ChatId,
 	}
-	if len(msg.IdempotentID) == 0 {
-		msg.IdempotentID = uuid.New().String()
+	if len(msg.ID) == 0 {
+		msg.ID = uuid.New().String()
 	}
 	if err := c.DB.Create(msg).Error; err == nil {
 		rsp.Message = msg.Serialize()
 		return nil
-	} else if !strings.Contains(err.Error(), "idempotent_id") {
+	} else if !strings.Contains(err.Error(), "messages_pkey") {
 		logger.Errorf("Error creating message: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
 
-	// a message already exists with this idempotent_id
+	// a message already exists with this id
 	var existing Message
-	if err := c.DB.Where(&Message{IdempotentID: msg.IdempotentID}).First(&existing).Error; err != nil {
+	if err := c.DB.Where(&Message{ID: msg.ID}).First(&existing).Error; err != nil {
 		logger.Errorf("Error creating message: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}

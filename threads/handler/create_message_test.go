@@ -30,7 +30,7 @@ func TestCreateMessage(t *testing.T) {
 		Name           string
 		AuthorID       string
 		ConversationID string
-		IdempotentID   string
+		ID             string
 		Text           string
 		Error          error
 	}{
@@ -60,24 +60,24 @@ func TestCreateMessage(t *testing.T) {
 			Error:          handler.ErrNotFound,
 		},
 		{
-			Name:           "NoIdempotentID",
+			Name:           "NoID",
 			ConversationID: cRsp.Conversation.Id,
 			AuthorID:       uuid.New().String(),
 			Text:           "HelloWorld",
 		},
 		{
-			Name:           "WithIdempotentID",
+			Name:           "WithID",
 			ConversationID: cRsp.Conversation.Id,
 			Text:           "HelloWorld",
 			AuthorID:       "johndoe",
-			IdempotentID:   iid,
+			ID:             iid,
 		},
 		{
-			Name:           "RepeatIdempotentID",
+			Name:           "RepeatID",
 			ConversationID: cRsp.Conversation.Id,
 			Text:           "HelloWorld",
 			AuthorID:       "johndoe",
-			IdempotentID:   iid,
+			ID:             iid,
 		},
 	}
 
@@ -88,7 +88,7 @@ func TestCreateMessage(t *testing.T) {
 				AuthorId:       tc.AuthorID,
 				ConversationId: tc.ConversationID,
 				Text:           tc.Text,
-				IdempotentId:   tc.IdempotentID,
+				Id:             tc.ID,
 			}, &rsp)
 
 			assert.Equal(t, tc.Error, err)
@@ -98,7 +98,7 @@ func TestCreateMessage(t *testing.T) {
 			}
 
 			assertMessagesMatch(t, &pb.Message{
-				IdempotentId:   tc.IdempotentID,
+				Id:             tc.ID,
 				AuthorId:       tc.AuthorID,
 				ConversationId: tc.ConversationID,
 				SentAt:         timestamppb.New(h.Time()),
