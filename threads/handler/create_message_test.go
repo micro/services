@@ -25,10 +25,12 @@ func TestCreateMessage(t *testing.T) {
 		return
 	}
 
+	iid := uuid.New().String()
 	tt := []struct {
 		Name           string
 		AuthorID       string
 		ConversationID string
+		ID             string
 		Text           string
 		Error          error
 	}{
@@ -58,10 +60,24 @@ func TestCreateMessage(t *testing.T) {
 			Error:          handler.ErrNotFound,
 		},
 		{
-			Name:           "Valid",
+			Name:           "NoID",
 			ConversationID: cRsp.Conversation.Id,
 			AuthorID:       uuid.New().String(),
 			Text:           "HelloWorld",
+		},
+		{
+			Name:           "WithID",
+			ConversationID: cRsp.Conversation.Id,
+			Text:           "HelloWorld",
+			AuthorID:       "johndoe",
+			ID:             iid,
+		},
+		{
+			Name:           "RepeatID",
+			ConversationID: cRsp.Conversation.Id,
+			Text:           "HelloWorld",
+			AuthorID:       "johndoe",
+			ID:             iid,
 		},
 	}
 
@@ -69,7 +85,10 @@ func TestCreateMessage(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.CreateMessageResponse
 			err := h.CreateMessage(context.TODO(), &pb.CreateMessageRequest{
-				Text: tc.Text, ConversationId: tc.ConversationID, AuthorId: tc.AuthorID,
+				AuthorId:       tc.AuthorID,
+				ConversationId: tc.ConversationID,
+				Text:           tc.Text,
+				Id:             tc.ID,
 			}, &rsp)
 
 			assert.Equal(t, tc.Error, err)
@@ -79,6 +98,7 @@ func TestCreateMessage(t *testing.T) {
 			}
 
 			assertMessagesMatch(t, &pb.Message{
+				Id:             tc.ID,
 				AuthorId:       tc.AuthorID,
 				ConversationId: tc.ConversationID,
 				SentAt:         timestamppb.New(h.Time()),

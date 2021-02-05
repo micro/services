@@ -39,9 +39,10 @@ message CreateChatResponse {
 }
 
 message CreateMessageRequest {
-	string chat_id = 1;
-	string author_id = 2;
-	string text = 3;
+	string id = 1;
+	string chat_id = 2;
+	string author_id = 3;
+	string text = 4;
 }
 
 message CreateMessageResponse {
