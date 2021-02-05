@@ -210,7 +210,7 @@ func (p *Posts) Index(ctx context.Context, req *proto.IndexRequest, rsp *proto.I
 	}
 
 	// iterate and add
-	for i := 0; i <= limit; i++ {
+	for i := 0; i < limit; i++ {
 		// strip the content
 		posts[i].Content = ""
 		rsp.Posts = append(rsp.Posts, posts[i])
@@ -256,7 +256,7 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 	}
 
 	// iterate and add
-	for i := 0; i <= limit; i++ {
+	for i := 0; i < limit; i++ {
 		rsp.Posts = append(rsp.Posts, posts[i])
 	}
 
