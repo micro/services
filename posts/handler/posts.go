@@ -197,23 +197,11 @@ func (p *Posts) Index(ctx context.Context, req *proto.IndexRequest, rsp *proto.I
 		return err
 	}
 
-	// model does not deal with limits yet
-	limit := int(req.Limit)
-
-	// TODO: implement offset
-	if limit == 0 {
-		limit = 20
-	}
-	// set the limit to length of posts
-	if v := len(posts); v < limit {
-		limit = v
-	}
-
 	// iterate and add
-	for i := 0; i < limit; i++ {
+	for _, post := range posts {
 		// strip the content
-		posts[i].Content = ""
-		rsp.Posts = append(rsp.Posts, posts[i])
+		post.Content = ""
+		rsp.Posts = append(rsp.Posts, post)
 	}
 
 	return nil
@@ -245,19 +233,6 @@ func (p *Posts) Query(ctx context.Context, req *proto.QueryRequest, rsp *proto.Q
 
 	if err := p.db.Read(q, &posts); err != nil {
 		return err
-	}
-
-	// model does not deal with limits yet
-	limit := int(req.Limit)
-
-	// set the limit to length of posts
-	if v := len(posts); v < limit {
-		limit = v
-	}
-
-	// iterate and add
-	for i := 0; i < limit; i++ {
-		rsp.Posts = append(rsp.Posts, posts[i])
 	}
 
 	return nil
