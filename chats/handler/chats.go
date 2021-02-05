@@ -32,20 +32,22 @@ type Chat struct {
 }
 
 type Message struct {
-	ID       string
-	AuthorID string
-	ChatID   string
-	Text     string
-	SentAt   time.Time
+	ID           string
+	AuthorID     string
+	ChatID       string
+	Text         string
+	IdempotentID string `gorm:"uniqueIndex:idempotent_id"`
+	SentAt       time.Time
 }
 
 func (m *Message) Serialize() *pb.Message {
 	return &pb.Message{
-		Id:       m.ID,
-		AuthorId: m.AuthorID,
-		ChatId:   m.ChatID,
-		Text:     m.Text,
-		SentAt:   timestamppb.New(m.SentAt),
+		Id:           m.ID,
+		AuthorId:     m.AuthorID,
+		ChatId:       m.ChatID,
+		Text:         m.Text,
+		IdempotentId: m.IdempotentID,
+		SentAt:       timestamppb.New(m.SentAt),
 	}
 }
 

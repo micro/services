@@ -40,6 +40,7 @@ message Message {
 	string conversation_id = 3;
 	string text = 4;
 	google.protobuf.Timestamp sent_at = 5;
+	string idempotent_id = 6;
 }
 
 message CreateConversationRequest {
@@ -87,6 +88,7 @@ message CreateMessageRequest {
 	string conversation_id = 1;
 	string author_id = 2;
 	string text = 3;
+	string idempotent_id = 4;
 }
 
 message CreateMessageResponse {

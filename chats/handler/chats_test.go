@@ -62,12 +62,17 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 		return
 	}
 
-	// adapt this check so we can reuse the func in testing create, where we don't know the exact id
-	// which will be generated
+	// adapt these checks so we can reuse the func in testing create, where we don't know the exact id /
+	// idempotent_id which will be generated
 	if len(exp.Id) > 0 {
 		assert.Equal(t, exp.Id, act.Id)
 	} else {
 		assert.NotEmpty(t, act.Id)
+	}
+	if len(exp.IdempotentId) > 0 {
+		assert.Equal(t, exp.IdempotentId, act.IdempotentId)
+	} else {
+		assert.NotEmpty(t, act.IdempotentId)
 	}
 
 	assert.Equal(t, exp.Text, act.Text)
