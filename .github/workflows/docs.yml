@@ -74,6 +74,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           go run cmd/tsgen/main.go .
+          cp -R clients/ts/posts/* clients/ts/
 
       # publish to github first under micro/services
       # .npmrc has settings for it
