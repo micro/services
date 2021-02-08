@@ -39,6 +39,7 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 
 	// start the subscription
 	evChan, err := s.Events.Consume(req.Topic, events.WithGroup(token.Token))
+	logger.Infof("Subscribing to %v via queue %v", req.Topic, token.Topic)
 	if err != nil {
 		logger.Errorf("Error connecting to events stream: %v", err)
 		return errors.InternalServerError("EVENTS_ERROR", "Error connecting to events stream")
@@ -50,6 +51,7 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 			if !ok {
 				return
 			}
+			logger.Infof("Sending message to subscriber %v", token.Topic)
 			if err := stream.Send(&pb.Message{
 				Topic:   msg.Topic,
 				Message: string(msg.Payload),
