@@ -12,6 +12,8 @@ import (
 )
 
 func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Streams_SubscribeStream) error {
+	logger.Infof("Recieved subscribe request. Topic: '%v', Token: '%v'", req.Topic, req.Token)
+
 	// validate the request
 	if len(req.Token) == 0 {
 		return ErrMissingToken
