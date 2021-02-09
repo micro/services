@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var dbAddress = "postgresql://postgres@localhost:5432/invites?sslmode=disable"
+var dbAddress = "postgresql://postgres:postgres@localhost:5432/invites?sslmode=disable"
 
 func main() {
 	// Create service

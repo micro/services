@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"io"
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/events"
@@ -12,6 +13,8 @@ import (
 )
 
 func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Streams_SubscribeStream) error {
+	logger.Infof("Recieved subscribe request. Topic: '%v', Token: '%v'", req.Topic, req.Token)
+
 	// validate the request
 	if len(req.Token) == 0 {
 		return ErrMissingToken
@@ -38,29 +41,31 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 	}
 
 	// start the subscription
+	logger.Infof("Subscribing to %v via queue %v", req.Topic, token.Token)
 	evChan, err := s.Events.Consume(req.Topic, events.WithGroup(token.Token))
-	logger.Infof("Subscribing to %v via queue %v", req.Topic, token.Topic)
 	if err != nil {
 		logger.Errorf("Error connecting to events stream: %v", err)
 		return errors.InternalServerError("EVENTS_ERROR", "Error connecting to events stream")
 	}
-	go func() {
-		defer stream.Close()
-		for {
-			msg, ok := <-evChan
-			if !ok {
-				return
-			}
-			logger.Infof("Sending message to subscriber %v", token.Topic)
-			if err := stream.Send(&pb.Message{
-				Topic:   msg.Topic,
-				Message: string(msg.Payload),
-				SentAt:  timestamppb.New(msg.Timestamp),
-			}); err != nil {
-				return
-			}
-		}
-	}()
+	defer stream.Close()
 
-	return nil
+	for {
+		msg, ok := <-evChan
+		if !ok {
+			return nil
+		}
+
+		logger.Infof("Sending message to subscriber %v", token.Topic)
+		pbMsg := &pb.Message{
+			Topic:   msg.Topic,
+			Message: string(msg.Payload),
+			SentAt:  timestamppb.New(msg.Timestamp),
+		}
+
+		if err := stream.Send(pbMsg); err == io.EOF {
+			return nil
+		} else if err != nil {
+			return err
+		}
+	}
 }
