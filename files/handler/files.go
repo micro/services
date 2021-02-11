@@ -2,8 +2,10 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"strings"
 
+	"github.com/micro/micro/v3/service/auth"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/model"
 	files "github.com/micro/services/files/proto"
@@ -31,6 +33,11 @@ func NewFiles() *Files {
 }
 
 func (e *Files) Save(ctx context.Context, req *files.SaveRequest, rsp *files.SaveResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.New("Files.Save requires authentication")
+	}
+
 	log.Info("Received Files.Save request")
 	for _, file := range req.Files {
 		err := e.db.Create(file)
