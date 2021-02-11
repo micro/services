@@ -16,7 +16,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterFilesHandler(srv.Server(), new(handler.Files))
+	pb.RegisterFilesHandler(srv.Server(), handler.NewFiles())
 
 	// Run service
 	if err := srv.Run(); err != nil {

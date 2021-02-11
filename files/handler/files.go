@@ -17,11 +17,13 @@ func NewFiles() *Files {
 	i := model.ByEquality("project")
 	i.Order.Type = model.OrderTypeUnordered
 
-	db := model.NewModel(
-		model.WithIndexes(i),
+	db := model.New(
+		files.File{},
+		&model.Options{
+			Key:     "Id",
+			Indexes: []model.Index{i},
+		},
 	)
-
-	db.Register(new(files.File))
 
 	return &Files{
 		db: db,
@@ -29,7 +31,7 @@ func NewFiles() *Files {
 }
 
 func (e *Files) Save(ctx context.Context, req *files.SaveRequest, rsp *files.SaveResponse) error {
-	log.Info("Received Files.Call request")
+	log.Info("Received Files.Save request")
 	for _, file := range req.Files {
 		err := e.db.Create(file)
 		if err != nil {
@@ -40,7 +42,7 @@ func (e *Files) Save(ctx context.Context, req *files.SaveRequest, rsp *files.Sav
 }
 
 func (e *Files) List(ctx context.Context, req *files.ListRequest, rsp *files.ListResponse) error {
-	log.Info("Received Files.Call request")
+	log.Info("Received Files.List request")
 	rsp.Files = []*files.File{}
 	err := e.db.Read(model.QueryEquals("project", req.GetProject()), &rsp.Files)
 	if err != nil {
