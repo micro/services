@@ -35,7 +35,7 @@ func main() {
 	}
 
 	// Register handler
-	pb.RegisterGroupsHandler(srv.Server(), &handler.Groups{DB: db})
+	pb.RegisterGroupsHandler(srv.Server(), &handler.Groups{DB: db.Debug()})
 
 	// Run service
 	if err := srv.Run(); err != nil {
