@@ -78,7 +78,7 @@ jobs:
       # publish to github first under micro/services
       # .npmrc has settings for it
       - uses: JS-DevTools/npm-publish@v1
-        if: github.ref == 'refs/heads/master'
+        #if: github.ref == 'refs/heads/master'
         with:
           access: public
           package: services/clients/ts/package.json
@@ -92,7 +92,7 @@ jobs:
           sed -i 's/micro/m3o/g' clients/ts/package.json
 
       - uses: JS-DevTools/npm-publish@v1
-        if: github.ref == 'refs/heads/master'
+        #if: github.ref == 'refs/heads/master'
         with:
           access: public
           package: services/clients/ts/package.json
