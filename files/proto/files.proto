@@ -23,6 +23,8 @@ message File {
 	string file_contents = 6;
 	int64 created = 7;
 	int64 updated = 8;
+	// owner
+	string owner = 9;
 }
 
 // The save endpoint lets you batch save text files.

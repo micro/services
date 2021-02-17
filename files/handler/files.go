@@ -33,14 +33,23 @@ func NewFiles() *Files {
 }
 
 func (e *Files) Save(ctx context.Context, req *files.SaveRequest, rsp *files.SaveResponse) error {
-	_, ok := auth.AccountFromContext(ctx)
+	// @todo return proper micro errors
+	acc, ok := auth.AccountFromContext(ctx)
 	if !ok {
 		return errors.New("Files.Save requires authentication")
 	}
 
 	log.Info("Received Files.Save request")
 	for _, file := range req.Files {
-		err := e.db.Create(file)
+		f := files.File{}
+		err := e.db.Read(model.QueryEquals("Id", file.Id), &f)
+		if err != nil && err != model.ErrorNotFound {
+			return err
+		}
+		if f.Owner != acc.ID {
+			return errors.New("Not authorized")
+		}
+		err = e.db.Create(file)
 		if err != nil {
 			return err
 		}
