@@ -64,7 +64,7 @@ func (i *Invites) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Cre
 		ID:      uuid.New().String(),
 		Code:    generateCode(),
 		GroupID: req.GroupId,
-		Email:   req.Email,
+		Email:   strings.ToLower(req.Email),
 	}
 	if err := i.DB.Create(invite).Error; err != nil && strings.Contains(err.Error(), "group_email") {
 	} else if err != nil {
@@ -116,7 +116,7 @@ func (i *Invites) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRes
 		query.GroupID = req.GroupId.Value
 	}
 	if req.Email != nil {
-		query.Email = req.Email.Value
+		query.Email = strings.ToLower(req.Email.Value)
 	}
 
 	// query the database

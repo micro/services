@@ -97,7 +97,7 @@ func (u *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 			ID:        uuid.New().String(),
 			FirstName: req.FirstName,
 			LastName:  req.LastName,
-			Email:     req.Email,
+			Email:     strings.ToLower(req.Email),
 			Password:  phash,
 		}
 		err = u.DB.Create(user).Error
@@ -184,7 +184,7 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 		user.LastName = req.LastName.Value
 	}
 	if req.Email != nil {
-		user.Email = req.Email.Value
+		user.Email = strings.ToLower(req.Email.Value)
 	}
 
 	// write the user to the database
