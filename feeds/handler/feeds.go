@@ -95,8 +95,9 @@ func (e *Feeds) Entries(ctx context.Context, req *feeds.EntriesRequest, rsp *fee
 
 func (e *Feeds) List(ctx context.Context, req *feeds.ListRequest, rsp *feeds.ListResponse) error {
 	var feeds []*feeds.Feed
-
-	err := e.feeds.Read(model.QueryAll(), &feeds)
+	q := model.QueryAll()
+	q.Index.FieldName = "Name"
+	err := e.feeds.Read(q, &feeds)
 	if err != nil {
 		return errors.InternalServerError("feeds.list", "failed to read list of feeds: %v", err)
 	}
