@@ -20,7 +20,7 @@ build:
 
 .PHONY: test
 test:
-	go test -v ./... -cover
+	go test -v -p 1 ./...
 
 .PHONY: docker
 docker:
