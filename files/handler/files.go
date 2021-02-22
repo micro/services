@@ -46,7 +46,8 @@ func (e *Files) Save(ctx context.Context, req *files.SaveRequest, rsp *files.Sav
 		if err != nil && err != model.ErrorNotFound {
 			return err
 		}
-		if f.Owner != acc.ID {
+		// if file exists check ownership
+		if f.Id != "" && f.Owner != acc.ID {
 			return errors.New("Not authorized")
 		}
 		err = e.db.Create(file)
