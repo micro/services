@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
+	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/golang/protobuf v1.4.3

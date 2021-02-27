@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/SlyMarbo/rss"
+	"github.com/micro/services/feeds/parser"
 	log "github.com/micro/micro/v3/service/logger"
 	feeds "github.com/micro/services/feeds/proto"
 	posts "github.com/micro/services/posts/proto"
@@ -69,8 +70,15 @@ func (e *Feeds) fetch(f *feeds.Feed) error {
 			content = item.Summary
 		}
 
+		// if we have a parser which returns content use it
+		// e.g cnbc
+		c, err := parser.Parse(item.Link)
+		if err == nil && len(c) > 0 {
+			content = c
+		}
+
 		// @todo make this optional
-		_, err := e.postsService.Save(context.TODO(), &posts.SaveRequest{
+		_, err = e.postsService.Save(context.TODO(), &posts.SaveRequest{
 			Id:        id,
 			Title:     item.Title,
 			Content:   content,
