@@ -8,8 +8,8 @@ import (
 	"net/url"
 
 	"github.com/SlyMarbo/rss"
-	"github.com/micro/services/feeds/parser"
 	log "github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/feeds/parser"
 	feeds "github.com/micro/services/feeds/proto"
 	posts "github.com/micro/services/posts/proto"
 )
