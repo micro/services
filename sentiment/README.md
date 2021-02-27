@@ -1,23 +1,12 @@
 # Sentiment Service
 
-This is the Sentiment service
-
-Generated with
-
-```
-micro new sentiment
-```
+The sentiment service provides rudimentary sentiment analysis on text
 
 ## Usage
 
-Generate the proto code
-
 ```
-make proto
-```
-
-Run the service
-
-```
-micro run .
+$ micro sentiment analyze --text "This is great"
+{
+        "score": 1
+}
 ```
