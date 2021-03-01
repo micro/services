@@ -3,14 +3,12 @@ package handler
 import (
 	"context"
 
-	"github.com/cdipaolo/sentiment"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/services/sentiment/model"
 	pb "github.com/micro/services/sentiment/proto"
 )
 
-type Sentiment struct {
-	Model *sentiment.Models
-}
+type Sentiment struct{}
 
 func (e *Sentiment) Analyze(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
 	if len(req.Text) == 0 {
@@ -25,8 +23,7 @@ func (e *Sentiment) Analyze(ctx context.Context, req *pb.Request, rsp *pb.Respon
 		return errors.BadRequest("sentiment.analyze", "only support english")
 	}
 
-	an := e.Model.SentimentAnalysis(req.Text, sentiment.English)
-	rsp.Score = float64(an.Score)
+	rsp.Score = model.Analyze(req.Text)
 
 	// TODO: more complex word scoring
 

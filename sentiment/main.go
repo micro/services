@@ -1,10 +1,11 @@
 package main
 
 import (
+	posts "github.com/micro/services/posts/proto"
 	"github.com/micro/services/sentiment/handler"
 	pb "github.com/micro/services/sentiment/proto"
+	"github.com/micro/services/sentiment/subscriber"
 
-	"github.com/cdipaolo/sentiment"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 )
@@ -15,14 +16,12 @@ func main() {
 		service.Name("sentiment"),
 	)
 
-	// load sentiment analysis tool
-	md, err := sentiment.Restore()
-	if err != nil {
-		logger.Fatal(err)
-	}
-
 	// Register handler
-	pb.RegisterSentimentHandler(srv.Server(), &handler.Sentiment{&md})
+	pb.RegisterSentimentHandler(srv.Server(), new(handler.Sentiment))
+
+	// Register subscriber
+	service.Subscribe("posts", subscriber.EnrichPost)
+	subscriber.PostsClient = posts.NewPostsService("posts", srv.Client())
 
 	// Run service
 	if err := srv.Run(); err != nil {
