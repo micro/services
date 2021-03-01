@@ -183,7 +183,7 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 
 		err := ioutil.WriteFile(contentFile, append([]byte("---\ntitle: "+serviceName+v.titlePostFix+"\nservicename: "+serviceName+"\nlabels: "+tagsString+"\n---\n"), app...), 0777)
 		if err != nil {
-			fmt.Printf("Failed to write post content to %v:\n%v\n", err)
+			fmt.Printf("Failed to write post content to %v:\n%v\n", contentFile, err)
 			os.Exit(1)
 		}
 		fi, err := os.OpenFile(contentFile, os.O_APPEND|os.O_WRONLY, os.ModeAppend)

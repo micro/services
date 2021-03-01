@@ -14,6 +14,7 @@ import (
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/logger"
 	chat "github.com/micro/services/test/chat/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -60,7 +61,7 @@ func main() {
 			// send a message to the chat
 			err = stream.Send(&chat.Message{
 				ClientId: uuid.New().String(),
-				SentAt:   time.Now().Unix(),
+				SentAt:   timestamppb.New(time.Now()),
 				Subject:  "Message from user one",
 				Text:     fmt.Sprintf("Message #%v", i),
 			})
@@ -96,7 +97,7 @@ func main() {
 			// send a response to the chat
 			err = stream.Send(&chat.Message{
 				ClientId: uuid.New().String(),
-				SentAt:   time.Now().Unix(),
+				SentAt:   timestamppb.New(time.Now()),
 				Subject:  "Response from user two",
 				Text:     fmt.Sprintf("Response #%v", i),
 			})
