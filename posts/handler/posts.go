@@ -132,6 +132,7 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
 	}
 
 	// publish the post as an event
+	logger.Info("Publishing post: '%v'", post.Title)
 	service.NewEvent("posts").Publish(ctx, post)
 
 	if oldPost == nil {
