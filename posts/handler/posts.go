@@ -130,10 +130,11 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
 	if err != nil {
 		return err
 	}
-	if oldPost == nil {
-		// publish the post as an event
-		service.NewEvent("posts").Publish(ctx, post)
 
+	// publish the post as an event
+	service.NewEvent("posts").Publish(ctx, post)
+
+	if oldPost == nil {
 		for _, tagName := range post.Tags {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
 				ResourceID: post.Id,
