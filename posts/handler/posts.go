@@ -7,6 +7,7 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/model"
+	"github.com/micro/micro/v3/service"
 
 	"github.com/gosimple/slug"
 	proto "github.com/micro/services/posts/proto"
@@ -130,6 +131,9 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
 		return err
 	}
 	if oldPost == nil {
+		// publish the post as an event
+		service.NewEvent("posts").Publish(ctx, post)
+
 		for _, tagName := range post.Tags {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
 				ResourceID: post.Id,
