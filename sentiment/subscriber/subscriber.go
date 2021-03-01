@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/posts/proto"
 	"github.com/micro/services/sentiment/model"
 )
@@ -24,6 +25,8 @@ func EnrichPost(ctx context.Context, post *pb.Post) error {
 	// later we will look at the content
 	score := model.Analyze(post.Title)
 	post.Metadata["sentiment"] = fmt.Sprintf("%.1f", score)
+
+	logger.Info("Setting score %.1f for post %v", score, post.Title)
 
 	// now save the post
 	PostsClient.Save(ctx, &pb.SaveRequest{
