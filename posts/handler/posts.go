@@ -131,11 +131,11 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
 		return err
 	}
 
-	// publish the post as an event
-	logger.Infof("Publishing post: '%v'", post.Title)
-	service.NewEvent("posts").Publish(ctx, post)
-
 	if oldPost == nil {
+		// publish the post as an event
+		logger.Infof("Publishing post: '%v'", post.Title)
+		service.NewEvent("posts").Publish(ctx, post)
+
 		for _, tagName := range post.Tags {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
 				ResourceID: post.Id,
