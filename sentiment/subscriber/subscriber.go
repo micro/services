@@ -26,7 +26,7 @@ func EnrichPost(ctx context.Context, post *pb.Post) error {
 	score := model.Analyze(post.Title)
 	post.Metadata["sentiment"] = fmt.Sprintf("%.1f", score)
 
-	logger.Infof("Setting score %.1f for post %v", score, post.Title)
+	logger.Infof("Setting score %.1f for post '%v'", score, post.Title)
 
 	// now save the post
 	PostsClient.Save(ctx, &pb.SaveRequest{

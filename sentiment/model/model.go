@@ -20,5 +20,19 @@ func init() {
 
 func Analyze(text string) float64 {
 	an := model.SentimentAnalysis(text, sentiment.English)
-	return float64(an.Score)
+
+	// no words, just return whats scored
+	if len(an.Words) == 0 {
+		return float64(an.Score)
+	}
+
+	// take each word score then divide by num words
+	var total float64
+
+	for _, word := range an.Words {
+		total += float64(word.Score)
+	}
+
+	// get the overall score
+	return total / float64(len(an.Words))
 }
