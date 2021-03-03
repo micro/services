@@ -93,10 +93,7 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 	}
 
 	// merge the metadata
-	for k, v := range oldPost.Metadata {
-		if _, ok := post.Metadata[k]; ok {
-			continue
-		}
+	for k, v := range req.Metadata {
 		post.Metadata[k] = v
 	}
 
