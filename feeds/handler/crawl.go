@@ -55,8 +55,6 @@ func (e *Feeds) fetch(f *feeds.Feed) error {
 		if err != nil {
 			return fmt.Errorf("Error fetching address %v: %v", url, err)
 		}
-		// set the refresh time
-		fd.Refresh = time.Now()
 		// save the feed
 		rssSync.Lock()
 		rssFeeds[f.Name] = fd
@@ -70,6 +68,8 @@ func (e *Feeds) fetch(f *feeds.Feed) error {
 		}
 	}
 
+	// set the refresh time
+	fd.Refresh = time.Now()
 	domain := getDomain(url)
 
 	// range over the feed and save the items
