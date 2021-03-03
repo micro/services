@@ -29,7 +29,7 @@ func EnrichPost(ctx context.Context, post *pb.Post) error {
 	logger.Infof("Setting score %.1f for post '%v'", score, post.Title)
 
 	// now save the post
-	PostsClient.Save(ctx, &pb.SaveRequest{
+	_, err := PostsClient.Save(ctx, &pb.SaveRequest{
 		Id:        post.Id,
 		Title:     post.Title,
 		Content:   post.Content,
@@ -39,6 +39,9 @@ func EnrichPost(ctx context.Context, post *pb.Post) error {
 		Image:     post.Image,
 		Slug:      post.Slug,
 	})
+	if err != nil {
+		logger.Info("Error saving post: %v", err)
+	}
 
 	return nil
 }
