@@ -71,7 +71,19 @@ func (e *Feeds) crawl() {
 }
 
 func (e *Feeds) Add(ctx context.Context, req *feeds.AddRequest, rsp *feeds.AddResponse) error {
-	log.Info("Received Feeds.New request")
+	log.Info("Received Feeds.Add request")
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest("feeds.add", "require name")
+	}
+
+	rssSync.RLock()
+	defer rssSync.RUnlock()
+
+	// check if the feed already exists
+	if _, ok := rssFeeds[req.Name]; ok {
+		return errors.BadRequest("feeds.add", "%s already exists", req.Name)
+	}
 
 	f := feeds.Feed{
 		Name:     req.Name,
