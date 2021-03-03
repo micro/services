@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"sync"
+	"time"
 
 	"github.com/SlyMarbo/rss"
 	log "github.com/micro/micro/v3/service/logger"
@@ -54,6 +55,8 @@ func (e *Feeds) fetch(f *feeds.Feed) error {
 		if err != nil {
 			return fmt.Errorf("Error fetching address %v: %v", url, err)
 		}
+		// set the refresh time
+		fd.Refresh = time.Now()
 		// save the feed
 		rssSync.Lock()
 		rssFeeds[f.Name] = fd
