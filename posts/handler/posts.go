@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/model"
-	"github.com/micro/micro/v3/service"
 
 	"github.com/gosimple/slug"
 	proto "github.com/micro/services/posts/proto"
@@ -75,6 +75,8 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 		}
 		return nil
 	}
+
+	// get the old post
 	oldPost := posts[0]
 
 	post := &proto.Post{
@@ -85,11 +87,23 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 		Tags:     oldPost.Tags,
 		Created:  oldPost.Created,
 		Updated:  req.Timestamp,
-		Metadata: req.Metadata,
-		Image:    req.Image,
+		Metadata: oldPost.Metadata,
+		Image:    oldPost.Image,
 	}
+
+	// merge the metadata
+	for k, v := range oldPost.Metadata {
+		if _, ok := post.Metadata[k]; ok {
+			continue
+		}
+		post.Metadata[k] = v
+	}
+
 	if post.Created == 0 {
 		post.Created = time.Now().Unix()
+	}
+	if len(req.Image) > 0 {
+		post.Image = req.Image
 	}
 	if len(req.Title) > 0 {
 		post.Title = req.Title
