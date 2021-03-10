@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"context"
+	"os"
 	"sort"
 	"testing"
 
@@ -15,19 +16,23 @@ import (
 
 func testHandler(t *testing.T) *handler.Groups {
 	// connect to the database
-	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5432/groups?sslmode=disable"), &gorm.Config{})
+	addr := os.Getenv("POSTGRES_URL")
+	if len(addr) == 0 {
+		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
+	}
+	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
+	}
+
+	// clean any data from a previous run
+	if err := db.Exec("DROP TABLE IF EXISTS groups, memberships CASCADE").Error; err != nil {
+		t.Fatalf("Error cleaning database: %v", err)
 	}
 
 	// migrate the database
 	if err := db.AutoMigrate(&handler.Group{}, &handler.Membership{}); err != nil {
 		t.Fatalf("Error migrating database: %v", err)
-	}
-
-	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE groups CASCADE").Error; err != nil {
-		t.Fatalf("Error cleaning database: %v", err)
 	}
 
 	return &handler.Groups{DB: db}

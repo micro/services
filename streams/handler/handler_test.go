@@ -1,18 +1,23 @@
 package handler_test
 
 import (
+	"os"
 	"testing"
 	"time"
 
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/services/streams/handler"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func testHandler(t *testing.T) *handler.Streams {
-	// use an in memory DB
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	// connect to the database
+	addr := os.Getenv("POSTGRES_URL")
+	if len(addr) == 0 {
+		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
+	}
+	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
 	}

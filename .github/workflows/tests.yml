@@ -5,6 +5,21 @@ jobs:
   test:
     name: Test repo
     runs-on: ubuntu-latest
+    container: node:10.18-jessie
+    services:
+      postgres:
+        image: postgres:12.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DATABASE: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Set up Go 1.13
         uses: actions/setup-go@v1
@@ -23,4 +38,5 @@ jobs:
         id: tests
         env:
           IN_TRAVIS_CI: yes
+          POSTGRES_URL: postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable
         run: go test -v -p 1 ./...

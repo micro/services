@@ -2,12 +2,12 @@ package handler_test
 
 import (
 	"context"
+	"os"
 	"testing"
-
-	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/micro/services/invites/handler"
 	pb "github.com/micro/services/invites/proto"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -17,19 +17,23 @@ import (
 
 func testHandler(t *testing.T) *handler.Invites {
 	// connect to the database
-	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5432/invites?sslmode=disable"), &gorm.Config{})
+	addr := os.Getenv("POSTGRES_URL")
+	if len(addr) == 0 {
+		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
+	}
+	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
+	}
+
+	// clean any data from a previous run
+	if err := db.Exec("DROP TABLE IF EXISTS invites CASCADE").Error; err != nil {
+		t.Fatalf("Error cleaning database: %v", err)
 	}
 
 	// migrate the database
 	if err := db.AutoMigrate(&handler.Invite{}); err != nil {
 		t.Fatalf("Error migrating database: %v", err)
-	}
-
-	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE invites CASCADE").Error; err != nil {
-		t.Fatalf("Error cleaning database: %v", err)
 	}
 
 	return &handler.Invites{DB: db}
