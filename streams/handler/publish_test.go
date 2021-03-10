@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -13,7 +14,7 @@ import (
 
 func TestPublish(t *testing.T) {
 	msg := "{\"foo\":\"bar\"}"
-	topic := uuid.New().String()
+	topic := strings.ReplaceAll(uuid.New().String(), "-", "")
 
 	t.Run("MissingTopic", func(t *testing.T) {
 		h := testHandler(t)
@@ -40,6 +41,7 @@ func TestPublish(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 1, h.Events.(*eventsMock).PublishCount)
 		assert.Equal(t, msg, h.Events.(*eventsMock).PublishMessage)
-		assert.Equal(t, topic, h.Events.(*eventsMock).PublishTopic)
+		// topic is prefixed with acc issuer to implement multitenancy
+		assert.Equal(t, "foo."+topic, h.Events.(*eventsMock).PublishTopic)
 	})
 }

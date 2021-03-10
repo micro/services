@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/micro/micro/v3/service/auth"
+	"github.com/micro/services/streams/handler"
 	pb "github.com/micro/services/streams/proto"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,5 +27,12 @@ func TestToken(t *testing.T) {
 		err := h.Token(ctx, &pb.TokenRequest{Topic: "helloworld"}, &rsp)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, rsp.Token)
+	})
+
+	t.Run("WithBadTopic", func(t *testing.T) {
+		var rsp pb.TokenResponse
+		ctx := auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		err := h.Token(ctx, &pb.TokenRequest{Topic: "helloworld-1"}, &rsp)
+		assert.Equal(t, handler.ErrInvalidTopic, err)
 	})
 }

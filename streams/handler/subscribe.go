@@ -56,7 +56,6 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 		logger.Errorf("Error connecting to events stream: %v", err)
 		return errors.InternalServerError("EVENTS_ERROR", "Error connecting to events stream")
 	}
-	defer stream.Close()
 
 	for {
 		msg, ok := <-evChan

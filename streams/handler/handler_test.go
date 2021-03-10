@@ -6,13 +6,13 @@ import (
 
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/services/streams/handler"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func testHandler(t *testing.T) *handler.Streams {
-	// connect to the database
-	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5432/postgres?sslmode=disable"), &gorm.Config{})
+	// use an in memory DB
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
 	}
@@ -20,11 +20,6 @@ func testHandler(t *testing.T) *handler.Streams {
 	// migrate the database
 	if err := db.AutoMigrate(&handler.Token{}); err != nil {
 		t.Fatalf("Error migrating database: %v", err)
-	}
-
-	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE tokens CASCADE").Error; err != nil {
-		t.Fatalf("Error cleaning database: %v", err)
 	}
 
 	return &handler.Streams{
