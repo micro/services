@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/services/streams/handler"
 	pb "github.com/micro/services/streams/proto"
@@ -17,7 +18,8 @@ func TestSubscribe(t *testing.T) {
 		h := testHandler(t)
 		s := new(streamMock)
 
-		err := h.Subscribe(context.TODO(), &pb.SubscribeRequest{
+		ctx:=auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		err := h.Subscribe(ctx, &pb.SubscribeRequest{
 			Topic: "helloworld",
 		}, s)
 
@@ -29,7 +31,8 @@ func TestSubscribe(t *testing.T) {
 		h := testHandler(t)
 		s := new(streamMock)
 
-		err := h.Subscribe(context.TODO(), &pb.SubscribeRequest{
+		ctx:=auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		err := h.Subscribe(ctx, &pb.SubscribeRequest{
 			Token: uuid.New().String(),
 		}, s)
 
@@ -41,7 +44,8 @@ func TestSubscribe(t *testing.T) {
 		h := testHandler(t)
 		s := new(streamMock)
 
-		err := h.Subscribe(context.TODO(), &pb.SubscribeRequest{
+		ctx:=auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		err := h.Subscribe(ctx, &pb.SubscribeRequest{
 			Topic: "helloworld",
 			Token: uuid.New().String(),
 		}, s)
@@ -54,7 +58,8 @@ func TestSubscribe(t *testing.T) {
 		h := testHandler(t)
 
 		var tRsp pb.TokenResponse
-		err := h.Token(context.TODO(), &pb.TokenRequest{
+		ctx:=auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		err := h.Token(ctx, &pb.TokenRequest{
 			Topic: "helloworld",
 		}, &tRsp)
 		assert.NoError(t, err)
@@ -62,7 +67,7 @@ func TestSubscribe(t *testing.T) {
 		ct := h.Time()
 		h.Time = func() time.Time { return ct.Add(handler.TokenTTL * 2) }
 		s := new(streamMock)
-		err = h.Subscribe(context.TODO(), &pb.SubscribeRequest{
+		err = h.Subscribe(ctx, &pb.SubscribeRequest{
 			Topic: "helloworld",
 			Token: tRsp.Token,
 		}, s)
@@ -75,13 +80,14 @@ func TestSubscribe(t *testing.T) {
 		h := testHandler(t)
 
 		var tRsp pb.TokenResponse
-		err := h.Token(context.TODO(), &pb.TokenRequest{
+		ctx:=auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		err := h.Token(ctx, &pb.TokenRequest{
 			Topic: "helloworldx",
 		}, &tRsp)
 		assert.NoError(t, err)
 
 		s := new(streamMock)
-		err = h.Subscribe(context.TODO(), &pb.SubscribeRequest{
+		err = h.Subscribe(ctx, &pb.SubscribeRequest{
 			Topic: "helloworld",
 			Token: tRsp.Token,
 		}, s)
@@ -96,13 +102,14 @@ func TestSubscribe(t *testing.T) {
 		h.Events.(*eventsMock).ConsumeChan = c
 
 		var tRsp pb.TokenResponse
-		err := h.Token(context.TODO(), &pb.TokenRequest{
+		ctx:=auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		err := h.Token(ctx, &pb.TokenRequest{
 			Topic: "helloworld",
 		}, &tRsp)
 		assert.NoError(t, err)
 
 		s := &streamMock{Messages: []*pb.Message{}}
-		err = h.Subscribe(context.TODO(), &pb.SubscribeRequest{
+		err = h.Subscribe(ctx, &pb.SubscribeRequest{
 			Topic: "helloworld",
 			Token: tRsp.Token,
 		}, s)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
@@ -13,7 +14,7 @@ import (
 )
 
 func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Streams_SubscribeStream) error {
-	logger.Infof("Recieved subscribe request. Topic: '%v', Token: '%v'", req.Topic, req.Token)
+	logger.Infof("Received subscribe request. Topic: '%v', Token: '%v'", req.Topic, req.Token)
 
 	// validate the request
 	if len(req.Token) == 0 {
@@ -22,10 +23,18 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 	if len(req.Topic) == 0 {
 		return ErrMissingTopic
 	}
+	if err := validateTopicInput(req.Topic); err != nil {
+		return err
+	}
+
+	acc, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 
 	// find the token and check to see if it has expired
 	var token Token
-	if err := s.DB.Where(&Token{Token: req.Token}).First(&token).Error; err == gorm.ErrRecordNotFound {
+	if err := s.DB.Where(&Token{Token: req.Token, Namespace: acc.Issuer}).First(&token).Error; err == gorm.ErrRecordNotFound {
 		return ErrInvalidToken
 	} else if err != nil {
 		logger.Errorf("Error reading token from store: %v", err)
@@ -42,7 +51,7 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 
 	// start the subscription
 	logger.Infof("Subscribing to %v via queue %v", req.Topic, token.Token)
-	evChan, err := s.Events.Consume(req.Topic, events.WithGroup(token.Token))
+	evChan, err := s.Events.Consume(fmtTopic(acc.Issuer, req.Topic), events.WithGroup(token.Token))
 	if err != nil {
 		logger.Errorf("Error connecting to events stream: %v", err)
 		return errors.InternalServerError("EVENTS_ERROR", "Error connecting to events stream")
@@ -57,7 +66,7 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 
 		logger.Infof("Sending message to subscriber %v", token.Topic)
 		pbMsg := &pb.Message{
-			Topic:   msg.Topic,
+			Topic:   req.Topic, // use req.Topic not msg.Topic because topic is munged for multitenancy
 			Message: string(msg.Payload),
 			SentAt:  timestamppb.New(msg.Timestamp),
 		}
