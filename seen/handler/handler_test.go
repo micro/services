@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/uuid"
 	"github.com/micro/services/seen/handler"
 	pb "github.com/micro/services/seen/proto"
@@ -227,13 +228,13 @@ func TestRead(t *testing.T) {
 	assert.Len(t, rsp.Timestamps, 2)
 
 	if v := rsp.Timestamps["message-1"]; v != nil {
-		assert.True(t, v.AsTime().Equal(tn))
+		assert.True(t, microSecondTime(v).Equal(tn))
 	} else {
 		t.Errorf("Expected a timestamp for message-1")
 	}
 
 	if v := rsp.Timestamps["message-2"]; v != nil {
-		assert.True(t, v.AsTime().Equal(tn.Add(time.Minute*-10)))
+		assert.True(t, microSecondTime(v).Equal(tn.Add(time.Minute*-10)))
 	} else {
 		t.Errorf("Expected a timestamp for message-2")
 	}
@@ -254,4 +255,11 @@ func TestRead(t *testing.T) {
 	}, &rsp)
 	assert.NoError(t, err)
 	assert.Len(t, rsp.Timestamps, 1)
+
+}
+
+// postgres has a resolution of 100microseconds so just test that it's accurate to the second
+func microSecondTime(t *timestamp.Timestamp) time.Time {
+	tt := t.AsTime()
+	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }
