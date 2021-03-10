@@ -157,7 +157,7 @@ var servicesToTags = map[string][]string{
 	"posts":      []string{"Headless CMS"},
 	"tags":       []string{"Headless CMS"},
 	"feeds":      []string{"Headless CMS"},
-	"chat":       []string{"Communications"},
+	"datastore":  []string{"Backend"},
 	"geocoding":  []string{"Logistics"},
 	"places":     []string{"Logistics"},
 	"routing":    []string{"Logistics"},
@@ -183,7 +183,7 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 
 		err := ioutil.WriteFile(contentFile, append([]byte("---\ntitle: "+serviceName+v.titlePostFix+"\nservicename: "+serviceName+"\nlabels: "+tagsString+"\n---\n"), app...), 0777)
 		if err != nil {
-			fmt.Printf("Failed to write post content to %v:\n%v\n", err)
+			fmt.Printf("Failed to write post content to %v:\n%v\n", contentFile, err)
 			os.Exit(1)
 		}
 		fi, err := os.OpenFile(contentFile, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
@@ -214,7 +214,7 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 						if len(parts) <= 1 {
 							return string(bs)
 						}
-						parts[len(parts)-1] = strings.Repeat(" ", prepend) + parts[len(parts)-1]
+						parts[len(parts)-1] = parts[len(parts)-1]
 						return strings.Join(parts, "\n")
 					}
 				}
@@ -259,30 +259,39 @@ func saveSpec(originalMarkDown []byte, contentDir, serviceName string, spec *ope
 
 func schemaToMap(spec *openapi3.SchemaRef, schemas map[string]*openapi3.SchemaRef) map[string]interface{} {
 	var recurse func(props map[string]*openapi3.SchemaRef) map[string]interface{}
+	getAtomic := func(v *openapi3.SchemaRef) interface{} {
+		switch v.Value.Type {
+		case "string":
+			if len(v.Value.Description) > 0 {
+				return strings.Replace(v.Value.Description, "\n", ".", -1)
+			} else {
+				return v.Value.Type
+			}
+		case "number":
+			return 1
+		case "boolean":
+			return true
+		}
+		return "UNKOWN TYPE " + v.Value.Type
+	}
 	recurse = func(props map[string]*openapi3.SchemaRef) map[string]interface{} {
 		ret := map[string]interface{}{}
 		for k, v := range props {
 			k = strcase.SnakeCase(k)
-			//v.Value.
+
 			if v.Value.Type == "object" {
-				// @todo identify what is a slice and what is not!
-				// currently the openapi converter messes this up
-				// see redoc html output
-				ret[k] = []interface{}{recurse(v.Value.Properties)}
+				ret[k] = recurse(v.Value.Properties)
 				continue
 			}
-			switch v.Value.Type {
-			case "string":
-				if len(v.Value.Description) > 0 {
-					ret[k] = strings.Replace(v.Value.Description, "\n", ".", -1)
+			if v.Value.Type == "array" {
+				if v.Value.Items.Value.Type != "object" {
+					ret[k] = []interface{}{getAtomic(v.Value.Items)}
 				} else {
-					ret[k] = v.Value.Type
+					ret[k] = []interface{}{recurse(v.Value.Items.Value.Properties)}
 				}
-			case "number":
-				ret[k] = 1
-			case "boolean":
-				ret[k] = true
+				continue
 			}
+			ret[k] = getAtomic(v)
 
 		}
 		return ret

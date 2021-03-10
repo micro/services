@@ -1,23 +1,5 @@
 # Streams Service
 
-This is the Streams service
-
-Generated with
-
-```
-micro new streams
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+The streams service provides an event stream, designed for sending messages from a server to mutliple
+clients connecting via Websockets. The Token RPC should be called to generate a token for each client,
+the clients should then subscribe using the Subscribe RPC.

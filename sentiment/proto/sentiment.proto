@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sentiment;
+
+option go_package = "proto;sentiment";
+
+service Sentiment {
+	rpc Analyze(Request) returns (Response) {};
+}
+
+message Request {
+	string text = 1;
+	string lang = 2;
+}
+
+message Response {
+	double score = 1;
+}
+

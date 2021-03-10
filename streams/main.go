@@ -5,15 +5,16 @@ import (
 
 	"github.com/micro/services/streams/handler"
 	pb "github.com/micro/services/streams/proto"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
-var dbAddress = "postgresql://postgres@localhost:5432/streams?sslmode=disable"
+var dbAddress = "postgresql://postgres:postgres@localhost:5432/streams?sslmode=disable"
 
 func main() {
 	// Create service
@@ -32,12 +33,16 @@ func main() {
 	if err != nil {
 		logger.Fatalf("Error connecting to database: %v", err)
 	}
-	if err := db.AutoMigrate(&handler.Conversation{}, &handler.Message{}); err != nil {
+	if err := db.AutoMigrate(&handler.Token{}); err != nil {
 		logger.Fatalf("Error migrating database: %v", err)
 	}
 
 	// Register handler
-	pb.RegisterStreamsHandler(srv.Server(), &handler.Streams{DB: db, Time: time.Now})
+	pb.RegisterStreamsHandler(srv.Server(), &handler.Streams{
+		DB:     db,
+		Events: events.DefaultStream,
+		Time:   time.Now,
+	})
 
 	// Run service
 	if err := srv.Run(); err != nil {

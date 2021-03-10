@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package datastore;
+
+option go_package = "proto;datastore";
+
+// These endpoints are experimental and will likely change,
+// especially related to indexes.
+service Datastore {
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc CreateIndex(CreateIndexRequest) returns (CreateIndexResponse) {}
+}
+
+message Query {
+	Index index = 1;
+	Order  order = 2;
+	string value = 3;
+	int64 offset = 4;
+	int64 limit = 5;
+}
+
+// Order is the order of the index
+message Order {
+	// Field to order on
+	// eg. age
+	string fieldName = 1;
+	// Ordered or unordered keys. Ordered keys are padded.
+	// Default is true. This option only exists for strings, where ordering
+	// comes at the cost of having rather long padded keys.
+	enum OrderType {
+    	UNORDERED = 0;
+    	ASCENDING = 1;
+    	DESCENDING = 2;
+  	}
+	// Type of the ordering
+	// eg. ascending, descending, unordered
+	OrderType orderType = 2;
+}
+
+message Index {
+	// Field to index on.
+	// eg. email
+	string fieldName = 1;
+	// Type of index
+	// eg. eq
+	string type = 2;
+	Order order = 3;
+
+	// Do not allow duplicate values of this field in the index.
+	// Useful for emails, usernames, post slugs etc.
+	bool unique = 4;
+
+	// Strings for ordering will be padded to a fix length
+	// Not a useful property for Querying, please ignore this at query time.
+	// Number is in bytes, not string characters. Choose a sufficiently big one.
+	// Consider that each character might take 4 bytes given the
+	// internals of reverse ordering. So a good rule of thumbs is expected
+	// characters in a string X 4
+	int64 stringOrderPadLength = 5;
+	// True = base32 encode ordered strings for easier management
+	// or false = keep 4 bytes long runes that might dispaly weirdly
+	bool Base32Encode = 6;
+
+	string FloatFormat = 7;
+	float Float64Max = 8;
+	float Float32Max = 9;
+}
+
+
+message CreateRequest {
+	// JSON marshalled record to save
+	string value = 1;
+}
+
+message CreateResponse {
+}
+
+message UpdateRequest {
+	// JSON marshalled record to save
+	string value = 1;
+}
+
+message UpdateResponse {
+
+}
+
+message ReadRequest {
+	Query query = 1;
+}
+
+message ReadResponse {
+	// JSON marshalled record found
+	string value = 1;
+}
+
+message DeleteRequest {
+	Query query = 1;
+}
+
+message DeleteResponse {
+}
+
+message CreateIndexRequest {
+	Index index = 1;
+}
+
+message CreateIndexResponse {
+
+}

@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package threads;
+option go_package = "proto;threads";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+service Threads {
+	// Create a conversation
+	rpc CreateConversation(CreateConversationRequest) returns (CreateConversationResponse);
+	// Read a conversation using its ID, can filter using group ID if provided
+	rpc ReadConversation(ReadConversationRequest) returns (ReadConversationResponse);
+	// Update a conversations topic
+	rpc UpdateConversation(UpdateConversationRequest) returns (UpdateConversationResponse);
+	// Delete a conversation and all the messages within
+	rpc DeleteConversation(DeleteConversationRequest) returns (DeleteConversationResponse);
+	// List all the conversations for a group
+	rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse);
+	// Create a message within a conversation
+	rpc CreateMessage(CreateMessageRequest) returns (CreateMessageResponse);
+	// List the messages within a conversation in reverse chronological order, using sent_before to
+	// offset as older messages need to be loaded
+	rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
+	// RecentMessages returns the most recent messages in a group of conversations. By default the 
+	// most messages retrieved per conversation is 25, however this can be overriden using the 
+	// limit_per_conversation option
+	rpc RecentMessages(RecentMessagesRequest) returns (RecentMessagesResponse);
+}
+
+message Conversation {
+	string id = 1;
+	string group_id = 2;
+	string topic = 3;
+	google.protobuf.Timestamp created_at = 4;
+}
+
+message Message {
+	string id = 1;
+	string author_id = 2;
+	string conversation_id = 3;
+	string text = 4;
+	google.protobuf.Timestamp sent_at = 5;
+}
+
+message CreateConversationRequest {
+	string group_id = 1;
+	string topic = 2;
+}
+
+message CreateConversationResponse {
+	Conversation conversation = 1;
+}
+
+message ReadConversationRequest {
+	string id = 1;
+	google.protobuf.StringValue group_id = 2;
+}
+
+message ReadConversationResponse {
+	Conversation conversation = 1;
+}
+
+message ListConversationsRequest {
+	string group_id = 1;
+}
+
+message ListConversationsResponse {
+	repeated Conversation conversations = 1;
+}
+
+message UpdateConversationRequest {
+	string id = 1;
+	string topic = 2;
+}
+
+message UpdateConversationResponse {
+	Conversation conversation = 1;
+}
+
+message DeleteConversationRequest {
+	string id = 1;
+}
+
+message DeleteConversationResponse {}
+
+message CreateMessageRequest {
+	string id = 1;
+	string conversation_id = 2;
+	string author_id = 3;
+	string text = 4;
+}
+
+message CreateMessageResponse {
+	Message message = 1;
+}
+
+message ListMessagesRequest {
+	string conversation_id = 1;
+	google.protobuf.Timestamp sent_before = 2;
+	google.protobuf.Int32Value limit = 3;
+}
+
+message ListMessagesResponse {
+	repeated Message messages = 1;
+}
+
+message RecentMessagesRequest {
+	repeated string conversation_ids = 1;
+	google.protobuf.Int32Value limit_per_conversation = 2;
+}
+
+message RecentMessagesResponse {
+	repeated Message messages = 1;
+}

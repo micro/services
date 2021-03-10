@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package codes;
+option go_package = "proto;codes";
+import "google/protobuf/timestamp.proto";
+
+service Codes {
+	rpc Create(CreateRequest) returns (CreateResponse);
+	rpc Verify(VerifyRequest) returns (VerifyResponse);
+}
+
+message CreateRequest {
+	string identity = 1; // e.g. phone number or email being verified
+	google.protobuf.Timestamp expires_at = 2; // expiry time for the code, default 5 minutes
+}
+
+message CreateResponse {
+	string code = 1;
+}
+
+message VerifyRequest {
+	string code = 1;
+	string identity = 2;
+}
+
+message VerifyResponse {}

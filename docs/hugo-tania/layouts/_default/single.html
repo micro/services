@@ -36,25 +36,4 @@
     </div>
 </div>
 
-<div class="container">
-    {{ if .Section }}
-    <nav class="flex container suggested">
-        {{ with .PrevInSection }}
-        <a rel="prev" href="{{ .RelPermalink }}" title="Previous post (older)">
-            <span>Previous</span>
-            {{ .Title }}
-            </a>
-        {{ end }}
-        
-        {{ with .NextInSection }}
-        <a rel="next" href="{{ .RelPermalink }}" title="Next post (newer)">
-            <span>Next</span>
-            {{ .Title }}
-            </a> 
-        {{ end }}
-    </nav>
-    {{ end }}
-</div>
-</main>
-
 {{ end }}

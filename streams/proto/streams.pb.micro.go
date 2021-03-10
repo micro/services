@@ -7,7 +7,6 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
-	_ "github.com/golang/protobuf/ptypes/wrappers"
 	math "math"
 )
 
@@ -44,25 +43,9 @@ func NewStreamsEndpoints() []*api.Endpoint {
 // Client API for Streams service
 
 type StreamsService interface {
-	// Create a conversation
-	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...client.CallOption) (*CreateConversationResponse, error)
-	// Read a conversation using its ID, can filter using group ID if provided
-	ReadConversation(ctx context.Context, in *ReadConversationRequest, opts ...client.CallOption) (*ReadConversationResponse, error)
-	// Update a conversations topic
-	UpdateConversation(ctx context.Context, in *UpdateConversationRequest, opts ...client.CallOption) (*UpdateConversationResponse, error)
-	// Delete a conversation and all the messages within
-	DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...client.CallOption) (*DeleteConversationResponse, error)
-	// List all the conversations for a group
-	ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...client.CallOption) (*ListConversationsResponse, error)
-	// Create a message within a conversation
-	CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...client.CallOption) (*CreateMessageResponse, error)
-	// List the messages within a conversation in reverse chronological order, using sent_before to
-	// offset as older messages need to be loaded
-	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...client.CallOption) (*ListMessagesResponse, error)
-	// RecentMessages returns the most recent messages in a group of conversations. By default the
-	// most messages retrieved per conversation is 10, however this can be overriden using the
-	// limit_per_conversation option
-	RecentMessages(ctx context.Context, in *RecentMessagesRequest, opts ...client.CallOption) (*RecentMessagesResponse, error)
+	Publish(ctx context.Context, in *Message, opts ...client.CallOption) (*PublishResponse, error)
+	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Streams_SubscribeService, error)
+	Token(ctx context.Context, in *TokenRequest, opts ...client.CallOption) (*TokenResponse, error)
 }
 
 type streamsService struct {
@@ -77,9 +60,9 @@ func NewStreamsService(name string, c client.Client) StreamsService {
 	}
 }
 
-func (c *streamsService) CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...client.CallOption) (*CreateConversationResponse, error) {
-	req := c.c.NewRequest(c.name, "Streams.CreateConversation", in)
-	out := new(CreateConversationResponse)
+func (c *streamsService) Publish(ctx context.Context, in *Message, opts ...client.CallOption) (*PublishResponse, error) {
+	req := c.c.NewRequest(c.name, "Streams.Publish", in)
+	out := new(PublishResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -87,69 +70,58 @@ func (c *streamsService) CreateConversation(ctx context.Context, in *CreateConve
 	return out, nil
 }
 
-func (c *streamsService) ReadConversation(ctx context.Context, in *ReadConversationRequest, opts ...client.CallOption) (*ReadConversationResponse, error) {
-	req := c.c.NewRequest(c.name, "Streams.ReadConversation", in)
-	out := new(ReadConversationResponse)
-	err := c.c.Call(ctx, req, out, opts...)
+func (c *streamsService) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Streams_SubscribeService, error) {
+	req := c.c.NewRequest(c.name, "Streams.Subscribe", &SubscribeRequest{})
+	stream, err := c.c.Stream(ctx, req, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	if err := stream.Send(in); err != nil {
+		return nil, err
+	}
+	return &streamsServiceSubscribe{stream}, nil
 }
 
-func (c *streamsService) UpdateConversation(ctx context.Context, in *UpdateConversationRequest, opts ...client.CallOption) (*UpdateConversationResponse, error) {
-	req := c.c.NewRequest(c.name, "Streams.UpdateConversation", in)
-	out := new(UpdateConversationResponse)
-	err := c.c.Call(ctx, req, out, opts...)
+type Streams_SubscribeService interface {
+	Context() context.Context
+	SendMsg(interface{}) error
+	RecvMsg(interface{}) error
+	Close() error
+	Recv() (*Message, error)
+}
+
+type streamsServiceSubscribe struct {
+	stream client.Stream
+}
+
+func (x *streamsServiceSubscribe) Close() error {
+	return x.stream.Close()
+}
+
+func (x *streamsServiceSubscribe) Context() context.Context {
+	return x.stream.Context()
+}
+
+func (x *streamsServiceSubscribe) SendMsg(m interface{}) error {
+	return x.stream.Send(m)
+}
+
+func (x *streamsServiceSubscribe) RecvMsg(m interface{}) error {
+	return x.stream.Recv(m)
+}
+
+func (x *streamsServiceSubscribe) Recv() (*Message, error) {
+	m := new(Message)
+	err := x.stream.Recv(m)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	return m, nil
 }
 
-func (c *streamsService) DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...client.CallOption) (*DeleteConversationResponse, error) {
-	req := c.c.NewRequest(c.name, "Streams.DeleteConversation", in)
-	out := new(DeleteConversationResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *streamsService) ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...client.CallOption) (*ListConversationsResponse, error) {
-	req := c.c.NewRequest(c.name, "Streams.ListConversations", in)
-	out := new(ListConversationsResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *streamsService) CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...client.CallOption) (*CreateMessageResponse, error) {
-	req := c.c.NewRequest(c.name, "Streams.CreateMessage", in)
-	out := new(CreateMessageResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *streamsService) ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...client.CallOption) (*ListMessagesResponse, error) {
-	req := c.c.NewRequest(c.name, "Streams.ListMessages", in)
-	out := new(ListMessagesResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *streamsService) RecentMessages(ctx context.Context, in *RecentMessagesRequest, opts ...client.CallOption) (*RecentMessagesResponse, error) {
-	req := c.c.NewRequest(c.name, "Streams.RecentMessages", in)
-	out := new(RecentMessagesResponse)
+func (c *streamsService) Token(ctx context.Context, in *TokenRequest, opts ...client.CallOption) (*TokenResponse, error) {
+	req := c.c.NewRequest(c.name, "Streams.Token", in)
+	out := new(TokenResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -160,37 +132,16 @@ func (c *streamsService) RecentMessages(ctx context.Context, in *RecentMessagesR
 // Server API for Streams service
 
 type StreamsHandler interface {
-	// Create a conversation
-	CreateConversation(context.Context, *CreateConversationRequest, *CreateConversationResponse) error
-	// Read a conversation using its ID, can filter using group ID if provided
-	ReadConversation(context.Context, *ReadConversationRequest, *ReadConversationResponse) error
-	// Update a conversations topic
-	UpdateConversation(context.Context, *UpdateConversationRequest, *UpdateConversationResponse) error
-	// Delete a conversation and all the messages within
-	DeleteConversation(context.Context, *DeleteConversationRequest, *DeleteConversationResponse) error
-	// List all the conversations for a group
-	ListConversations(context.Context, *ListConversationsRequest, *ListConversationsResponse) error
-	// Create a message within a conversation
-	CreateMessage(context.Context, *CreateMessageRequest, *CreateMessageResponse) error
-	// List the messages within a conversation in reverse chronological order, using sent_before to
-	// offset as older messages need to be loaded
-	ListMessages(context.Context, *ListMessagesRequest, *ListMessagesResponse) error
-	// RecentMessages returns the most recent messages in a group of conversations. By default the
-	// most messages retrieved per conversation is 10, however this can be overriden using the
-	// limit_per_conversation option
-	RecentMessages(context.Context, *RecentMessagesRequest, *RecentMessagesResponse) error
+	Publish(context.Context, *Message, *PublishResponse) error
+	Subscribe(context.Context, *SubscribeRequest, Streams_SubscribeStream) error
+	Token(context.Context, *TokenRequest, *TokenResponse) error
 }
 
 func RegisterStreamsHandler(s server.Server, hdlr StreamsHandler, opts ...server.HandlerOption) error {
 	type streams interface {
-		CreateConversation(ctx context.Context, in *CreateConversationRequest, out *CreateConversationResponse) error
-		ReadConversation(ctx context.Context, in *ReadConversationRequest, out *ReadConversationResponse) error
-		UpdateConversation(ctx context.Context, in *UpdateConversationRequest, out *UpdateConversationResponse) error
-		DeleteConversation(ctx context.Context, in *DeleteConversationRequest, out *DeleteConversationResponse) error
-		ListConversations(ctx context.Context, in *ListConversationsRequest, out *ListConversationsResponse) error
-		CreateMessage(ctx context.Context, in *CreateMessageRequest, out *CreateMessageResponse) error
-		ListMessages(ctx context.Context, in *ListMessagesRequest, out *ListMessagesResponse) error
-		RecentMessages(ctx context.Context, in *RecentMessagesRequest, out *RecentMessagesResponse) error
+		Publish(ctx context.Context, in *Message, out *PublishResponse) error
+		Subscribe(ctx context.Context, stream server.Stream) error
+		Token(ctx context.Context, in *TokenRequest, out *TokenResponse) error
 	}
 	type Streams struct {
 		streams
@@ -203,34 +154,50 @@ type streamsHandler struct {
 	StreamsHandler
 }
 
-func (h *streamsHandler) CreateConversation(ctx context.Context, in *CreateConversationRequest, out *CreateConversationResponse) error {
-	return h.StreamsHandler.CreateConversation(ctx, in, out)
+func (h *streamsHandler) Publish(ctx context.Context, in *Message, out *PublishResponse) error {
+	return h.StreamsHandler.Publish(ctx, in, out)
 }
 
-func (h *streamsHandler) ReadConversation(ctx context.Context, in *ReadConversationRequest, out *ReadConversationResponse) error {
-	return h.StreamsHandler.ReadConversation(ctx, in, out)
+func (h *streamsHandler) Subscribe(ctx context.Context, stream server.Stream) error {
+	m := new(SubscribeRequest)
+	if err := stream.Recv(m); err != nil {
+		return err
+	}
+	return h.StreamsHandler.Subscribe(ctx, m, &streamsSubscribeStream{stream})
 }
 
-func (h *streamsHandler) UpdateConversation(ctx context.Context, in *UpdateConversationRequest, out *UpdateConversationResponse) error {
-	return h.StreamsHandler.UpdateConversation(ctx, in, out)
+type Streams_SubscribeStream interface {
+	Context() context.Context
+	SendMsg(interface{}) error
+	RecvMsg(interface{}) error
+	Close() error
+	Send(*Message) error
 }
 
-func (h *streamsHandler) DeleteConversation(ctx context.Context, in *DeleteConversationRequest, out *DeleteConversationResponse) error {
-	return h.StreamsHandler.DeleteConversation(ctx, in, out)
+type streamsSubscribeStream struct {
+	stream server.Stream
 }
 
-func (h *streamsHandler) ListConversations(ctx context.Context, in *ListConversationsRequest, out *ListConversationsResponse) error {
-	return h.StreamsHandler.ListConversations(ctx, in, out)
+func (x *streamsSubscribeStream) Close() error {
+	return x.stream.Close()
 }
 
-func (h *streamsHandler) CreateMessage(ctx context.Context, in *CreateMessageRequest, out *CreateMessageResponse) error {
-	return h.StreamsHandler.CreateMessage(ctx, in, out)
+func (x *streamsSubscribeStream) Context() context.Context {
+	return x.stream.Context()
 }
 
-func (h *streamsHandler) ListMessages(ctx context.Context, in *ListMessagesRequest, out *ListMessagesResponse) error {
-	return h.StreamsHandler.ListMessages(ctx, in, out)
+func (x *streamsSubscribeStream) SendMsg(m interface{}) error {
+	return x.stream.Send(m)
 }
 
-func (h *streamsHandler) RecentMessages(ctx context.Context, in *RecentMessagesRequest, out *RecentMessagesResponse) error {
-	return h.StreamsHandler.RecentMessages(ctx, in, out)
+func (x *streamsSubscribeStream) RecvMsg(m interface{}) error {
+	return x.stream.Recv(m)
+}
+
+func (x *streamsSubscribeStream) Send(m *Message) error {
+	return x.stream.Send(m)
+}
+
+func (h *streamsHandler) Token(ctx context.Context, in *TokenRequest, out *TokenResponse) error {
+	return h.StreamsHandler.Token(ctx, in, out)
 }

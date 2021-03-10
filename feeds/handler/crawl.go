@@ -4,13 +4,20 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
-
 	"net/url"
+	"sync"
+	"time"
 
 	"github.com/SlyMarbo/rss"
 	log "github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/feeds/parser"
 	feeds "github.com/micro/services/feeds/proto"
 	posts "github.com/micro/services/posts/proto"
+)
+
+var (
+	rssSync  sync.RWMutex
+	rssFeeds = map[string]*rss.Feed{}
 )
 
 func (e *Feeds) fetchAll() {
@@ -34,18 +41,42 @@ func (e *Feeds) fetchAll() {
 
 func (e *Feeds) fetch(f *feeds.Feed) error {
 	url := f.Url
-
 	log.Infof("Fetching address %v", url)
-	fd, err := rss.Fetch(url)
-	if err != nil {
-		return fmt.Errorf("Error fetching address %v: %v", url, err)
+
+	// see if there's an existing rss feed
+	rssSync.RLock()
+	fd, ok := rssFeeds[f.Name]
+	rssSync.RUnlock()
+
+	if !ok {
+		// create a new one if it doesn't exist
+		var err error
+		fd, err = rss.Fetch(f.Url)
+		if err != nil {
+			return fmt.Errorf("Error fetching address %v: %v", url, err)
+		}
+		// save the feed
+		rssSync.Lock()
+		rssFeeds[f.Name] = fd
+		rssSync.Unlock()
+	} else {
+		// otherwise update the existing feed
+		fd.Items = []*rss.Item{}
+		fd.Unread = 0
+		if err := fd.Update(); err != nil {
+			return fmt.Errorf("Error updating address %v: %v", url, err)
+		}
 	}
+
+	// set the refresh time
+	fd.Refresh = time.Now()
 	domain := getDomain(url)
 
+	// range over the feed and save the items
 	for _, item := range fd.Items {
 		id := fmt.Sprintf("%x", md5.Sum([]byte(item.ID)))
 
-		err = e.entries.Create(feeds.Entry{
+		err := e.entries.Create(feeds.Entry{
 			Id:       id,
 			Url:      item.Link,
 			Title:    item.Title,
@@ -63,11 +94,24 @@ func (e *Feeds) fetch(f *feeds.Feed) error {
 			tags = append(tags, f.Category)
 		}
 
+		// check if content exists
+		content := item.Content
+		if len(content) == 0 && len(item.Summary) > 0 {
+			content = item.Summary
+		}
+
+		// if we have a parser which returns content use it
+		// e.g cnbc
+		c, err := parser.Parse(item.Link)
+		if err == nil && len(c) > 0 {
+			content = c
+		}
+
 		// @todo make this optional
-		_, err := e.postsService.Save(context.TODO(), &posts.SaveRequest{
+		_, err = e.postsService.Save(context.TODO(), &posts.SaveRequest{
 			Id:        id,
 			Title:     item.Title,
-			Content:   item.Content,
+			Content:   content,
 			Timestamp: item.Date.Unix(),
 			Metadata: map[string]string{
 				"domain": domain,
