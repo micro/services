@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
 	"github.com/stretchr/testify/assert"
@@ -64,7 +65,7 @@ func assertConversationsMatch(t *testing.T, exp, act *pb.Conversation) {
 		return
 	}
 
-	assert.True(t, exp.CreatedAt.AsTime().Equal(act.CreatedAt.AsTime()))
+	assert.True(t, microSecondTime(exp.CreatedAt).Equal(microSecondTime(act.CreatedAt)))
 }
 
 func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
@@ -90,5 +91,11 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 		return
 	}
 
-	assert.True(t, exp.SentAt.AsTime().Equal(act.SentAt.AsTime()))
+	assert.True(t, microSecondTime(exp.SentAt).Equal(microSecondTime(act.SentAt)))
+}
+
+// postgres has a resolution of 100microseconds so just test that it's accurate to the second
+func microSecondTime(t *timestamp.Timestamp) time.Time {
+	tt := t.AsTime()
+	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }

@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/uuid"
 	geo "github.com/hailocab/go-geoindex"
 	"github.com/stretchr/testify/assert"
@@ -474,12 +475,12 @@ func TestRead(t *testing.T) {
 		assert.Equal(t, loc2.Id, rsp.Places[0].Id)
 		assert.Equal(t, loc2.Latitude.Value, rsp.Places[0].Latitude.Value)
 		assert.Equal(t, loc2.Longitude.Value, rsp.Places[0].Longitude.Value)
-		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
+		assert.Equal(t, microSecondTime(loc2.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 
 		assert.Equal(t, loc3.Id, rsp.Places[1].Id)
 		assert.Equal(t, loc3.Latitude.Value, rsp.Places[1].Latitude.Value)
 		assert.Equal(t, loc3.Longitude.Value, rsp.Places[1].Longitude.Value)
-		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Places[1].Timestamp.AsTime())
+		assert.Equal(t, microSecondTime(loc3.Timestamp), microSecondTime(rsp.Places[1].Timestamp))
 	})
 
 	t.Run("OnePlaceIDReducedTime", func(t *testing.T) {
@@ -497,7 +498,7 @@ func TestRead(t *testing.T) {
 		assert.Equal(t, loc2.Id, rsp.Places[0].Id)
 		assert.Equal(t, loc2.Latitude.Value, rsp.Places[0].Latitude.Value)
 		assert.Equal(t, loc2.Longitude.Value, rsp.Places[0].Longitude.Value)
-		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
+		assert.Equal(t, microSecondTime(loc2.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 	})
 
 	t.Run("TwoPlaceIDs", func(t *testing.T) {
@@ -515,11 +516,17 @@ func TestRead(t *testing.T) {
 		assert.Equal(t, loc1.Id, rsp.Places[0].Id)
 		assert.Equal(t, loc1.Latitude.Value, rsp.Places[0].Latitude.Value)
 		assert.Equal(t, loc1.Longitude.Value, rsp.Places[0].Longitude.Value)
-		assert.Equal(t, loc1.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
+		assert.Equal(t, microSecondTime(loc1.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 
 		assert.Equal(t, loc2.Id, rsp.Places[1].Id)
 		assert.Equal(t, loc2.Latitude.Value, rsp.Places[1].Latitude.Value)
 		assert.Equal(t, loc2.Longitude.Value, rsp.Places[1].Longitude.Value)
-		assert.Equal(t, loc2.Timestamp.AsTime(), rsp.Places[1].Timestamp.AsTime())
+		assert.Equal(t, microSecondTime(loc2.Timestamp), microSecondTime(rsp.Places[1].Timestamp))
 	})
+}
+
+// postgres has a resolution of 100microseconds so just test that it's accurate to the second
+func microSecondTime(t *timestamp.Timestamp) time.Time {
+	tt := t.AsTime()
+	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }
