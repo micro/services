@@ -132,24 +132,25 @@ func TestLast(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Empty(t, rsp.Places)
 	})
+	tn := time.Now()
 
 	// generate some example data to work with
 	loc1 := &pb.Location{
 		Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
-		Timestamp: timestamppb.New(time.Now()),
+		Timestamp: timestamppb.New(tn),
 		Id:        "a",
 	}
 	loc2 := &pb.Location{
 		Latitude:  &wrapperspb.DoubleValue{Value: 51.6007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.1546},
-		Timestamp: timestamppb.New(time.Now()),
+		Timestamp: timestamppb.New(tn.Add(1 * time.Microsecond)),
 		Id:        "b",
 	}
 	loc3 := &pb.Location{
 		Latitude:  &wrapperspb.DoubleValue{Value: 52.6007},
 		Longitude: &wrapperspb.DoubleValue{Value: 0.2546},
-		Timestamp: timestamppb.New(time.Now()),
+		Timestamp: timestamppb.New(tn.Add(2 * time.Microsecond)),
 		Id:        loc2.Id,
 	}
 	err := h.Save(context.TODO(), &pb.SaveRequest{
@@ -160,7 +161,7 @@ func TestLast(t *testing.T) {
 	t.Run("OneUser", func(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Last(context.Background(), &pb.LastRequest{
-			Ids: []string{loc2.Id},
+			Ids: []string{loc3.Id},
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -170,7 +171,7 @@ func TestLast(t *testing.T) {
 		assert.Equal(t, loc3.Id, rsp.Places[0].Id)
 		assert.Equal(t, loc3.Latitude.Value, rsp.Places[0].Latitude.Value)
 		assert.Equal(t, loc3.Longitude.Value, rsp.Places[0].Longitude.Value)
-		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
+		assert.Equal(t, microSecondTime(loc3.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 	})
 
 	t.Run("ManyUser", func(t *testing.T) {
@@ -192,12 +193,12 @@ func TestLast(t *testing.T) {
 		assert.Equal(t, loc1.Id, rsp.Places[1].Id)
 		assert.Equal(t, loc1.Latitude.Value, rsp.Places[1].Latitude.Value)
 		assert.Equal(t, loc1.Longitude.Value, rsp.Places[1].Longitude.Value)
-		assert.Equal(t, loc1.Timestamp.AsTime(), rsp.Places[1].Timestamp.AsTime())
+		assert.Equal(t, microSecondTime(loc1.Timestamp), microSecondTime(rsp.Places[1].Timestamp))
 
 		assert.Equal(t, loc3.Id, rsp.Places[0].Id)
 		assert.Equal(t, loc3.Latitude.Value, rsp.Places[0].Latitude.Value)
 		assert.Equal(t, loc3.Longitude.Value, rsp.Places[0].Longitude.Value)
-		assert.Equal(t, loc3.Timestamp.AsTime(), rsp.Places[0].Timestamp.AsTime())
+		assert.Equal(t, microSecondTime(loc3.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 	})
 }
 
