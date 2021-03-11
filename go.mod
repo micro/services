@@ -12,7 +12,7 @@ require (
 	github.com/gosimple/slug v1.9.0
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
-	github.com/micro/micro/v3 v3.1.1
+	github.com/micro/micro/v3 v3.1.2-0.20210311170414-40583563ada6
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.6.1
@@ -27,7 +27,6 @@ require (
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/postgres v1.0.6
-	gorm.io/driver/sqlite v1.1.4
 	gorm.io/gorm v1.20.9
 )
 
