@@ -139,7 +139,7 @@ func testPosts(t *test.T) {
 
 	if err := test.Try("Save post", t, func() ([]byte, error) {
 		// Attention! The content must be unquoted, don't add quotes.
-		outp, err := cmd.Exec("posts", "--id=1", "--title=Hi", "--content=Hi there", "--tags=a,b", "save")
+		outp, err := cmd.Exec("posts", "save", "--id=1", "--title=Hi", "--content=Hi there", "--tags=a,b")
 		if err != nil {
 			outp1, _ := cmd.Exec("logs", "posts")
 			return append(outp, outp1...), err
@@ -206,7 +206,7 @@ func testPosts(t *test.T) {
 
 	time.Sleep(5 * time.Second)
 	// Inserting an other post so tag counts increase
-	outp, err = cmd.Exec("posts", "--id=2", "--title=Hi1", "--content=Hi there1", "--tags=a,b", "save")
+	outp, err = cmd.Exec("posts", "save", "--id=2", "--title=Hi1", "--content=Hi there1", "--tags=a,b")
 	if err != nil {
 		t.Fatal(string(outp))
 		return
@@ -238,7 +238,7 @@ func testPosts(t *test.T) {
 	}
 
 	// test updating fields fields and removing tags
-	outp, err = cmd.Exec("posts", "--id=2", "--title=Hi2", "--tags=a", "save")
+	outp, err = cmd.Exec("posts", "save", "--id=2", "--title=Hi2", "--tags=a")
 	if err != nil {
 		t.Fatal(string(outp))
 		return
