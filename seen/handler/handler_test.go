@@ -228,13 +228,13 @@ func TestRead(t *testing.T) {
 	assert.Len(t, rsp.Timestamps, 2)
 
 	if v := rsp.Timestamps["message-1"]; v != nil {
-		assert.True(t, microSecondTime(v).Equal(tn))
+		assert.Equal(t, microSecondTime(v), tn.UTC())
 	} else {
 		t.Errorf("Expected a timestamp for message-1")
 	}
 
 	if v := rsp.Timestamps["message-2"]; v != nil {
-		assert.True(t, microSecondTime(v).Equal(tn.Add(time.Minute*-10)))
+		assert.Equal(t, microSecondTime(v), tn.Add(time.Minute*-10).UTC())
 	} else {
 		t.Errorf("Expected a timestamp for message-2")
 	}
@@ -261,5 +261,5 @@ func TestRead(t *testing.T) {
 // postgres has a resolution of 100microseconds so just test that it's accurate to the second
 func microSecondTime(t *timestamp.Timestamp) time.Time {
 	tt := t.AsTime()
-	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
+	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000)).UTC()
 }
