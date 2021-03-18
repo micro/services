@@ -11,7 +11,7 @@ proto:
 
 docs:
 	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=. proto/chats.proto
-	@redoc-cli bundle api-chats.json
+	@redoc-cli bundle api-protobuf.json
 
 .PHONY: build
 build:
