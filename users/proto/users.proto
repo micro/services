@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package users;
-option go_package = "proto;users";
+option go_package = "./proto;users";
 import "google/protobuf/wrappers.proto";
 
 service Users {

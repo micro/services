@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -16,7 +17,11 @@ import (
 
 func testHandler(t *testing.T) *handler.Seen {
 	// connect to the database
-	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5433/postgres?sslmode=disable"), &gorm.Config{})
+	addr := os.Getenv("POSTGRES_URL")
+	if len(addr) == 0 {
+		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
+	}
+	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
 	}
@@ -222,13 +227,13 @@ func TestRead(t *testing.T) {
 	assert.Len(t, rsp.Timestamps, 2)
 
 	if v := rsp.Timestamps["message-1"]; v != nil {
-		assert.True(t, v.AsTime().Equal(tn))
+		assert.Equal(t, microSecondTime(v.AsTime()), microSecondTime(tn))
 	} else {
 		t.Errorf("Expected a timestamp for message-1")
 	}
 
 	if v := rsp.Timestamps["message-2"]; v != nil {
-		assert.True(t, v.AsTime().Equal(tn.Add(time.Minute*-10)))
+		assert.Equal(t, microSecondTime(v.AsTime()), microSecondTime(tn.Add(time.Minute*-10).UTC()))
 	} else {
 		t.Errorf("Expected a timestamp for message-2")
 	}
@@ -249,4 +254,10 @@ func TestRead(t *testing.T) {
 	}, &rsp)
 	assert.NoError(t, err)
 	assert.Len(t, rsp.Timestamps, 1)
+
+}
+
+// postgres has a resolution of 100microseconds so just test that it's accurate to the second
+func microSecondTime(tt time.Time) time.Time {
+	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000)).UTC()
 }

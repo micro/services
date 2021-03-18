@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package feeds;
 
-option go_package = "proto;feeds";
+option go_package = "./proto;feeds";
 
 service Feeds {
 	rpc Add(AddRequest) returns (AddResponse) {}

@@ -7,12 +7,12 @@ require (
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/getkin/kin-openapi v0.26.0
-	github.com/golang/protobuf v1.4.3
+	github.com/golang/protobuf v1.5.1
 	github.com/google/uuid v1.1.2
 	github.com/gosimple/slug v1.9.0
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
-	github.com/micro/micro/v3 v3.1.1-0.20210301204023-e0e966d08c06
+	github.com/micro/micro/v3 v3.1.2-0.20210311170414-40583563ada6
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.6.1
@@ -23,7 +23,7 @@ require (
 	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect
 	google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 // indirect
 	google.golang.org/grpc v1.32.0 // indirect
-	google.golang.org/protobuf v1.25.0
+	google.golang.org/protobuf v1.26.0
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/driver/postgres v1.0.6

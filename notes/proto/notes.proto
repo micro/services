@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package notes;
-option go_package = "proto;notes";
+option go_package = "./proto;notes";
 
 service Notes {
 	rpc List(ListRequest) returns (ListResponse);

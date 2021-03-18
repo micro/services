@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package sentiment;
 
-option go_package = "proto;sentiment";
+option go_package = "./proto;sentiment";
 
 service Sentiment {
 	rpc Analyze(Request) returns (Response) {};

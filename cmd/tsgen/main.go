@@ -129,7 +129,7 @@ func main() {
 	}
 
 	// get latest version from github
-	getVersions := exec.Command("npm", "show", "@micro/services", "time", "--json")
+	getVersions := exec.Command("npm", "show", "@micro/services", "--time", "--json")
 	getVersions.Dir = tsPath
 
 	outp, err := getVersions.CombinedOutput()
@@ -137,15 +137,20 @@ func main() {
 		fmt.Println("Failed to get versions of NPM package", string(outp))
 		os.Exit(1)
 	}
-	versions := map[string]interface{}{}
-	err = json.Unmarshal(outp, &versions)
-	if err != nil {
-		fmt.Println("Failed to unmarshal versions", string(outp))
-		os.Exit(1)
+	type npmVers struct {
+		Versions []string `json:"versions"`
+	}
+	npmOutput := &npmVers{}
+	var latest *semver.Version
+	if len(outp) > 0 {
+		err = json.Unmarshal(outp, npmOutput)
+		if err != nil {
+			fmt.Println("Failed to unmarshal versions", string(outp))
+			os.Exit(1)
+		}
 	}
 
-	var latest *semver.Version
-	for version, _ := range versions {
+	for _, version := range npmOutput.Versions {
 		v, err := semver.NewVersion(version)
 		if err != nil {
 			fmt.Println("Failed to parse semver", err)
@@ -157,6 +162,9 @@ func main() {
 		if v.GreaterThan(latest) {
 			latest = v
 		}
+	}
+	if latest == nil {
+		latest, _ = semver.NewVersion("0.0.0")
 	}
 	newV := latest.IncPatch()
 
