@@ -1,7 +1,7 @@
-syntax = "proto3";
+syntax = "./proto3";
 
 package codes;
-option go_package = "proto;codes";
+option go_package = "./proto;codes";
 import "google/protobuf/timestamp.proto";
 
 service Codes {

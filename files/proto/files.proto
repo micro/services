@@ -1,8 +1,8 @@
-syntax = "proto3";
+syntax = "./proto3";
 
 package files;
 
-option go_package = "proto;files";
+option go_package = "./proto;files";
 
 service Files {
 	rpc Save(SaveRequest) returns (SaveResponse) {}

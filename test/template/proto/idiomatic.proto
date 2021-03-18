@@ -1,8 +1,8 @@
-syntax = "proto3";
+syntax = "./proto3";
 
 package idiomatic;
 
-option go_package = "proto;idiomatic";
+option go_package = "./proto;idiomatic";
 
 service Idiomatic {
 	rpc Call(Request) returns (Response) {}

@@ -1,7 +1,7 @@
-syntax = "proto3";
+syntax = "./proto3";
 
 package invites;
-option go_package = "proto;invites";
+option go_package = "./proto;invites";
 import "google/protobuf/wrappers.proto";
 
 service Invites {

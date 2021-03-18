@@ -1,7 +1,7 @@
-syntax = "proto3";
+syntax = "./proto3";
 
 package threads;
-option go_package = "proto;threads";
+option go_package = "./proto;threads";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 

@@ -1,7 +1,7 @@
-syntax = "proto3";
+syntax = "./proto3";
 
 package seen;
-option go_package = "proto;seen";
+option go_package = "./proto;seen";
 import "google/protobuf/timestamp.proto";
 
 // Seen is a service to keep track of which resources a user has seen (read). For example, it can

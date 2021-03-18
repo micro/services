@@ -1,8 +1,8 @@
-syntax = "proto3";
+syntax = "./proto3";
 
 package datastore;
 
-option go_package = "proto;datastore";
+option go_package = "./proto;datastore";
 
 // These endpoints are experimental and will likely change,
 // especially related to indexes.

@@ -1,6 +1,6 @@
-syntax = "proto3";
+syntax = "./proto3";
 
-option go_package = "proto;location";
+option go_package = "./proto;location";
 
 // The location service stores GPS points for tracking purposes
 // and provides endpoints to query those points.

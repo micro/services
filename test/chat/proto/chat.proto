@@ -1,7 +1,7 @@
-syntax = "proto3";
+syntax = "./proto3";
 
 package chat;
-option go_package = "proto;chat";
+option go_package = "./proto;chat";
 import "google/protobuf/timestamp.proto";
 
 service Chat {
