@@ -138,13 +138,17 @@ func main() {
 		os.Exit(1)
 	}
 	versions := map[string]interface{}{}
-	err = json.Unmarshal(outp, &versions)
-	if err != nil {
-		fmt.Println("Failed to unmarshal versions", string(outp))
-		os.Exit(1)
+	var latest *semver.Version
+	if len(outp) > 0 {
+		err = json.Unmarshal(outp, &versions)
+		if err != nil {
+			fmt.Println("Failed to unmarshal versions", string(outp))
+			os.Exit(1)
+		}
+	} else {
+		latest, _ = semver.NewVersion("0.0.0")
 	}
 
-	var latest *semver.Version
 	for version, _ := range versions {
 		v, err := semver.NewVersion(version)
 		if err != nil {
