@@ -1,4 +1,4 @@
-syntax = "./proto3";
+syntax = "proto3";
 
 package threads;
 option go_package = "./proto;threads";

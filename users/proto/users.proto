@@ -1,4 +1,4 @@
-syntax = "./proto3";
+syntax = "proto3";
 
 package users;
 option go_package = "./proto;users";
