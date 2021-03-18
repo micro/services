@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package geocoding;
-option go_package = "proto;geocoding";
+option go_package = "./proto;geocoding";
 
 import "google/protobuf/wrappers.proto";
 
