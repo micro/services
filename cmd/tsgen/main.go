@@ -138,9 +138,9 @@ func main() {
 		os.Exit(1)
 	}
 	type npmVers struct {
-		Versions []string
+		Versions []string `json:"versions"`
 	}
-	var npmOutput *npmVers
+	npmOutput := &npmVers{}
 	var latest *semver.Version
 	if len(outp) > 0 {
 		err = json.Unmarshal(outp, npmOutput)
@@ -148,8 +148,6 @@ func main() {
 			fmt.Println("Failed to unmarshal versions", string(outp))
 			os.Exit(1)
 		}
-	} else {
-		latest, _ = semver.NewVersion("0.0.0")
 	}
 
 	for _, version := range npmOutput.Versions {
@@ -164,6 +162,9 @@ func main() {
 		if v.GreaterThan(latest) {
 			latest = v
 		}
+	}
+	if latest == nil {
+		latest, _ = semver.NewVersion("0.0.0")
 	}
 	newV := latest.IncPatch()
 
