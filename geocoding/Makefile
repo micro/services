@@ -12,7 +12,7 @@ proto:
 .PHONY: docs
 docs:
 	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/geocoding.proto
-	@redoc-cli bundle api-protobuf.json
+	@redoc-cli bundle api-geocoding.json
 
 .PHONY: build
 build:
