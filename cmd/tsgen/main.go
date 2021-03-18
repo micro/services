@@ -137,10 +137,13 @@ func main() {
 		fmt.Println("Failed to get versions of NPM package", string(outp))
 		os.Exit(1)
 	}
-	versions := map[string]interface{}{}
+	type npmVers struct {
+		Versions []string
+	}
+	var npmOutput *npmVers
 	var latest *semver.Version
 	if len(outp) > 0 {
-		err = json.Unmarshal(outp, &versions)
+		err = json.Unmarshal(outp, npmOutput)
 		if err != nil {
 			fmt.Println("Failed to unmarshal versions", string(outp))
 			os.Exit(1)
@@ -149,7 +152,7 @@ func main() {
 		latest, _ = semver.NewVersion("0.0.0")
 	}
 
-	for version, _ := range versions {
+	for _, version := range npmOutput.Versions {
 		v, err := semver.NewVersion(version)
 		if err != nil {
 			fmt.Println("Failed to parse semver", err)
