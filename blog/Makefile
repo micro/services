@@ -12,7 +12,7 @@ proto:
 .PHONY: docs
 docs:
 	protoc --openapi_out=. --proto_path=$$GOPATH/src:. --micro_out=. --go_out=:. proto/blog.proto
-	@redoc-cli bundle api-protobuf.json
+	@redoc-cli bundle api-blog.json
 
 .PHONY: build
 build:
