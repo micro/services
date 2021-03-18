@@ -19,8 +19,8 @@ build:
 
 .PHONY: docs
 docs:
-        protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/codes.proto
-        @redoc-cli bundle api-codes.json
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/codes.proto
+	@redoc-cli bundle api-protobuf.json
 
 .PHONY: test
 test:
