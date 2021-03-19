@@ -207,7 +207,7 @@ func TestSubscribe(t *testing.T) {
 		s := new(streamMock)
 		ctx = auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "bar"})
 		err = h.Subscribe(ctx, &pb.SubscribeRequest{
-			Topic: "tok-for-diff",
+			Topic: "tok-for/diff",
 			Token: tRsp.Token,
 		}, s)
 		assert.Equal(t, handler.ErrInvalidTopic, err)
