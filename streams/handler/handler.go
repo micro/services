@@ -2,12 +2,12 @@ package handler
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/events"
+
+	"github.com/nats-io/nats-streaming-server/util"
 	"gorm.io/gorm"
 )
 
@@ -35,16 +35,14 @@ type Streams struct {
 	Time   func() time.Time
 }
 
-// fmtTopic returns a topic string with namespace prefix and hyphens replaced with dots
+// fmtTopic returns a topic string with namespace prefix
 func fmtTopic(ns, topic string) string {
-	// events topic names can only be alphanumeric and "."
-	return fmt.Sprintf("%s.%s", strings.ReplaceAll(ns, "-", "."), topic)
+	return fmt.Sprintf("%s.%s", ns, topic)
 }
 
 // validateTopicInput validates that topic is alphanumeric
 func validateTopicInput(topic string) error {
-	reg := regexp.MustCompile("^[a-zA-Z0-9]+$")
-	if len(reg.FindString(topic)) == 0 {
+	if !util.IsChannelNameValid(topic, false) {
 		return ErrInvalidTopic
 	}
 	return nil

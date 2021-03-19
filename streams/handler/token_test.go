@@ -32,7 +32,7 @@ func TestToken(t *testing.T) {
 	t.Run("WithBadTopic", func(t *testing.T) {
 		var rsp pb.TokenResponse
 		ctx := auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
-		err := h.Token(ctx, &pb.TokenRequest{Topic: "helloworld-1"}, &rsp)
+		err := h.Token(ctx, &pb.TokenRequest{Topic: "helloworld/1"}, &rsp)
 		assert.Equal(t, handler.ErrInvalidTopic, err)
 	})
 }
