@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	pb "github.com/micro/services/users/proto"
@@ -19,7 +18,7 @@ func TestList(t *testing.T) {
 		Email:     "john@doe.com",
 		Password:  "passwordabc",
 	}
-	err := h.Create(context.TODO(), &cReq1, &cRsp1)
+	err := h.Create(microAccountCtx(), &cReq1, &cRsp1)
 	assert.NoError(t, err)
 	if cRsp1.User == nil {
 		t.Fatal("No user returned")
@@ -33,7 +32,7 @@ func TestList(t *testing.T) {
 		Email:     "johndoe@gmail.com",
 		Password:  "passwordabc",
 	}
-	err = h.Create(context.TODO(), &cReq2, &cRsp2)
+	err = h.Create(microAccountCtx(), &cReq2, &cRsp2)
 	assert.NoError(t, err)
 	if cRsp2.User == nil {
 		t.Fatal("No user returned")
@@ -41,7 +40,7 @@ func TestList(t *testing.T) {
 	}
 
 	var rsp pb.ListResponse
-	err = h.List(context.TODO(), &pb.ListRequest{}, &rsp)
+	err = h.List(microAccountCtx(), &pb.ListRequest{}, &rsp)
 	assert.NoError(t, err)
 	if rsp.Users == nil {
 		t.Error("No users returned")

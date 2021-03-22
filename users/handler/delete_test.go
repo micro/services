@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/micro/services/users/handler"
@@ -13,7 +12,7 @@ func TestDelete(t *testing.T) {
 	h := testHandler(t)
 
 	t.Run("MissingID", func(t *testing.T) {
-		err := h.Delete(context.TODO(), &pb.DeleteRequest{}, &pb.DeleteResponse{})
+		err := h.Delete(microAccountCtx(), &pb.DeleteRequest{}, &pb.DeleteResponse{})
 		assert.Equal(t, handler.ErrMissingID, err)
 	})
 
@@ -25,7 +24,7 @@ func TestDelete(t *testing.T) {
 		Email:     "john@doe.com",
 		Password:  "passwordabc",
 	}
-	err := h.Create(context.TODO(), &cReq, &cRsp)
+	err := h.Create(microAccountCtx(), &cReq, &cRsp)
 	assert.NoError(t, err)
 	if cRsp.User == nil {
 		t.Fatal("No user returned")
@@ -33,14 +32,14 @@ func TestDelete(t *testing.T) {
 	}
 
 	t.Run("Valid", func(t *testing.T) {
-		err := h.Delete(context.TODO(), &pb.DeleteRequest{
+		err := h.Delete(microAccountCtx(), &pb.DeleteRequest{
 			Id: cRsp.User.Id,
 		}, &pb.DeleteResponse{})
 		assert.NoError(t, err)
 
 		// check it was actually deleted
 		var rsp pb.ReadResponse
-		err = h.Read(context.TODO(), &pb.ReadRequest{
+		err = h.Read(microAccountCtx(), &pb.ReadRequest{
 			Ids: []string{cRsp.User.Id},
 		}, &rsp)
 		assert.NoError(t, err)
@@ -48,7 +47,7 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("Retry", func(t *testing.T) {
-		err := h.Delete(context.TODO(), &pb.DeleteRequest{
+		err := h.Delete(microAccountCtx(), &pb.DeleteRequest{
 			Id: cRsp.User.Id,
 		}, &pb.DeleteResponse{})
 		assert.NoError(t, err)

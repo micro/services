@@ -16,7 +16,12 @@ func (u *Users) Validate(ctx context.Context, req *pb.ValidateRequest, rsp *pb.V
 		return ErrMissingToken
 	}
 
-	return u.DB.Transaction(func(tx *gorm.DB) error {
+	db, err := u.getDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
+	return db.Transaction(func(tx *gorm.DB) error {
 		// lookup the token
 		var token Token
 		if err := tx.Where(&Token{Key: req.Token}).Preload("User").First(&token).Error; err == gorm.ErrRecordNotFound {

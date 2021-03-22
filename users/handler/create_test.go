@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/micro/services/users/handler"
@@ -61,7 +60,7 @@ func TestCreate(t *testing.T) {
 	h := testHandler(t)
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
-			err := h.Create(context.TODO(), &pb.CreateRequest{
+			err := h.Create(microAccountCtx(), &pb.CreateRequest{
 				FirstName: tc.FirstName,
 				LastName:  tc.LastName,
 				Email:     tc.Email,
@@ -79,7 +78,7 @@ func TestCreate(t *testing.T) {
 			Email:     "john@doe.com",
 			Password:  "passwordabc",
 		}
-		err := h.Create(context.TODO(), &req, &rsp)
+		err := h.Create(microAccountCtx(), &req, &rsp)
 
 		assert.NoError(t, err)
 		u := rsp.User
@@ -101,7 +100,7 @@ func TestCreate(t *testing.T) {
 			Email:     "john@doe.com",
 			Password:  "passwordabc",
 		}
-		err := h.Create(context.TODO(), &req, &rsp)
+		err := h.Create(microAccountCtx(), &req, &rsp)
 		assert.Equal(t, handler.ErrDuplicateEmail, err)
 		assert.Nil(t, rsp.User)
 	})
@@ -114,7 +113,7 @@ func TestCreate(t *testing.T) {
 			Email:     "johndoe@gmail.com",
 			Password:  "passwordabc",
 		}
-		err := h.Create(context.TODO(), &req, &rsp)
+		err := h.Create(microAccountCtx(), &req, &rsp)
 
 		assert.NoError(t, err)
 		u := rsp.User

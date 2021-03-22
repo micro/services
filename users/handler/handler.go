@@ -1,13 +1,18 @@
 package handler
 
 import (
+	"context"
+	"fmt"
 	"regexp"
+	"strings"
 	"time"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	pb "github.com/micro/services/users/proto"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 var (
@@ -58,8 +63,38 @@ type Token struct {
 }
 
 type Users struct {
-	DB   *gorm.DB
-	Time func() time.Time
+	Time         func() time.Time
+	Dialector    gorm.Dialector
+	dbMigrations map[string]bool
+}
+
+func NewHandler(t func() time.Time, d gorm.Dialector) *Users {
+	return &Users{Time: t, Dialector: d, dbMigrations: map[string]bool{}}
+}
+
+func (u *Users) getDBConn(ctx context.Context) (*gorm.DB, error) {
+	acc, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return nil, fmt.Errorf("missing account from context")
+	}
+	db, err := gorm.Open(u.Dialector, &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix: fmt.Sprintf("%s_", strings.ReplaceAll(acc.Issuer, "-", "")),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	// skip migration if we've already done it
+	if u.dbMigrations[acc.Issuer] {
+		return db, nil
+	}
+	if err := db.AutoMigrate(&User{}, &Token{}); err != nil {
+		return nil, err
+	}
+	// record success
+	u.dbMigrations[acc.Issuer] = true
+	return db, nil
 }
 
 // isEmailValid checks if the email provided passes the required structure and length.

@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -22,7 +21,7 @@ func TestValidate(t *testing.T) {
 		Email:     "john@doe.com",
 		Password:  "passwordabc",
 	}
-	err := h.Create(context.TODO(), &cReq1, &cRsp1)
+	err := h.Create(microAccountCtx(), &cReq1, &cRsp1)
 	assert.NoError(t, err)
 	if cRsp1.User == nil {
 		t.Fatal("No user returned")
@@ -36,7 +35,7 @@ func TestValidate(t *testing.T) {
 		Email:     "barry@doe.com",
 		Password:  "passwordabc",
 	}
-	err = h.Create(context.TODO(), &cReq2, &cRsp2)
+	err = h.Create(microAccountCtx(), &cReq2, &cRsp2)
 	assert.NoError(t, err)
 	if cRsp2.User == nil {
 		t.Fatal("No user returned")
@@ -88,7 +87,7 @@ func TestValidate(t *testing.T) {
 			}
 
 			var rsp pb.ValidateResponse
-			err := h.Validate(context.TODO(), &pb.ValidateRequest{Token: tc.Token}, &rsp)
+			err := h.Validate(microAccountCtx(), &pb.ValidateRequest{Token: tc.Token}, &rsp)
 			assert.Equal(t, tc.Error, err)
 
 			if tc.User != nil {

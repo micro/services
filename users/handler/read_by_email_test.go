@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -15,14 +14,14 @@ func TestReadByEmail(t *testing.T) {
 
 	t.Run("MissingEmails", func(t *testing.T) {
 		var rsp pb.ReadByEmailResponse
-		err := h.ReadByEmail(context.TODO(), &pb.ReadByEmailRequest{}, &rsp)
+		err := h.ReadByEmail(microAccountCtx(), &pb.ReadByEmailRequest{}, &rsp)
 		assert.Equal(t, handler.ErrMissingEmails, err)
 		assert.Nil(t, rsp.Users)
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
 		var rsp pb.ReadByEmailResponse
-		err := h.ReadByEmail(context.TODO(), &pb.ReadByEmailRequest{Emails: []string{"foo"}}, &rsp)
+		err := h.ReadByEmail(microAccountCtx(), &pb.ReadByEmailRequest{Emails: []string{"foo"}}, &rsp)
 		assert.Nil(t, err)
 		if rsp.Users == nil {
 			t.Fatal("Expected the users object to not be nil")
@@ -38,7 +37,7 @@ func TestReadByEmail(t *testing.T) {
 		Email:     "john@doe.com",
 		Password:  "passwordabc",
 	}
-	err := h.Create(context.TODO(), &req1, &rsp1)
+	err := h.Create(microAccountCtx(), &req1, &rsp1)
 	assert.NoError(t, err)
 	if rsp1.User == nil {
 		t.Fatal("No user returned")
@@ -52,7 +51,7 @@ func TestReadByEmail(t *testing.T) {
 		Email:     "apple@tree.com",
 		Password:  "passwordabc",
 	}
-	err = h.Create(context.TODO(), &req2, &rsp2)
+	err = h.Create(microAccountCtx(), &req2, &rsp2)
 	assert.NoError(t, err)
 	if rsp2.User == nil {
 		t.Fatal("No user returned")
@@ -61,7 +60,7 @@ func TestReadByEmail(t *testing.T) {
 
 	// test the read
 	var rsp pb.ReadByEmailResponse
-	err = h.ReadByEmail(context.TODO(), &pb.ReadByEmailRequest{
+	err = h.ReadByEmail(microAccountCtx(), &pb.ReadByEmailRequest{
 		Emails: []string{rsp1.User.Email, strings.ToUpper(rsp2.User.Email)},
 	}, &rsp)
 	assert.NoError(t, err)

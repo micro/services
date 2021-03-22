@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -14,12 +13,12 @@ func TestLogout(t *testing.T) {
 	h := testHandler(t)
 
 	t.Run("MissingUserID", func(t *testing.T) {
-		err := h.Logout(context.TODO(), &pb.LogoutRequest{}, &pb.LogoutResponse{})
+		err := h.Logout(microAccountCtx(), &pb.LogoutRequest{}, &pb.LogoutResponse{})
 		assert.Equal(t, handler.ErrMissingID, err)
 	})
 
 	t.Run("UserNotFound", func(t *testing.T) {
-		err := h.Logout(context.TODO(), &pb.LogoutRequest{Id: uuid.New().String()}, &pb.LogoutResponse{})
+		err := h.Logout(microAccountCtx(), &pb.LogoutRequest{Id: uuid.New().String()}, &pb.LogoutResponse{})
 		assert.Equal(t, handler.ErrNotFound, err)
 	})
 
@@ -32,17 +31,17 @@ func TestLogout(t *testing.T) {
 			Email:     "john@doe.com",
 			Password:  "passwordabc",
 		}
-		err := h.Create(context.TODO(), &cReq, &cRsp)
+		err := h.Create(microAccountCtx(), &cReq, &cRsp)
 		assert.NoError(t, err)
 		if cRsp.User == nil {
 			t.Fatal("No user returned")
 			return
 		}
 
-		err = h.Logout(context.TODO(), &pb.LogoutRequest{Id: cRsp.User.Id}, &pb.LogoutResponse{})
+		err = h.Logout(microAccountCtx(), &pb.LogoutRequest{Id: cRsp.User.Id}, &pb.LogoutResponse{})
 		assert.NoError(t, err)
 
-		err = h.Validate(context.TODO(), &pb.ValidateRequest{Token: cRsp.Token}, &pb.ValidateResponse{})
+		err = h.Validate(microAccountCtx(), &pb.ValidateRequest{Token: cRsp.Token}, &pb.ValidateResponse{})
 		assert.Error(t, err)
 	})
 }

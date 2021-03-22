@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"regexp"
 	"strings"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -34,7 +35,12 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 
 	// lookup the user
 	var user User
-	if err := u.DB.Where(&User{ID: req.Id}).First(&user).Error; err == gorm.ErrRecordNotFound {
+	db, err := u.getDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
+	if err := db.Where(&User{ID: req.Id}).First(&user).Error; err == gorm.ErrRecordNotFound {
 		return ErrNotFound
 	} else if err != nil {
 		logger.Errorf("Error reading from the database: %v", err)
@@ -61,10 +67,11 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 	}
 
 	// write the user to the database
-	err := u.DB.Save(user).Error
-	if err != nil && strings.Contains(err.Error(), "idx_users_email") {
-		return ErrDuplicateEmail
-	} else if err != nil {
+	err = db.Save(user).Error
+	if err != nil {
+		if match, _ := regexp.MatchString(`idx_[\S]+_users_email`, err.Error()); match {
+			return ErrDuplicateEmail
+		}
 		logger.Errorf("Error writing to the database: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to the database")
 	}

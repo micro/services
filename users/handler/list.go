@@ -11,8 +11,13 @@ import (
 // List all users
 func (u *Users) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	// query the database
+	db, err := u.getDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	var users []User
-	if err := u.DB.Model(&User{}).Find(&users).Error; err != nil {
+	if err := db.Model(&User{}).Find(&users).Error; err != nil {
 		logger.Errorf("Error reading from the database: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to the database")
 	}

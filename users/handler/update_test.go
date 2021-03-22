@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/micro/services/users/handler"
@@ -15,14 +14,14 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("MissingID", func(t *testing.T) {
 		var rsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &pb.UpdateRequest{}, &rsp)
+		err := h.Update(microAccountCtx(), &pb.UpdateRequest{}, &rsp)
 		assert.Equal(t, handler.ErrMissingID, err)
 		assert.Nil(t, rsp.User)
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
 		var rsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &pb.UpdateRequest{Id: "foo"}, &rsp)
+		err := h.Update(microAccountCtx(), &pb.UpdateRequest{Id: "foo"}, &rsp)
 		assert.Equal(t, handler.ErrNotFound, err)
 		assert.Nil(t, rsp.User)
 	})
@@ -35,7 +34,7 @@ func TestUpdate(t *testing.T) {
 		Email:     "john@doe.com",
 		Password:  "passwordabc",
 	}
-	err := h.Create(context.TODO(), &cReq1, &cRsp1)
+	err := h.Create(microAccountCtx(), &cReq1, &cRsp1)
 	assert.NoError(t, err)
 	if cRsp1.User == nil {
 		t.Fatal("No user returned")
@@ -49,7 +48,7 @@ func TestUpdate(t *testing.T) {
 		Email:     "johndoe@gmail.com",
 		Password:  "passwordabc",
 	}
-	err = h.Create(context.TODO(), &cReq2, &cRsp2)
+	err = h.Create(microAccountCtx(), &cReq2, &cRsp2)
 	assert.NoError(t, err)
 	if cRsp2.User == nil {
 		t.Fatal("No user returned")
@@ -58,7 +57,7 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("BlankFirstName", func(t *testing.T) {
 		var rsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &pb.UpdateRequest{
+		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
 			Id: cRsp1.User.Id, FirstName: &wrapperspb.StringValue{},
 		}, &rsp)
 		assert.Equal(t, handler.ErrMissingFirstName, err)
@@ -67,7 +66,7 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("BlankLastName", func(t *testing.T) {
 		var rsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &pb.UpdateRequest{
+		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
 			Id: cRsp1.User.Id, LastName: &wrapperspb.StringValue{},
 		}, &rsp)
 		assert.Equal(t, handler.ErrMissingLastName, err)
@@ -76,7 +75,7 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("BlankLastName", func(t *testing.T) {
 		var rsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &pb.UpdateRequest{
+		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
 			Id: cRsp1.User.Id, LastName: &wrapperspb.StringValue{},
 		}, &rsp)
 		assert.Equal(t, handler.ErrMissingLastName, err)
@@ -85,7 +84,7 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("BlankEmail", func(t *testing.T) {
 		var rsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &pb.UpdateRequest{
+		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
 			Id: cRsp1.User.Id, Email: &wrapperspb.StringValue{},
 		}, &rsp)
 		assert.Equal(t, handler.ErrMissingEmail, err)
@@ -94,7 +93,7 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("InvalidEmail", func(t *testing.T) {
 		var rsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &pb.UpdateRequest{
+		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
 			Id: cRsp1.User.Id, Email: &wrapperspb.StringValue{Value: "foo.bar"},
 		}, &rsp)
 		assert.Equal(t, handler.ErrInvalidEmail, err)
@@ -103,7 +102,7 @@ func TestUpdate(t *testing.T) {
 
 	t.Run("EmailAlreadyExists", func(t *testing.T) {
 		var rsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &pb.UpdateRequest{
+		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
 			Id: cRsp1.User.Id, Email: &wrapperspb.StringValue{Value: cRsp2.User.Email},
 		}, &rsp)
 		assert.Equal(t, handler.ErrDuplicateEmail, err)
@@ -118,7 +117,7 @@ func TestUpdate(t *testing.T) {
 			LastName:  &wrapperspb.StringValue{Value: "Bar"},
 		}
 		var uRsp pb.UpdateResponse
-		err := h.Update(context.TODO(), &uReq, &uRsp)
+		err := h.Update(microAccountCtx(), &uReq, &uRsp)
 		assert.NoError(t, err)
 		if uRsp.User == nil {
 			t.Error("No user returned")
@@ -135,14 +134,14 @@ func TestUpdate(t *testing.T) {
 			Id:       cRsp2.User.Id,
 			Password: &wrapperspb.StringValue{Value: "helloworld"},
 		}
-		err := h.Update(context.TODO(), &uReq, &pb.UpdateResponse{})
+		err := h.Update(microAccountCtx(), &uReq, &pb.UpdateResponse{})
 		assert.NoError(t, err)
 
 		lReq := pb.LoginRequest{
 			Email:    cRsp2.User.Email,
 			Password: "helloworld",
 		}
-		err = h.Login(context.TODO(), &lReq, &pb.LoginResponse{})
+		err = h.Login(microAccountCtx(), &lReq, &pb.LoginResponse{})
 		assert.NoError(t, err)
 	})
 }

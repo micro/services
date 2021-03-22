@@ -16,8 +16,13 @@ func (u *Users) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	}
 
 	// query the database
+	db, err := u.getDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	var users []User
-	if err := u.DB.Model(&User{}).Where("id IN (?)", req.Ids).Find(&users).Error; err != nil {
+	if err := db.Model(&User{}).Where("id IN (?)", req.Ids).Find(&users).Error; err != nil {
 		logger.Errorf("Error reading from the database: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to the database")
 	}

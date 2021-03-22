@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/micro/services/users/handler"
@@ -14,14 +13,14 @@ func TestRead(t *testing.T) {
 
 	t.Run("MissingIDs", func(t *testing.T) {
 		var rsp pb.ReadResponse
-		err := h.Read(context.TODO(), &pb.ReadRequest{}, &rsp)
+		err := h.Read(microAccountCtx(), &pb.ReadRequest{}, &rsp)
 		assert.Equal(t, handler.ErrMissingIDs, err)
 		assert.Nil(t, rsp.Users)
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
 		var rsp pb.ReadResponse
-		err := h.Read(context.TODO(), &pb.ReadRequest{Ids: []string{"foo"}}, &rsp)
+		err := h.Read(microAccountCtx(), &pb.ReadRequest{Ids: []string{"foo"}}, &rsp)
 		assert.Nil(t, err)
 		if rsp.Users == nil {
 			t.Fatal("Expected the users object to not be nil")
@@ -37,7 +36,7 @@ func TestRead(t *testing.T) {
 		Email:     "john@doe.com",
 		Password:  "passwordabc",
 	}
-	err := h.Create(context.TODO(), &req1, &rsp1)
+	err := h.Create(microAccountCtx(), &req1, &rsp1)
 	assert.NoError(t, err)
 	if rsp1.User == nil {
 		t.Fatal("No user returned")
@@ -51,7 +50,7 @@ func TestRead(t *testing.T) {
 		Email:     "apple@tree.com",
 		Password:  "passwordabc",
 	}
-	err = h.Create(context.TODO(), &req2, &rsp2)
+	err = h.Create(microAccountCtx(), &req2, &rsp2)
 	assert.NoError(t, err)
 	if rsp2.User == nil {
 		t.Fatal("No user returned")
@@ -60,7 +59,7 @@ func TestRead(t *testing.T) {
 
 	// test the read
 	var rsp pb.ReadResponse
-	err = h.Read(context.TODO(), &pb.ReadRequest{
+	err = h.Read(microAccountCtx(), &pb.ReadRequest{
 		Ids: []string{rsp1.User.Id, rsp2.User.Id},
 	}, &rsp)
 	assert.NoError(t, err)
