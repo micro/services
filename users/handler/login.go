@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/users/proto"
@@ -12,6 +13,10 @@ import (
 
 // Login using email and password returns the users profile and a token
 func (u *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.Email) == 0 {
 		return ErrMissingEmail

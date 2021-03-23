@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/users/proto"
@@ -13,6 +14,10 @@ import (
 
 // Update a user
 func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.Id) == 0 {
 		return ErrMissingID

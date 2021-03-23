@@ -27,7 +27,7 @@ func main() {
 	}
 	addr := cfg.String(dbAddress)
 	// Register handler
-	pb.RegisterUsersHandler(srv.Server(), &handler.Users{Dialector: postgres.Open(addr), Time: time.Now})
+	pb.RegisterUsersHandler(srv.Server(), handler.NewHandler(time.Now, postgres.Open(addr)))
 
 	// Run service
 	if err := srv.Run(); err != nil {

@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/users/proto"
@@ -11,6 +12,10 @@ import (
 
 // Validate a token, each time a token is validated it extends its lifetime for another week
 func (u *Users) Validate(ctx context.Context, req *pb.ValidateRequest, rsp *pb.ValidateResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.Token) == 0 {
 		return ErrMissingToken

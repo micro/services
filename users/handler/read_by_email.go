@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/users/proto"
@@ -11,6 +12,10 @@ import (
 
 // Read users using email
 func (u *Users) ReadByEmail(ctx context.Context, req *pb.ReadByEmailRequest, rsp *pb.ReadByEmailResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.Emails) == 0 {
 		return ErrMissingEmails

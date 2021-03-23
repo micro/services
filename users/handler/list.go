@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/users/proto"
@@ -10,6 +11,10 @@ import (
 
 // List all users
 func (u *Users) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// query the database
 	db, err := u.getDBConn(ctx)
 	if err != nil {
