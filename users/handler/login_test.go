@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/micro/services/users/handler"
@@ -20,7 +19,7 @@ func TestLogin(t *testing.T) {
 		Email:     "john@doe.com",
 		Password:  "passwordabc",
 	}
-	err := h.Create(context.TODO(), &cReq, &cRsp)
+	err := h.Create(microAccountCtx(), &cReq, &cRsp)
 	assert.NoError(t, err)
 	if cRsp.User == nil {
 		t.Fatal("No user returned")
@@ -67,7 +66,7 @@ func TestLogin(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.LoginResponse
-			err := h.Login(context.TODO(), &pb.LoginRequest{
+			err := h.Login(microAccountCtx(), &pb.LoginRequest{
 				Email: tc.Email, Password: tc.Password,
 			}, &rsp)
 			assert.Equal(t, tc.Error, err)

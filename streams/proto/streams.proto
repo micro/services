@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package streams;
-option go_package = "github.com/micro/services/streams/proto;streams";
+option go_package = "./proto;streams";
 import "google/protobuf/timestamp.proto";
 
 service Streams {

@@ -1,11 +1,14 @@
 package handler_test
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm/schema"
 
 	"github.com/micro/services/users/handler"
 	pb "github.com/micro/services/users/proto"
@@ -19,13 +22,16 @@ func testHandler(t *testing.T) *handler.Users {
 	if len(addr) == 0 {
 		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
 	}
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	dial := postgres.Open(addr)
+	db, err := gorm.Open(dial, &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{TablePrefix: "micro_"},
+	})
 	if err != nil {
 		t.Fatalf("Error connecting to database: %v", err)
 	}
 
 	// clean any data from a previous run
-	if err := db.Exec("DROP TABLE IF EXISTS users, tokens CASCADE").Error; err != nil {
+	if err := db.Exec("DROP TABLE IF EXISTS micro_users, micro_tokens CASCADE").Error; err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
@@ -33,8 +39,7 @@ func testHandler(t *testing.T) *handler.Users {
 	if err := db.AutoMigrate(&handler.User{}, &handler.Token{}); err != nil {
 		t.Fatalf("Error migrating database: %v", err)
 	}
-
-	return &handler.Users{DB: db, Time: time.Now}
+	return handler.NewHandler(time.Now, dial)
 }
 
 func assertUsersMatch(t *testing.T, exp, act *pb.User) {
@@ -46,4 +51,10 @@ func assertUsersMatch(t *testing.T, exp, act *pb.User) {
 	assert.Equal(t, exp.FirstName, act.FirstName)
 	assert.Equal(t, exp.LastName, act.LastName)
 	assert.Equal(t, exp.Email, act.Email)
+}
+
+func microAccountCtx() context.Context {
+	return auth.ContextWithAccount(context.TODO(), &auth.Account{
+		Issuer: "micro",
+	})
 }
