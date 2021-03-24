@@ -2,18 +2,18 @@ package handler_test
 
 import (
 	"context"
+	"database/sql"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm/schema"
 
 	"github.com/micro/services/users/handler"
 	pb "github.com/micro/services/users/proto"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 func testHandler(t *testing.T) *handler.Users {
@@ -22,24 +22,16 @@ func testHandler(t *testing.T) *handler.Users {
 	if len(addr) == 0 {
 		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
 	}
-	dial := postgres.Open(addr)
-	db, err := gorm.Open(dial, &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{TablePrefix: "micro_"},
-	})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		t.Fatalf("Error connecting to database: %v", err)
+		t.Fatalf("Failed to open connection to DB %s", err)
 	}
-
 	// clean any data from a previous run
-	if err := db.Exec("DROP TABLE IF EXISTS micro_users, micro_tokens CASCADE").Error; err != nil {
+	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_users, micro_tokens CASCADE"); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	// migrate the database
-	if err := db.AutoMigrate(&handler.User{}, &handler.Token{}); err != nil {
-		t.Fatalf("Error migrating database: %v", err)
-	}
-	return handler.NewHandler(time.Now, dial)
+	return handler.NewHandler(time.Now, sqlDB)
 }
 
 func assertUsersMatch(t *testing.T, exp, act *pb.User) {

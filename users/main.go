@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/micro/micro/v3/service"
@@ -8,7 +9,8 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/users/handler"
 	pb "github.com/micro/services/users/proto"
-	"gorm.io/driver/postgres"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 var dbAddress = "postgresql://postgres:postgres@localhost:5432/users?sslmode=disable"
@@ -26,8 +28,13 @@ func main() {
 		logger.Fatalf("Error loading config: %v", err)
 	}
 	addr := cfg.String(dbAddress)
+
 	// Register handler
-	pb.RegisterUsersHandler(srv.Server(), handler.NewHandler(time.Now, postgres.Open(addr)))
+	sqlDB, err := sql.Open("pgx", addr)
+	if err != nil {
+		logger.Fatalf("Failed to open connection to DB %s", err)
+	}
+	pb.RegisterUsersHandler(srv.Server(), handler.NewHandler(time.Now, sqlDB))
 
 	// Run service
 	if err := srv.Run(); err != nil {

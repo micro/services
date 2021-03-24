@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/gosimple/slug v1.9.0
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
+	github.com/jackc/pgx/v4 v4.10.1
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
 	github.com/micro/micro/v3 v3.1.2-0.20210311170414-40583563ada6
 	github.com/miekg/dns v1.1.31 // indirect
