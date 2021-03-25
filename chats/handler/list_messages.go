@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/chats/proto"
@@ -13,13 +14,22 @@ const DefaultLimit = 25
 // List the messages within a chat in reverse chronological order, using sent_before to
 // offset as older messages need to be loaded
 func (c *Chats) ListMessages(ctx context.Context, req *pb.ListMessagesRequest, rsp *pb.ListMessagesResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.ChatId) == 0 {
 		return ErrMissingChatID
 	}
 
+	db, err := c.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// construct the query
-	q := c.DB.Where(&Message{ChatID: req.ChatId}).Order("sent_at DESC")
+	q := db.Where(&Message{ChatID: req.ChatId}).Order("sent_at DESC")
 	if req.SentBefore != nil {
 		q = q.Where("sent_at < ?", req.SentBefore.AsTime())
 	}

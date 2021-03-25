@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/micro/services/chats/handler"
@@ -9,8 +10,8 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 var dbAddress = "postgresql://postgres:postgres@localhost:5432/chats?sslmode=disable"
@@ -28,16 +29,15 @@ func main() {
 		logger.Fatalf("Error loading config: %v", err)
 	}
 	addr := cfg.String(dbAddress)
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		logger.Fatalf("Error connecting to database: %v", err)
-	}
-	if err := db.AutoMigrate(&handler.Chat{}, &handler.Message{}); err != nil {
-		logger.Fatalf("Error migrating database: %v", err)
+		logger.Fatalf("Failed to open connection to DB %s", err)
 	}
 
+	h := &handler.Chats{Time: time.Now}
+	h.DBConn(sqlDB).Migrations(&handler.Chat{}, &handler.Message{})
 	// Register handler
-	pb.RegisterChatsHandler(srv.Server(), &handler.Chats{DB: db, Time: time.Now})
+	pb.RegisterChatsHandler(srv.Server(), h)
 
 	// Run service
 	if err := srv.Run(); err != nil {
