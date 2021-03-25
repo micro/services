@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/chats/proto"
@@ -13,6 +14,10 @@ import (
 
 // Create a message within a chat
 func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest, rsp *pb.CreateMessageResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.AuthorId) == 0 {
 		return ErrMissingAuthorID
@@ -24,9 +29,14 @@ func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest,
 		return ErrMissingText
 	}
 
+	db, err := c.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// lookup the chat
 	var conv Chat
-	if err := c.DB.Where(&Chat{ID: req.ChatId}).First(&conv).Error; err == gorm.ErrRecordNotFound {
+	if err := db.Where(&Chat{ID: req.ChatId}).First(&conv).Error; err == gorm.ErrRecordNotFound {
 		return ErrNotFound
 	} else if err != nil {
 		logger.Errorf("Error reading chat: %v", err)
@@ -44,7 +54,7 @@ func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest,
 	if len(msg.ID) == 0 {
 		msg.ID = uuid.New().String()
 	}
-	if err := c.DB.Create(msg).Error; err == nil {
+	if err := db.Create(msg).Error; err == nil {
 		rsp.Message = msg.Serialize()
 		return nil
 	} else if !strings.Contains(err.Error(), "messages_pkey") {
@@ -54,7 +64,7 @@ func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest,
 
 	// a message already exists with this id
 	var existing Message
-	if err := c.DB.Where(&Message{ID: msg.ID}).First(&existing).Error; err != nil {
+	if err := db.Where(&Message{ID: msg.ID}).First(&existing).Error; err != nil {
 		logger.Errorf("Error creating message: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
