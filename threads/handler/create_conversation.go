@@ -26,7 +26,12 @@ func (s *Threads) CreateConversation(ctx context.Context, req *pb.CreateConversa
 		GroupID:   req.GroupId,
 		CreatedAt: s.Time(),
 	}
-	if err := s.DB.Create(conv).Error; err != nil {
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
+	if err := db.Create(conv).Error; err != nil {
 		logger.Errorf("Error creating conversation: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}

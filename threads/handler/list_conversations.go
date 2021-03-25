@@ -15,9 +15,14 @@ func (s *Threads) ListConversations(ctx context.Context, req *pb.ListConversatio
 		return ErrMissingGroupID
 	}
 
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// query the database
 	var convs []Conversation
-	if err := s.DB.Where(&Conversation{GroupID: req.GroupId}).Find(&convs).Error; err != nil {
+	if err := db.Where(&Conversation{GroupID: req.GroupId}).Find(&convs).Error; err != nil {
 		logger.Errorf("Error reading conversation: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}

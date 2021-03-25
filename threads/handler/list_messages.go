@@ -18,8 +18,13 @@ func (s *Threads) ListMessages(ctx context.Context, req *pb.ListMessagesRequest,
 		return ErrMissingConversationID
 	}
 
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// construct the query
-	q := s.DB.Where(&Message{ConversationID: req.ConversationId}).Order("sent_at DESC")
+	q := db.Where(&Message{ConversationID: req.ConversationId}).Order("sent_at DESC")
 	if req.SentBefore != nil {
 		q = q.Where("sent_at < ?", req.SentBefore.AsTime())
 	}

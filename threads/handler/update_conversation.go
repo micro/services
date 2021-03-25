@@ -19,9 +19,14 @@ func (s *Threads) UpdateConversation(ctx context.Context, req *pb.UpdateConversa
 		return ErrMissingTopic
 	}
 
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// lookup the conversation
 	var conv Conversation
-	if err := s.DB.Where(&Conversation{ID: req.Id}).First(&conv).Error; err == gorm.ErrRecordNotFound {
+	if err := db.Where(&Conversation{ID: req.Id}).First(&conv).Error; err == gorm.ErrRecordNotFound {
 		return ErrNotFound
 	} else if err != nil {
 		logger.Errorf("Error reading conversation: %v", err)
@@ -30,7 +35,7 @@ func (s *Threads) UpdateConversation(ctx context.Context, req *pb.UpdateConversa
 
 	// update the conversation
 	conv.Topic = req.Topic
-	if err := s.DB.Save(&conv).Error; err != nil {
+	if err := db.Save(&conv).Error; err != nil {
 		logger.Errorf("Error updating conversation: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}

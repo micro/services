@@ -23,9 +23,14 @@ func (s *Threads) ReadConversation(ctx context.Context, req *pb.ReadConversation
 		q.GroupID = req.GroupId.Value
 	}
 
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// execute the query
 	var conv Conversation
-	if err := s.DB.Where(&q).First(&conv).Error; err == gorm.ErrRecordNotFound {
+	if err := db.Where(&q).First(&conv).Error; err == gorm.ErrRecordNotFound {
 		return ErrNotFound
 	} else if err != nil {
 		logger.Errorf("Error reading conversation: %v", err)

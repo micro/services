@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,7 +14,7 @@ func TestListConversations(t *testing.T) {
 
 	// seed some data
 	var cRsp1 pb.CreateConversationResponse
-	err := h.CreateConversation(context.TODO(), &pb.CreateConversationRequest{
+	err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
 		Topic: "HelloWorld", GroupId: uuid.New().String(),
 	}, &cRsp1)
 	if err != nil {
@@ -23,7 +22,7 @@ func TestListConversations(t *testing.T) {
 		return
 	}
 	var cRsp2 pb.CreateConversationResponse
-	err = h.CreateConversation(context.TODO(), &pb.CreateConversationRequest{
+	err = h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
 		Topic: "FooBar", GroupId: uuid.New().String(),
 	}, &cRsp2)
 	if err != nil {
@@ -33,14 +32,14 @@ func TestListConversations(t *testing.T) {
 
 	t.Run("MissingGroupID", func(t *testing.T) {
 		var rsp pb.ListConversationsResponse
-		err := h.ListConversations(context.TODO(), &pb.ListConversationsRequest{}, &rsp)
+		err := h.ListConversations(microAccountCtx(), &pb.ListConversationsRequest{}, &rsp)
 		assert.Equal(t, handler.ErrMissingGroupID, err)
 		assert.Nil(t, rsp.Conversations)
 	})
 
 	t.Run("Valid", func(t *testing.T) {
 		var rsp pb.ListConversationsResponse
-		err := h.ListConversations(context.TODO(), &pb.ListConversationsRequest{
+		err := h.ListConversations(microAccountCtx(), &pb.ListConversationsRequest{
 			GroupId: cRsp1.Conversation.GroupId,
 		}, &rsp)
 

@@ -15,8 +15,13 @@ func (s *Threads) DeleteConversation(ctx context.Context, req *pb.DeleteConversa
 	if len(req.Id) == 0 {
 		return ErrMissingID
 	}
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 
-	return s.DB.Transaction(func(tx *gorm.DB) error {
+	return db.Transaction(func(tx *gorm.DB) error {
 		// delete all the messages
 		if err := tx.Where(&Message{ConversationID: req.Id}).Delete(&Message{}).Error; err != nil {
 			logger.Errorf("Error deleting messages: %v", err)
