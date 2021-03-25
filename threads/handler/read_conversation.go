@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/micro/micro/v3/service/auth"
 	"gorm.io/gorm"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -12,6 +13,10 @@ import (
 
 // Read a conversation using its ID, can filter using group ID if provided
 func (s *Threads) ReadConversation(ctx context.Context, req *pb.ReadConversationRequest, rsp *pb.ReadConversationResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.Id) == 0 {
 		return ErrMissingID

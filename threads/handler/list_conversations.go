@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/threads/proto"
@@ -10,6 +11,10 @@ import (
 
 // List all the conversations for a group
 func (s *Threads) ListConversations(ctx context.Context, req *pb.ListConversationsRequest, rsp *pb.ListConversationsResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.GroupId) == 0 {
 		return ErrMissingGroupID
