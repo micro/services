@@ -25,7 +25,7 @@ func (u *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 		return ErrInvalidPassword
 	}
 
-	db, err := u.getDBConn(ctx)
+	db, err := u.GetDBConn(ctx)
 	if err != nil {
 		logger.Errorf("Error connecting to DB: %v", err)
 		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")

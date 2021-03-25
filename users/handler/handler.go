@@ -1,21 +1,13 @@
 package handler
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"regexp"
-	"strings"
-	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
+	gorm2 "github.com/micro/services/pkg/gorm"
 	pb "github.com/micro/services/users/proto"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 )
 
 var (
@@ -66,52 +58,12 @@ type Token struct {
 }
 
 type Users struct {
-	sync.RWMutex
-	Time      func() time.Time
-	dbConn    *sql.DB
-	gormConns map[string]*gorm.DB
+	gorm2.Helper
+	Time func() time.Time
 }
 
-func NewHandler(t func() time.Time, dbConn *sql.DB) *Users {
-	return &Users{Time: t, dbConn: dbConn, gormConns: map[string]*gorm.DB{}}
-}
-
-func (u *Users) getDBConn(ctx context.Context) (*gorm.DB, error) {
-	acc, ok := auth.AccountFromContext(ctx)
-	if !ok {
-		return nil, fmt.Errorf("missing account from context")
-	}
-	u.RLock()
-	if conn, ok := u.gormConns[acc.Issuer]; ok {
-		u.RUnlock()
-		return conn, nil
-	}
-	u.RUnlock()
-	u.Lock()
-	// double check
-	if conn, ok := u.gormConns[acc.Issuer]; ok {
-		u.Unlock()
-		return conn, nil
-	}
-	defer u.Unlock()
-	db, err := gorm.Open(
-		postgres.New(postgres.Config{
-			Conn: u.dbConn,
-		}),
-		&gorm.Config{
-			NamingStrategy: schema.NamingStrategy{
-				TablePrefix: fmt.Sprintf("%s_", strings.ReplaceAll(acc.Issuer, "-", "")),
-			},
-		})
-	if err != nil {
-		return nil, err
-	}
-	if err := db.AutoMigrate(&User{}, &Token{}); err != nil {
-		return nil, err
-	}
-	// record success
-	u.gormConns[acc.Issuer] = db
-	return db, nil
+func NewHandler(t func() time.Time) *Users {
+	return &Users{Time: t}
 }
 
 // isEmailValid checks if the email provided passes the required structure and length.

@@ -40,7 +40,7 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 
 	// lookup the user
 	var user User
-	db, err := u.getDBConn(ctx)
+	db, err := u.GetDBConn(ctx)
 	if err != nil {
 		logger.Errorf("Error connecting to DB: %v", err)
 		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
