@@ -4,13 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"reflect"
 	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/micro/micro/v3/service/auth"
-	"github.com/micro/micro/v3/service/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -262,14 +260,8 @@ func (g gormMigrator) parseFieldIndexes(field *schema.Field) (indexes []schema.I
 				if name == "" {
 					name = g.namer.IndexName(field.Schema.Table, field.Name)
 				} else {
-					ns, ok := g.namer.(*schema.NamingStrategy)
-					if ok {
-						// prefix the index name with the table prefix
-						name = fmt.Sprintf("%s%s", ns.TablePrefix, name)
-						logger.Infof("Updated name to %s, %s", name, ns.TablePrefix)
-					} else {
-						logger.Warnf("Invalid type assertion %s", reflect.TypeOf(g.namer))
-					}
+					ns := g.namer.(*schema.NamingStrategy)
+					name = fmt.Sprintf("%s%s", ns.TablePrefix, name)
 				}
 
 				if (k == "UNIQUEINDEX") || settings["UNIQUE"] != "" {

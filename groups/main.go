@@ -30,7 +30,7 @@ func main() {
 		logger.Fatalf("Failed to open connection to DB %s", err)
 	}
 	h := &handler.Groups{}
-	h.Migrations(&handler.Group{}, &handler.Membership{}).DBConn(sqlDB)
+	h.DBConn(sqlDB).Migrations(&handler.Group{}, &handler.Membership{})
 	// Register handler
 	pb.RegisterGroupsHandler(srv.Server(), h)
 

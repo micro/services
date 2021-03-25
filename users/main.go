@@ -34,7 +34,9 @@ func main() {
 	if err != nil {
 		logger.Fatalf("Failed to open connection to DB %s", err)
 	}
-	pb.RegisterUsersHandler(srv.Server(), handler.NewHandler(time.Now, sqlDB))
+	h := handler.NewHandler(time.Now)
+	h.DBConn(sqlDB).Migrations(&handler.User{}, &handler.Token{})
+	pb.RegisterUsersHandler(srv.Server(), h)
 
 	// Run service
 	if err := srv.Run(); err != nil {

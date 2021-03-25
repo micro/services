@@ -44,7 +44,7 @@ func (u *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 		logger.Errorf("Error hashing and salting password: %v", err)
 		return errors.InternalServerError("HASHING_ERROR", "Error hashing password")
 	}
-	db, err := u.getDBConn(ctx)
+	db, err := u.GetDBConn(ctx)
 	if err != nil {
 		logger.Errorf("Error connecting to DB: %v", err)
 		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
