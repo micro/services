@@ -6,7 +6,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/groups/proto"
+	gorm2 "github.com/micro/services/pkg/gorm"
+
 	"gorm.io/gorm"
 )
 
@@ -41,7 +44,7 @@ func (g *Group) Serialize() *pb.Group {
 }
 
 type Groups struct {
-	DB *gorm.DB
+	gorm2.Helper
 }
 
 func (g *Groups) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
@@ -52,7 +55,13 @@ func (g *Groups) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Crea
 
 	// create the group object
 	group := &Group{ID: uuid.New().String(), Name: req.Name}
-	if err := g.DB.Create(group).Error; err != nil {
+	db, err := g.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
+
+	if err := db.Create(group).Error; err != nil {
 		return ErrStore
 	}
 
@@ -67,9 +76,14 @@ func (g *Groups) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResp
 		return ErrMissingIDs
 	}
 
+	db, err := g.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// query the database
 	var groups []Group
-	if err := g.DB.Model(&Group{}).Preload("Memberships").Where("id IN (?)", req.Ids).Find(&groups).Error; err != nil {
+	if err := db.Model(&Group{}).Preload("Memberships").Where("id IN (?)", req.Ids).Find(&groups).Error; err != nil {
 		return ErrStore
 	}
 
@@ -90,8 +104,13 @@ func (g *Groups) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Upda
 	if len(req.Name) == 0 {
 		return ErrMissingName
 	}
+	db, err := g.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 
-	return g.DB.Transaction(func(tx *gorm.DB) error {
+	return db.Transaction(func(tx *gorm.DB) error {
 		// find the group
 		var group Group
 		if err := tx.Where(&Group{ID: req.Id}).First(&group).Error; err == gorm.ErrRecordNotFound {
@@ -118,8 +137,13 @@ func (g *Groups) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Dele
 		return ErrMissingID
 	}
 
+	db, err := g.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// delete from the database
-	if err := g.DB.Delete(&Group{ID: req.Id}).Error; err == gorm.ErrRecordNotFound {
+	if err := db.Delete(&Group{ID: req.Id}).Error; err == gorm.ErrRecordNotFound {
 		return nil
 	} else if err != nil {
 		return ErrStore
@@ -129,23 +153,28 @@ func (g *Groups) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Dele
 }
 
 func (g *Groups) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+	db, err := g.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	if len(req.MemberId) > 0 {
 		// only list groups the user is a member of
 		var ms []Membership
-		q := g.DB.Where(&Membership{MemberID: req.MemberId}).Preload("Group.Memberships")
+		q := db.Where(&Membership{MemberID: req.MemberId}).Preload("Group.Memberships")
 		if err := q.Find(&ms).Error; err != nil {
 			return err
 		}
 		rsp.Groups = make([]*pb.Group, len(ms))
-		for i, m := range ms {
-			rsp.Groups[i] = m.Group.Serialize()
+		for i, _ := range ms {
+			rsp.Groups[i] = nil //m.Group.Serialize()
 		}
 		return nil
 	}
 
 	// load all groups
 	var groups []Group
-	if err := g.DB.Model(&Group{}).Preload("Memberships").Find(&groups).Error; err != nil {
+	if err := db.Model(&Group{}).Preload("Memberships").Find(&groups).Error; err != nil {
 		return ErrStore
 	}
 
@@ -166,8 +195,13 @@ func (g *Groups) AddMember(ctx context.Context, req *pb.AddMemberRequest, rsp *p
 	if len(req.MemberId) == 0 {
 		return ErrMissingMemberID
 	}
+	db, err := g.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 
-	return g.DB.Transaction(func(tx *gorm.DB) error {
+	return db.Transaction(func(tx *gorm.DB) error {
 		// check the group exists
 		var group Group
 		if err := tx.Where(&Group{ID: req.GroupId}).First(&group).Error; err == gorm.ErrRecordNotFound {
@@ -199,9 +233,14 @@ func (g *Groups) RemoveMember(ctx context.Context, req *pb.RemoveMemberRequest, 
 		return ErrMissingMemberID
 	}
 
+	db, err := g.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// delete the membership
 	m := &Membership{MemberID: req.MemberId, GroupID: req.GroupId}
-	if err := g.DB.Where(m).Delete(m).Error; err != nil {
+	if err := db.Where(m).Delete(m).Error; err != nil {
 		return ErrStore
 	}
 
