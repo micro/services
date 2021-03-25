@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/micro/micro/v3/service/auth"
+	gorm2 "github.com/micro/services/pkg/gorm"
 	"gorm.io/gorm"
 
 	"github.com/google/uuid"
@@ -22,7 +24,7 @@ var (
 )
 
 type Seen struct {
-	DB *gorm.DB
+	gorm2.Helper
 }
 
 type SeenInstance struct {
@@ -35,6 +37,10 @@ type SeenInstance struct {
 
 // Set a resource as seen by a user. If no timestamp is provided, the current time is used.
 func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.UserId) == 0 {
 		return ErrMissingUserID
@@ -57,7 +63,12 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
 	}
-	if err := s.DB.Where(&instance).First(&instance).Error; err == gorm.ErrRecordNotFound {
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
+	if err := db.Where(&instance).First(&instance).Error; err == gorm.ErrRecordNotFound {
 		instance.ID = uuid.New().String()
 	} else if err != nil {
 		logger.Errorf("Error with store: %v", err)
@@ -66,7 +77,7 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 
 	// update the resource
 	instance.Timestamp = req.Timestamp.AsTime()
-	if err := s.DB.Save(&instance).Error; err != nil {
+	if err := db.Save(&instance).Error; err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
@@ -77,6 +88,10 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 // Unset a resource as seen, used in cases where a user viewed a resource but wants to override
 // this so they remember to action it in the future, e.g. "Mark this as unread".
 func (s *Seen) Unset(ctx context.Context, req *pb.UnsetRequest, rsp *pb.UnsetResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.UserId) == 0 {
 		return ErrMissingUserID
@@ -88,8 +103,13 @@ func (s *Seen) Unset(ctx context.Context, req *pb.UnsetRequest, rsp *pb.UnsetRes
 		return ErrMissingResourceType
 	}
 
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// delete the object from the store
-	err := s.DB.Delete(SeenInstance{}, SeenInstance{
+	err = db.Delete(SeenInstance{}, SeenInstance{
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
@@ -106,6 +126,10 @@ func (s *Seen) Unset(ctx context.Context, req *pb.UnsetRequest, rsp *pb.UnsetRes
 // is returned for a given resource_id, it indicates that resource has not yet been seen by the
 // user.
 func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.UserId) == 0 {
 		return ErrMissingUserID
@@ -117,8 +141,13 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 		return ErrMissingResourceType
 	}
 
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// query the store
-	q := s.DB.Where(SeenInstance{UserID: req.UserId, ResourceType: req.ResourceType})
+	q := db.Where(SeenInstance{UserID: req.UserId, ResourceType: req.ResourceType})
 	q = q.Where("resource_id IN (?)", req.ResourceIds)
 	var data []SeenInstance
 	if err := q.Find(&data).Error; err != nil {
