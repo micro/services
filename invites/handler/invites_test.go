@@ -2,17 +2,17 @@ package handler_test
 
 import (
 	"context"
+	"database/sql"
 	"os"
 	"testing"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/services/invites/handler"
 	pb "github.com/micro/services/invites/proto"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func testHandler(t *testing.T) *handler.Invites {
@@ -21,22 +21,19 @@ func testHandler(t *testing.T) *handler.Invites {
 	if len(addr) == 0 {
 		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
 	}
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		t.Fatalf("Error connecting to database: %v", err)
+		t.Fatalf("Failed to open connection to DB %s", err)
 	}
 
 	// clean any data from a previous run
-	if err := db.Exec("DROP TABLE IF EXISTS invites CASCADE").Error; err != nil {
+	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_invites CASCADE"); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	// migrate the database
-	if err := db.AutoMigrate(&handler.Invite{}); err != nil {
-		t.Fatalf("Error migrating database: %v", err)
-	}
-
-	return &handler.Invites{DB: db}
+	h := &handler.Invites{}
+	h.DBConn(sqlDB).Migrations(&handler.Invite{})
+	return h
 }
 
 func TestCreate(t *testing.T) {
@@ -78,7 +75,7 @@ func TestCreate(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.CreateResponse
-			err := h.Create(context.TODO(), &pb.CreateRequest{
+			err := h.Create(microAccountCtx(), &pb.CreateRequest{
 				GroupId: tc.GroupID, Email: tc.Email,
 			}, &rsp)
 			assert.Equal(t, tc.Error, err)
@@ -106,7 +103,7 @@ func TestRead(t *testing.T) {
 
 	// seed some data
 	var cRsp pb.CreateResponse
-	err := h.Create(context.TODO(), &pb.CreateRequest{Email: "john@doe.com", GroupId: uuid.New().String()}, &cRsp)
+	err := h.Create(microAccountCtx(), &pb.CreateRequest{Email: "john@doe.com", GroupId: uuid.New().String()}, &cRsp)
 	assert.NoError(t, err)
 	if cRsp.Invite == nil {
 		t.Fatal("No invite returned on create")
@@ -149,7 +146,7 @@ func TestRead(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.ReadResponse
-			err := h.Read(context.TODO(), &pb.ReadRequest{Id: tc.ID, Code: tc.Code}, &rsp)
+			err := h.Read(microAccountCtx(), &pb.ReadRequest{Id: tc.ID, Code: tc.Code}, &rsp)
 			assert.Equal(t, tc.Error, err)
 
 			if tc.Invite == nil {
@@ -166,7 +163,7 @@ func TestList(t *testing.T) {
 
 	// seed some data
 	var cRsp pb.CreateResponse
-	err := h.Create(context.TODO(), &pb.CreateRequest{Email: "john@doe.com", GroupId: uuid.New().String()}, &cRsp)
+	err := h.Create(microAccountCtx(), &pb.CreateRequest{Email: "john@doe.com", GroupId: uuid.New().String()}, &cRsp)
 	assert.NoError(t, err)
 	if cRsp.Invite == nil {
 		t.Fatal("No invite returned on create")
@@ -212,7 +209,7 @@ func TestList(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.ListResponse
-			err := h.List(context.TODO(), &pb.ListRequest{Email: tc.Email, GroupId: tc.GroupID}, &rsp)
+			err := h.List(microAccountCtx(), &pb.ListRequest{Email: tc.Email, GroupId: tc.GroupID}, &rsp)
 			assert.Equal(t, tc.Error, err)
 
 			if tc.Invite == nil {
@@ -232,13 +229,13 @@ func TestDelete(t *testing.T) {
 	h := testHandler(t)
 
 	t.Run("MissingID", func(t *testing.T) {
-		err := h.Delete(context.TODO(), &pb.DeleteRequest{}, &pb.DeleteResponse{})
+		err := h.Delete(microAccountCtx(), &pb.DeleteRequest{}, &pb.DeleteResponse{})
 		assert.Equal(t, handler.ErrMissingID, err)
 	})
 
 	// seed some data
 	var cRsp pb.CreateResponse
-	err := h.Create(context.TODO(), &pb.CreateRequest{Email: "john@doe.com", GroupId: uuid.New().String()}, &cRsp)
+	err := h.Create(microAccountCtx(), &pb.CreateRequest{Email: "john@doe.com", GroupId: uuid.New().String()}, &cRsp)
 	assert.NoError(t, err)
 	if cRsp.Invite == nil {
 		t.Fatal("No invite returned on create")
@@ -246,15 +243,15 @@ func TestDelete(t *testing.T) {
 	}
 
 	t.Run("Valid", func(t *testing.T) {
-		err := h.Delete(context.TODO(), &pb.DeleteRequest{Id: cRsp.Invite.Id}, &pb.DeleteResponse{})
+		err := h.Delete(microAccountCtx(), &pb.DeleteRequest{Id: cRsp.Invite.Id}, &pb.DeleteResponse{})
 		assert.NoError(t, err)
 
-		err = h.Read(context.TODO(), &pb.ReadRequest{Id: &wrapperspb.StringValue{Value: cRsp.Invite.Id}}, &pb.ReadResponse{})
+		err = h.Read(microAccountCtx(), &pb.ReadRequest{Id: &wrapperspb.StringValue{Value: cRsp.Invite.Id}}, &pb.ReadResponse{})
 		assert.Equal(t, handler.ErrInviteNotFound, err)
 	})
 
 	t.Run("Repeat", func(t *testing.T) {
-		err := h.Delete(context.TODO(), &pb.DeleteRequest{Id: cRsp.Invite.Id}, &pb.DeleteResponse{})
+		err := h.Delete(microAccountCtx(), &pb.DeleteRequest{Id: cRsp.Invite.Id}, &pb.DeleteResponse{})
 		assert.NoError(t, err)
 	})
 }
@@ -268,4 +265,10 @@ func assertInvitesMatch(t *testing.T, exp, act *pb.Invite) {
 	assert.Equal(t, exp.Code, act.Code)
 	assert.Equal(t, exp.Email, act.Email)
 	assert.Equal(t, exp.GroupId, act.GroupId)
+}
+
+func microAccountCtx() context.Context {
+	return auth.ContextWithAccount(context.TODO(), &auth.Account{
+		Issuer: "micro",
+	})
 }
