@@ -1,17 +1,17 @@
 package handler_test
 
 import (
+	"context"
+	"database/sql"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
 	"github.com/stretchr/testify/assert"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func testHandler(t *testing.T) *handler.Threads {
@@ -20,27 +20,20 @@ func testHandler(t *testing.T) *handler.Threads {
 	if len(addr) == 0 {
 		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
 	}
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		t.Fatalf("Error connecting to database: %v", err)
+		t.Fatalf("Failed to open connection to DB %s", err)
 	}
 
 	// clean any data from a previous run
-	if err := db.Exec("DROP TABLE IF EXISTS conversations, messages CASCADE").Error; err != nil {
+	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_conversations, micro_messages CASCADE"); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	// migrate the database
-	if err := db.AutoMigrate(&handler.Conversation{}, &handler.Message{}); err != nil {
-		t.Fatalf("Error migrating database: %v", err)
-	}
+	h := &handler.Threads{Time: func() time.Time { return time.Unix(1611327673, 0) }}
+	h.DBConn(sqlDB).Migrations(&handler.Conversation{}, &handler.Message{})
 
-	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE conversations, messages CASCADE").Error; err != nil {
-		t.Fatalf("Error cleaning database: %v", err)
-	}
-
-	return &handler.Threads{DB: db, Time: func() time.Time { return time.Unix(1611327673, 0) }}
+	return h
 }
 
 func assertConversationsMatch(t *testing.T, exp, act *pb.Conversation) {
@@ -98,4 +91,10 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 func microSecondTime(t *timestamp.Timestamp) time.Time {
 	tt := t.AsTime()
 	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
+}
+
+func microAccountCtx() context.Context {
+	return auth.ContextWithAccount(context.TODO(), &auth.Account{
+		Issuer: "micro",
+	})
 }

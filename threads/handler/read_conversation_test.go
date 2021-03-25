@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -16,7 +15,7 @@ func TestReadConversation(t *testing.T) {
 
 	// seed some data
 	var cRsp pb.CreateConversationResponse
-	err := h.CreateConversation(context.TODO(), &pb.CreateConversationRequest{
+	err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
 		Topic: "HelloWorld", GroupId: uuid.New().String(),
 	}, &cRsp)
 	if err != nil {
@@ -55,7 +54,7 @@ func TestReadConversation(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.ReadConversationResponse
-			err := h.ReadConversation(context.TODO(), &pb.ReadConversationRequest{
+			err := h.ReadConversation(microAccountCtx(), &pb.ReadConversationRequest{
 				Id: tc.ID, GroupId: tc.GroupID,
 			}, &rsp)
 			assert.Equal(t, tc.Error, err)

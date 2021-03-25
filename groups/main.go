@@ -8,6 +8,8 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/groups/handler"
 	pb "github.com/micro/services/groups/proto"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 var dbAddress = "postgresql://postgres:postgres@localhost:5432/groups?sslmode=disable"
