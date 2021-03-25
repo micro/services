@@ -15,7 +15,7 @@ build:
 
 docs:
 	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/seen.proto
-	@redoc-cli bundle api-protobuf.json
+	@redoc-cli bundle api-seen.json
 
 
 .PHONY: test

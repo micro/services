@@ -14,7 +14,7 @@ proto:
 .PHONY: docs
 docs:
 	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/etas.proto
-	@redoc-cli bundle api-protobuf.json
+	@redoc-cli bundle api-etas.json
 
 .PHONY: build
 build:
