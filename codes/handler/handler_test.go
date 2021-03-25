@@ -1,13 +1,12 @@
 package handler_test
 
 import (
+	"database/sql"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/micro/services/codes/handler"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func testHandler(t *testing.T) *handler.Codes {
@@ -17,20 +16,17 @@ func testHandler(t *testing.T) *handler.Codes {
 		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
 	}
 
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		t.Fatalf("Error connecting to database: %v", err)
-	}
-
-	// migrate the database
-	if err := db.AutoMigrate(&handler.Code{}); err != nil {
-		t.Fatalf("Error migrating database: %v", err)
+		t.Fatalf("Failed to open connection to DB %s", err)
 	}
 
 	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE codes CASCADE").Error; err != nil {
+	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_codes CASCADE"); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	return &handler.Codes{DB: db, Time: time.Now}
+	h := &handler.Codes{Time: time.Now}
+	h.DBConn(sqlDB).Migrations(&handler.Code{})
+	return h
 }

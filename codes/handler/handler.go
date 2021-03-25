@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
-	"gorm.io/gorm"
+	"github.com/micro/services/pkg/gorm"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 )
 
 type Codes struct {
-	DB   *gorm.DB
+	gorm.Helper
 	Time func() time.Time
 }
 

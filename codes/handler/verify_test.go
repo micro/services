@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -15,30 +14,30 @@ func TestVerify(t *testing.T) {
 
 	t.Run("MissingIdentity", func(t *testing.T) {
 		var rsp pb.VerifyResponse
-		err := h.Verify(context.TODO(), &pb.VerifyRequest{Code: "123456"}, &rsp)
+		err := h.Verify(microAccountCtx(), &pb.VerifyRequest{Code: "123456"}, &rsp)
 		assert.Equal(t, handler.ErrMissingIdentity, err)
 	})
 
 	t.Run("MissingCode", func(t *testing.T) {
 		var rsp pb.VerifyResponse
-		err := h.Verify(context.TODO(), &pb.VerifyRequest{Identity: "demo@m3o.com"}, &rsp)
+		err := h.Verify(microAccountCtx(), &pb.VerifyRequest{Identity: "demo@m3o.com"}, &rsp)
 		assert.Equal(t, handler.ErrMissingCode, err)
 	})
 
 	// generate a code to test
 	var cRsp pb.CreateResponse
-	err := h.Create(context.TODO(), &pb.CreateRequest{Identity: "demo@m3o.com"}, &cRsp)
+	err := h.Create(microAccountCtx(), &pb.CreateRequest{Identity: "demo@m3o.com"}, &cRsp)
 	assert.NoError(t, err)
 
 	t.Run("IncorrectCode", func(t *testing.T) {
 		var rsp pb.VerifyResponse
-		err := h.Verify(context.TODO(), &pb.VerifyRequest{Identity: "demo@m3o.com", Code: "12345"}, &rsp)
+		err := h.Verify(microAccountCtx(), &pb.VerifyRequest{Identity: "demo@m3o.com", Code: "12345"}, &rsp)
 		assert.Equal(t, handler.ErrInvalidCode, err)
 	})
 
 	t.Run("IncorrectEmail", func(t *testing.T) {
 		var rsp pb.VerifyResponse
-		err := h.Verify(context.TODO(), &pb.VerifyRequest{Identity: "john@m3o.com", Code: cRsp.Code}, &rsp)
+		err := h.Verify(microAccountCtx(), &pb.VerifyRequest{Identity: "john@m3o.com", Code: cRsp.Code}, &rsp)
 		assert.Equal(t, handler.ErrInvalidCode, err)
 	})
 
@@ -48,13 +47,13 @@ func TestVerify(t *testing.T) {
 		defer func() { h.Time = ot }()
 
 		var rsp pb.VerifyResponse
-		err := h.Verify(context.TODO(), &pb.VerifyRequest{Identity: "demo@m3o.com", Code: cRsp.Code}, &rsp)
+		err := h.Verify(microAccountCtx(), &pb.VerifyRequest{Identity: "demo@m3o.com", Code: cRsp.Code}, &rsp)
 		assert.Equal(t, handler.ErrExpiredCode, err)
 	})
 
 	t.Run("ValidCode", func(t *testing.T) {
 		var rsp pb.VerifyResponse
-		err := h.Verify(context.TODO(), &pb.VerifyRequest{Identity: "demo@m3o.com", Code: cRsp.Code}, &rsp)
+		err := h.Verify(microAccountCtx(), &pb.VerifyRequest{Identity: "demo@m3o.com", Code: cRsp.Code}, &rsp)
 		assert.NoError(t, err)
 	})
 }

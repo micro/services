@@ -5,12 +5,17 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/codes/proto"
 )
 
 func (c *Codes) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.Identity) == 0 {
 		return ErrMissingIdentity
@@ -24,8 +29,13 @@ func (c *Codes) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 		code.ExpiresAt = c.Time().Add(DefaultTTL)
 	}
 
+	db, err := c.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// write to the database
-	if err := c.DB.Create(&code).Error; err != nil {
+	if err := db.Create(&code).Error; err != nil {
 		logger.Errorf("Error creating code in database: %v", err)
 		return errors.InternalServerError("DATABASE_ERORR", "Error connecting to database")
 	}
