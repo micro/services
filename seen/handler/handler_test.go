@@ -2,17 +2,17 @@ package handler_test
 
 import (
 	"context"
+	"database/sql"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/services/seen/handler"
 	pb "github.com/micro/services/seen/proto"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func testHandler(t *testing.T) *handler.Seen {
@@ -21,22 +21,19 @@ func testHandler(t *testing.T) *handler.Seen {
 	if len(addr) == 0 {
 		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
 	}
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		t.Fatalf("Error connecting to database: %v", err)
-	}
-
-	// migrate the database
-	if err := db.AutoMigrate(&handler.SeenInstance{}); err != nil {
-		t.Fatalf("Error migrating database: %v", err)
+		t.Fatalf("Failed to open connection to DB %s", err)
 	}
 
 	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE seen_instances CASCADE").Error; err != nil {
+	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_seen_instances CASCADE"); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	return &handler.Seen{DB: db}
+	h := &handler.Seen{}
+	h.DBConn(sqlDB).Migrations(&handler.SeenInstance{})
+	return h
 }
 
 func TestSet(t *testing.T) {
@@ -91,7 +88,7 @@ func TestSet(t *testing.T) {
 	h := testHandler(t)
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
-			err := h.Set(context.TODO(), &pb.SetRequest{
+			err := h.Set(microAccountCtx(), &pb.SetRequest{
 				UserId:       tc.UserID,
 				ResourceId:   tc.ResourceID,
 				ResourceType: tc.ResourceType,
@@ -110,7 +107,7 @@ func TestUnset(t *testing.T) {
 		ResourceId:   uuid.New().String(),
 		ResourceType: "message",
 	}
-	err := h.Set(context.TODO(), seed, &pb.SetResponse{})
+	err := h.Set(microAccountCtx(), seed, &pb.SetResponse{})
 	assert.NoError(t, err)
 
 	tt := []struct {
@@ -154,7 +151,7 @@ func TestUnset(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
-			err := h.Unset(context.TODO(), &pb.UnsetRequest{
+			err := h.Unset(microAccountCtx(), &pb.UnsetRequest{
 				UserId:       tc.UserID,
 				ResourceId:   tc.ResourceID,
 				ResourceType: tc.ResourceType,
@@ -208,7 +205,7 @@ func TestRead(t *testing.T) {
 		},
 	}
 	for _, d := range td {
-		assert.NoError(t, h.Set(context.TODO(), &pb.SetRequest{
+		assert.NoError(t, h.Set(microAccountCtx(), &pb.SetRequest{
 			UserId:       d.UserID,
 			ResourceId:   d.ResourceID,
 			ResourceType: d.ResourceType,
@@ -218,7 +215,7 @@ func TestRead(t *testing.T) {
 
 	// check only the requested values are returned
 	var rsp pb.ReadResponse
-	err := h.Read(context.TODO(), &pb.ReadRequest{
+	err := h.Read(microAccountCtx(), &pb.ReadRequest{
 		UserId:       "user-1",
 		ResourceType: "message",
 		ResourceIds:  []string{"message-1", "message-2", "message-3"},
@@ -239,7 +236,7 @@ func TestRead(t *testing.T) {
 	}
 
 	// unsetting a resource should remove it from the list
-	err = h.Unset(context.TODO(), &pb.UnsetRequest{
+	err = h.Unset(microAccountCtx(), &pb.UnsetRequest{
 		UserId:       "user-1",
 		ResourceId:   "message-2",
 		ResourceType: "message",
@@ -247,7 +244,7 @@ func TestRead(t *testing.T) {
 	assert.NoError(t, err)
 
 	rsp = pb.ReadResponse{}
-	err = h.Read(context.TODO(), &pb.ReadRequest{
+	err = h.Read(microAccountCtx(), &pb.ReadRequest{
 		UserId:       "user-1",
 		ResourceType: "message",
 		ResourceIds:  []string{"message-1", "message-2", "message-3"},
@@ -260,4 +257,10 @@ func TestRead(t *testing.T) {
 // postgres has a resolution of 100microseconds so just test that it's accurate to the second
 func microSecondTime(tt time.Time) time.Time {
 	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000)).UTC()
+}
+
+func microAccountCtx() context.Context {
+	return auth.ContextWithAccount(context.TODO(), &auth.Account{
+		Issuer: "micro",
+	})
 }
