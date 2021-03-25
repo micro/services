@@ -1,14 +1,16 @@
 package main
 
 import (
+	"database/sql"
+
 	"github.com/micro/services/invites/handler"
 	pb "github.com/micro/services/invites/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 var dbAddress = "postgresql://postgres:postgres@localhost:5432/invites?sslmode=disable"
@@ -26,16 +28,15 @@ func main() {
 		logger.Fatalf("Error loading config: %v", err)
 	}
 	addr := cfg.String(dbAddress)
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		logger.Fatalf("Error connecting to database: %v", err)
+		logger.Fatalf("Failed to open connection to DB %s", err)
 	}
-	if err := db.AutoMigrate(&handler.Invite{}); err != nil {
-		logger.Fatalf("Error migrating database: %v", err)
-	}
+	h := &handler.Invites{}
+	h.DBConn(sqlDB).Migrations(&handler.Invite{})
 
 	// Register handler
-	pb.RegisterInvitesHandler(srv.Server(), &handler.Invites{DB: db})
+	pb.RegisterInvitesHandler(srv.Server(), h)
 
 	// Run service
 	if err := srv.Run(); err != nil {
