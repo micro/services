@@ -31,7 +31,9 @@ func testHandler(t *testing.T) *handler.Users {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	return handler.NewHandler(time.Now, sqlDB)
+	h := handler.NewHandler(time.Now)
+	h.DBConn(sqlDB).Migrations(&handler.User{}, &handler.Token{})
+	return h
 }
 
 func assertUsersMatch(t *testing.T, exp, act *pb.User) {

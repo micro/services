@@ -166,8 +166,8 @@ func (g *Groups) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResp
 			return err
 		}
 		rsp.Groups = make([]*pb.Group, len(ms))
-		for i, _ := range ms {
-			rsp.Groups[i] = nil //m.Group.Serialize()
+		for i, m := range ms {
+			rsp.Groups[i] = m.Group.Serialize()
 		}
 		return nil
 	}
