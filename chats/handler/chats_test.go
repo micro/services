@@ -1,35 +1,39 @@
 package handler_test
 
 import (
+	"context"
+	"database/sql"
+	"os"
 	"testing"
 	"time"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/services/chats/handler"
 	pb "github.com/micro/services/chats/proto"
 	"github.com/stretchr/testify/assert"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
 func testHandler(t *testing.T) *handler.Chats {
 	// connect to the database
-	db, err := gorm.Open(postgres.Open("postgresql://postgres@localhost:5432/chats?sslmode=disable"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("Error connecting to database: %v", err)
+	addr := os.Getenv("POSTGRES_URL")
+	if len(addr) == 0 {
+		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
 	}
-
-	// migrate the database
-	if err := db.AutoMigrate(&handler.Chat{}, &handler.Message{}); err != nil {
-		t.Fatalf("Error migrating database: %v", err)
+	sqlDB, err := sql.Open("pgx", addr)
+	if err != nil {
+		t.Fatalf("Failed to open connection to DB %s", err)
 	}
 
 	// clean any data from a previous run
-	if err := db.Exec("TRUNCATE TABLE chats, messages CASCADE").Error; err != nil {
+	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_chats, micro_messages CASCADE"); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	return &handler.Chats{DB: db, Time: func() time.Time { return time.Unix(1611327673, 0) }}
+	h := &handler.Chats{Time: func() time.Time { return time.Unix(1611327673, 0) }}
+	h.DBConn(sqlDB).Migrations(&handler.Chat{}, &handler.Message{})
+	return h
 }
 
 func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
@@ -53,7 +57,13 @@ func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
 		return
 	}
 
-	assert.True(t, exp.CreatedAt.AsTime().Equal(act.CreatedAt.AsTime()))
+	assert.True(t, microSecondTime(exp.CreatedAt).Equal(microSecondTime(act.CreatedAt)))
+}
+
+// postgres has a resolution of 100microseconds so just test that it's accurate to the second
+func microSecondTime(t *timestamp.Timestamp) time.Time {
+	tt := t.AsTime()
+	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }
 
 func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
@@ -77,6 +87,11 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 		t.Errorf("SentAt not set")
 		return
 	}
+	assert.True(t, microSecondTime(exp.SentAt).Equal(microSecondTime(act.SentAt)))
+}
 
-	assert.True(t, exp.SentAt.AsTime().Equal(act.SentAt.AsTime()))
+func microAccountCtx() context.Context {
+	return auth.ContextWithAccount(context.TODO(), &auth.Account{
+		Issuer: "micro",
+	})
 }

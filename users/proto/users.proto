@@ -1,12 +1,13 @@
 syntax = "proto3";
 
 package users;
-option go_package = "proto;users";
+option go_package = "./proto;users";
 import "google/protobuf/wrappers.proto";
 
 service Users {
 	rpc Create(CreateRequest) returns (CreateResponse) {}
 	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc ReadByEmail(ReadByEmailRequest) returns (ReadByEmailResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
@@ -46,11 +47,20 @@ message ReadResponse {
 	map<string,User> users = 1;
 }
 
+message ReadByEmailRequest {
+	repeated string emails = 1;
+}
+
+message ReadByEmailResponse {
+	map<string,User> users = 1;
+}
+
 message UpdateRequest {
 	string id = 1;
 	google.protobuf.StringValue first_name = 2;
 	google.protobuf.StringValue last_name = 3;
 	google.protobuf.StringValue email = 4;
+	google.protobuf.StringValue password = 5;
 }
 
 message UpdateResponse {

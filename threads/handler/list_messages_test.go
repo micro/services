@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"sort"
 	"strconv"
 	"testing"
@@ -20,7 +19,7 @@ func TestListMessages(t *testing.T) {
 
 	// seed some data
 	var convRsp pb.CreateConversationResponse
-	err := h.CreateConversation(context.TODO(), &pb.CreateConversationRequest{
+	err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
 		Topic: "TestListMessages", GroupId: uuid.New().String(),
 	}, &convRsp)
 	assert.NoError(t, err)
@@ -31,7 +30,7 @@ func TestListMessages(t *testing.T) {
 	msgs := make([]*pb.Message, 50)
 	for i := 0; i < len(msgs); i++ {
 		var rsp pb.CreateMessageResponse
-		err := h.CreateMessage(context.TODO(), &pb.CreateMessageRequest{
+		err := h.CreateMessage(microAccountCtx(), &pb.CreateMessageRequest{
 			ConversationId: convRsp.Conversation.Id,
 			AuthorId:       uuid.New().String(),
 			Text:           strconv.Itoa(i),
@@ -42,14 +41,14 @@ func TestListMessages(t *testing.T) {
 
 	t.Run("MissingConversationID", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
-		err := h.ListMessages(context.TODO(), &pb.ListMessagesRequest{}, &rsp)
+		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{}, &rsp)
 		assert.Equal(t, handler.ErrMissingConversationID, err)
 		assert.Nil(t, rsp.Messages)
 	})
 
 	t.Run("NoOffset", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
-		err := h.ListMessages(context.TODO(), &pb.ListMessagesRequest{
+		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
 			ConversationId: convRsp.Conversation.Id,
 		}, &rsp)
 		assert.NoError(t, err)
@@ -67,7 +66,7 @@ func TestListMessages(t *testing.T) {
 
 	t.Run("LimitSet", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
-		err := h.ListMessages(context.TODO(), &pb.ListMessagesRequest{
+		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
 			ConversationId: convRsp.Conversation.Id,
 			Limit:          &wrapperspb.Int32Value{Value: 10},
 		}, &rsp)
@@ -86,7 +85,7 @@ func TestListMessages(t *testing.T) {
 
 	t.Run("OffsetAndLimit", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
-		err := h.ListMessages(context.TODO(), &pb.ListMessagesRequest{
+		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
 			ConversationId: convRsp.Conversation.Id,
 			Limit:          &wrapperspb.Int32Value{Value: 5},
 			SentBefore:     msgs[20].SentAt,

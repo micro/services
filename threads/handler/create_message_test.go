@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/micro/services/threads/handler"
@@ -17,7 +16,7 @@ func TestCreateMessage(t *testing.T) {
 
 	// seed some data
 	var cRsp pb.CreateConversationResponse
-	err := h.CreateConversation(context.TODO(), &pb.CreateConversationRequest{
+	err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
 		Topic: "HelloWorld", GroupId: uuid.New().String(),
 	}, &cRsp)
 	if err != nil {
@@ -84,7 +83,7 @@ func TestCreateMessage(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.CreateMessageResponse
-			err := h.CreateMessage(context.TODO(), &pb.CreateMessageRequest{
+			err := h.CreateMessage(microAccountCtx(), &pb.CreateMessageRequest{
 				AuthorId:       tc.AuthorID,
 				ConversationId: tc.ConversationID,
 				Text:           tc.Text,

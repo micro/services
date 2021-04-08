@@ -71,7 +71,19 @@ func (e *Feeds) crawl() {
 }
 
 func (e *Feeds) Add(ctx context.Context, req *feeds.AddRequest, rsp *feeds.AddResponse) error {
-	log.Info("Received Feeds.New request")
+	log.Info("Received Feeds.Add request")
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest("feeds.add", "require name")
+	}
+
+	rssSync.RLock()
+	defer rssSync.RUnlock()
+
+	// check if the feed already exists
+	if _, ok := rssFeeds[req.Name]; ok {
+		return errors.BadRequest("feeds.add", "%s already exists", req.Name)
+	}
 
 	f := feeds.Feed{
 		Name:     req.Name,
@@ -95,8 +107,9 @@ func (e *Feeds) Entries(ctx context.Context, req *feeds.EntriesRequest, rsp *fee
 
 func (e *Feeds) List(ctx context.Context, req *feeds.ListRequest, rsp *feeds.ListResponse) error {
 	var feeds []*feeds.Feed
-
-	err := e.feeds.Read(model.QueryAll(), &feeds)
+	q := model.QueryAll()
+	q.Index.FieldName = "Name"
+	err := e.feeds.Read(q, &feeds)
 	if err != nil {
 		return errors.InternalServerError("feeds.list", "failed to read list of feeds: %v", err)
 	}

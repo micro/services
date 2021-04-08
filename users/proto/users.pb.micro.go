@@ -6,7 +6,7 @@ package users
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/wrappers"
+	_ "google.golang.org/protobuf/types/known/wrapperspb"
 	math "math"
 )
 
@@ -45,6 +45,7 @@ func NewUsersEndpoints() []*api.Endpoint {
 type UsersService interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
+	ReadByEmail(ctx context.Context, in *ReadByEmailRequest, opts ...client.CallOption) (*ReadByEmailResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
@@ -81,6 +82,16 @@ func (c *usersService) Create(ctx context.Context, in *CreateRequest, opts ...cl
 func (c *usersService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
 	req := c.c.NewRequest(c.name, "Users.Read", in)
 	out := new(ReadResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersService) ReadByEmail(ctx context.Context, in *ReadByEmailRequest, opts ...client.CallOption) (*ReadByEmailResponse, error) {
+	req := c.c.NewRequest(c.name, "Users.ReadByEmail", in)
+	out := new(ReadByEmailResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -153,6 +164,7 @@ func (c *usersService) Validate(ctx context.Context, in *ValidateRequest, opts .
 type UsersHandler interface {
 	Create(context.Context, *CreateRequest, *CreateResponse) error
 	Read(context.Context, *ReadRequest, *ReadResponse) error
+	ReadByEmail(context.Context, *ReadByEmailRequest, *ReadByEmailResponse) error
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
@@ -168,6 +180,7 @@ func RegisterUsersHandler(s server.Server, hdlr UsersHandler, opts ...server.Han
 	type users interface {
 		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
 		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
+		ReadByEmail(ctx context.Context, in *ReadByEmailRequest, out *ReadByEmailResponse) error
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
@@ -192,6 +205,10 @@ func (h *usersHandler) Create(ctx context.Context, in *CreateRequest, out *Creat
 
 func (h *usersHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
 	return h.UsersHandler.Read(ctx, in, out)
+}
+
+func (h *usersHandler) ReadByEmail(ctx context.Context, in *ReadByEmailRequest, out *ReadByEmailResponse) error {
+	return h.UsersHandler.ReadByEmail(ctx, in, out)
 }
 
 func (h *usersHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {

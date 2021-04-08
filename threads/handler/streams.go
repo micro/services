@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
+	gorm2 "github.com/micro/services/pkg/gorm"
 	pb "github.com/micro/services/threads/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"gorm.io/gorm"
 )
 
 var (
@@ -21,7 +21,7 @@ var (
 )
 
 type Threads struct {
-	DB   *gorm.DB
+	gorm2.Helper
 	Time func() time.Time
 }
 

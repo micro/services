@@ -5,10 +5,10 @@ import (
 	"time"
 
 	pb "github.com/micro/services/chats/proto"
+	"github.com/micro/services/pkg/gorm"
 
 	"github.com/micro/micro/v3/service/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"gorm.io/gorm"
 )
 
 var (
@@ -21,7 +21,7 @@ var (
 )
 
 type Chats struct {
-	DB   *gorm.DB
+	gorm.Helper
 	Time func() time.Time
 }
 

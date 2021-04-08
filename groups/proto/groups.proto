@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package groups;
-option go_package = "proto;groups";
+option go_package = "./proto;groups";
 
 service Groups {
 	// Create a group

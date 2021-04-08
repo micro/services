@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -22,7 +21,7 @@ func TestRecentMessages(t *testing.T) {
 	convos := make(map[string][]*pb.Message, 3)
 	for i := 0; i < 3; i++ {
 		var convRsp pb.CreateConversationResponse
-		err := h.CreateConversation(context.TODO(), &pb.CreateConversationRequest{
+		err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
 			Topic: "TestRecentMessages", GroupId: uuid.New().String(),
 		}, &convRsp)
 		assert.NoError(t, err)
@@ -35,7 +34,7 @@ func TestRecentMessages(t *testing.T) {
 
 		for j := 0; j < 50; j++ {
 			var rsp pb.CreateMessageResponse
-			err := h.CreateMessage(context.TODO(), &pb.CreateMessageRequest{
+			err := h.CreateMessage(microAccountCtx(), &pb.CreateMessageRequest{
 				ConversationId: convRsp.Conversation.Id,
 				AuthorId:       uuid.New().String(),
 				Text:           fmt.Sprintf("Conversation %v, Message %v", i, j),
@@ -47,14 +46,14 @@ func TestRecentMessages(t *testing.T) {
 
 	t.Run("MissingConversationIDs", func(t *testing.T) {
 		var rsp pb.RecentMessagesResponse
-		err := h.RecentMessages(context.TODO(), &pb.RecentMessagesRequest{}, &rsp)
+		err := h.RecentMessages(microAccountCtx(), &pb.RecentMessagesRequest{}, &rsp)
 		assert.Equal(t, handler.ErrMissingConversationIDs, err)
 		assert.Nil(t, rsp.Messages)
 	})
 
 	t.Run("LimitSet", func(t *testing.T) {
 		var rsp pb.RecentMessagesResponse
-		err := h.RecentMessages(context.TODO(), &pb.RecentMessagesRequest{
+		err := h.RecentMessages(microAccountCtx(), &pb.RecentMessagesRequest{
 			ConversationIds:      ids,
 			LimitPerConversation: &wrapperspb.Int32Value{Value: 10},
 		}, &rsp)
@@ -79,7 +78,7 @@ func TestRecentMessages(t *testing.T) {
 		reducedIDs := ids[:2]
 
 		var rsp pb.RecentMessagesResponse
-		err := h.RecentMessages(context.TODO(), &pb.RecentMessagesRequest{
+		err := h.RecentMessages(microAccountCtx(), &pb.RecentMessagesRequest{
 			ConversationIds: reducedIDs,
 		}, &rsp)
 		assert.NoError(t, err)

@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/threads/proto"
@@ -13,6 +14,10 @@ import (
 // most messages retrieved per conversation is 25, however this can be overriden using the
 // limit_per_conversation option
 func (s *Threads) RecentMessages(ctx context.Context, req *pb.RecentMessagesRequest, rsp *pb.RecentMessagesResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.ConversationIds) == 0 {
 		return ErrMissingConversationIDs
@@ -23,9 +28,14 @@ func (s *Threads) RecentMessages(ctx context.Context, req *pb.RecentMessagesRequ
 		limit = int(req.LimitPerConversation.Value)
 	}
 
+	db, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// query the database
 	var msgs []Message
-	err := s.DB.Transaction(func(tx *gorm.DB) error {
+	err = db.Transaction(func(tx *gorm.DB) error {
 		for _, id := range req.ConversationIds {
 			var cms []Message
 			if err := tx.Where(&Message{ConversationID: id}).Order("sent_at DESC").Limit(limit).Find(&cms).Error; err != nil {

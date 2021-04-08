@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package places;
+option go_package = "./proto;places";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";

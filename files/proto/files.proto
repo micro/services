@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package files;
 
-option go_package = "proto;files";
+option go_package = "./proto;files";
 
 service Files {
 	rpc Save(SaveRequest) returns (SaveResponse) {}
@@ -10,18 +10,21 @@ service Files {
 }
 
 message File {
+	string id = 1;
 	// A custom string for namespacing purposes
 	// eg. files-of-mywebsite.com
-	string project = 1;
+	string project = 2;
 	// Name of folder or file.
-	string name = 2;
+	string name = 3;
 	// Path. Default is '/', ie. top level
-	string path = 3;
-	bool isDirectory = 4;
+	string path = 4;
+	bool is_directory = 5;
 	// File contents. Empty for directories.
-	string fileContents = 5;
-	int64 created = 6;
-	int64 updated = 7;
+	string file_contents = 6;
+	int64 created = 7;
+	int64 updated = 8;
+	// owner
+	string owner = 9;
 }
 
 // The save endpoint lets you batch save text files.

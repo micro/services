@@ -8,9 +8,11 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/invites/proto"
+	gorm2 "github.com/micro/services/pkg/gorm"
 	"gorm.io/gorm"
 )
 
@@ -43,11 +45,15 @@ func (i *Invite) Serialize() *pb.Invite {
 }
 
 type Invites struct {
-	DB *gorm.DB
+	gorm2.Helper
 }
 
 // Create an invite
 func (i *Invites) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.GroupId) == 0 {
 		return ErrMissingGroupID
@@ -64,10 +70,14 @@ func (i *Invites) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Cre
 		ID:      uuid.New().String(),
 		Code:    generateCode(),
 		GroupID: req.GroupId,
-		Email:   req.Email,
+		Email:   strings.ToLower(req.Email),
 	}
-	if err := i.DB.Create(invite).Error; err != nil && strings.Contains(err.Error(), "group_email") {
-	} else if err != nil {
+	db, err := i.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
+	if err := db.Create(invite).Error; err != nil && !strings.Contains(err.Error(), "group_email") {
 		logger.Errorf("Error writing to the store: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to the database")
 	}
@@ -79,6 +89,10 @@ func (i *Invites) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Cre
 
 // Read an invite using ID or code
 func (i *Invites) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	var query Invite
 	if req.Id != nil {
@@ -89,9 +103,14 @@ func (i *Invites) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRes
 		return ErrMissingIDAndCode
 	}
 
+	db, err := i.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// query the database
 	var invite Invite
-	if err := i.DB.Where(&query).First(&invite).Error; err == gorm.ErrRecordNotFound {
+	if err := db.Where(&query).First(&invite).Error; err == gorm.ErrRecordNotFound {
 		return ErrInviteNotFound
 	} else if err != nil {
 		logger.Errorf("Error reading from the store: %v", err)
@@ -105,6 +124,10 @@ func (i *Invites) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRes
 
 // List invited for a group or specific email
 func (i *Invites) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if req.Email == nil && req.GroupId == nil {
 		return ErrMissingGroupIDAndEmail
@@ -116,12 +139,17 @@ func (i *Invites) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRes
 		query.GroupID = req.GroupId.Value
 	}
 	if req.Email != nil {
-		query.Email = req.Email.Value
+		query.Email = strings.ToLower(req.Email.Value)
 	}
 
+	db, err := i.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// query the database
 	var invites []Invite
-	if err := i.DB.Where(&query).Find(&invites).Error; err != nil {
+	if err := db.Where(&query).Find(&invites).Error; err != nil {
 		logger.Errorf("Error reading from the store: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to the database")
 	}
@@ -136,13 +164,22 @@ func (i *Invites) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRes
 
 // Delete an invite
 func (i *Invites) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
+	_, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	}
 	// validate the request
 	if len(req.Id) == 0 {
 		return ErrMissingID
 	}
 
+	db, err := i.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error connecting to DB: %v", err)
+		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	}
 	// delete from the database
-	if err := i.DB.Where(&Invite{ID: req.Id}).Delete(&Invite{}).Error; err != nil {
+	if err := db.Where(&Invite{ID: req.Id}).Delete(&Invite{}).Error; err != nil {
 		logger.Errorf("Error deleting from the store: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to the database")
 	}

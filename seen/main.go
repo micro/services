@@ -1,17 +1,19 @@
 package main
 
 import (
+	"database/sql"
+
 	"github.com/micro/services/seen/handler"
 	pb "github.com/micro/services/seen/proto"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-var dbAddress = "postgresql://postgres@localhost:5432/seen?sslmode=disable"
+var dbAddress = "postgresql://postgres:postgres@localhost:5432/seen?sslmode=disable"
 
 func main() {
 	// Create service
@@ -26,16 +28,15 @@ func main() {
 		logger.Fatalf("Error loading config: %v", err)
 	}
 	addr := cfg.String(dbAddress)
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		logger.Fatalf("Error connecting to database: %v", err)
-	}
-	if err := db.AutoMigrate(&handler.SeenInstance{}); err != nil {
-		logger.Fatalf("Error migrating database: %v", err)
+		logger.Fatalf("Failed to open connection to DB %s", err)
 	}
 
+	h := &handler.Seen{}
+	h.DBConn(sqlDB).Migrations(&handler.SeenInstance{})
 	// Register handler
-	pb.RegisterSeenHandler(srv.Server(), &handler.Seen{DB: db.Debug()})
+	pb.RegisterSeenHandler(srv.Server(), h)
 
 	// Run service
 	if err := srv.Run(); err != nil {

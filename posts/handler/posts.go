@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/model"
@@ -44,15 +45,16 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 		return errors.BadRequest("proto.save.input-check", "Id is missing")
 	}
 
-	// read by post
+	// look for an existing post
 	posts := []*proto.Post{}
 	q := model.QueryEquals("id", req.Id)
 	q.Order.Type = model.OrderTypeUnordered
-	err := p.db.Read(q, &posts)
-	if err != nil {
+
+	if err := p.db.Read(q, &posts); err != nil {
 		return errors.InternalServerError("proto.save.store-id-read", "Failed to read post by id: %v", err.Error())
 	}
 	postSlug := slug.Make(req.Title)
+
 	// If no existing record is found, create a new one
 	if len(posts) == 0 {
 		post := &proto.Post{
@@ -74,6 +76,8 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 		}
 		return nil
 	}
+
+	// get the old post
 	oldPost := posts[0]
 
 	post := &proto.Post{
@@ -84,11 +88,20 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 		Tags:     oldPost.Tags,
 		Created:  oldPost.Created,
 		Updated:  req.Timestamp,
-		Metadata: req.Metadata,
-		Image:    req.Image,
+		Metadata: oldPost.Metadata,
+		Image:    oldPost.Image,
 	}
+
+	// merge the metadata
+	for k, v := range req.Metadata {
+		post.Metadata[k] = v
+	}
+
 	if post.Created == 0 {
 		post.Created = time.Now().Unix()
+	}
+	if len(req.Image) > 0 {
+		post.Image = req.Image
 	}
 	if len(req.Title) > 0 {
 		post.Title = req.Title
@@ -110,8 +123,7 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 	}
 
 	postsWithThisSlug := []*proto.Post{}
-	err = p.db.Read(model.QueryEquals("slug", postSlug), &postsWithThisSlug)
-	if err != nil {
+	if err := p.db.Read(model.QueryEquals("slug", postSlug), &postsWithThisSlug); err != nil {
 		return errors.InternalServerError("proto.save.store-read", "Failed to read post by slug: %v", err.Error())
 	}
 
@@ -125,11 +137,15 @@ func (p *Posts) Save(ctx context.Context, req *proto.SaveRequest, rsp *proto.Sav
 }
 
 func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
-	err := p.db.Create(post)
-	if err != nil {
+	if err := p.db.Create(post); err != nil {
 		return err
 	}
+
 	if oldPost == nil {
+		// publish the post as an event
+		logger.Infof("Publishing post: '%v'", post.Title)
+		service.NewEvent("posts").Publish(ctx, post)
+
 		for _, tagName := range post.Tags {
 			_, err := p.Tags.Add(ctx, &tags.AddRequest{
 				ResourceID: post.Id,
@@ -140,8 +156,10 @@ func (p *Posts) savePost(ctx context.Context, oldPost, post *proto.Post) error {
 				return err
 			}
 		}
+
 		return nil
 	}
+
 	return p.diffTags(ctx, post.Id, oldPost.Tags, post.Tags)
 }
 

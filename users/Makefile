@@ -12,7 +12,7 @@ proto:
 .PHONY: docs
 docs:
 	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/users.proto
-	@redoc-cli bundle api-protobuf.json
+	@redoc-cli bundle api-users.json
 
 .PHONY: build
 build:
@@ -20,7 +20,7 @@ build:
 
 .PHONY: test
 test:
-	go test -v ./... -cover
+	go test -v -p 1 ./...
 
 .PHONY: docker
 docker:

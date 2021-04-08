@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -43,7 +42,7 @@ func TestCreateChat(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.CreateChatResponse
-			err := h.CreateChat(context.TODO(), &pb.CreateChatRequest{
+			err := h.CreateChat(microAccountCtx(), &pb.CreateChatRequest{
 				UserIds: tc.UserIDs,
 			}, &rsp)
 
