@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,6 +17,40 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stoewer/go-strcase"
 )
+
+func saveMeta(service, readme, openapijson string) error {
+	client := &http.Client{}
+
+	//Encode the data
+	postBody, _ := json.Marshal(map[string]string{
+		"serviceName": service,
+		"readme":      readme,
+		"openAPIJSON": openapijson,
+	})
+	rbody := bytes.NewBuffer(postBody)
+
+	//Leverage Go's HTTP Post function to make request
+	req, err := http.NewRequest("POST", "https://api.m3o.com/explore/SaveMeta", rbody)
+
+	// Add auth headers here if needed
+	req.Header.Add("Authorization", `Bearer `+os.Getenv("MICRO_ADMIN_TOKEN"))
+	resp, err := client.Do(req)
+
+	//Handle Error
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	//Read the response body
+	//body, err := ioutil.ReadAll(resp.Body)
+	//if err != nil {
+	//	return err
+	//}
+	//sb := string(body)
+	//log.Printf(sb)
+
+	return nil
+}
 
 const (
 	postContentPath = "docs/hugo-tania/site/content/post"
@@ -92,6 +128,13 @@ func main() {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
+
+			err = saveMeta(serviceName, string(dat), string(js))
+			if err != nil {
+				fmt.Println("Failed to save meta to explore service", err)
+				os.Exit(1)
+			}
+
 			err = saveSpec(dat, contentDir, serviceName, spec)
 			if err != nil {
 				fmt.Println("Failed to save to spec file", err)
