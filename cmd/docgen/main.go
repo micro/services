@@ -36,18 +36,11 @@ func saveMeta(service, readme, openapijson string) error {
 	req.Header.Add("Authorization", `Bearer `+os.Getenv("MICRO_ADMIN_TOKEN"))
 	resp, err := client.Do(req)
 
-	//Handle Error
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	//Read the response body
-	//body, err := ioutil.ReadAll(resp.Body)
-	//if err != nil {
-	//	return err
-	//}
-	//sb := string(body)
-	//log.Printf(sb)
+	io.Copy(ioutil.Discard, resp.Body)
 
 	return nil
 }
