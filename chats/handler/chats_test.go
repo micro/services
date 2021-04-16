@@ -64,8 +64,8 @@ func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
 
 // postgres has a resolution of 100microseconds so just test that it's accurate to the second
 func microSecondTime(t *timestamp.Timestamp) time.Time {
-	tt:=t.AsTime()
-	return time.Unix(tt.Unix(), int64( tt.Nanosecond() - tt.Nanosecond() % 1000))
+	tt := t.AsTime()
+	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }
 
 func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
