@@ -1,6 +1,6 @@
 # Micro Services
 
-This repo includes reusable micro services.
+This repo includes reusable Micro services.
 
 ## Overview
 
