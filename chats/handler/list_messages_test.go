@@ -58,7 +58,7 @@ func TestListMessages(t *testing.T) {
 		}
 		expected := msgs[25:]
 		sortMessages(rsp.Messages)
-		for i, msg := range rsp.Messages {
+		for _, msg := range rsp.Messages {
 			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
 		}
 	})
@@ -77,7 +77,7 @@ func TestListMessages(t *testing.T) {
 		}
 		expected := msgs[40:]
 		sortMessages(rsp.Messages)
-		for i, msg := range rsp.Messages {
+		for _, msg := range rsp.Messages {
 			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
 		}
 	})
@@ -97,7 +97,7 @@ func TestListMessages(t *testing.T) {
 		}
 		expected := msgs[15:20]
 		sortMessages(rsp.Messages)
-		for i, msg := range rsp.Messages {
+		for _, msg := range rsp.Messages {
 			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
 		}
 	})
