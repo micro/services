@@ -109,6 +109,8 @@ func sortMessages(msgs []*pb.Message) {
 		if msgs[i].SentAt == 0 || msgs[j].SentAt == 0 {
 			return true
 		}
-		return msgs[i].SentAt < msgs[j].SentAt
+		a := time.Unix(msgs[i].SentAt, 0)
+		b := time.Unix(msgs[j].SentAt, 0)
+		return a.Before(b)
 	})
 }
