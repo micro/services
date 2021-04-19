@@ -93,7 +93,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("InvalidEmail", func(t *testing.T) {
 		var rsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, Email: "",
+			Id: cRsp1.User.Id, Email: "foo.bar",
 		}, &rsp)
 		assert.Equal(t, handler.ErrInvalidEmail, err)
 		assert.Nil(t, rsp.User)
