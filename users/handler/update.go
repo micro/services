@@ -22,22 +22,6 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 	if len(req.Id) == 0 {
 		return ErrMissingID
 	}
-	if len(req.FirstName) == 0 {
-		return ErrMissingFirstName
-	}
-	if len(req.LastName) == 0 {
-		return ErrMissingLastName
-	}
-	if len(req.Email) == 0 {
-		return ErrMissingEmail
-	}
-	if !isEmailValid(req.Email) {
-		return ErrInvalidEmail
-	}
-	if len(req.Password) < 8 {
-		return ErrInvalidEmail
-	}
-
 	// lookup the user
 	var user User
 	db, err := u.GetDBConn(ctx)
@@ -60,7 +44,13 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 		user.LastName = req.LastName
 	}
 	if req.Email != "" {
+		if !isEmailValid(req.Email) {
+			return ErrInvalidEmail
+		}
 		user.Email = strings.ToLower(req.Email)
+	}
+	if len(req.Password) < 8 {
+		return ErrInvalidPassword
 	}
 	if req.Password != "" {
 		p, err := hashAndSalt(req.Password)

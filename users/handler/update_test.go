@@ -54,42 +54,6 @@ func TestUpdate(t *testing.T) {
 		return
 	}
 
-	t.Run("BlankFirstName", func(t *testing.T) {
-		var rsp pb.UpdateResponse
-		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, FirstName: "",
-		}, &rsp)
-		assert.Equal(t, handler.ErrMissingFirstName, err)
-		assert.Nil(t, rsp.User)
-	})
-
-	t.Run("BlankLastName", func(t *testing.T) {
-		var rsp pb.UpdateResponse
-		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, LastName: "",
-		}, &rsp)
-		assert.Equal(t, handler.ErrMissingLastName, err)
-		assert.Nil(t, rsp.User)
-	})
-
-	t.Run("BlankLastName", func(t *testing.T) {
-		var rsp pb.UpdateResponse
-		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, LastName: "",
-		}, &rsp)
-		assert.Equal(t, handler.ErrMissingLastName, err)
-		assert.Nil(t, rsp.User)
-	})
-
-	t.Run("BlankEmail", func(t *testing.T) {
-		var rsp pb.UpdateResponse
-		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, Email: "",
-		}, &rsp)
-		assert.Equal(t, handler.ErrMissingEmail, err)
-		assert.Nil(t, rsp.User)
-	})
-
 	t.Run("InvalidEmail", func(t *testing.T) {
 		var rsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
