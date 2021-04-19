@@ -36,6 +36,7 @@ func TestListMessages(t *testing.T) {
 		}, &rsp)
 		assert.NoError(t, err)
 		msgs[i] = rsp.Message
+		time.Sleep(time.Millisecond * 100)
 	}
 
 	t.Run("MissingConversationID", func(t *testing.T) {
