@@ -24,7 +24,7 @@ func (c *Codes) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 
 	// construct the code
 	code := Code{Code: generateCode(), Identity: req.Identity}
-	if req.ExpiresAt == 0 {
+	if req.ExpiresAt > 0 {
 		code.ExpiresAt = time.Unix(req.ExpiresAt, 0)
 	} else {
 		code.ExpiresAt = c.Time().Add(DefaultTTL)
