@@ -223,13 +223,13 @@ func TestRead(t *testing.T) {
 	assert.Len(t, rsp.Timestamps, 2)
 
 	if v := rsp.Timestamps["message-1"]; v != 0 {
-		assert.Equal(t, microSecondTime(time.Unix(v, 0)), microSecondTime(tn))
+		assert.Equal(t, v, tn.Unix())
 	} else {
 		t.Errorf("Expected a timestamp for message-1")
 	}
 
 	if v := rsp.Timestamps["message-2"]; v != 0 {
-		assert.Equal(t, microSecondTime(time.Unix(v, 0)), microSecondTime(tn.Add(time.Minute*-10).UTC()))
+		assert.Equal(t, v, tn.Add(time.Minute*-10).Unix())
 	} else {
 		t.Errorf("Expected a timestamp for message-2")
 	}
