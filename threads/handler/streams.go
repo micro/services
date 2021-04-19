@@ -6,7 +6,6 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	pb "github.com/micro/services/threads/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -39,7 +38,7 @@ func (m *Message) Serialize() *pb.Message {
 		AuthorId:       m.AuthorID,
 		ConversationId: m.ConversationID,
 		Text:           m.Text,
-		SentAt:         timestamppb.New(m.SentAt),
+		SentAt:         m.SentAt.Unix(),
 	}
 }
 
@@ -55,6 +54,6 @@ func (c *Conversation) Serialize() *pb.Conversation {
 		Id:        c.ID,
 		GroupId:   c.GroupID,
 		Topic:     c.Topic,
-		CreatedAt: timestamppb.New(c.CreatedAt),
+		CreatedAt: c.CreatedAt.Unix(),
 	}
 }

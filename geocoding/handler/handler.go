@@ -42,16 +42,16 @@ func (g *Geocoding) Geocode(ctx context.Context, req *pb.Address, rsp *pb.Addres
 // Reverse geocode an address
 func (g *Geocoding) Reverse(ctx context.Context, req *pb.Coordinates, rsp *pb.Address) error {
 	// validate the request
-	if req.Latitude == nil {
+	if req.Latitude == 0.0 {
 		return ErrMissingLatitude
 	}
-	if req.Longitude == nil {
+	if req.Longitude == 0.0 {
 		return ErrMissingLongitude
 	}
 
 	// query google maps
 	results, err := g.Maps.ReverseGeocode(ctx, &maps.GeocodingRequest{
-		LatLng: &maps.LatLng{Lat: req.Latitude.Value, Lng: req.Longitude.Value},
+		LatLng: &maps.LatLng{Lat: req.Latitude, Lng: req.Longitude},
 	})
 	if err != nil {
 		logger.Errorf("Error geocoding: %v", err)

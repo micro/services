@@ -7,8 +7,6 @@ import (
 
 	"github.com/google/uuid"
 	geo "github.com/hailocab/go-geoindex"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"gorm.io/gorm"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -42,10 +40,10 @@ func (l *Places) Save(ctx context.Context, req *pb.SaveRequest, rsp *pb.SaveResp
 		return ErrMissingPlaces
 	}
 	for _, l := range req.Places {
-		if l.Latitude == nil {
+		if l.Latitude == 0.0 {
 			return ErrMissingLatitude
 		}
-		if l.Longitude == nil {
+		if l.Longitude == 0.0 {
 			return ErrMissingLongitude
 		}
 		if len(l.Id) == 0 {
@@ -59,11 +57,11 @@ func (l *Places) Save(ctx context.Context, req *pb.SaveRequest, rsp *pb.SaveResp
 		loc := &model.Location{
 			ID:        uuid.New().String(),
 			PlaceID:   lc.Id,
-			Latitude:  lc.Latitude.Value,
-			Longitude: lc.Longitude.Value,
+			Latitude:  lc.Latitude,
+			Longitude: lc.Longitude,
 		}
-		if lc.Timestamp != nil {
-			loc.Timestamp = lc.Timestamp.AsTime()
+		if lc.Timestamp != 0 {
+			loc.Timestamp = time.Unix(lc.Timestamp, 0)
 		} else {
 			loc.Timestamp = time.Now()
 		}
@@ -108,20 +106,20 @@ func (l *Places) Last(ctx context.Context, req *pb.LastRequest, rsp *pb.ListResp
 // Near returns the places near a point
 func (l *Places) Near(ctx context.Context, req *pb.NearRequest, rsp *pb.ListResponse) error {
 	// validate the request
-	if req.Latitude == nil {
+	if req.Latitude == 0.0 {
 		return ErrMissingLatitude
 	}
-	if req.Longitude == nil {
+	if req.Longitude == 0.0 {
 		return ErrMissingLongitude
 	}
-	if req.Radius == nil {
+	if req.Radius == 0.0 {
 		return ErrMissingRadius
 	}
 
 	// query the geoindex
 	l.RLock()
-	p := geo.NewGeoPoint("query", req.Latitude.Value, req.Longitude.Value)
-	result := l.Geoindex.PointsWithin(p, geo.Km(req.Radius.Value), func(p geo.Point) bool {
+	p := geo.NewGeoPoint("query", req.Latitude, req.Longitude)
+	result := l.Geoindex.PointsWithin(p, geo.Km(req.Radius), func(p geo.Point) bool {
 		return true
 	})
 	l.RUnlock()
@@ -141,17 +139,19 @@ func (l *Places) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ListResp
 	if len(req.Ids) == 0 {
 		return ErrMissingIDs
 	}
-	if req.Before == nil {
+	if req.Before == 0 {
 		return ErrMissingBefore
 	}
-	if req.After == nil {
+	if req.After == 0 {
 		return ErrMissingAfter
 	}
 
 	// construct the request
+	before := time.Unix(req.Before, 0)
+	after := time.Unix(req.After, 0)
 	q := l.DB.Model(&model.Location{})
 	q = q.Order("timestamp ASC")
-	q = q.Where("place_id IN (?) AND timestamp > ? AND timestamp < ?", req.Ids, req.After.AsTime(), req.Before.AsTime())
+	q = q.Where("place_id IN (?) AND timestamp > ? AND timestamp < ?", req.Ids, after, before)
 	var locs []*model.Location
 	if err := q.Find(&locs).Error; err != nil {
 		logger.Errorf("Error reading from the database: %v", err)
@@ -168,9 +168,9 @@ func serializePlaces(locs []*model.Location) []*pb.Location {
 	for i, l := range locs {
 		rsp[i] = &pb.Location{
 			Id:        l.PlaceID,
-			Latitude:  &wrapperspb.DoubleValue{Value: l.Latitude},
-			Longitude: &wrapperspb.DoubleValue{Value: l.Longitude},
-			Timestamp: timestamppb.New(l.Timestamp),
+			Latitude:  l.Latitude,
+			Longitude: l.Longitude,
+			Timestamp: l.Timestamp.Unix(),
 		}
 	}
 	return rsp

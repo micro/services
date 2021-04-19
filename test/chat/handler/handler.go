@@ -12,7 +12,6 @@ import (
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	// it's standard to import the services own proto under the alias pb
 	pb "github.com/micro/services/test/chat/proto"
@@ -158,7 +157,7 @@ func (c *Chat) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespon
 		UserId:   req.UserId,
 		Subject:  req.Subject,
 		Text:     req.Text,
-		SentAt:   timestamppb.New(time.Now()),
+		SentAt:   time.Now().Unix(),
 	}
 
 	// default the client id if not provided

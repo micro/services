@@ -24,8 +24,8 @@ func (s *Threads) ReadConversation(ctx context.Context, req *pb.ReadConversation
 
 	// construct the query
 	q := Conversation{ID: req.Id}
-	if req.GroupId != nil {
-		q.GroupID = req.GroupId.Value
+	if req.GroupId != "" {
+		q.GroupID = req.GroupId
 	}
 
 	db, err := s.GetDBConn(ctx)

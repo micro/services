@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
@@ -53,7 +52,7 @@ func assertConversationsMatch(t *testing.T, exp, act *pb.Conversation) {
 	assert.Equal(t, exp.Topic, act.Topic)
 	assert.Equal(t, exp.GroupId, act.GroupId)
 
-	if act.CreatedAt == nil {
+	if act.CreatedAt == 0 {
 		t.Errorf("CreatedAt not set")
 		return
 	}
@@ -79,7 +78,7 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 	assert.Equal(t, exp.AuthorId, act.AuthorId)
 	assert.Equal(t, exp.ConversationId, act.ConversationId)
 
-	if act.SentAt == nil {
+	if act.SentAt == 0 {
 		t.Errorf("SentAt not set")
 		return
 	}
@@ -88,9 +87,9 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 }
 
 // postgres has a resolution of 100microseconds so just test that it's accurate to the second
-func microSecondTime(t *timestamp.Timestamp) time.Time {
-	tt := t.AsTime()
-	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
+func microSecondTime(t int64) time.Time {
+	tt := time.Unix(t, 0)
+	return time.Unix(t, int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }
 
 func microAccountCtx() context.Context {

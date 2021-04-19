@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package users;
 option go_package = "./proto;users";
-import "google/protobuf/wrappers.proto";
 
 service Users {
 	rpc Create(CreateRequest) returns (CreateResponse) {}
@@ -57,10 +56,10 @@ message ReadByEmailResponse {
 
 message UpdateRequest {
 	string id = 1;
-	google.protobuf.StringValue first_name = 2;
-	google.protobuf.StringValue last_name = 3;
-	google.protobuf.StringValue email = 4;
-	google.protobuf.StringValue password = 5;
+	string first_name = 2;
+	string last_name = 3;
+	string email = 4;
+	string password = 5;
 }
 
 message UpdateResponse {

@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package threads;
 option go_package = "./proto;threads";
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
 
 service Threads {
 	// Create a conversation
@@ -31,7 +29,7 @@ message Conversation {
 	string id = 1;
 	string group_id = 2;
 	string topic = 3;
-	google.protobuf.Timestamp created_at = 4;
+	int64 created_at = 4;
 }
 
 message Message {
@@ -39,7 +37,7 @@ message Message {
 	string author_id = 2;
 	string conversation_id = 3;
 	string text = 4;
-	google.protobuf.Timestamp sent_at = 5;
+	int64 sent_at = 5;
 }
 
 message CreateConversationRequest {
@@ -53,7 +51,7 @@ message CreateConversationResponse {
 
 message ReadConversationRequest {
 	string id = 1;
-	google.protobuf.StringValue group_id = 2;
+	string group_id = 2;
 }
 
 message ReadConversationResponse {
@@ -96,8 +94,8 @@ message CreateMessageResponse {
 
 message ListMessagesRequest {
 	string conversation_id = 1;
-	google.protobuf.Timestamp sent_before = 2;
-	google.protobuf.Int32Value limit = 3;
+	int64 sent_before = 2;
+	int32 limit = 3;
 }
 
 message ListMessagesResponse {
@@ -106,7 +104,7 @@ message ListMessagesResponse {
 
 message RecentMessagesRequest {
 	repeated string conversation_ids = 1;
-	google.protobuf.Int32Value limit_per_conversation = 2;
+	int32 limit_per_conversation = 2;
 }
 
 message RecentMessagesResponse {

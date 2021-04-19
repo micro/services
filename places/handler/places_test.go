@@ -7,12 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/uuid"
 	geo "github.com/hailocab/go-geoindex"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -59,7 +56,7 @@ func TestSave(t *testing.T) {
 			Name: "NoLatitude",
 			Places: []*pb.Location{
 				{
-					Longitude: &wrapperspb.DoubleValue{Value: -0.1246},
+					Longitude: -0.1246,
 					Id:        uuid.New().String(),
 				},
 			},
@@ -69,7 +66,7 @@ func TestSave(t *testing.T) {
 			Name: "NoLongitude",
 			Places: []*pb.Location{
 				{
-					Latitude: &wrapperspb.DoubleValue{Value: -0.1246},
+					Latitude: -0.1246,
 					Id:       uuid.New().String(),
 				},
 			},
@@ -79,9 +76,9 @@ func TestSave(t *testing.T) {
 			Name: "OneLocation",
 			Places: []*pb.Location{
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
-					Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
-					Timestamp: timestamppb.New(time.Now()),
+					Latitude:  51.5007,
+					Longitude: 0.1246,
+					Timestamp: time.Now().Unix(),
 					Id:        uuid.New().String(),
 				},
 			},
@@ -90,14 +87,14 @@ func TestSave(t *testing.T) {
 			Name: "ManyPlaces",
 			Places: []*pb.Location{
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
-					Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
-					Timestamp: timestamppb.New(time.Now()),
+					Latitude:  51.5007,
+					Longitude: 0.1246,
+					Timestamp: time.Now().Unix(),
 					Id:        uuid.New().String(),
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: 51.003},
-					Longitude: &wrapperspb.DoubleValue{Value: -0.1246},
+					Latitude:  51.003,
+					Longitude: -0.1246,
 					Id:        uuid.New().String(),
 				},
 			},
@@ -136,21 +133,21 @@ func TestLast(t *testing.T) {
 
 	// generate some example data to work with
 	loc1 := &pb.Location{
-		Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
-		Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
-		Timestamp: timestamppb.New(tn),
+		Latitude:  51.5007,
+		Longitude: 0.1246,
+		Timestamp: tn.Unix(),
 		Id:        "a",
 	}
 	loc2 := &pb.Location{
-		Latitude:  &wrapperspb.DoubleValue{Value: 51.6007},
-		Longitude: &wrapperspb.DoubleValue{Value: 0.1546},
-		Timestamp: timestamppb.New(tn.Add(1 * time.Microsecond)),
+		Latitude:  51.6007,
+		Longitude: 0.1546,
+		Timestamp: tn.Add(1 * time.Microsecond).Unix(),
 		Id:        "b",
 	}
 	loc3 := &pb.Location{
-		Latitude:  &wrapperspb.DoubleValue{Value: 52.6007},
-		Longitude: &wrapperspb.DoubleValue{Value: 0.2546},
-		Timestamp: timestamppb.New(tn.Add(2 * time.Microsecond)),
+		Latitude:  52.6007,
+		Longitude: 0.2546,
+		Timestamp: tn.Add(2 * time.Microsecond).Unix(),
 		Id:        loc2.Id,
 	}
 	err := h.Save(context.TODO(), &pb.SaveRequest{
@@ -169,8 +166,8 @@ func TestLast(t *testing.T) {
 			t.Fatalf("One location should be returned")
 		}
 		assert.Equal(t, loc3.Id, rsp.Places[0].Id)
-		assert.Equal(t, loc3.Latitude.Value, rsp.Places[0].Latitude.Value)
-		assert.Equal(t, loc3.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc3.Latitude, rsp.Places[0].Latitude)
+		assert.Equal(t, loc3.Longitude, rsp.Places[0].Longitude)
 		assert.Equal(t, microSecondTime(loc3.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 	})
 
@@ -191,35 +188,35 @@ func TestLast(t *testing.T) {
 		})
 
 		assert.Equal(t, loc1.Id, rsp.Places[1].Id)
-		assert.Equal(t, loc1.Latitude.Value, rsp.Places[1].Latitude.Value)
-		assert.Equal(t, loc1.Longitude.Value, rsp.Places[1].Longitude.Value)
+		assert.Equal(t, loc1.Latitude, rsp.Places[1].Latitude)
+		assert.Equal(t, loc1.Longitude, rsp.Places[1].Longitude)
 		assert.Equal(t, microSecondTime(loc1.Timestamp), microSecondTime(rsp.Places[1].Timestamp))
 
 		assert.Equal(t, loc3.Id, rsp.Places[0].Id)
-		assert.Equal(t, loc3.Latitude.Value, rsp.Places[0].Latitude.Value)
-		assert.Equal(t, loc3.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc3.Latitude, rsp.Places[0].Latitude)
+		assert.Equal(t, loc3.Longitude, rsp.Places[0].Longitude)
 		assert.Equal(t, microSecondTime(loc3.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 	})
 }
 
 func TestNear(t *testing.T) {
-	lat := &wrapperspb.DoubleValue{Value: 51.510357}
-	lng := &wrapperspb.DoubleValue{Value: -0.116773}
-	rad := &wrapperspb.DoubleValue{Value: 2.0}
+	lat := 51.510357
+	lng := -0.116773
+	rad := 2.0
 
-	inBoundsLat := &wrapperspb.DoubleValue{Value: 51.5110}
-	inBoundsLng := &wrapperspb.DoubleValue{Value: -0.1142}
+	inBoundsLat := 51.5110
+	inBoundsLng := -0.1142
 
-	outOfBoundsLat := &wrapperspb.DoubleValue{Value: 51.5415}
-	outOfBoundsLng := &wrapperspb.DoubleValue{Value: -0.0028}
+	outOfBoundsLat := 51.5415
+	outOfBoundsLng := -0.0028
 
 	tt := []struct {
 		Name           string
 		Places         []*pb.Location
 		Results        []*pb.Location
-		QueryLatitude  *wrapperspb.DoubleValue
-		QueryLongitude *wrapperspb.DoubleValue
-		QueryRadius    *wrapperspb.DoubleValue
+		QueryLatitude  float64
+		QueryLongitude float64
+		QueryRadius    float64
 		Error          error
 	}{
 		{
@@ -275,7 +272,7 @@ func TestNear(t *testing.T) {
 			Name:           "NoneWithinRadius",
 			QueryLatitude:  lat,
 			QueryLongitude: lng,
-			QueryRadius:    &wrapperspb.DoubleValue{Value: 0.01},
+			QueryRadius:    0.01,
 			Places: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
@@ -328,7 +325,7 @@ func TestNear(t *testing.T) {
 			Name:           "ManyWithinRadius",
 			QueryLatitude:  lat,
 			QueryLongitude: lng,
-			QueryRadius:    &wrapperspb.DoubleValue{Value: 20},
+			QueryRadius:    20,
 			Places: []*pb.Location{
 				&pb.Location{
 					Latitude:  inBoundsLat,
@@ -390,8 +387,8 @@ func TestNear(t *testing.T) {
 			for i, r := range tc.Results {
 				l := rsp.Places[i]
 				assert.Equal(t, r.Id, l.Id)
-				assert.Equal(t, r.Latitude.Value, l.Latitude.Value)
-				assert.Equal(t, r.Longitude.Value, l.Longitude.Value)
+				assert.Equal(t, r.Latitude, l.Latitude)
+				assert.Equal(t, r.Longitude, l.Longitude)
 			}
 		})
 	}
@@ -404,8 +401,8 @@ func TestRead(t *testing.T) {
 
 	t.Run("MissingIDs", func(t *testing.T) {
 		err := h.Read(context.Background(), &pb.ReadRequest{
-			After:  timestamppb.New(baseTime),
-			Before: timestamppb.New(baseTime),
+			After:  baseTime.Unix(),
+			Before: baseTime.Unix(),
 		}, &pb.ListResponse{})
 		assert.Equal(t, handler.ErrMissingIDs, err)
 	})
@@ -413,7 +410,7 @@ func TestRead(t *testing.T) {
 	t.Run("MissingAfter", func(t *testing.T) {
 		err := h.Read(context.Background(), &pb.ReadRequest{
 			Ids:    []string{uuid.New().String()},
-			Before: timestamppb.New(baseTime),
+			Before: baseTime.Unix(),
 		}, &pb.ListResponse{})
 		assert.Equal(t, handler.ErrMissingAfter, err)
 	})
@@ -421,28 +418,28 @@ func TestRead(t *testing.T) {
 	t.Run("MissingBefore", func(t *testing.T) {
 		err := h.Read(context.Background(), &pb.ReadRequest{
 			Ids:   []string{uuid.New().String()},
-			After: timestamppb.New(baseTime),
+			After: baseTime.Unix(),
 		}, &pb.ListResponse{})
 		assert.Equal(t, handler.ErrMissingBefore, err)
 	})
 
 	// generate some example data to work with
 	loc1 := &pb.Location{
-		Latitude:  &wrapperspb.DoubleValue{Value: 51.5007},
-		Longitude: &wrapperspb.DoubleValue{Value: 0.1246},
-		Timestamp: timestamppb.New(baseTime.Add(time.Minute * 10)),
+		Latitude:  51.5007,
+		Longitude: 0.1246,
+		Timestamp: baseTime.Add(time.Minute * 10).Unix(),
 		Id:        "a",
 	}
 	loc2 := &pb.Location{
-		Latitude:  &wrapperspb.DoubleValue{Value: 51.6007},
-		Longitude: &wrapperspb.DoubleValue{Value: 0.1546},
-		Timestamp: timestamppb.New(baseTime.Add(time.Minute * 20)),
+		Latitude:  51.6007,
+		Longitude: 0.1546,
+		Timestamp: baseTime.Add(time.Minute * 20).Unix(),
 		Id:        "b",
 	}
 	loc3 := &pb.Location{
-		Latitude:  &wrapperspb.DoubleValue{Value: 52.6007},
-		Longitude: &wrapperspb.DoubleValue{Value: 0.2546},
-		Timestamp: timestamppb.New(baseTime.Add(time.Minute * 40)),
+		Latitude:  52.6007,
+		Longitude: 0.2546,
+		Timestamp: baseTime.Add(time.Minute * 40).Unix(),
 		Id:        loc2.Id,
 	}
 	err := h.Save(context.TODO(), &pb.SaveRequest{
@@ -454,8 +451,8 @@ func TestRead(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Read(context.Background(), &pb.ReadRequest{
 			Ids:    []string{uuid.New().String()},
-			After:  timestamppb.New(baseTime),
-			Before: timestamppb.New(baseTime.Add(time.Hour)),
+			After:  baseTime.Unix(),
+			Before: baseTime.Add(time.Hour).Unix(),
 		}, &rsp)
 		assert.NoError(t, err)
 		assert.Empty(t, rsp.Places)
@@ -465,8 +462,8 @@ func TestRead(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Read(context.Background(), &pb.ReadRequest{
 			Ids:    []string{loc2.Id},
-			After:  timestamppb.New(baseTime),
-			Before: timestamppb.New(baseTime.Add(time.Hour)),
+			After:  baseTime.Unix(),
+			Before: baseTime.Add(time.Hour).Unix(),
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -474,13 +471,13 @@ func TestRead(t *testing.T) {
 			t.Fatalf("Two places should be returned")
 		}
 		assert.Equal(t, loc2.Id, rsp.Places[0].Id)
-		assert.Equal(t, loc2.Latitude.Value, rsp.Places[0].Latitude.Value)
-		assert.Equal(t, loc2.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc2.Latitude, rsp.Places[0].Latitude)
+		assert.Equal(t, loc2.Longitude, rsp.Places[0].Longitude)
 		assert.Equal(t, microSecondTime(loc2.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 
 		assert.Equal(t, loc3.Id, rsp.Places[1].Id)
-		assert.Equal(t, loc3.Latitude.Value, rsp.Places[1].Latitude.Value)
-		assert.Equal(t, loc3.Longitude.Value, rsp.Places[1].Longitude.Value)
+		assert.Equal(t, loc3.Latitude, rsp.Places[1].Latitude)
+		assert.Equal(t, loc3.Longitude, rsp.Places[1].Longitude)
 		assert.Equal(t, microSecondTime(loc3.Timestamp), microSecondTime(rsp.Places[1].Timestamp))
 	})
 
@@ -488,8 +485,8 @@ func TestRead(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Read(context.Background(), &pb.ReadRequest{
 			Ids:    []string{loc2.Id},
-			After:  timestamppb.New(baseTime),
-			Before: timestamppb.New(baseTime.Add(time.Minute * 30)),
+			After:  baseTime.Unix(),
+			Before: baseTime.Add(time.Minute * 30).Unix(),
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -497,8 +494,8 @@ func TestRead(t *testing.T) {
 			t.Fatalf("One location should be returned")
 		}
 		assert.Equal(t, loc2.Id, rsp.Places[0].Id)
-		assert.Equal(t, loc2.Latitude.Value, rsp.Places[0].Latitude.Value)
-		assert.Equal(t, loc2.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc2.Latitude, rsp.Places[0].Latitude)
+		assert.Equal(t, loc2.Longitude, rsp.Places[0].Longitude)
 		assert.Equal(t, microSecondTime(loc2.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 	})
 
@@ -506,8 +503,8 @@ func TestRead(t *testing.T) {
 		var rsp pb.ListResponse
 		err := h.Read(context.Background(), &pb.ReadRequest{
 			Ids:    []string{loc1.Id, loc2.Id},
-			After:  timestamppb.New(baseTime),
-			Before: timestamppb.New(baseTime.Add(time.Minute * 30)),
+			After:  baseTime.Unix(),
+			Before: baseTime.Add(time.Minute * 30).Unix(),
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -515,19 +512,19 @@ func TestRead(t *testing.T) {
 			t.Fatalf("Two places should be returned")
 		}
 		assert.Equal(t, loc1.Id, rsp.Places[0].Id)
-		assert.Equal(t, loc1.Latitude.Value, rsp.Places[0].Latitude.Value)
-		assert.Equal(t, loc1.Longitude.Value, rsp.Places[0].Longitude.Value)
+		assert.Equal(t, loc1.Latitude, rsp.Places[0].Latitude)
+		assert.Equal(t, loc1.Longitude, rsp.Places[0].Longitude)
 		assert.Equal(t, microSecondTime(loc1.Timestamp), microSecondTime(rsp.Places[0].Timestamp))
 
 		assert.Equal(t, loc2.Id, rsp.Places[1].Id)
-		assert.Equal(t, loc2.Latitude.Value, rsp.Places[1].Latitude.Value)
-		assert.Equal(t, loc2.Longitude.Value, rsp.Places[1].Longitude.Value)
+		assert.Equal(t, loc2.Latitude, rsp.Places[1].Latitude)
+		assert.Equal(t, loc2.Longitude, rsp.Places[1].Longitude)
 		assert.Equal(t, microSecondTime(loc2.Timestamp), microSecondTime(rsp.Places[1].Timestamp))
 	})
 }
 
 // postgres has a resolution of 100microseconds so just test that it's accurate to the second
-func microSecondTime(t *timestamp.Timestamp) time.Time {
-	tt := t.AsTime()
-	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
+func microSecondTime(t int64) time.Time {
+	tt := time.Unix(t, 0)
+	return time.Unix(t, int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }

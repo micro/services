@@ -6,7 +6,6 @@ package codes
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	math "math"
 )
 

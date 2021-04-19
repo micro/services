@@ -95,10 +95,10 @@ func (i *Invites) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRes
 	}
 	// validate the request
 	var query Invite
-	if req.Id != nil {
-		query.ID = req.Id.Value
-	} else if req.Code != nil {
-		query.Code = req.Code.Value
+	if req.Id != "" {
+		query.ID = req.Id
+	} else if req.Code != "" {
+		query.Code = req.Code
 	} else {
 		return ErrMissingIDAndCode
 	}
@@ -129,17 +129,17 @@ func (i *Invites) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRes
 		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
 	}
 	// validate the request
-	if req.Email == nil && req.GroupId == nil {
+	if req.Email == "" && req.GroupId == "" {
 		return ErrMissingGroupIDAndEmail
 	}
 
 	// construct the query
 	var query Invite
-	if req.GroupId != nil {
-		query.GroupID = req.GroupId.Value
+	if req.GroupId != "" {
+		query.GroupID = req.GroupId
 	}
-	if req.Email != nil {
-		query.Email = strings.ToLower(req.Email.Value)
+	if req.Email != "" {
+		query.Email = strings.ToLower(req.Email)
 	}
 
 	db, err := i.GetDBConn(ctx)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
@@ -23,8 +24,8 @@ func (c *Codes) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 
 	// construct the code
 	code := Code{Code: generateCode(), Identity: req.Identity}
-	if req.ExpiresAt != nil {
-		code.ExpiresAt = req.ExpiresAt.AsTime()
+	if req.ExpiresAt == 0 {
+		code.ExpiresAt = time.Unix(req.ExpiresAt, 0)
 	} else {
 		code.ExpiresAt = c.Time().Add(DefaultTTL)
 	}

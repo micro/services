@@ -24,8 +24,8 @@ func (s *Threads) RecentMessages(ctx context.Context, req *pb.RecentMessagesRequ
 	}
 
 	limit := DefaultLimit
-	if req.LimitPerConversation != nil {
-		limit = int(req.LimitPerConversation.Value)
+	if req.LimitPerConversation > 0 {
+		limit = int(req.LimitPerConversation)
 	}
 
 	db, err := s.GetDBConn(ctx)

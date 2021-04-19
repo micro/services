@@ -5,7 +5,6 @@ import (
 
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -100,7 +99,7 @@ func TestCreateMessage(t *testing.T) {
 				Id:             tc.ID,
 				AuthorId:       tc.AuthorID,
 				ConversationId: tc.ConversationID,
-				SentAt:         timestamppb.New(h.Time()),
+				SentAt:         h.Time().Unix(),
 				Text:           tc.Text,
 			}, rsp.Message)
 		})

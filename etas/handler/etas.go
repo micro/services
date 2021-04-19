@@ -8,7 +8,6 @@ import (
 	pb "etas/proto"
 
 	"github.com/micro/micro/v3/service/errors"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"googlemaps.github.io/maps"
 )
 
@@ -40,8 +39,8 @@ func (e *ETAs) Calculate(ctx context.Context, req *pb.Route, rsp *pb.Response) e
 		destinations[i] = pointToCoords(p)
 	}
 	departureTime := "now"
-	if req.StartTime != nil {
-		departureTime = req.StartTime.String()
+	if req.StartTime > 0 {
+		departureTime = time.Unix(req.StartTime, 0).String()
 	}
 	resp, err := e.Maps.DistanceMatrix(ctx, &maps.DistanceMatrixRequest{
 		Origins:       []string{pointToCoords(req.Pickup)},
@@ -62,8 +61,8 @@ func (e *ETAs) Calculate(ctx context.Context, req *pb.Route, rsp *pb.Response) e
 
 	// calculate the response
 	currentTime := time.Now()
-	if req.StartTime != nil {
-		currentTime = req.StartTime.AsTime()
+	if req.StartTime > 0 {
+		currentTime = time.Unix(req.StartTime, 0)
 	}
 	rsp.Points = make(map[string]*pb.ETA, len(req.Waypoints)+1)
 	for i, p := range append([]*pb.Point{req.Pickup}, req.Waypoints...) {
@@ -74,8 +73,8 @@ func (e *ETAs) Calculate(ctx context.Context, req *pb.Route, rsp *pb.Response) e
 		et := at.Add(time.Minute * time.Duration(p.WaitTime))
 
 		rsp.Points[p.Id] = &pb.ETA{
-			EstimatedArrivalTime:   timestamppb.New(at),
-			EstimatedDepartureTime: timestamppb.New(et),
+			EstimatedArrivalTime:   at.Unix(),
+			EstimatedDepartureTime: et.Unix(),
 		}
 
 		currentTime = et

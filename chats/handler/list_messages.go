@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"time"
 
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
@@ -30,11 +31,11 @@ func (c *Chats) ListMessages(ctx context.Context, req *pb.ListMessagesRequest, r
 	}
 	// construct the query
 	q := db.Where(&Message{ChatID: req.ChatId}).Order("sent_at DESC")
-	if req.SentBefore != nil {
-		q = q.Where("sent_at < ?", req.SentBefore.AsTime())
+	if req.SentBefore > 0 {
+		q = q.Where("sent_at < ?", time.Unix(req.SentBefore, 0))
 	}
-	if req.Limit != nil {
-		q.Limit(int(req.Limit.Value))
+	if req.Limit > 0 {
+		q.Limit(int(req.Limit))
 	} else {
 		q.Limit(DefaultLimit)
 	}

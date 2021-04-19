@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"googlemaps.github.io/maps"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -63,23 +62,23 @@ func (r *Routing) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.Route
 	rsp.Waypoints = make([]*pb.Point, len(points))
 	for i, p := range points {
 		rsp.Waypoints[i] = &pb.Point{
-			Latitude:  &wrapperspb.DoubleValue{Value: p.Lat},
-			Longitude: &wrapperspb.DoubleValue{Value: p.Lng},
+			Latitude:  p.Lat,
+			Longitude: p.Lng,
 		}
 	}
 	return nil
 }
 
 func validatePoint(p *pb.Point) error {
-	if p.Latitude == nil {
+	if p.Latitude == 0.0 {
 		return ErrMissingLatitude
 	}
-	if p.Longitude == nil {
+	if p.Longitude == 0.0 {
 		return ErrMissingLongitude
 	}
 	return nil
 }
 
 func pointToString(p *pb.Point) string {
-	return fmt.Sprintf("%v,%v", p.Latitude.Value, p.Longitude.Value)
+	return fmt.Sprintf("%v,%v", p.Latitude, p.Longitude)
 }

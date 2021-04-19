@@ -1,8 +1,7 @@
 syntax = "proto3";
 
 package chat;
-option go_package = "proto;chat";
-import "google/protobuf/timestamp.proto";
+option go_package = "./proto;chat";
 
 service Chat {
   // New creates a chat for a group of users. The RPC is idempotent so if it's called multiple times
@@ -72,7 +71,7 @@ message Message {
   // id of the user who sent the message
   string user_id = 4;
   // time time the message was sent in unix format 
-  google.protobuf.Timestamp sent_at = 5;
+  int64 sent_at = 5;
   // subject of the message
   string subject = 6;
   // text of the message

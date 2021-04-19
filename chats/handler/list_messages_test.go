@@ -10,7 +10,6 @@ import (
 	"github.com/micro/services/chats/handler"
 	pb "github.com/micro/services/chats/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestListMessages(t *testing.T) {
@@ -68,7 +67,7 @@ func TestListMessages(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
 			ChatId: chatRsp.Chat.Id,
-			Limit:  &wrapperspb.Int32Value{Value: 10},
+			Limit:  int32(10),
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -87,7 +86,7 @@ func TestListMessages(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
 			ChatId:     chatRsp.Chat.Id,
-			Limit:      &wrapperspb.Int32Value{Value: 5},
+			Limit:      int32(5),
 			SentBefore: msgs[20].SentAt,
 		}, &rsp)
 		assert.NoError(t, err)
@@ -107,9 +106,12 @@ func TestListMessages(t *testing.T) {
 // sortMessages by the time they were sent
 func sortMessages(msgs []*pb.Message) {
 	sort.Slice(msgs, func(i, j int) bool {
-		if msgs[i].SentAt == nil || msgs[j].SentAt == nil {
+		if msgs[i].SentAt == 0 || msgs[j].SentAt == 0 {
 			return true
 		}
-		return msgs[i].SentAt.AsTime().Before(msgs[j].SentAt.AsTime())
+		ti := time.Unix(msgs[i].SentAt, 0)
+		tj := time.Unix(msgs[j].SentAt, 0)
+
+		return ti.Before(tj)
 	})
 }

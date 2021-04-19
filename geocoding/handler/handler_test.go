@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"googlemaps.github.io/maps"
 
 	"github.com/micro/services/geocoding/handler"
@@ -171,34 +170,34 @@ func TestReverseGeocoding(t *testing.T) {
 		ResponseBody string
 		ResponseCode int
 		Error        error
-		Latitude     *wrapperspb.DoubleValue
-		Longitude    *wrapperspb.DoubleValue
+		Latitude     float64
+		Longitude    float64
 		Result       *pb.Address
 	}{
 		{
 			Name:     "Missing longitude",
-			Latitude: &wrapperspb.DoubleValue{Value: 51.522214},
+			Latitude: 51.522214,
 			Error:    handler.ErrMissingLongitude,
 		},
 		{
 			Name:      "Missing latitude",
-			Longitude: &wrapperspb.DoubleValue{Value: -0.113565},
+			Longitude: -0.113565,
 			Error:     handler.ErrMissingLatitude,
 		},
 		{
 			Name:         "Invalid address",
 			ResponseBody: noResultsReponse,
 			ResponseCode: http.StatusOK,
-			Latitude:     &wrapperspb.DoubleValue{Value: 999.999999},
-			Longitude:    &wrapperspb.DoubleValue{Value: 999.999999},
+			Latitude:     999.999999,
+			Longitude:    999.999999,
 			Error:        handler.ErrNoResults,
 		},
 		{
 			Name:         "Valid address",
 			ResponseBody: validReponse,
 			ResponseCode: http.StatusOK,
-			Latitude:     &wrapperspb.DoubleValue{Value: 51.522214},
-			Longitude:    &wrapperspb.DoubleValue{Value: -0.113565},
+			Latitude:     51.522214,
+			Longitude:    -0.113565,
 			Result: &pb.Address{
 				LineOne:  "160 Grays Inn Road",
 				LineTwo:  "Holborn",
@@ -208,8 +207,8 @@ func TestReverseGeocoding(t *testing.T) {
 		},
 		{
 			Name:         "Maps error",
-			Latitude:     &wrapperspb.DoubleValue{Value: 51.522214},
-			Longitude:    &wrapperspb.DoubleValue{Value: -0.113565},
+			Latitude:     51.522214,
+			Longitude:    -0.113565,
 			ResponseCode: http.StatusInternalServerError,
 			Error:        handler.ErrDownstream,
 			ResponseBody: "{}",
@@ -243,9 +242,9 @@ func TestReverseGeocoding(t *testing.T) {
 			}, &rsp)
 			assert.Equal(t, tc.Error, err)
 
-			if tc.Latitude != nil && tc.Longitude != nil {
-				assert.Equal(t, fmt.Sprintf("%f", tc.Latitude.Value), lat)
-				assert.Equal(t, fmt.Sprintf("%f", tc.Longitude.Value), lng)
+			if tc.Latitude != 0.0 && tc.Longitude != 0.0 {
+				assert.Equal(t, fmt.Sprintf("%f", tc.Latitude), lat)
+				assert.Equal(t, fmt.Sprintf("%f", tc.Longitude), lng)
 			}
 
 			if tc.Result != nil {

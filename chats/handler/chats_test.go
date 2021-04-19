@@ -11,8 +11,6 @@ import (
 	"github.com/micro/services/chats/handler"
 	pb "github.com/micro/services/chats/proto"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
 func testHandler(t *testing.T) *handler.Chats {
@@ -52,7 +50,7 @@ func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
 
 	assert.Equal(t, exp.UserIds, act.UserIds)
 
-	if act.CreatedAt == nil {
+	if act.CreatedAt == 0 {
 		t.Errorf("CreatedAt not set")
 		return
 	}
@@ -61,9 +59,9 @@ func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
 }
 
 // postgres has a resolution of 100microseconds so just test that it's accurate to the second
-func microSecondTime(t *timestamp.Timestamp) time.Time {
-	tt := t.AsTime()
-	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
+func microSecondTime(t int64) time.Time {
+	tt := time.Unix(t, 0)
+	return time.Unix(t, int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }
 
 func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
@@ -83,7 +81,7 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 	assert.Equal(t, exp.AuthorId, act.AuthorId)
 	assert.Equal(t, exp.ChatId, act.ChatId)
 
-	if act.SentAt == nil {
+	if act.SentAt == 0 {
 		t.Errorf("SentAt not set")
 		return
 	}

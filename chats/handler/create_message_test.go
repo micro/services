@@ -3,11 +3,9 @@ package handler_test
 import (
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/micro/services/chats/handler"
 	pb "github.com/micro/services/chats/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -99,7 +97,7 @@ func TestCreateMessage(t *testing.T) {
 			assertMessagesMatch(t, &pb.Message{
 				AuthorId: tc.AuthorID,
 				ChatId:   tc.ChatID,
-				SentAt:   timestamppb.New(h.Time()),
+				SentAt:   h.Time().Unix(),
 				Text:     tc.Text,
 				Id:       tc.ID,
 			}, rsp.Message)

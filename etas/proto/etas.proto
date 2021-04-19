@@ -3,8 +3,6 @@ syntax = "proto3";
 package etas;
 option go_package = "./proto;etas";
 
-import "google/protobuf/timestamp.proto";
-
 service ETAs {
 	rpc Calculate(Route) returns (Response);
 }
@@ -29,7 +27,7 @@ message Route {
 	repeated Point waypoints = 2;
 	// start time specifies the time the vehicle will arrive at the pickup. If no value is provided,
 	// the current time will be used
-	google.protobuf.Timestamp start_time = 3;
+	int64 start_time = 3;
 }
 
 message Response {
@@ -39,6 +37,6 @@ message Response {
 }
 
 message ETA {
-	google.protobuf.Timestamp estimated_arrival_time = 1;
-	google.protobuf.Timestamp estimated_departure_time = 2;
+	int64 estimated_arrival_time = 1;
+	int64 estimated_departure_time = 2;
 }

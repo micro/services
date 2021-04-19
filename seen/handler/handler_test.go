@@ -12,7 +12,6 @@ import (
 	"github.com/micro/services/seen/handler"
 	pb "github.com/micro/services/seen/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func testHandler(t *testing.T) *handler.Seen {
@@ -42,7 +41,7 @@ func TestSet(t *testing.T) {
 		UserID       string
 		ResourceType string
 		ResourceID   string
-		Timestamp    *timestamppb.Timestamp
+		Timestamp    int64
 		Error        error
 	}{
 		{
@@ -68,7 +67,7 @@ func TestSet(t *testing.T) {
 			UserID:       uuid.New().String(),
 			ResourceID:   uuid.New().String(),
 			ResourceType: "message",
-			Timestamp:    timestamppb.New(time.Now().Add(time.Minute * -5)),
+			Timestamp:    time.Now().Add(time.Minute * -5).Unix(),
 		},
 		{
 			Name:         "WithoutTimetamp",
@@ -81,7 +80,7 @@ func TestSet(t *testing.T) {
 			UserID:       uuid.New().String(),
 			ResourceID:   uuid.New().String(),
 			ResourceType: "message",
-			Timestamp:    timestamppb.New(time.Now().Add(time.Minute * -3)),
+			Timestamp:    time.Now().Add(time.Minute * -3).Unix(),
 		},
 	}
 
@@ -171,37 +170,37 @@ func TestRead(t *testing.T) {
 		UserID       string
 		ResourceID   string
 		ResourceType string
-		Timestamp    *timestamppb.Timestamp
+		Timestamp    int64
 	}{
 		{
 			UserID:       "user-1",
 			ResourceID:   "message-1",
 			ResourceType: "message",
-			Timestamp:    timestamppb.New(tn.Add(time.Minute * -10)),
+			Timestamp:    tn.Add(time.Minute * -10).Unix(),
 		},
 		{
 			UserID:       "user-1",
 			ResourceID:   "message-1",
 			ResourceType: "message",
-			Timestamp:    timestamppb.New(tn),
+			Timestamp:    tn.Unix(),
 		},
 		{
 			UserID:       "user-1",
 			ResourceID:   "message-2",
 			ResourceType: "message",
-			Timestamp:    timestamppb.New(tn.Add(time.Minute * -10)),
+			Timestamp:    tn.Add(time.Minute * -10).Unix(),
 		},
 		{
 			UserID:       "user-1",
 			ResourceID:   "notification-1",
 			ResourceType: "notification",
-			Timestamp:    timestamppb.New(tn.Add(time.Minute * -10)),
+			Timestamp:    tn.Add(time.Minute * -10).Unix(),
 		},
 		{
 			UserID:       "user-2",
 			ResourceID:   "message-3",
 			ResourceType: "message",
-			Timestamp:    timestamppb.New(tn.Add(time.Minute * -10)),
+			Timestamp:    tn.Add(time.Minute * -10).Unix(),
 		},
 	}
 	for _, d := range td {
@@ -223,14 +222,14 @@ func TestRead(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, rsp.Timestamps, 2)
 
-	if v := rsp.Timestamps["message-1"]; v != nil {
-		assert.Equal(t, microSecondTime(v.AsTime()), microSecondTime(tn))
+	if v := rsp.Timestamps["message-1"]; v != 0 {
+		assert.Equal(t, microSecondTime(time.Unix(v, 0)), microSecondTime(tn))
 	} else {
 		t.Errorf("Expected a timestamp for message-1")
 	}
 
-	if v := rsp.Timestamps["message-2"]; v != nil {
-		assert.Equal(t, microSecondTime(v.AsTime()), microSecondTime(tn.Add(time.Minute*-10).UTC()))
+	if v := rsp.Timestamps["message-2"]; v != 0 {
+		assert.Equal(t, microSecondTime(time.Unix(v, 0)), microSecondTime(tn.Add(time.Minute*-10).UTC()))
 	} else {
 		t.Errorf("Expected a timestamp for message-2")
 	}

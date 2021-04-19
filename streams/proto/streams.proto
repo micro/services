@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package streams;
 option go_package = "./proto;streams";
-import "google/protobuf/timestamp.proto";
 
 service Streams {
 	rpc Publish(Message) returns (PublishResponse) {}
@@ -15,7 +14,7 @@ message PublishResponse {}
 message Message {
 	string topic = 1;
 	string message = 2;
-	google.protobuf.Timestamp sent_at = 3;
+	int64 sent_at = 3;
 }
 
 message SubscribeRequest {

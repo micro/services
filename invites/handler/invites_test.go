@@ -9,7 +9,6 @@ import (
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/services/invites/handler"
 	pb "github.com/micro/services/invites/proto"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -112,8 +111,8 @@ func TestRead(t *testing.T) {
 
 	tt := []struct {
 		Name   string
-		ID     *wrapperspb.StringValue
-		Code   *wrapperspb.StringValue
+		ID     string
+		Code   string
 		Error  error
 		Invite *pb.Invite
 	}{
@@ -123,22 +122,22 @@ func TestRead(t *testing.T) {
 		},
 		{
 			Name:  "NotFoundByID",
-			ID:    &wrapperspb.StringValue{Value: uuid.New().String()},
+			ID:    uuid.New().String(),
 			Error: handler.ErrInviteNotFound,
 		},
 		{
 			Name:  "NotFoundByCode",
-			Code:  &wrapperspb.StringValue{Value: "12345678"},
+			Code:  "12345678",
 			Error: handler.ErrInviteNotFound,
 		},
 		{
 			Name:   "ValidID",
-			ID:     &wrapperspb.StringValue{Value: cRsp.Invite.Id},
+			ID:     cRsp.Invite.Id,
 			Invite: cRsp.Invite,
 		},
 		{
 			Name:   "ValidCode",
-			Code:   &wrapperspb.StringValue{Value: cRsp.Invite.Code},
+			Code:   cRsp.Invite.Code,
 			Invite: cRsp.Invite,
 		},
 	}
@@ -172,8 +171,8 @@ func TestList(t *testing.T) {
 
 	tt := []struct {
 		Name    string
-		GroupID *wrapperspb.StringValue
-		Email   *wrapperspb.StringValue
+		GroupID string
+		Email   string
 		Error   error
 		Invite  *pb.Invite
 	}{
@@ -183,26 +182,26 @@ func TestList(t *testing.T) {
 		},
 		{
 			Name:  "NoResultsForEmail",
-			Email: &wrapperspb.StringValue{Value: "foo@bar.com"},
+			Email: "foo@bar.com",
 		},
 		{
 			Name:    "NoResultsForGroupID",
-			GroupID: &wrapperspb.StringValue{Value: uuid.New().String()},
+			GroupID: uuid.New().String(),
 		},
 		{
 			Name:    "ValidGroupID",
-			GroupID: &wrapperspb.StringValue{Value: cRsp.Invite.GroupId},
+			GroupID: cRsp.Invite.GroupId,
 			Invite:  cRsp.Invite,
 		},
 		{
 			Name:   "ValidEmail",
-			Email:  &wrapperspb.StringValue{Value: cRsp.Invite.Email},
+			Email:  cRsp.Invite.Email,
 			Invite: cRsp.Invite,
 		},
 		{
 			Name:    "EmailAndGroupID",
-			Email:   &wrapperspb.StringValue{Value: cRsp.Invite.Email},
-			GroupID: &wrapperspb.StringValue{Value: uuid.New().String()},
+			Email:   cRsp.Invite.Email,
+			GroupID: uuid.New().String(),
 		},
 	}
 
@@ -246,7 +245,7 @@ func TestDelete(t *testing.T) {
 		err := h.Delete(microAccountCtx(), &pb.DeleteRequest{Id: cRsp.Invite.Id}, &pb.DeleteResponse{})
 		assert.NoError(t, err)
 
-		err = h.Read(microAccountCtx(), &pb.ReadRequest{Id: &wrapperspb.StringValue{Value: cRsp.Invite.Id}}, &pb.ReadResponse{})
+		err = h.Read(microAccountCtx(), &pb.ReadRequest{Id: cRsp.Invite.Id}, &pb.ReadResponse{})
 		assert.Equal(t, handler.ErrInviteNotFound, err)
 	})
 

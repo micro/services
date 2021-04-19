@@ -3,8 +3,6 @@ syntax = "proto3";
 package geocoding;
 option go_package = "./proto;geocoding";
 
-import "google/protobuf/wrappers.proto";
-
 service Geocoding {
 	// Geocode an address, the result will be the normalized address which contains coordinates
 	rpc Geocode(Address) returns (Address) {};
@@ -23,6 +21,6 @@ message Address {
 }
 
 message Coordinates {
-	google.protobuf.DoubleValue latitude = 1;
-	google.protobuf.DoubleValue longitude = 2;
+	double latitude = 1;
+	double longitude = 2;
 }

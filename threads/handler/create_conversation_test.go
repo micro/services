@@ -5,7 +5,6 @@ import (
 
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -50,7 +49,7 @@ func TestCreateConversation(t *testing.T) {
 			}
 
 			assertConversationsMatch(t, &pb.Conversation{
-				CreatedAt: timestamppb.New(h.Time()),
+				CreatedAt: h.Time().Unix(),
 				GroupId:   tc.GroupID,
 				Topic:     tc.Topic,
 			}, rsp.Conversation)

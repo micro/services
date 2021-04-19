@@ -3,9 +3,6 @@ syntax = "proto3";
 package places;
 option go_package = "./proto;places";
 
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
-
 service Places {
 	// Save a set of places
 	rpc Save(SaveRequest) returns (SaveResponse) {}
@@ -21,9 +18,9 @@ message Location {
 	string id = 1;
 	string name = 2;
 	map<string,string> metadata = 3;
-	google.protobuf.Timestamp timestamp = 4;
-	google.protobuf.DoubleValue latitude = 5;
-	google.protobuf.DoubleValue longitude = 6;
+	int64 timestamp = 4;
+	double latitude = 5;
+	double longitude = 6;
 }
 
 message SaveRequest {
@@ -41,14 +38,14 @@ message ListResponse {
 }
 
 message NearRequest {
-	google.protobuf.DoubleValue latitude = 1;
-	google.protobuf.DoubleValue longitude = 2;
+	double latitude = 1;
+	double longitude = 2;
 	// radius to search within, units km
-	google.protobuf.DoubleValue radius = 3;
+	double radius = 3;
 }
 
 message ReadRequest {
 	repeated string ids = 1;
-	google.protobuf.Timestamp after = 2;
-	google.protobuf.Timestamp before = 3;
+	int64 after = 2;
+	int64 before = 3;
 }

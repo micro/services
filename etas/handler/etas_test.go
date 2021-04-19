@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"etas/handler"
 	pb "etas/proto"
@@ -83,7 +82,7 @@ func TestCalculate(t *testing.T) {
 
 		var rsp pb.Response
 		err := e.Calculate(context.TODO(), &pb.Route{
-			StartTime: timestamppb.New(st),
+			StartTime: st.Unix(),
 			Pickup: &pb.Point{
 				Id:        "shenfield-station",
 				Latitude:  51.6308,
@@ -111,19 +110,25 @@ func TestCalculate(t *testing.T) {
 		p := rsp.Points["shenfield-station"]
 		ea := st
 		ed := ea.Add(time.Minute * 5)
-		assert.True(t, p.EstimatedArrivalTime.AsTime().Equal(ea))
-		assert.True(t, p.EstimatedDepartureTime.AsTime().Equal(ed))
+		arrival := time.Unix(p.EstimatedArrivalTime, 0)
+		depart := time.Unix(p.EstimatedDepartureTime, 0)
+		assert.True(t, arrival.Equal(ea))
+		assert.True(t, depart.Equal(ed))
 
 		p = rsp.Points["nandos"]
 		ea = ed.Add(time.Minute * 10) // drive time
 		ed = ea.Add(time.Minute * 10) // wait time
-		assert.True(t, p.EstimatedArrivalTime.AsTime().Equal(ea))
-		assert.True(t, p.EstimatedDepartureTime.AsTime().Equal(ed))
+		arrival = time.Unix(p.EstimatedArrivalTime, 0)
+		depart = time.Unix(p.EstimatedDepartureTime, 0)
+		assert.True(t, arrival.Equal(ea))
+		assert.True(t, depart.Equal(ed))
 
 		p = rsp.Points["brentwood-station"]
 		ea = ed.Add(time.Minute * 6) // drive time
 		ed = ea
-		assert.True(t, p.EstimatedArrivalTime.AsTime().Equal(ea))
-		assert.True(t, p.EstimatedDepartureTime.AsTime().Equal(ed))
+		arrival = time.Unix(p.EstimatedArrivalTime, 0)
+		depart = time.Unix(p.EstimatedDepartureTime, 0)
+		assert.True(t, arrival.Equal(ea))
+		assert.True(t, depart.Equal(ed))
 	})
 }

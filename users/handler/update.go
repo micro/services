@@ -22,19 +22,19 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 	if len(req.Id) == 0 {
 		return ErrMissingID
 	}
-	if req.FirstName != nil && len(req.FirstName.Value) == 0 {
+	if len(req.FirstName) == 0 {
 		return ErrMissingFirstName
 	}
-	if req.LastName != nil && len(req.LastName.Value) == 0 {
+	if len(req.LastName) == 0 {
 		return ErrMissingLastName
 	}
-	if req.Email != nil && len(req.Email.Value) == 0 {
+	if len(req.Email) == 0 {
 		return ErrMissingEmail
 	}
-	if req.Email != nil && !isEmailValid(req.Email.Value) {
+	if !isEmailValid(req.Email) {
 		return ErrInvalidEmail
 	}
-	if req.Password != nil && len(req.Password.Value) < 8 {
+	if len(req.Password) < 8 {
 		return ErrInvalidEmail
 	}
 
@@ -53,17 +53,17 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 	}
 
 	// assign the updated values
-	if req.FirstName != nil {
-		user.FirstName = req.FirstName.Value
+	if req.FirstName != "" {
+		user.FirstName = req.FirstName
 	}
-	if req.LastName != nil {
-		user.LastName = req.LastName.Value
+	if req.LastName != "" {
+		user.LastName = req.LastName
 	}
-	if req.Email != nil {
-		user.Email = strings.ToLower(req.Email.Value)
+	if req.Email != "" {
+		user.Email = strings.ToLower(req.Email)
 	}
-	if req.Password != nil {
-		p, err := hashAndSalt(req.Password.Value)
+	if req.Password != "" {
+		p, err := hashAndSalt(req.Password)
 		if err != nil {
 			logger.Errorf("Error hasing and salting password: %v", err)
 			return errors.InternalServerError("HASHING_ERROR", "Error hashing password")

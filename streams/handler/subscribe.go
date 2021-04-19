@@ -9,7 +9,6 @@ import (
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/streams/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 
@@ -67,7 +66,7 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 		pbMsg := &pb.Message{
 			Topic:   req.Topic, // use req.Topic not msg.Topic because topic is munged for multitenancy
 			Message: string(msg.Payload),
-			SentAt:  timestamppb.New(msg.Timestamp),
+			SentAt:  msg.Timestamp.Unix(),
 		}
 
 		if err := stream.Send(pbMsg); err == io.EOF {

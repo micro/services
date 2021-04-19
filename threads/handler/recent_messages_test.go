@@ -9,7 +9,6 @@ import (
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestRecentMessages(t *testing.T) {
@@ -55,7 +54,7 @@ func TestRecentMessages(t *testing.T) {
 		var rsp pb.RecentMessagesResponse
 		err := h.RecentMessages(microAccountCtx(), &pb.RecentMessagesRequest{
 			ConversationIds:      ids,
-			LimitPerConversation: &wrapperspb.Int32Value{Value: 10},
+			LimitPerConversation: 10,
 		}, &rsp)
 		assert.NoError(t, err)
 

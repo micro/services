@@ -4,9 +4,6 @@ package chats;
 
 option go_package = "./proto;chats";
 
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
-
 service Chats {
 	// Create a chat between two or more users, if a chat already exists for these users, the existing
 	// chat will be returned
@@ -21,7 +18,7 @@ service Chats {
 message Chat {
 	string id = 1;
 	repeated string user_ids = 2;
-	google.protobuf.Timestamp created_at = 3;
+	int64 created_at = 3;
 }
 
 message Message {
@@ -29,7 +26,7 @@ message Message {
 	string author_id = 2;
 	string chat_id = 3;
 	string text = 4;
-	google.protobuf.Timestamp sent_at = 5;
+	int64 sent_at = 5;
 }
 
 message CreateChatRequest {
@@ -53,8 +50,8 @@ message CreateMessageResponse {
 
 message ListMessagesRequest {
 	string chat_id = 1;
-	google.protobuf.Timestamp sent_before = 2;
-	google.protobuf.Int32Value limit = 3;
+	int64 sent_before = 2;
+	int32 limit = 3;
 }
 
 message ListMessagesResponse {

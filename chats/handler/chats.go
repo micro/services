@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/micro/micro/v3/service/errors"
 	pb "github.com/micro/services/chats/proto"
 	"github.com/micro/services/pkg/gorm"
-
-	"github.com/micro/micro/v3/service/errors"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -45,7 +43,7 @@ func (m *Message) Serialize() *pb.Message {
 		AuthorId: m.AuthorID,
 		ChatId:   m.ChatID,
 		Text:     m.Text,
-		SentAt:   timestamppb.New(m.SentAt),
+		SentAt:   m.SentAt.Unix(),
 	}
 }
 
@@ -56,6 +54,6 @@ func (c *Chat) Serialize() *pb.Chat {
 	return &pb.Chat{
 		Id:        c.ID,
 		UserIds:   userIDs,
-		CreatedAt: timestamppb.New(c.CreatedAt),
+		CreatedAt: c.CreatedAt.Unix(),
 	}
 }

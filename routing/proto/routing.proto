@@ -3,15 +3,13 @@ syntax = "proto3";
 package routing;
 option go_package = "./proto;routing";
 
-import "google/protobuf/wrappers.proto";
-
 service Routing {
 	rpc Route(RouteRequest) returns (RouteResponse) {}
 }
 
 message Point {
-	google.protobuf.DoubleValue latitude = 1;
-	google.protobuf.DoubleValue longitude = 2;
+	double latitude = 1;
+	double longitude = 2;
 }
 
 message RouteRequest {

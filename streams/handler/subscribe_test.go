@@ -169,11 +169,11 @@ func TestSubscribe(t *testing.T) {
 
 		assert.Equal(t, e1.Topic, s.Messages[0].Topic)
 		assert.Equal(t, string(e1.Payload), s.Messages[0].Message)
-		assert.True(t, e1.Timestamp.Equal(s.Messages[0].SentAt.AsTime()))
+		assert.True(t, e1.Timestamp.Equal(time.Unix(s.Messages[0].SentAt, 0)))
 
 		assert.Equal(t, e2.Topic, s.Messages[1].Topic)
 		assert.Equal(t, string(e2.Payload), s.Messages[1].Message)
-		assert.True(t, e2.Timestamp.Equal(s.Messages[1].SentAt.AsTime()))
+		assert.True(t, e2.Timestamp.Equal(time.Unix(s.Messages[1].SentAt, 0)))
 	})
 
 	t.Run("TokenForDifferentIssuer", func(t *testing.T) {

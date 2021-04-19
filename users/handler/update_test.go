@@ -6,7 +6,6 @@ import (
 	"github.com/micro/services/users/handler"
 	pb "github.com/micro/services/users/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestUpdate(t *testing.T) {
@@ -58,7 +57,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("BlankFirstName", func(t *testing.T) {
 		var rsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, FirstName: &wrapperspb.StringValue{},
+			Id: cRsp1.User.Id, FirstName: "",
 		}, &rsp)
 		assert.Equal(t, handler.ErrMissingFirstName, err)
 		assert.Nil(t, rsp.User)
@@ -67,7 +66,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("BlankLastName", func(t *testing.T) {
 		var rsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, LastName: &wrapperspb.StringValue{},
+			Id: cRsp1.User.Id, LastName: "",
 		}, &rsp)
 		assert.Equal(t, handler.ErrMissingLastName, err)
 		assert.Nil(t, rsp.User)
@@ -76,7 +75,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("BlankLastName", func(t *testing.T) {
 		var rsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, LastName: &wrapperspb.StringValue{},
+			Id: cRsp1.User.Id, LastName: "",
 		}, &rsp)
 		assert.Equal(t, handler.ErrMissingLastName, err)
 		assert.Nil(t, rsp.User)
@@ -85,7 +84,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("BlankEmail", func(t *testing.T) {
 		var rsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, Email: &wrapperspb.StringValue{},
+			Id: cRsp1.User.Id, Email: "",
 		}, &rsp)
 		assert.Equal(t, handler.ErrMissingEmail, err)
 		assert.Nil(t, rsp.User)
@@ -94,7 +93,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("InvalidEmail", func(t *testing.T) {
 		var rsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, Email: &wrapperspb.StringValue{Value: "foo.bar"},
+			Id: cRsp1.User.Id, Email: "",
 		}, &rsp)
 		assert.Equal(t, handler.ErrInvalidEmail, err)
 		assert.Nil(t, rsp.User)
@@ -103,7 +102,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("EmailAlreadyExists", func(t *testing.T) {
 		var rsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &pb.UpdateRequest{
-			Id: cRsp1.User.Id, Email: &wrapperspb.StringValue{Value: cRsp2.User.Email},
+			Id: cRsp1.User.Id, Email: cRsp2.User.Email,
 		}, &rsp)
 		assert.Equal(t, handler.ErrDuplicateEmail, err)
 		assert.Nil(t, rsp.User)
@@ -112,9 +111,9 @@ func TestUpdate(t *testing.T) {
 	t.Run("Valid", func(t *testing.T) {
 		uReq := pb.UpdateRequest{
 			Id:        cRsp1.User.Id,
-			Email:     &wrapperspb.StringValue{Value: "foobar@gmail.com"},
-			FirstName: &wrapperspb.StringValue{Value: "Foo"},
-			LastName:  &wrapperspb.StringValue{Value: "Bar"},
+			Email:     "foobar@gmail.com",
+			FirstName: "Foo",
+			LastName:  "Bar",
 		}
 		var uRsp pb.UpdateResponse
 		err := h.Update(microAccountCtx(), &uReq, &uRsp)
@@ -124,15 +123,15 @@ func TestUpdate(t *testing.T) {
 			return
 		}
 		assert.Equal(t, cRsp1.User.Id, uRsp.User.Id)
-		assert.Equal(t, uReq.Email.Value, uRsp.User.Email)
-		assert.Equal(t, uReq.FirstName.Value, uRsp.User.FirstName)
-		assert.Equal(t, uReq.LastName.Value, uRsp.User.LastName)
+		assert.Equal(t, uReq.Email, uRsp.User.Email)
+		assert.Equal(t, uReq.FirstName, uRsp.User.FirstName)
+		assert.Equal(t, uReq.LastName, uRsp.User.LastName)
 	})
 
 	t.Run("UpdatePassword", func(t *testing.T) {
 		uReq := pb.UpdateRequest{
 			Id:       cRsp2.User.Id,
-			Password: &wrapperspb.StringValue{Value: "helloworld"},
+			Password: "helloworld",
 		}
 		err := h.Update(microAccountCtx(), &uReq, &pb.UpdateResponse{})
 		assert.NoError(t, err)

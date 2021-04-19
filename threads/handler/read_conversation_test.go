@@ -7,7 +7,6 @@ import (
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestReadConversation(t *testing.T) {
@@ -26,7 +25,7 @@ func TestReadConversation(t *testing.T) {
 	tt := []struct {
 		Name    string
 		ID      string
-		GroupID *wrapperspb.StringValue
+		GroupID string
 		Error   error
 		Result  *pb.Conversation
 	}{
@@ -48,7 +47,7 @@ func TestReadConversation(t *testing.T) {
 			Name:    "IncorrectGroupID",
 			ID:      cRsp.Conversation.Id,
 			Error:   handler.ErrNotFound,
-			GroupID: &wrapperspb.StringValue{Value: uuid.New().String()},
+			GroupID: uuid.New().String(),
 		},
 	}
 	for _, tc := range tt {

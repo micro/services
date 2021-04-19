@@ -12,7 +12,6 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/seen/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -53,8 +52,8 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 	}
 
 	// default the timestamp
-	if req.Timestamp == nil {
-		req.Timestamp = timestamppb.New(time.Now())
+	if req.Timestamp == 0 {
+		req.Timestamp = time.Now().Unix()
 	}
 
 	// find the resource
@@ -76,7 +75,7 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 	}
 
 	// update the resource
-	instance.Timestamp = req.Timestamp.AsTime()
+	instance.Timestamp = time.Unix(req.Timestamp, 0)
 	if err := db.Save(&instance).Error; err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
@@ -156,9 +155,9 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 	}
 
 	// serialize the response
-	rsp.Timestamps = make(map[string]*timestamppb.Timestamp, len(data))
+	rsp.Timestamps = make(map[string]int64, len(data))
 	for _, i := range data {
-		rsp.Timestamps[i.ResourceID] = timestamppb.New(i.Timestamp)
+		rsp.Timestamps[i.ResourceID] = i.Timestamp.Unix()
 	}
 
 	return nil
