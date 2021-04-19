@@ -109,7 +109,7 @@ func getMsg(id string, msgs []*pb.Message) *pb.Message {
 			return msg
 		}
 	}
-	return nil
+	return &pb.Message{}
 }
 
 // sortMessages by the time they were sent
