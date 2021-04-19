@@ -103,6 +103,15 @@ func TestListMessages(t *testing.T) {
 	})
 }
 
+func getMsg(id string, msgs []*pb.Message) *pb.Message {
+        for _, msg := range msgs {
+                if id == msg.Id {
+                        return msg
+                }
+        }
+        return nil
+}
+
 // sortMessages by the time they were sent
 func sortMessages(msgs []*pb.Message) {
 	sort.Slice(msgs, func(i, j int) bool {
