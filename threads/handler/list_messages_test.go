@@ -58,8 +58,8 @@ func TestListMessages(t *testing.T) {
 		}
 		expected := msgs[25:]
 		sortMessages(rsp.Messages)
-		for i, msg := range rsp.Messages {
-			assertMessagesMatch(t, expected[i], msg)
+		for _, msg := range rsp.Messages {
+			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
 		}
 	})
 
@@ -77,8 +77,8 @@ func TestListMessages(t *testing.T) {
 		}
 		expected := msgs[40:]
 		sortMessages(rsp.Messages)
-		for i, msg := range rsp.Messages {
-			assertMessagesMatch(t, expected[i], msg)
+		for _, msg := range rsp.Messages {
+			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
 		}
 	})
 
@@ -97,10 +97,19 @@ func TestListMessages(t *testing.T) {
 		}
 		expected := msgs[15:20]
 		sortMessages(rsp.Messages)
-		for i, msg := range rsp.Messages {
-			assertMessagesMatch(t, expected[i], msg)
+		for _, msg := range rsp.Messages {
+			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
 		}
 	})
+}
+
+func getMsg(id string, msgs []*pb.Message) *pb.Message {
+	for _, msg := range msgs {
+		if id == msg.Id {
+			return msg
+		}
+	}
+	return nil
 }
 
 // sortMessages by the time they were sent

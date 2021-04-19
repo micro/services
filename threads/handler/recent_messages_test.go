@@ -68,8 +68,8 @@ func TestRecentMessages(t *testing.T) {
 		}
 		sortMessages(expected)
 		sortMessages(rsp.Messages)
-		for i, msg := range rsp.Messages {
-			assertMessagesMatch(t, expected[i], msg)
+		for _, msg := range rsp.Messages {
+			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
 		}
 	})
 
@@ -92,8 +92,8 @@ func TestRecentMessages(t *testing.T) {
 		}
 		sortMessages(expected)
 		sortMessages(rsp.Messages)
-		for i, msg := range rsp.Messages {
-			assertMessagesMatch(t, expected[i], msg)
+		for _, msg := range rsp.Messages {
+			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
 		}
 	})
 }
