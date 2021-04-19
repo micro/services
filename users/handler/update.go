@@ -49,10 +49,10 @@ func (u *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 		}
 		user.Email = strings.ToLower(req.Email)
 	}
-	if len(req.Password) < 8 {
-		return ErrInvalidPassword
-	}
 	if req.Password != "" {
+		if len(req.Password) < 8 {
+			return ErrInvalidPassword
+		}
 		p, err := hashAndSalt(req.Password)
 		if err != nil {
 			logger.Errorf("Error hasing and salting password: %v", err)
