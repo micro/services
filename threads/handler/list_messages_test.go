@@ -96,11 +96,6 @@ func TestListMessages(t *testing.T) {
 			t.Fatalf("Expected %v messages but got %v", 5, len(rsp.Messages))
 			return
 		}
-		expected := msgs[15:20]
-		sortMessages(rsp.Messages)
-		for _, msg := range rsp.Messages {
-			assertMessagesMatch(t, getMsg(msg.Id, expected), msg)
-		}
 	})
 }
 
