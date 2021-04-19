@@ -141,13 +141,13 @@ func TestLast(t *testing.T) {
 	loc2 := &pb.Location{
 		Latitude:  51.6007,
 		Longitude: 0.1546,
-		Timestamp: tn.Add(1 * time.Microsecond).Unix(),
+		Timestamp: tn.Add(1 * time.Second).Unix(),
 		Id:        "b",
 	}
 	loc3 := &pb.Location{
 		Latitude:  52.6007,
 		Longitude: 0.2546,
-		Timestamp: tn.Add(2 * time.Microsecond).Unix(),
+		Timestamp: tn.Add(2 * time.Second).Unix(),
 		Id:        loc2.Id,
 	}
 	err := h.Save(context.TODO(), &pb.SaveRequest{
