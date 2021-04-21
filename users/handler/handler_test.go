@@ -27,7 +27,7 @@ func testHandler(t *testing.T) *handler.Users {
 		t.Fatalf("Failed to open connection to DB %s", err)
 	}
 	// clean any data from a previous run
-	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_users, micro_tokens CASCADE"); err != nil {
+	if _, err := sqlDB.Exec(`DROP TABLE IF EXISTS "micro_someID_users", "micro_someID_tokens" CASCADE`); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
@@ -50,5 +50,6 @@ func assertUsersMatch(t *testing.T, exp, act *pb.User) {
 func microAccountCtx() context.Context {
 	return auth.ContextWithAccount(context.TODO(), &auth.Account{
 		Issuer: "micro",
+		ID:     "someID",
 	})
 }

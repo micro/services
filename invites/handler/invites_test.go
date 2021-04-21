@@ -27,7 +27,7 @@ func testHandler(t *testing.T) *handler.Invites {
 	}
 
 	// clean any data from a previous run
-	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_invites CASCADE"); err != nil {
+	if _, err := sqlDB.Exec(`DROP TABLE IF EXISTS "micro_someID_invites" CASCADE`); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
@@ -270,5 +270,6 @@ func assertInvitesMatch(t *testing.T, exp, act *pb.Invite) {
 func microAccountCtx() context.Context {
 	return auth.ContextWithAccount(context.TODO(), &auth.Account{
 		Issuer: "micro",
+		ID:     "someID",
 	})
 }
