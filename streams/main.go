@@ -1,12 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/micro/services/streams/handler"
 	pb "github.com/micro/services/streams/proto"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
@@ -29,20 +28,19 @@ func main() {
 		logger.Fatalf("Error loading config: %v", err)
 	}
 	addr := cfg.String(dbAddress)
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		logger.Fatalf("Error connecting to database: %v", err)
-	}
-	if err := db.AutoMigrate(&handler.Token{}); err != nil {
-		logger.Fatalf("Error migrating database: %v", err)
+		logger.Fatalf("Failed to open connection to DB %s", err)
 	}
 
-	// Register handler
-	pb.RegisterStreamsHandler(srv.Server(), &handler.Streams{
-		DB:     db,
+	h := &handler.Streams{
 		Events: events.DefaultStream,
 		Time:   time.Now,
-	})
+	}
+	h.DBConn(sqlDB).Migrations(&handler.Token{})
+
+	// Register handler
+	pb.RegisterStreamsHandler(srv.Server(), h)
 
 	// Run service
 	if err := srv.Run(); err != nil {

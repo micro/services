@@ -1,14 +1,13 @@
 package handler_test
 
 import (
+	"database/sql"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/services/streams/handler"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func testHandler(t *testing.T) *handler.Streams {
@@ -17,23 +16,24 @@ func testHandler(t *testing.T) *handler.Streams {
 	if len(addr) == 0 {
 		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
 	}
-	db, err := gorm.Open(postgres.Open(addr), &gorm.Config{})
+
+	sqlDB, err := sql.Open("pgx", addr)
 	if err != nil {
-		t.Fatalf("Error connecting to database: %v", err)
+		t.Fatalf("Failed to open connection to DB %s", err)
+	}
+	// clean any data from a previous run
+	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_users, micro_tokens CASCADE"); err != nil {
+		t.Fatalf("Error cleaning database: %v", err)
 	}
 
-	// migrate the database
-	if err := db.AutoMigrate(&handler.Token{}); err != nil {
-		t.Fatalf("Error migrating database: %v", err)
-	}
-
-	return &handler.Streams{
-		DB:     db,
+	h := &handler.Streams{
 		Events: new(eventsMock),
 		Time: func() time.Time {
 			return time.Unix(1612787045, 0)
 		},
 	}
+	h.DBConn(sqlDB).Migrations(&handler.Token{})
+	return h
 }
 
 type eventsMock struct {

@@ -34,7 +34,12 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 
 	// find the token and check to see if it has expired
 	var token Token
-	if err := s.DB.Where(&Token{Token: req.Token, Namespace: acc.Issuer}).First(&token).Error; err == gorm.ErrRecordNotFound {
+	dbConn, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error reading token from store: %v", err)
+		return errors.InternalServerError("DATABASE_ERROR", "Error reading token from database")
+	}
+	if err := dbConn.Where(&Token{Token: req.Token}).First(&token).Error; err == gorm.ErrRecordNotFound {
 		return ErrInvalidToken
 	} else if err != nil {
 		logger.Errorf("Error reading token from store: %v", err)
@@ -51,7 +56,7 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 
 	// start the subscription
 	logger.Infof("Subscribing to %v via queue %v", req.Topic, token.Token)
-	evChan, err := s.Events.Consume(fmtTopic(acc.Issuer, req.Topic), events.WithGroup(token.Token))
+	evChan, err := s.Events.Consume(fmtTopic(acc, req.Topic), events.WithGroup(token.Token))
 	if err != nil {
 		logger.Errorf("Error connecting to events stream: %v", err)
 		return errors.InternalServerError("EVENTS_ERROR", "Error connecting to events stream")

@@ -27,5 +27,5 @@ func (s *Streams) Publish(ctx context.Context, req *pb.Message, rsp *pb.PublishR
 
 	// publish the message
 	logger.Infof("Publishing message to topic: %v", req.Topic)
-	return s.Events.Publish(fmtTopic(acc.Issuer, req.Topic), req.Message)
+	return s.Events.Publish(fmtTopic(acc, req.Topic), req.Message)
 }

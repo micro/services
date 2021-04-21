@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Streams) Token(ctx context.Context, req *pb.TokenRequest, rsp *pb.TokenResponse) error {
-	acc, ok := auth.AccountFromContext(ctx)
+	_, ok := auth.AccountFromContext(ctx)
 	if !ok {
 		return errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
 	}
@@ -26,9 +26,13 @@ func (s *Streams) Token(ctx context.Context, req *pb.TokenRequest, rsp *pb.Token
 		Token:     uuid.New().String(),
 		ExpiresAt: s.Time().Add(TokenTTL),
 		Topic:     req.Topic,
-		Namespace: acc.Issuer,
 	}
-	if err := s.DB.Create(&t).Error; err != nil {
+	dbConn, err := s.GetDBConn(ctx)
+	if err != nil {
+		logger.Errorf("Error creating token in store: %v", err)
+		return errors.InternalServerError("DATABASE_ERROR", "Error writing token to database")
+	}
+	if err := dbConn.Create(&t).Error; err != nil {
 		logger.Errorf("Error creating token in store: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error writing token to database")
 	}

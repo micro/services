@@ -34,26 +34,35 @@ func (h *Helper) DBConn(conn *sql.DB) *Helper {
 	return h
 }
 
+func getTenancyKey(acc *auth.Account) string {
+	owner := acc.Metadata["apikey_owner"]
+	if len(owner) == 0 {
+		owner = acc.ID
+	}
+	return fmt.Sprintf("%s_%s", acc.Issuer, owner)
+}
+
 func (h *Helper) GetDBConn(ctx context.Context) (*gorm.DB, error) {
 	acc, ok := auth.AccountFromContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("missing account from context")
 	}
 	h.RLock()
-	if conn, ok := h.gormConns[acc.Issuer]; ok {
+	tenancyKey := getTenancyKey(acc)
+	if conn, ok := h.gormConns[tenancyKey]; ok {
 		h.RUnlock()
 		return conn, nil
 	}
 	h.RUnlock()
 	h.Lock()
 	// double check
-	if conn, ok := h.gormConns[acc.Issuer]; ok {
+	if conn, ok := h.gormConns[tenancyKey]; ok {
 		h.Unlock()
 		return conn, nil
 	}
 	defer h.Unlock()
 	ns := schema.NamingStrategy{
-		TablePrefix: fmt.Sprintf("%s_", strings.ReplaceAll(acc.Issuer, "-", "")),
+		TablePrefix: fmt.Sprintf("%s_", strings.ReplaceAll(tenancyKey, "-", "")),
 	}
 	db, err := gorm.Open(
 		newGormDialector(postgres.Config{
@@ -67,7 +76,7 @@ func (h *Helper) GetDBConn(ctx context.Context) (*gorm.DB, error) {
 	}
 	if len(h.migrations) == 0 {
 		// record success
-		h.gormConns[acc.Issuer] = db
+		h.gormConns[tenancyKey] = db
 		return db, nil
 	}
 
@@ -76,7 +85,7 @@ func (h *Helper) GetDBConn(ctx context.Context) (*gorm.DB, error) {
 	}
 
 	// record success
-	h.gormConns[acc.Issuer] = db
+	h.gormConns[tenancyKey] = db
 	return db, nil
 }
 

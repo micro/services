@@ -108,7 +108,7 @@ func TestSubscribe(t *testing.T) {
 		h.Events.(*eventsMock).ConsumeChan = c
 
 		var tRsp pb.TokenResponse
-		ctx := auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		ctx := auth.ContextWithAccount(context.TODO(), &auth.Account{ID: "foo", Issuer: "my-ns"})
 		err := h.Token(ctx, &pb.TokenRequest{
 			Topic: "helloworld",
 		}, &tRsp)
@@ -158,7 +158,7 @@ func TestSubscribe(t *testing.T) {
 		close(c)
 		wg.Wait()
 		assert.NoError(t, subsErr)
-		assert.Equal(t, "foo.helloworld", h.Events.(*eventsMock).ConsumeTopic)
+		assert.Equal(t, "my-ns.foo.helloworld", h.Events.(*eventsMock).ConsumeTopic)
 
 		// sleep to wait for the subscribe loop to push the message to the stream
 		//time.Sleep(1 * time.Second)

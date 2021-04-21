@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/events"
+	gorm2 "github.com/micro/services/pkg/gorm"
 
 	"github.com/nats-io/nats-streaming-server/util"
-	"gorm.io/gorm"
 )
 
 var (
@@ -26,18 +27,21 @@ type Token struct {
 	Token     string `gorm:"primaryKey"`
 	Topic     string
 	ExpiresAt time.Time
-	Namespace string
 }
 
 type Streams struct {
-	DB     *gorm.DB
+	gorm2.Helper
 	Events events.Stream
 	Time   func() time.Time
 }
 
 // fmtTopic returns a topic string with namespace prefix
-func fmtTopic(ns, topic string) string {
-	return fmt.Sprintf("%s.%s", ns, topic)
+func fmtTopic(acc *auth.Account, topic string) string {
+	owner := acc.Metadata["apikey_owner"]
+	if len(owner) == 0 {
+		owner = acc.ID
+	}
+	return fmt.Sprintf("%s.%s.%s", acc.Issuer, owner, topic)
 }
 
 // validateTopicInput validates that topic is alphanumeric
