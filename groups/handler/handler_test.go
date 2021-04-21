@@ -26,7 +26,7 @@ func testHandler(t *testing.T) *handler.Groups {
 	}
 
 	// clean any data from a previous run
-	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_groups, micro_memberships CASCADE"); err != nil {
+	if _, err := sqlDB.Exec(`DROP TABLE IF EXISTS "micro_someID_groups", "micro_someID_memberships" CASCADE`); err != nil {
 		t.Fatalf("Error cleaning database: %v", err)
 	}
 
@@ -291,5 +291,6 @@ func TestRemoveMember(t *testing.T) {
 func microAccountCtx() context.Context {
 	return auth.ContextWithAccount(context.TODO(), &auth.Account{
 		Issuer: "micro",
+		ID:     "someID",
 	})
 }

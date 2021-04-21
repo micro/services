@@ -34,7 +34,7 @@ func TestPublish(t *testing.T) {
 
 	t.Run("ValidMessage", func(t *testing.T) {
 		h := testHandler(t)
-		ctx := auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo"})
+		ctx := auth.ContextWithAccount(context.TODO(), &auth.Account{Issuer: "foo", ID: "foo-id"})
 		err := h.Publish(ctx, &pb.Message{
 			Topic: topic, Message: msg,
 		}, &pb.PublishResponse{})
@@ -42,6 +42,6 @@ func TestPublish(t *testing.T) {
 		assert.Equal(t, 1, h.Events.(*eventsMock).PublishCount)
 		assert.Equal(t, msg, h.Events.(*eventsMock).PublishMessage)
 		// topic is prefixed with acc issuer to implement multitenancy
-		assert.Equal(t, "foo."+topic, h.Events.(*eventsMock).PublishTopic)
+		assert.Equal(t, "foo.foo-id."+topic, h.Events.(*eventsMock).PublishTopic)
 	})
 }
