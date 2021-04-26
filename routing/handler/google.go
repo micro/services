@@ -18,10 +18,16 @@ var (
 	ErrMissingLatitude    = errors.BadRequest("MISSING_LATITUDE", "Missing latitude")
 	ErrMissingLongitude   = errors.BadRequest("MISSING_LONGITUDE", "Missing longitude")
 	ErrNoRoutes           = errors.BadRequest("NO_ROUTES", "No routes found")
+	ErrUnimplemented      = errors.InternalServerError("UNIMPLEMENTED", "endpoint is unimplemented")
 )
 
 type Google struct {
 	Maps *maps.Client
+}
+
+func (r *Google) ETA(ctx context.Context, req *pb.ETARequest, rsp *pb.ETAResponse) error {
+	// TODO: implement eta
+	return ErrUnimplemented
 }
 
 func (r *Google) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.RouteResponse) error {

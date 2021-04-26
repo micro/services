@@ -4,7 +4,10 @@ package routing;
 option go_package = "./proto;routing";
 
 service Routing {
+	// Route returns a gps route from origin to destination based on lat/lng
 	rpc Route(RouteRequest) returns (RouteResponse) {}
+	// ETA returns an estimated time of arrival for a route
+	rpc ETA(ETARequest) returns (ETAResponse) {}
 }
 
 message Point {
@@ -13,9 +16,24 @@ message Point {
 }
 
 message Waypoint {
+	// street name or related reference
 	string name = 1;
-	double distance = 2;
-	Point location = 3;
+	// gps point coordinates
+	Point location = 2;
+}
+
+message ETARequest {
+	Point origin = 1;
+	Point destination = 2;
+	// type of transport e.g car, foot, bicycle
+	string type = 3;
+	// speed in kilometers
+	double speed = 4;
+}
+
+message ETAResponse {
+	// eta in seconds
+	double duration = 1;
 }
 
 message RouteRequest {
@@ -23,10 +41,9 @@ message RouteRequest {
 	Point origin = 1;
 	// Point of destination for the trip
 	Point destination = 2;
-	// Mode of transport e.g driving, walking, cycling
-	string transport = 3; 
 }
 
 message RouteResponse {
-	repeated Waypoint waypoints = 1;
+	// waypoints on the route
+	repeated Waypoint waypoints = 2;
 }

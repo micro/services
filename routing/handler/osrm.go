@@ -18,6 +18,60 @@ type OSRM struct {
 	Client *osrm.OSRM
 }
 
+func (o *OSRM) ETA(ctx context.Context, req *pb.ETARequest, rsp *pb.ETAResponse) error {
+	// validate the request
+	if req.Origin == nil {
+		return ErrMissingOrigin
+	}
+	if req.Destination == nil {
+		return ErrMissingDestination
+	}
+	if err := validatePoint(req.Origin); err != nil {
+		return err
+	}
+	if err := validatePoint(req.Destination); err != nil {
+		return err
+	}
+
+	orig := req.Origin
+	dest := req.Destination
+
+	resp, err := o.Client.Route(ctx, osrm.RouteRequest{
+		Profile: "car",
+		Coordinates: osrm.NewGeometryFromPointSet(geo.PointSet{
+			{orig.Longitude, orig.Latitude},
+			{dest.Longitude, dest.Latitude},
+		}),
+		Steps:       osrm.StepsFalse,
+		Annotations: osrm.AnnotationsFalse,
+		Overview:    osrm.OverviewFalse,
+	})
+	if err != nil {
+		return errors.InternalServerError("routing.eta", "failed to get route: %v", err.Error())
+	}
+
+	if len(resp.Routes) == 0 {
+		return nil
+	}
+
+	// distance is meters
+	distance := resp.Routes[0].Distance
+	// duration is seconds
+	duration := resp.Routes[0].Duration
+
+	// nothing to calculate
+	if distance == 0.0 {
+		return nil
+	}
+
+	// set the duration
+	rsp.Duration = float64(duration)
+
+	// TODO: calculate transport/speed
+
+	return nil
+}
+
 func (o *OSRM) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.RouteResponse) error {
 	// validate the request
 	if req.Origin == nil {
@@ -54,9 +108,8 @@ func (o *OSRM) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.RouteRes
 			{dest.Longitude, dest.Latitude},
 		}),
 		Steps:       osrm.StepsTrue,
-		Annotations: osrm.AnnotationsTrue,
+		Annotations: osrm.AnnotationsFalse,
 		Overview:    osrm.OverviewFalse,
-		Geometries:  osrm.GeometriesPolyline6,
 	})
 	if err != nil {
 		return errors.InternalServerError("routing.route", "failed to get route: %v", err.Error())
