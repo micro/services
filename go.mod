@@ -7,6 +7,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/getkin/kin-openapi v0.26.0
+	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang/protobuf v1.5.1
 	github.com/google/uuid v1.1.2
 	github.com/gosimple/slug v1.9.0
@@ -16,6 +17,7 @@ require (
 	github.com/micro/micro/v3 v3.2.1-0.20210416134206-20d3a6b03014
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/nats-io/nats-streaming-server v0.21.1
+	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.6.1
 	github.com/ulikunitz/xz v0.5.8 // indirect

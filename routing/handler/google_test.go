@@ -11,7 +11,6 @@ import (
 	"github.com/micro/services/routing/handler"
 	pb "github.com/micro/services/routing/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"googlemaps.github.io/maps"
 )
 
@@ -116,13 +115,13 @@ func TestRoute(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	h := &handler.Routing{Maps: m}
+	h := &handler.Google{Maps: m}
 
-	originLat := &wrapperspb.DoubleValue{Value: 33.8688}
-	originLng := &wrapperspb.DoubleValue{Value: 151.2093}
+	originLat := 33.8688
+	originLng := 151.2093
 
-	destinationLat := &wrapperspb.DoubleValue{Value: 33.8136}
-	destinationLng := &wrapperspb.DoubleValue{Value: 151.0034}
+	destinationLat := 33.8136
+	destinationLng := 151.0034
 
 	tt := []struct {
 		Name        string
@@ -159,52 +158,52 @@ func TestRoute(t *testing.T) {
 			Destination: &pb.Point{Latitude: destinationLat, Longitude: destinationLng},
 			Result: []*pb.Point{
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.867490000000004},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20708000000002},
+					Latitude:  -33.867490000000004,
+					Longitude: 151.20708000000002,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.867610000000006},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20707000000002},
+					Latitude:  -33.867610000000006,
+					Longitude: 151.20707000000002,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.868080000000006},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20702},
+					Latitude:  -33.868080000000006,
+					Longitude: 151.20702,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.868390000000005},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20699000000002},
+					Latitude:  -33.868390000000005,
+					Longitude: 151.20699000000002,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.86874},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20697},
+					Latitude:  -33.86874,
+					Longitude: 151.20697,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.869400000000006},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20696},
+					Latitude:  -33.869400000000006,
+					Longitude: 151.20696,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.86941},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20696},
+					Latitude:  -33.86941,
+					Longitude: 151.20696,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.86957},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20695},
+					Latitude:  -33.86957,
+					Longitude: 151.20695,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.86965},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20695},
+					Latitude:  -33.86965,
+					Longitude: 151.20695,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.87059},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20694},
+					Latitude:  -33.87059,
+					Longitude: 151.20694,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.870740000000005},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20694},
+					Latitude:  -33.870740000000005,
+					Longitude: 151.20694,
 				},
 				{
-					Latitude:  &wrapperspb.DoubleValue{Value: -33.87078},
-					Longitude: &wrapperspb.DoubleValue{Value: 151.20693},
+					Latitude:  -33.87078,
+					Longitude: 151.20693,
 				},
 			},
 		},
@@ -223,17 +222,17 @@ func TestRoute(t *testing.T) {
 			}
 
 			// check the right info was sent to google maps
-			if tc.Origin != nil && tc.Origin.Latitude != nil {
-				assert.Equal(t, fmt.Sprintf("%v", tc.Origin.Latitude.Value), oLat)
+			if tc.Origin != nil && tc.Origin.Latitude != 0.0 {
+				assert.Equal(t, fmt.Sprintf("%v", tc.Origin.Latitude), oLat)
 			}
-			if tc.Origin != nil && tc.Origin.Longitude != nil {
-				assert.Equal(t, fmt.Sprintf("%v", tc.Origin.Longitude.Value), oLng)
+			if tc.Origin != nil && tc.Origin.Longitude != 0.0 {
+				assert.Equal(t, fmt.Sprintf("%v", tc.Origin.Longitude), oLng)
 			}
-			if tc.Destination != nil && tc.Destination.Latitude != nil {
-				assert.Equal(t, fmt.Sprintf("%v", tc.Destination.Latitude.Value), dLat)
+			if tc.Destination != nil && tc.Destination.Latitude != 0.0 {
+				assert.Equal(t, fmt.Sprintf("%v", tc.Destination.Latitude), dLat)
 			}
-			if tc.Destination != nil && tc.Destination.Longitude != nil {
-				assert.Equal(t, fmt.Sprintf("%v", tc.Destination.Longitude.Value), dLng)
+			if tc.Destination != nil && tc.Destination.Longitude != 0.0 {
+				assert.Equal(t, fmt.Sprintf("%v", tc.Destination.Longitude), dLng)
 			}
 
 			// check the response is correct
@@ -242,8 +241,8 @@ func TestRoute(t *testing.T) {
 			}
 			for i, p := range tc.Result {
 				w := rsp.Waypoints[i]
-				assert.Equal(t, p.Latitude.Value, w.Latitude.Value)
-				assert.Equal(t, p.Longitude.Value, w.Longitude.Value)
+				assert.Equal(t, p.Latitude, w.Location.Latitude)
+				assert.Equal(t, p.Longitude, w.Location.Longitude)
 			}
 		})
 	}

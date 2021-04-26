@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"googlemaps.github.io/maps"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -21,11 +20,11 @@ var (
 	ErrNoRoutes           = errors.BadRequest("NO_ROUTES", "No routes found")
 )
 
-type Routing struct {
+type Google struct {
 	Maps *maps.Client
 }
 
-func (r *Routing) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.RouteResponse) error {
+func (r *Google) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.RouteResponse) error {
 	// validate the request
 	if req.Origin == nil {
 		return ErrMissingOrigin
@@ -60,26 +59,28 @@ func (r *Routing) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.Route
 	}
 
 	// return the result
-	rsp.Waypoints = make([]*pb.Point, len(points))
+	rsp.Waypoints = make([]*pb.Waypoint, len(points))
 	for i, p := range points {
-		rsp.Waypoints[i] = &pb.Point{
-			Latitude:  &wrapperspb.DoubleValue{Value: p.Lat},
-			Longitude: &wrapperspb.DoubleValue{Value: p.Lng},
+		rsp.Waypoints[i] = &pb.Waypoint{
+			Location: &pb.Point{
+				Latitude:  p.Lat,
+				Longitude: p.Lng,
+			},
 		}
 	}
 	return nil
 }
 
 func validatePoint(p *pb.Point) error {
-	if p.Latitude == nil {
+	if p.Latitude == 0.0 {
 		return ErrMissingLatitude
 	}
-	if p.Longitude == nil {
+	if p.Longitude == 0.0 {
 		return ErrMissingLongitude
 	}
 	return nil
 }
 
 func pointToString(p *pb.Point) string {
-	return fmt.Sprintf("%v,%v", p.Latitude.Value, p.Longitude.Value)
+	return fmt.Sprintf("%v,%v", p.Latitude, p.Longitude)
 }
