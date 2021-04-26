@@ -18,7 +18,7 @@ type OSRM struct {
 	Client *osrm.OSRM
 }
 
-func (o *OSRM) ETA(ctx context.Context, req *pb.ETARequest, rsp *pb.ETAResponse) error {
+func (o *OSRM) Eta(ctx context.Context, req *pb.EtaRequest, rsp *pb.EtaResponse) error {
 	// validate the request
 	if req.Origin == nil {
 		return ErrMissingOrigin

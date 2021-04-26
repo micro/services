@@ -44,8 +44,8 @@ func NewRoutingEndpoints() []*api.Endpoint {
 type RoutingService interface {
 	// Route returns a gps route from origin to destination based on lat/lng
 	Route(ctx context.Context, in *RouteRequest, opts ...client.CallOption) (*RouteResponse, error)
-	// ETA returns an estimated time of arrival for a route
-	ETA(ctx context.Context, in *ETARequest, opts ...client.CallOption) (*ETAResponse, error)
+	// Eta returns an estimated time of arrival for a route
+	Eta(ctx context.Context, in *EtaRequest, opts ...client.CallOption) (*EtaResponse, error)
 }
 
 type routingService struct {
@@ -70,9 +70,9 @@ func (c *routingService) Route(ctx context.Context, in *RouteRequest, opts ...cl
 	return out, nil
 }
 
-func (c *routingService) ETA(ctx context.Context, in *ETARequest, opts ...client.CallOption) (*ETAResponse, error) {
-	req := c.c.NewRequest(c.name, "Routing.ETA", in)
-	out := new(ETAResponse)
+func (c *routingService) Eta(ctx context.Context, in *EtaRequest, opts ...client.CallOption) (*EtaResponse, error) {
+	req := c.c.NewRequest(c.name, "Routing.Eta", in)
+	out := new(EtaResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -85,14 +85,14 @@ func (c *routingService) ETA(ctx context.Context, in *ETARequest, opts ...client
 type RoutingHandler interface {
 	// Route returns a gps route from origin to destination based on lat/lng
 	Route(context.Context, *RouteRequest, *RouteResponse) error
-	// ETA returns an estimated time of arrival for a route
-	ETA(context.Context, *ETARequest, *ETAResponse) error
+	// Eta returns an estimated time of arrival for a route
+	Eta(context.Context, *EtaRequest, *EtaResponse) error
 }
 
 func RegisterRoutingHandler(s server.Server, hdlr RoutingHandler, opts ...server.HandlerOption) error {
 	type routing interface {
 		Route(ctx context.Context, in *RouteRequest, out *RouteResponse) error
-		ETA(ctx context.Context, in *ETARequest, out *ETAResponse) error
+		Eta(ctx context.Context, in *EtaRequest, out *EtaResponse) error
 	}
 	type Routing struct {
 		routing
@@ -109,6 +109,6 @@ func (h *routingHandler) Route(ctx context.Context, in *RouteRequest, out *Route
 	return h.RoutingHandler.Route(ctx, in, out)
 }
 
-func (h *routingHandler) ETA(ctx context.Context, in *ETARequest, out *ETAResponse) error {
-	return h.RoutingHandler.ETA(ctx, in, out)
+func (h *routingHandler) Eta(ctx context.Context, in *EtaRequest, out *EtaResponse) error {
+	return h.RoutingHandler.Eta(ctx, in, out)
 }

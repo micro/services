@@ -25,7 +25,7 @@ type Google struct {
 	Maps *maps.Client
 }
 
-func (r *Google) ETA(ctx context.Context, req *pb.ETARequest, rsp *pb.ETAResponse) error {
+func (r *Google) Eta(ctx context.Context, req *pb.EtaRequest, rsp *pb.EtaResponse) error {
 	// TODO: implement eta
 	return ErrUnimplemented
 }

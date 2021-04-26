@@ -132,7 +132,7 @@ func (x *Waypoint) GetLocation() *Point {
 	return nil
 }
 
-type ETARequest struct {
+type EtaRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -145,8 +145,8 @@ type ETARequest struct {
 	Speed float64 `protobuf:"fixed64,4,opt,name=speed,proto3" json:"speed,omitempty"`
 }
 
-func (x *ETARequest) Reset() {
-	*x = ETARequest{}
+func (x *EtaRequest) Reset() {
+	*x = EtaRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_routing_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -154,13 +154,13 @@ func (x *ETARequest) Reset() {
 	}
 }
 
-func (x *ETARequest) String() string {
+func (x *EtaRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ETARequest) ProtoMessage() {}
+func (*EtaRequest) ProtoMessage() {}
 
-func (x *ETARequest) ProtoReflect() protoreflect.Message {
+func (x *EtaRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_routing_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -172,40 +172,40 @@ func (x *ETARequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ETARequest.ProtoReflect.Descriptor instead.
-func (*ETARequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use EtaRequest.ProtoReflect.Descriptor instead.
+func (*EtaRequest) Descriptor() ([]byte, []int) {
 	return file_proto_routing_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *ETARequest) GetOrigin() *Point {
+func (x *EtaRequest) GetOrigin() *Point {
 	if x != nil {
 		return x.Origin
 	}
 	return nil
 }
 
-func (x *ETARequest) GetDestination() *Point {
+func (x *EtaRequest) GetDestination() *Point {
 	if x != nil {
 		return x.Destination
 	}
 	return nil
 }
 
-func (x *ETARequest) GetType() string {
+func (x *EtaRequest) GetType() string {
 	if x != nil {
 		return x.Type
 	}
 	return ""
 }
 
-func (x *ETARequest) GetSpeed() float64 {
+func (x *EtaRequest) GetSpeed() float64 {
 	if x != nil {
 		return x.Speed
 	}
 	return 0
 }
 
-type ETAResponse struct {
+type EtaResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -214,8 +214,8 @@ type ETAResponse struct {
 	Duration float64 `protobuf:"fixed64,1,opt,name=duration,proto3" json:"duration,omitempty"`
 }
 
-func (x *ETAResponse) Reset() {
-	*x = ETAResponse{}
+func (x *EtaResponse) Reset() {
+	*x = EtaResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_routing_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -223,13 +223,13 @@ func (x *ETAResponse) Reset() {
 	}
 }
 
-func (x *ETAResponse) String() string {
+func (x *EtaResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ETAResponse) ProtoMessage() {}
+func (*EtaResponse) ProtoMessage() {}
 
-func (x *ETAResponse) ProtoReflect() protoreflect.Message {
+func (x *EtaResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_routing_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -241,12 +241,12 @@ func (x *ETAResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ETAResponse.ProtoReflect.Descriptor instead.
-func (*ETAResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use EtaResponse.ProtoReflect.Descriptor instead.
+func (*EtaResponse) Descriptor() ([]byte, []int) {
 	return file_proto_routing_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *ETAResponse) GetDuration() float64 {
+func (x *EtaResponse) GetDuration() float64 {
 	if x != nil {
 		return x.Duration
 	}
@@ -372,7 +372,7 @@ var file_proto_routing_proto_rawDesc = []byte{
 	0x65, 0x12, 0x2a, 0x0a, 0x08, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x2e, 0x50, 0x6f,
 	0x69, 0x6e, 0x74, 0x52, 0x08, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x90, 0x01,
-	0x0a, 0x0a, 0x45, 0x54, 0x41, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x26, 0x0a, 0x06,
+	0x0a, 0x0a, 0x45, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x26, 0x0a, 0x06,
 	0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x72,
 	0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x2e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x6f, 0x72,
 	0x69, 0x67, 0x69, 0x6e, 0x12, 0x30, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74,
@@ -381,7 +381,7 @@ var file_proto_routing_proto_rawDesc = []byte{
 	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x70,
 	0x65, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x01, 0x52, 0x05, 0x73, 0x70, 0x65, 0x65, 0x64,
-	0x22, 0x29, 0x0a, 0x0b, 0x45, 0x54, 0x41, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x22, 0x29, 0x0a, 0x0b, 0x45, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
 	0x1a, 0x0a, 0x08, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x01, 0x52, 0x08, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x68, 0x0a, 0x0c, 0x52,
 	0x6f, 0x75, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x26, 0x0a, 0x06, 0x6f,
@@ -399,9 +399,9 @@ var file_proto_routing_proto_rawDesc = []byte{
 	0x75, 0x74, 0x69, 0x6e, 0x67, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x1a, 0x16, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x2e, 0x52, 0x6f, 0x75,
 	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x32, 0x0a, 0x03,
-	0x45, 0x54, 0x41, 0x12, 0x13, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x2e, 0x45, 0x54,
-	0x41, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x69,
-	0x6e, 0x67, 0x2e, 0x45, 0x54, 0x41, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
+	0x45, 0x74, 0x61, 0x12, 0x13, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x2e, 0x45, 0x74,
+	0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x69,
+	0x6e, 0x67, 0x2e, 0x45, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
 	0x42, 0x11, 0x5a, 0x0f, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x72, 0x6f, 0x75, 0x74,
 	0x69, 0x6e, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
@@ -422,22 +422,22 @@ var file_proto_routing_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_routing_proto_goTypes = []interface{}{
 	(*Point)(nil),         // 0: routing.Point
 	(*Waypoint)(nil),      // 1: routing.Waypoint
-	(*ETARequest)(nil),    // 2: routing.ETARequest
-	(*ETAResponse)(nil),   // 3: routing.ETAResponse
+	(*EtaRequest)(nil),    // 2: routing.EtaRequest
+	(*EtaResponse)(nil),   // 3: routing.EtaResponse
 	(*RouteRequest)(nil),  // 4: routing.RouteRequest
 	(*RouteResponse)(nil), // 5: routing.RouteResponse
 }
 var file_proto_routing_proto_depIdxs = []int32{
 	0, // 0: routing.Waypoint.location:type_name -> routing.Point
-	0, // 1: routing.ETARequest.origin:type_name -> routing.Point
-	0, // 2: routing.ETARequest.destination:type_name -> routing.Point
+	0, // 1: routing.EtaRequest.origin:type_name -> routing.Point
+	0, // 2: routing.EtaRequest.destination:type_name -> routing.Point
 	0, // 3: routing.RouteRequest.origin:type_name -> routing.Point
 	0, // 4: routing.RouteRequest.destination:type_name -> routing.Point
 	1, // 5: routing.RouteResponse.waypoints:type_name -> routing.Waypoint
 	4, // 6: routing.Routing.Route:input_type -> routing.RouteRequest
-	2, // 7: routing.Routing.ETA:input_type -> routing.ETARequest
+	2, // 7: routing.Routing.Eta:input_type -> routing.EtaRequest
 	5, // 8: routing.Routing.Route:output_type -> routing.RouteResponse
-	3, // 9: routing.Routing.ETA:output_type -> routing.ETAResponse
+	3, // 9: routing.Routing.Eta:output_type -> routing.EtaResponse
 	8, // [8:10] is the sub-list for method output_type
 	6, // [6:8] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
@@ -476,7 +476,7 @@ func file_proto_routing_proto_init() {
 			}
 		}
 		file_proto_routing_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ETARequest); i {
+			switch v := v.(*EtaRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -488,7 +488,7 @@ func file_proto_routing_proto_init() {
 			}
 		}
 		file_proto_routing_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ETAResponse); i {
+			switch v := v.(*EtaResponse); i {
 			case 0:
 				return &v.state
 			case 1:
