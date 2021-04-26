@@ -36,6 +36,17 @@ func (o *OSRM) Eta(ctx context.Context, req *pb.EtaRequest, rsp *pb.EtaResponse)
 	orig := req.Origin
 	dest := req.Destination
 
+	if o.Client == nil {
+		u, _ := url.Parse(o.Address)
+		if u.Scheme == "" {
+			u.Scheme = "http"
+		}
+		o.Client = osrm.NewFromURL(u.String())
+	}
+
+	ctx, cancelFn := context.WithTimeout(context.Background(), time.Second)
+	defer cancelFn()
+
 	resp, err := o.Client.Route(ctx, osrm.RouteRequest{
 		Profile: "car",
 		Coordinates: osrm.NewGeometryFromPointSet(geo.PointSet{
