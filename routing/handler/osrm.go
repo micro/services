@@ -62,15 +62,20 @@ func (o *OSRM) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.RouteRes
 		return errors.InternalServerError("routing.route", "failed to get route: %v", err.Error())
 	}
 
-	for _, waypoint := range resp.Waypoints {
-		rsp.Waypoints = append(rsp.Waypoints, &pb.Waypoint{
-			Name:     waypoint.Name,
-			Distance: float64(waypoint.Distance),
-			Location: &pb.Point{
-				Latitude:  waypoint.Location.Lat(),
-				Longitude: waypoint.Location.Lng(),
-			},
-		})
+	for _, routes := range resp.Routes {
+		for _, leg := range routes.Legs {
+			for _, step := range leg.Steps {
+				for _, intersect := range step.Intersections {
+					rsp.Waypoints = append(rsp.Waypoints, &pb.Waypoint{
+						Name: step.Name,
+						Location: &pb.Point{
+							Latitude:  intersect.Location.Lat(),
+							Longitude: intersect.Location.Lng(),
+						},
+					})
+				}
+			}
+		}
 	}
 
 	return nil
