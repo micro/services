@@ -4,6 +4,12 @@ Point to point routing directions
 
 The routing service provides point to point directions
 
+## Features
+
+- **Directions** - Turn by turn driving directions
+- **ETAs** - Estimated time of arrival from origin to destination
+- **Routes** - GPS point based routes with distance and duration
+
 ## Config
 
 The following config must be set
