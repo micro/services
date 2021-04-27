@@ -25,9 +25,49 @@ type Google struct {
 	Maps *maps.Client
 }
 
-func (r *Google) Eta(ctx context.Context, req *pb.EtaRequest, rsp *pb.EtaResponse) error {
+func (r *Google) Directions(ctx context.Context, req *pb.DirectionsRequest, rsp *pb.DirectionsResponse) error {
 	// TODO: implement eta
 	return ErrUnimplemented
+}
+
+// Calculate the ETAs for a route
+func (r *Google) Eta(ctx context.Context, req *pb.EtaRequest, rsp *pb.EtaResponse) error {
+	// validate the request
+	if req.Origin == nil {
+		return ErrMissingOrigin
+	}
+	if req.Destination == nil {
+		return ErrMissingDestination
+	}
+	if err := validatePoint(req.Origin); err != nil {
+		return err
+	}
+	if err := validatePoint(req.Destination); err != nil {
+		return err
+	}
+
+	// construct the request
+	resp, err := r.Maps.DistanceMatrix(ctx, &maps.DistanceMatrixRequest{
+		Origins:       []string{pointToString(req.Origin)},
+		Destinations:  []string{pointToString(req.Destination)},
+		DepartureTime: "now",
+		Units:         "UnitsMetric",
+		Mode:          maps.TravelModeDriving,
+	})
+	if err != nil {
+		return err
+	}
+
+	// check the correct number of elements (route segments) were returned
+	// from the Google API
+	if len(resp.Rows[0].Elements) != 1 {
+		return errors.InternalServerError("routing.eta", "Invalid downstream response. Expected %v segments but got %v", 1, len(resp.Rows[0].Elements))
+	}
+
+	// set the response duration in seconds
+	rsp.Duration = float64(resp.Rows[0].Elements[0].Duration.Seconds())
+
+	return nil
 }
 
 func (r *Google) Route(ctx context.Context, req *pb.RouteRequest, rsp *pb.RouteResponse) error {
