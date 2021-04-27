@@ -109,6 +109,11 @@ func (o *OSRM) Directions(ctx context.Context, req *pb.DirectionsRequest, rsp *p
 				})
 			}
 
+			action := step.Maneuver.Type
+			if action == "new name" {
+				action = "continue"
+			}
+
 			// set the directions for the route
 			rsp.Directions = append(rsp.Directions, &pb.Direction{
 				Name:        step.Name,
@@ -122,7 +127,7 @@ func (o *OSRM) Directions(ctx context.Context, req *pb.DirectionsRequest, rsp *p
 						Latitude:  float64(step.Maneuver.Location.Lat()),
 						Longitude: float64(step.Maneuver.Location.Lng()),
 					},
-					Action:    step.Maneuver.Type,
+					Action:    action,
 					Direction: step.Maneuver.Modifier,
 				},
 				Intersections: intersections,
