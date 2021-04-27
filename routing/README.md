@@ -9,5 +9,5 @@ The routing service provides point to point directions
 The following config must be set
 
 - **routing.mode**: "google" or "osrm"
-- **google.api.key**: google maps api key if using google
-- **osrm.api.address"**: location of osrm api
+- **routing.address"**: location of osrm api if used
+- **google.apikey**: google maps api key if using google

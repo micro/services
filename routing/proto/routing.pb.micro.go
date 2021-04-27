@@ -46,6 +46,8 @@ type RoutingService interface {
 	Route(ctx context.Context, in *RouteRequest, opts ...client.CallOption) (*RouteResponse, error)
 	// Eta returns an estimated time of arrival for a route
 	Eta(ctx context.Context, in *EtaRequest, opts ...client.CallOption) (*EtaResponse, error)
+	// Directions provides turn by turn directions
+	Directions(ctx context.Context, in *DirectionsRequest, opts ...client.CallOption) (*DirectionsResponse, error)
 }
 
 type routingService struct {
@@ -80,6 +82,16 @@ func (c *routingService) Eta(ctx context.Context, in *EtaRequest, opts ...client
 	return out, nil
 }
 
+func (c *routingService) Directions(ctx context.Context, in *DirectionsRequest, opts ...client.CallOption) (*DirectionsResponse, error) {
+	req := c.c.NewRequest(c.name, "Routing.Directions", in)
+	out := new(DirectionsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Routing service
 
 type RoutingHandler interface {
@@ -87,12 +99,15 @@ type RoutingHandler interface {
 	Route(context.Context, *RouteRequest, *RouteResponse) error
 	// Eta returns an estimated time of arrival for a route
 	Eta(context.Context, *EtaRequest, *EtaResponse) error
+	// Directions provides turn by turn directions
+	Directions(context.Context, *DirectionsRequest, *DirectionsResponse) error
 }
 
 func RegisterRoutingHandler(s server.Server, hdlr RoutingHandler, opts ...server.HandlerOption) error {
 	type routing interface {
 		Route(ctx context.Context, in *RouteRequest, out *RouteResponse) error
 		Eta(ctx context.Context, in *EtaRequest, out *EtaResponse) error
+		Directions(ctx context.Context, in *DirectionsRequest, out *DirectionsResponse) error
 	}
 	type Routing struct {
 		routing
@@ -111,4 +126,8 @@ func (h *routingHandler) Route(ctx context.Context, in *RouteRequest, out *Route
 
 func (h *routingHandler) Eta(ctx context.Context, in *EtaRequest, out *EtaResponse) error {
 	return h.RoutingHandler.Eta(ctx, in, out)
+}
+
+func (h *routingHandler) Directions(ctx context.Context, in *DirectionsRequest, out *DirectionsResponse) error {
+	return h.RoutingHandler.Directions(ctx, in, out)
 }

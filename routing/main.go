@@ -28,7 +28,7 @@ func main() {
 	switch mode {
 	case "google":
 		// Setup google maps
-		c, err := config.Get("google.api.key")
+		c, err := config.Get("google.apikey")
 		if err != nil {
 			logger.Fatalf("Error loading config: %v", err)
 		}
@@ -43,7 +43,7 @@ func main() {
 
 		// Register handler
 		pb.RegisterRoutingHandler(srv.Server(), &handler.Google{m})
-	case "osrm":
+	case "osrm", "":
 		// todo
 		// Setup google maps
 		c, err := config.Get("routing.address")
@@ -52,7 +52,7 @@ func main() {
 		}
 		apiAddr := c.String("http://router.project-osrm.org")
 		if len(apiAddr) == 0 {
-			logger.Fatalf("Missing required config: osrm.api.address")
+			logger.Fatalf("Missing required config: routing.address")
 		}
 		// Register handler
 		pb.RegisterRoutingHandler(srv.Server(), &handler.OSRM{Address: apiAddr})

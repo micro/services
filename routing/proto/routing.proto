@@ -8,6 +8,8 @@ service Routing {
 	rpc Route(RouteRequest) returns (RouteResponse) {}
 	// Eta returns an estimated time of arrival for a route
 	rpc Eta(EtaRequest) returns (EtaResponse) {}
+	// Directions provides turn by turn directions
+	rpc Directions(DirectionsRequest) returns (DirectionsResponse) {}
 }
 
 message Point {
@@ -20,6 +22,52 @@ message Waypoint {
 	string name = 1;
 	// gps point coordinates
 	Point location = 2;
+}
+
+message Maneuver {
+	double bearing_before = 1;
+	double bearing_after = 2;
+	Point location = 3;
+	string action = 4;
+	string direction = 5;
+}
+
+message Intersection {
+	Point location = 1;
+	repeated double bearings = 2;
+}
+
+message Direction {
+	// street name or location
+	string name = 1;
+	// alternative reference
+	string reference = 2;
+	// human readable instruction
+	string instruction = 3;
+	// distance to travel in meters
+	double distance = 4;
+	// duration to travel in seconds
+	double duration = 5;
+	// maneuver to take
+	Maneuver maneuver = 6;
+	// intersections on route
+	repeated Intersection intersections = 7;
+}
+
+message DirectionsRequest {
+	Point origin = 1;
+	Point destination = 2;
+}
+
+message DirectionsResponse {
+	// Turn by turn directions
+	repeated Direction directions = 1;
+	// The waypoints on the route
+	repeated Waypoint waypoints = 2;
+	// Estimated distance of the route in meters
+	double distance = 3;
+	// Estimated duration of the route in seconds
+	double duration = 4;
 }
 
 message EtaRequest {
@@ -44,6 +92,10 @@ message RouteRequest {
 }
 
 message RouteResponse {
+	// estimated distance in meters
+	double distance = 1;
+	// estimated duration in seconds
+	double duration = 2;
 	// waypoints on the route
-	repeated Waypoint waypoints = 2;
+	repeated Waypoint waypoints = 3;
 }
