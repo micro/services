@@ -58,6 +58,8 @@ jobs:
         working-directory: services
         run: |
           go run cmd/docgen/main.go .
+        env:
+          MICRO_ADMIN_TOKEN: ${{ secrets.MICRO_ADMIN_TOKEN }}
 
       - name: Deploy
         if: github.ref == 'refs/heads/master'
