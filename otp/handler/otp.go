@@ -28,6 +28,8 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 		key, err := totp.Generate(totp.GenerateOpts{
 			Issuer:      "Micro",
 			AccountName: req.Id,
+			Period: 60,
+			Algorithm: otp.AlgorithmSHA1,
 		})
 		if err != nil {
 			logger.Error("Failed to generate secret: %v", err)
@@ -47,7 +49,7 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 		Period:    60,
 		Skew:      1,
 		Digits:    otp.DigitsSix,
-		Algorithm: otp.AlgorithmSHA512,
+		Algorithm: otp.AlgorithmSHA1,
 	})
 
 	if err != nil {
@@ -85,13 +87,8 @@ func (e *Otp) Validate(ctx context.Context, req *pb.ValidateRequest, rsp *pb.Val
 		return errors.InternalServerError("otp.generate", "failed to validate code")
 	}
 
-	if !ok {
-		rsp.Success = false
-		return nil
-	}
-
 	// set the response
-	rsp.Success = true
+	rsp.Success = ok
 
 	return nil
 }
