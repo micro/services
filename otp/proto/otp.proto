@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package otp;
+
+option go_package = "./proto;otp";
+
+service Otp {
+	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
+	rpc Validate(ValidateRequest) returns (ValidateResponse) {}
+}
+
+// Generate an OTP (one time pass) code
+message GenerateRequest {
+	// unique id, email or user to generate an OTP for
+	string id = 1;
+}
+
+message GenerateResponse {
+	// 6 digit one time pass code
+	string code = 1;
+}
+
+// Validate the code
+message ValidateRequest {
+	// unique id, email or user for which the code was generated
+	string id = 1;
+	// 6 digit one time pass code to validate
+	string code = 2;
+}
+
+message ValidateResponse {
+	// returns true if successful
+	bool success = 1;
+}

@@ -18,6 +18,7 @@ require (
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/nats-io/nats-streaming-server v0.21.1
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
+	github.com/pquerna/otp v1.3.0
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.6.1
 	github.com/ulikunitz/xz v0.5.8 // indirect
