@@ -20,7 +20,7 @@ message GenerateResponse {
 	string code = 1;
 }
 
-// Validate the code
+// Validate the OTP code
 message ValidateRequest {
 	// unique id, email or user for which the code was generated
 	string id = 1;

@@ -1,23 +1,3 @@
-# Otp Service
+# OTP Service
 
-This is the Otp service
-
-Generated with
-
-```
-micro new otp
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+Generate one time passwords (OTP) for any unique id, email or user. Codes are valid for up to 60 seconds.
