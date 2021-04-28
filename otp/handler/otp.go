@@ -85,8 +85,13 @@ func (e *Otp) Validate(ctx context.Context, req *pb.ValidateRequest, rsp *pb.Val
 		return errors.InternalServerError("otp.generate", "failed to validate code")
 	}
 
+	if !ok {
+		rsp.Success = false
+		return nil
+	}
+
 	// set the response
-	rsp.Success = ok
+	rsp.Success = true
 
 	return nil
 }
