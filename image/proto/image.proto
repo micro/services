@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package image;
+
+option go_package = "github.com/micro/services/images/proto;image";
+
+service Image {
+	rpc Upload(UploadRequest) returns (UploadResponse) {}
+	rpc Resize(ResizeRequest) returns (ResizeResponse) {}
+	rpc Convert(ConvertRequest) returns (ConvertResponse) {}
+}
+
+message UploadRequest {
+	string base64 = 1;
+	string url = 2;
+	string imageID = 3;
+	// make output a URL and not a base64 response
+	bool outputURL = 4;
+}
+
+message UploadResponse {
+	string base64 = 1;
+	string url = 2;
+}
+
+message ResizeRequest {
+	string base64 = 1;
+	string url = 2;
+	string imageID = 3;
+	// make output a URL and not a base64 response
+	bool outputURL = 4;
+	int64 width = 5;
+	int64 height = 6;
+}
+
+message ResizeResponse {
+	string base64 = 1;
+	string url = 2;
+}
+
+message ConvertRequest {
+	string base64 = 1;
+	string url = 2;
+	string imageID = 3;
+	// make output a URL and not a base64 response
+	bool outputURL = 4;
+	bool extension = 5;
+}
+
+message ConvertResponse {
+
+}
