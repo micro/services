@@ -18,7 +18,7 @@ import (
 	"github.com/stoewer/go-strcase"
 )
 
-func saveMeta(service, readme, openapijson string) error {
+func saveMeta(service, readme, openapijson, examplejson string) error {
 	client := &http.Client{}
 
 	//Encode the data
@@ -26,6 +26,7 @@ func saveMeta(service, readme, openapijson string) error {
 		"serviceName": service,
 		"readme":      readme,
 		"openAPIJSON": openapijson,
+		"exampleJSON": examplejson,
 	})
 	rbody := bytes.NewBuffer(postBody)
 
@@ -122,7 +123,10 @@ func main() {
 				os.Exit(1)
 			}
 
-			err = saveMeta(serviceName, string(dat), string(js))
+			// not every service has examples
+			examples, _ := ioutil.ReadFile(filepath.Join(serviceDir, "examples.json"))
+
+			err = saveMeta(serviceName, string(dat), string(js), string(examples))
 			if err != nil {
 				fmt.Println("Failed to save meta to explore service", err)
 				os.Exit(1)
