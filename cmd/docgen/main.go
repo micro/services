@@ -23,10 +23,10 @@ func saveMeta(service, readme, openapijson, examplejson string) error {
 
 	//Encode the data
 	postBody, _ := json.Marshal(map[string]string{
-		"serviceName": service,
-		"readme":      readme,
-		"openAPIJSON": openapijson,
-		"exampleJSON": examplejson,
+		"serviceName":  service,
+		"readme":       readme,
+		"openAPIJSON":  openapijson,
+		"examplesJSON": examplejson,
 	})
 	rbody := bytes.NewBuffer(postBody)
 
