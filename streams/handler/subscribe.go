@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	"github.com/micro/micro/v3/service/auth"
@@ -27,11 +28,6 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 		return err
 	}
 
-	acc, ok := auth.AccountFromContext(ctx)
-	if !ok {
-		return errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
-	}
-
 	// find the token and check to see if it has expired
 	var token Token
 	dbConn, err := s.GetDBConn(ctx)
@@ -54,9 +50,23 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 		return ErrForbiddenTopic
 	}
 
+	var topic string
+
+	// attempt to create a unique topic for the account
+	acc, ok := auth.AccountFromContext(ctx)
+	if ok {
+		topic = fmtTopic(acc, req.Topic)
+	} else if len(token.Account) > 0 {
+		// use the account in the token if present
+		topic = fmt.Sprintf("%s.%s", token.Account, token.Topic)
+	} else {
+		topic = req.Topic
+	}
+
 	// start the subscription
 	logger.Infof("Subscribing to %v via queue %v", req.Topic, token.Token)
-	evChan, err := s.Events.Consume(fmtTopic(acc, req.Topic), events.WithGroup(token.Token))
+
+	evChan, err := s.Events.Consume(topic, events.WithGroup(token.Token))
 	if err != nil {
 		logger.Errorf("Error connecting to events stream: %v", err)
 		return errors.InternalServerError("EVENTS_ERROR", "Error connecting to events stream")

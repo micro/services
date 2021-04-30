@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/micro/micro/v3/service/auth"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/streams/proto"
 )
@@ -20,12 +19,16 @@ func (s *Streams) Publish(ctx context.Context, req *pb.Message, rsp *pb.PublishR
 	if len(req.Message) == 0 {
 		return ErrMissingMessage
 	}
+
+	topic := req.Topic
+
+	// in the event we have an account we use multi-tenancy
 	acc, ok := auth.AccountFromContext(ctx)
-	if !ok {
-		return errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
+	if ok {
+		topic = fmtTopic(acc, req.Topic)
 	}
 
 	// publish the message
 	logger.Infof("Publishing message to topic: %v", req.Topic)
-	return s.Events.Publish(fmtTopic(acc, req.Topic), req.Message)
+	return s.Events.Publish(topic, req.Message)
 }
