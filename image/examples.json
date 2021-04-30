@@ -1,0 +1,27 @@
+{
+    "resize": [{
+        "title": "Base64 to hosted image",
+        "description": "Resize an input base64 encoded image and store the resulting resized image on our CDN.",
+        "request": {
+            "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
+            "outputURL": true,
+            "imageID": "cat.png",
+            "width": 100,
+            "height": 100
+        },
+        "response": {
+            "url": "cdn.images.m3o.com/your-account-id/cat.png"
+        }
+    }, {
+        "title": "Base64 to base64 image",
+        "description": "Resize a base64 encoded image on the fly without storing it anywhere",
+        "request": {
+            "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
+            "width": 100,
+            "height": 100
+        },
+        "response": {
+            "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
+        }
+    }]
+}
