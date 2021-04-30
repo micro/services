@@ -10,6 +10,8 @@ service Image {
 	rpc Convert(ConvertRequest) returns (ConvertResponse) {}
 }
 
+// Upload an image by either sending a base64 encoded image to this endpoint or a URL.
+// To resize an image before uploading, see the Resize endpoint.
 message UploadRequest {
 	// Base64 encoded image to upload,
 	// ie. "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
@@ -18,15 +20,14 @@ message UploadRequest {
 	string url = 2;
 	// Output name of the image including extension, ie. "cat.png"
 	string imageID = 3;
-	// make output a URL and not a base64 response
-	bool outputURL = 4;
 }
 
 message UploadResponse {
-	string base64 = 1;
-	string url = 2;
+	string url = 1;
 }
 
+
+// Resize an image on the fly without storing it (by sending and receiving a base64 encoded image), or resize and upload depending on parameters.
 message ResizeRequest {
 	// base64 encoded image to resize,
 	// ie. "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
