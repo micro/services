@@ -26,6 +26,7 @@ var (
 type Token struct {
 	Token     string `gorm:"primaryKey"`
 	Topic     string
+	Account   string
 	ExpiresAt time.Time
 }
 
@@ -35,13 +36,17 @@ type Streams struct {
 	Time   func() time.Time
 }
 
-// fmtTopic returns a topic string with namespace prefix
-func fmtTopic(acc *auth.Account, topic string) string {
+func getAccount(acc *auth.Account) string {
 	owner := acc.Metadata["apikey_owner"]
 	if len(owner) == 0 {
 		owner = acc.ID
 	}
-	return fmt.Sprintf("%s.%s.%s", acc.Issuer, owner, topic)
+	return fmt.Sprintf("%s.%s", acc.Issuer, owner)
+}
+
+// fmtTopic returns a topic string with namespace prefix
+func fmtTopic(acc *auth.Account, topic string) string {
+	return fmt.Sprintf("%s.%s", getAccount(acc), topic)
 }
 
 // validateTopicInput validates that topic is alphanumeric

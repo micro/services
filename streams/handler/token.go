@@ -11,10 +11,11 @@ import (
 )
 
 func (s *Streams) Token(ctx context.Context, req *pb.TokenRequest, rsp *pb.TokenResponse) error {
-	_, ok := auth.AccountFromContext(ctx)
+	acc, ok := auth.AccountFromContext(ctx)
 	if !ok {
 		return errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
 	}
+
 	if len(req.Topic) > 0 {
 		if err := validateTopicInput(req.Topic); err != nil {
 			return err
@@ -26,12 +27,15 @@ func (s *Streams) Token(ctx context.Context, req *pb.TokenRequest, rsp *pb.Token
 		Token:     uuid.New().String(),
 		ExpiresAt: s.Time().Add(TokenTTL),
 		Topic:     req.Topic,
+		Account:   getAccount(acc),
 	}
+
 	dbConn, err := s.GetDBConn(ctx)
 	if err != nil {
 		logger.Errorf("Error creating token in store: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error writing token to database")
 	}
+
 	if err := dbConn.Create(&t).Error; err != nil {
 		logger.Errorf("Error creating token in store: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error writing token to database")
