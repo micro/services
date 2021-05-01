@@ -9,9 +9,9 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/streams/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"gorm.io/gorm"
 )
 
 func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Streams_SubscribeStream) error {
@@ -30,12 +30,7 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 
 	// find the token and check to see if it has expired
 	var token Token
-	dbConn, err := s.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error reading token from store: %v", err)
-		return errors.InternalServerError("DATABASE_ERROR", "Error reading token from database")
-	}
-	if err := dbConn.Where(&Token{Token: req.Token}).First(&token).Error; err == gorm.ErrRecordNotFound {
+	if err := s.Cache.Get(req.Token, &token); err == store.ErrNotFound {
 		return ErrInvalidToken
 	} else if err != nil {
 		logger.Errorf("Error reading token from store: %v", err)
