@@ -7,8 +7,6 @@ import (
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/events"
-	gorm2 "github.com/micro/services/pkg/gorm"
-
 	"github.com/nats-io/nats-streaming-server/util"
 )
 
@@ -24,14 +22,13 @@ var (
 )
 
 type Token struct {
-	Token     string `gorm:"primaryKey"`
+	Token     string
 	Topic     string
 	Account   string
 	ExpiresAt time.Time
 }
 
 type Streams struct {
-	gorm2.Helper
 	Events events.Stream
 	Time   func() time.Time
 }

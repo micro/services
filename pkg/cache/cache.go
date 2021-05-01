@@ -28,6 +28,9 @@ func Put(key string, val interface{}, expires time.Time) error {
 		return err
 	}
 	expiry := expires.Sub(time.Now())
+	if expiry < time.Duration(0) {
+		expiry = time.Duration(0)
+	}
 	return store.Write(&store.Record{
 		Key:    key,
 		Value:  b,
