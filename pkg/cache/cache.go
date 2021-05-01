@@ -8,8 +8,30 @@ import (
 	"github.com/micro/micro/v3/service/store"
 )
 
-func Get(key string, val interface{}) error {
-	recs, err := store.Read(key, store.ReadLimit(1))
+type Cache interface {
+	Get(key string, val interface{}) error
+	Put(key string, val interface{}, expires time.Time) error
+	Delete(key string) error
+}
+
+type cache struct {
+	Store store.Store
+}
+
+var (
+	DefaultCache = New(nil)
+)
+
+func New(st store.Store) Cache {
+	return &cache{st}
+}
+
+func (c *cache) Get(key string, val interface{}) error {
+	if c.Store == nil {
+		c.Store = store.DefaultStore
+	}
+
+	recs, err := c.Store.Read(key, store.ReadLimit(1))
 	if err != nil {
 		return err
 	}
@@ -22,7 +44,10 @@ func Get(key string, val interface{}) error {
 	return nil
 }
 
-func Put(key string, val interface{}, expires time.Time) error {
+func (c *cache) Put(key string, val interface{}, expires time.Time) error {
+	if c.Store == nil {
+		c.Store = store.DefaultStore
+	}
 	b, err := json.Marshal(val)
 	if err != nil {
 		return err
@@ -31,13 +56,28 @@ func Put(key string, val interface{}, expires time.Time) error {
 	if expiry < time.Duration(0) {
 		expiry = time.Duration(0)
 	}
-	return store.Write(&store.Record{
+	return c.Store.Write(&store.Record{
 		Key:    key,
 		Value:  b,
 		Expiry: expiry,
 	})
 }
 
+func (c *cache) Delete(key string) error {
+	if c.Store == nil {
+		c.Store = store.DefaultStore
+	}
+	return c.Store.Delete(key)
+}
+
+func Get(key string, val interface{}) error {
+	return DefaultCache.Get(key, val)
+}
+
+func Put(key string, val interface{}, expires time.Time) error {
+	return DefaultCache.Put(key, val, expires)
+}
+
 func Delete(key string) error {
-	return store.Delete(key)
+	return DefaultCache.Delete(key)
 }

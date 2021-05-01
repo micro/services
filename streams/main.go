@@ -3,12 +3,13 @@ package main
 import (
 	"time"
 
-	"github.com/micro/services/streams/handler"
-	pb "github.com/micro/services/streams/proto"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/pkg/cache"
+	"github.com/micro/services/streams/handler"
+	pb "github.com/micro/services/streams/proto"
 )
 
 func main() {
@@ -18,6 +19,7 @@ func main() {
 	)
 
 	h := &handler.Streams{
+		Cache:  cache.DefaultCache,
 		Events: events.DefaultStream,
 		Time:   time.Now,
 	}

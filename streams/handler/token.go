@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/micro/services/pkg/cache"
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
@@ -31,7 +30,7 @@ func (s *Streams) Token(ctx context.Context, req *pb.TokenRequest, rsp *pb.Token
 		Account:   getAccount(acc),
 	}
 
-	if err := cache.Put(t.Token, t, t.ExpiresAt); err != nil {
+	if err := s.Cache.Put(t.Token, t, t.ExpiresAt); err != nil {
 		logger.Errorf("Error creating token in store: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error writing token to database")
 	}

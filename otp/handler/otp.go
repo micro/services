@@ -28,8 +28,8 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 		key, err := totp.Generate(totp.GenerateOpts{
 			Issuer:      "Micro",
 			AccountName: req.Id,
-			Period: 60,
-			Algorithm: otp.AlgorithmSHA1,
+			Period:      60,
+			Algorithm:   otp.AlgorithmSHA1,
 		})
 		if err != nil {
 			logger.Error("Failed to generate secret: %v", err)

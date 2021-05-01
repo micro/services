@@ -7,6 +7,7 @@ import (
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/events"
+	"github.com/micro/services/pkg/cache"
 	"github.com/nats-io/nats-streaming-server/util"
 )
 
@@ -29,8 +30,13 @@ type Token struct {
 }
 
 type Streams struct {
+	Cache  cache.Cache
 	Events events.Stream
 	Time   func() time.Time
+}
+
+func (t *Token) Key() string {
+	return fmt.Sprintf("%s:%s", t.Account, t.Token)
 }
 
 func getAccount(acc *auth.Account) string {
