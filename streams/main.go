@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/pkg/cache"
