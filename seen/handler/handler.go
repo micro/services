@@ -12,6 +12,7 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/seen/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -34,8 +35,15 @@ type Record struct {
 	Timestamp    time.Time
 }
 
-func (r *Record) Key() string {
-	return fmt.Sprintf("%s:%s:%s", r.UserID, r.ResourceType, r.ResourceID)
+func (r *Record) Key(ctx context.Context) string {
+	key := fmt.Sprintf("%s:%s:%s", r.UserID, r.ResourceType, r.ResourceID)
+
+	t, ok := tenant.FromContext(ctx)
+	if !ok {
+		return key
+	}
+
+	return fmt.Sprintf("%s/%s", t, key)
 }
 
 func (r *Record) Marshal() []byte {
@@ -76,7 +84,7 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 		ResourceType: req.ResourceType,
 	}
 
-	_, err := store.Read(instance.Key(), store.ReadLimit(1))
+	_, err := store.Read(instance.Key(ctx), store.ReadLimit(1))
 	if err == store.ErrNotFound {
 		instance.ID = uuid.New().String()
 	} else if err != nil {
@@ -88,7 +96,7 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 	instance.Timestamp = req.Timestamp.AsTime()
 
 	if err := store.Write(&store.Record{
-		Key:   instance.Key(),
+		Key:   instance.Key(ctx),
 		Value: instance.Marshal(),
 	}); err != nil {
 		logger.Errorf("Error with store: %v", err)
@@ -123,7 +131,7 @@ func (s *Seen) Unset(ctx context.Context, req *pb.UnsetRequest, rsp *pb.UnsetRes
 	}
 
 	// delete the object from the store
-	if err := store.Delete(instance.Key()); err != nil {
+	if err := store.Delete(instance.Key(ctx)); err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
@@ -150,8 +158,10 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 		return ErrMissingResourceType
 	}
 
-	// create a key prefix
-	key := fmt.Sprintf("%s:%s:", req.UserId, req.ResourceType)
+	rec := &Record{
+		UserID:       req.UserId,
+		ResourceType: req.ResourceType,
+	}
 
 	var recs []*store.Record
 	var err error
@@ -159,9 +169,14 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 	// get the records for the resource type
 	if len(req.ResourceIds) == 1 {
 		// read the key itself
-		key = key + req.ResourceIds[0]
+		rec.ResourceId = req.ResourceIds[0]
+		// gen key
+		key = rec.Key(ctx)
+		// get the record
 		recs, err = store.Read(key, store.ReadLimit(1))
 	} else {
+		// create a key prefix
+		key := rec.Key(ctx)
 		// otherwise read the prefix
 		recs, err = store.Read(key, store.ReadPrefix())
 	}

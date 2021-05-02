@@ -2,20 +2,26 @@
 package cache
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/services/pkg/tenant"
 )
 
 type Cache interface {
+	// Context returns a tenant scoped Cache
+	Context(ctx context.Context) Cache
 	Get(key string, val interface{}) error
 	Put(key string, val interface{}, expires time.Time) error
 	Delete(key string) error
 }
 
 type cache struct {
-	Store store.Store
+	Store  store.Store
+	Prefix string
 }
 
 var (
@@ -23,7 +29,25 @@ var (
 )
 
 func New(st store.Store) Cache {
-	return &cache{st}
+	return &cache{Store: st}
+}
+
+func (c *cache) Key(k string) string {
+	if len(c.Prefix) > 0 {
+		return fmt.Sprintf("%s/%s", c.Prefix, k)
+	}
+	return k
+}
+
+func (c *cache) Context(ctx context.Context) Cache {
+	t, ok := tenant.FromContext(ctx)
+	if !ok {
+		return c
+	}
+	return &cache{
+		Store:  c.Store,
+		Prefix: t,
+	}
 }
 
 func (c *cache) Get(key string, val interface{}) error {
@@ -31,7 +55,7 @@ func (c *cache) Get(key string, val interface{}) error {
 		c.Store = store.DefaultStore
 	}
 
-	recs, err := c.Store.Read(key, store.ReadLimit(1))
+	recs, err := c.Store.Read(c.Key(key), store.ReadLimit(1))
 	if err != nil {
 		return err
 	}
@@ -57,7 +81,7 @@ func (c *cache) Put(key string, val interface{}, expires time.Time) error {
 		expiry = time.Duration(0)
 	}
 	return c.Store.Write(&store.Record{
-		Key:    key,
+		Key:    c.Key(key),
 		Value:  b,
 		Expiry: expiry,
 	})
@@ -67,7 +91,11 @@ func (c *cache) Delete(key string) error {
 	if c.Store == nil {
 		c.Store = store.DefaultStore
 	}
-	return c.Store.Delete(key)
+	return c.Store.Delete(c.Key(key))
+}
+
+func Context(ctx context.Context) Cache {
+	return DefaultCache.Context(ctx)
 }
 
 func Get(key string, val interface{}) error {
