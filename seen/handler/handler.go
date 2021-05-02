@@ -169,9 +169,9 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 	// get the records for the resource type
 	if len(req.ResourceIds) == 1 {
 		// read the key itself
-		rec.ResourceId = req.ResourceIds[0]
+		rec.ResourceID = req.ResourceIds[0]
 		// gen key
-		key = rec.Key(ctx)
+		key := rec.Key(ctx)
 		// get the record
 		recs, err = store.Read(key, store.ReadLimit(1))
 	} else {
