@@ -35,10 +35,6 @@ type Streams struct {
 	Time   func() time.Time
 }
 
-func (t *Token) Key() string {
-	return fmt.Sprintf("%s:%s", t.Account, t.Token)
-}
-
 func getAccount(acc *auth.Account) string {
 	owner := acc.Metadata["apikey_owner"]
 	if len(owner) == 0 {

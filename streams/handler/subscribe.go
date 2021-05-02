@@ -30,7 +30,7 @@ func (s *Streams) Subscribe(ctx context.Context, req *pb.SubscribeRequest, strea
 
 	// find the token and check to see if it has expired
 	var token Token
-	if err := s.Cache.Get(req.Token, &token); err == store.ErrNotFound {
+	if err := s.Cache.Get("token:"+req.Token, &token); err == store.ErrNotFound {
 		return ErrInvalidToken
 	} else if err != nil {
 		logger.Errorf("Error reading token from store: %v", err)
