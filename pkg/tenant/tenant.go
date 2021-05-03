@@ -25,3 +25,13 @@ func FromAccount(acc *auth.Account) string {
 	}
 	return fmt.Sprintf("%s/%s", acc.Issuer, owner)
 }
+
+// CreateKey generated a unique key for a resource
+func CreateKey(ctx context.Context, key string) string {
+	t, ok := FromContext(ctx)
+	if !ok {
+		return key
+	}
+	// return a tenant prefixed key e.g micro/asim/foobar
+	return fmt.Sprintf("%s/%s", t, key)
+}
