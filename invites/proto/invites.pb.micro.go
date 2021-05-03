@@ -6,7 +6,6 @@ package invites
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/wrapperspb"
 	math "math"
 )
 
