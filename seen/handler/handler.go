@@ -2,15 +2,17 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/auth"
-	gorm2 "github.com/micro/services/pkg/gorm"
-	"gorm.io/gorm"
-
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/seen/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -23,16 +25,34 @@ var (
 	ErrStore               = errors.InternalServerError("STORE_ERROR", "Error connecting to the store")
 )
 
-type Seen struct {
-	gorm2.Helper
+type Seen struct{}
+
+type Record struct {
+	ID           string
+	UserID       string
+	ResourceID   string
+	ResourceType string
+	Timestamp    time.Time
 }
 
-type SeenInstance struct {
-	ID           string
-	UserID       string `gorm:"uniqueIndex:user_resource"`
-	ResourceID   string `gorm:"uniqueIndex:user_resource"`
-	ResourceType string `gorm:"uniqueIndex:user_resource"`
-	Timestamp    time.Time
+func (r *Record) Key(ctx context.Context) string {
+	key := fmt.Sprintf("%s:%s:%s", r.UserID, r.ResourceType, r.ResourceID)
+
+	t, ok := tenant.FromContext(ctx)
+	if !ok {
+		return key
+	}
+
+	return fmt.Sprintf("%s/%s", t, key)
+}
+
+func (r *Record) Marshal() []byte {
+	b, _ := json.Marshal(r)
+	return b
+}
+
+func (r *Record) Unmarshal(b []byte) error {
+	return json.Unmarshal(b, &r)
 }
 
 // Set a resource as seen by a user. If no timestamp is provided, the current time is used.
@@ -58,17 +78,14 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 	}
 
 	// find the resource
-	instance := SeenInstance{
+	instance := &Record{
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
 	}
-	db, err := s.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error connecting to DB: %v", err)
-		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
-	}
-	if err := db.Where(&instance).First(&instance).Error; err == gorm.ErrRecordNotFound {
+
+	_, err := store.Read(instance.Key(ctx), store.ReadLimit(1))
+	if err == store.ErrNotFound {
 		instance.ID = uuid.New().String()
 	} else if err != nil {
 		logger.Errorf("Error with store: %v", err)
@@ -77,7 +94,11 @@ func (s *Seen) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse)
 
 	// update the resource
 	instance.Timestamp = req.Timestamp.AsTime()
-	if err := db.Save(&instance).Error; err != nil {
+
+	if err := store.Write(&store.Record{
+		Key:   instance.Key(ctx),
+		Value: instance.Marshal(),
+	}); err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
@@ -103,18 +124,14 @@ func (s *Seen) Unset(ctx context.Context, req *pb.UnsetRequest, rsp *pb.UnsetRes
 		return ErrMissingResourceType
 	}
 
-	db, err := s.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error connecting to DB: %v", err)
-		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
-	}
-	// delete the object from the store
-	err = db.Delete(SeenInstance{}, SeenInstance{
+	instance := &Record{
 		UserID:       req.UserId,
 		ResourceID:   req.ResourceId,
 		ResourceType: req.ResourceType,
-	}).Error
-	if err != nil {
+	}
+
+	// delete the object from the store
+	if err := store.Delete(instance.Key(ctx)); err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
@@ -141,24 +158,61 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 		return ErrMissingResourceType
 	}
 
-	db, err := s.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error connecting to DB: %v", err)
-		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	rec := &Record{
+		UserID:       req.UserId,
+		ResourceType: req.ResourceType,
 	}
-	// query the store
-	q := db.Where(SeenInstance{UserID: req.UserId, ResourceType: req.ResourceType})
-	q = q.Where("resource_id IN (?)", req.ResourceIds)
-	var data []SeenInstance
-	if err := q.Find(&data).Error; err != nil {
+
+	var recs []*store.Record
+	var err error
+
+	// get the records for the resource type
+	if len(req.ResourceIds) == 1 {
+		// read the key itself
+		rec.ResourceID = req.ResourceIds[0]
+		// gen key
+		key := rec.Key(ctx)
+		// get the record
+		recs, err = store.Read(key, store.ReadLimit(1))
+	} else {
+		// create a key prefix
+		key := rec.Key(ctx)
+		// otherwise read the prefix
+		recs, err = store.Read(key, store.ReadPrefix())
+	}
+
+	if err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
 
-	// serialize the response
-	rsp.Timestamps = make(map[string]*timestamppb.Timestamp, len(data))
-	for _, i := range data {
-		rsp.Timestamps[i.ResourceID] = timestamppb.New(i.Timestamp)
+	// make an id map
+	ids := make(map[string]bool)
+
+	for _, id := range req.ResourceIds {
+		ids[id] = true
+	}
+
+	// make the map
+	rsp.Timestamps = make(map[string]*timestamppb.Timestamp)
+
+	// range over records for the user/resource type
+	// TODO: add some sort of filter query in store
+	for _, rec := range recs {
+		// get id
+		parts := strings.Split(rec.Key, ":")
+		id := parts[2]
+
+		fmt.Println("checking record", rec.Key, id)
+
+		if ok := ids[id]; !ok {
+			continue
+		}
+
+		// add the timestamp for the record
+		r := new(Record)
+		r.Unmarshal(rec.Value)
+		rsp.Timestamps[id] = timestamppb.New(r.Timestamp)
 	}
 
 	return nil

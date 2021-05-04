@@ -15,7 +15,7 @@ require (
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
-	github.com/micro/micro/v3 v3.2.1-0.20210416134206-20d3a6b03014
+	github.com/micro/micro/v3 v3.2.2-0.20210502173659-359ab425002e
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/nats-io/nats-streaming-server v0.21.1
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33

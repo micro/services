@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package invites;
 option go_package = "./proto;invites";
-import "google/protobuf/wrappers.proto";
 
 service Invites {
 	// Create an invite
@@ -32,8 +31,8 @@ message CreateResponse {
 }
 
 message ReadRequest {
-	google.protobuf.StringValue id = 1;
-	google.protobuf.StringValue code = 2;
+	string id = 1;
+	string code = 2;
 }
 
 message ReadResponse {
@@ -41,8 +40,8 @@ message ReadResponse {
 }
 
 message ListRequest {
-	google.protobuf.StringValue group_id = 1;
-	google.protobuf.StringValue email = 2;
+	string group_id = 1;
+	string email = 2;
 }
 
 message ListResponse {

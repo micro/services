@@ -23,13 +23,13 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 	// check if a key exists for the user
 	var secret string
 
-	if err := cache.Get(req.Id, &secret); err != nil {
+	if err := cache.Context(ctx).Get(req.Id, &secret); err != nil {
 		// generate a key
 		key, err := totp.Generate(totp.GenerateOpts{
 			Issuer:      "Micro",
 			AccountName: req.Id,
-			Period: 60,
-			Algorithm: otp.AlgorithmSHA1,
+			Period:      60,
+			Algorithm:   otp.AlgorithmSHA1,
 		})
 		if err != nil {
 			logger.Error("Failed to generate secret: %v", err)
@@ -38,7 +38,7 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 
 		secret = key.Secret()
 
-		if err := cache.Put(req.Id, secret, time.Now().Add(time.Minute*5)); err != nil {
+		if err := cache.Context(ctx).Put(req.Id, secret, time.Now().Add(time.Minute*5)); err != nil {
 			logger.Error("Failed to store secret: %v", err)
 			return errors.InternalServerError("otp.generate", "failed to generate code")
 		}
@@ -72,7 +72,7 @@ func (e *Otp) Validate(ctx context.Context, req *pb.ValidateRequest, rsp *pb.Val
 
 	var secret string
 
-	if err := cache.Get(req.Id, &secret); err != nil {
+	if err := cache.Context(ctx).Get(req.Id, &secret); err != nil {
 		logger.Error("Failed to get secret from store: %v", err)
 		return errors.InternalServerError("otp.generate", "failed to validate code")
 	}
