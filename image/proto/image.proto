@@ -47,15 +47,21 @@ message ResizeResponse {
 	string url = 2;
 }
 
+// Convert an image from one format (jpeg, png etc.) to an other either on the fly (from base64 to base64),
+// or by uploading the conversion result.
 message ConvertRequest {
+	// base64 encoded image to resize,
+	// ie. "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
 	string base64 = 1;
+	// url of the image to resize
 	string url = 2;
+	// output name of the image including extension, ie. "cat.png"
 	string imageID = 3;
 	// make output a URL and not a base64 response
 	bool outputURL = 4;
-	bool extension = 5;
 }
 
 message ConvertResponse {
-
+	string base64 = 1;
+	string url = 2;
 }
