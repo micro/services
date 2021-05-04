@@ -18,12 +18,12 @@ func main() {
 	)
 
 	// decide whether to use google or osrm
-	c, err := config.Get("routing.mode")
+	c, err := config.Get("routing.provider")
 	if err != nil {
 		logger.Fatalf("Error loading config: %v", err)
 	}
 	// defaults to google
-	mode := c.String("google")
+	mode := c.String("")
 
 	switch mode {
 	case "google":
