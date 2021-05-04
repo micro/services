@@ -1,0 +1,13 @@
+
+{
+    "call": [{
+        "title": "Call the helloworld service",
+        "description": "Helloworld is a simple example that takes a name and returns a personalised message",
+        "request": {
+            "name": "John"
+        },
+        "response": {
+            "msg": "Hello John"
+        }
+    }]
+}
