@@ -34,12 +34,12 @@
                 "line_one": "10 Russell Street",
                 "city": "London",
                 "country": "United Kingdom",
-                 "postcode": "WC2B 5HZ"
+                "postcode": "WC2B 5HZ"
             },
             "location": {
                 "latitude": 51.5123064,
                 "longitude": -0.1216235
             }
-        }
+       }
     }]
 }
