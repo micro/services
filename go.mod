@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
+	github.com/disintegration/imaging v1.6.2
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang/protobuf v1.5.1
