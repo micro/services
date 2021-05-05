@@ -22,10 +22,9 @@ type Geocoding struct {
 	Maps *maps.Client
 }
 
-// Geocode an address
-func (g *Geocoding) Geocode(ctx context.Context, req *pb.Address, rsp *pb.Address) error {
+func (g *Geocoding) Lookup(ctx context.Context, req *pb.LookupRequest, rsp *pb.LookupResponse) error {
 	// query google maps
-	results, err := g.Maps.Geocode(ctx, &maps.GeocodingRequest{Address: toString(req)})
+	results, err := g.Maps.Geocode(ctx, &maps.GeocodingRequest{Address: req.Address})
 	if err != nil {
 		logger.Errorf("Error geocoding: %v", err)
 		return ErrDownstream
@@ -34,24 +33,28 @@ func (g *Geocoding) Geocode(ctx context.Context, req *pb.Address, rsp *pb.Addres
 		return ErrNoResults
 	}
 
+	rsp.Address = new(pb.Address)
+	rsp.Location = new(pb.Location)
+
 	// return the result
-	serializeResult(results[0], rsp)
+	serializeResult(results[0], rsp.Address, rsp.Location)
+
 	return nil
 }
 
 // Reverse geocode an address
-func (g *Geocoding) Reverse(ctx context.Context, req *pb.Coordinates, rsp *pb.Address) error {
+func (g *Geocoding) Reverse(ctx context.Context, req *pb.ReverseRequest, rsp *pb.ReverseResponse) error {
 	// validate the request
-	if req.Latitude == nil {
+	if req.Latitude == 0.0 {
 		return ErrMissingLatitude
 	}
-	if req.Longitude == nil {
+	if req.Longitude == 0.0 {
 		return ErrMissingLongitude
 	}
 
 	// query google maps
 	results, err := g.Maps.ReverseGeocode(ctx, &maps.GeocodingRequest{
-		LatLng: &maps.LatLng{Lat: req.Latitude.Value, Lng: req.Longitude.Value},
+		LatLng: &maps.LatLng{Lat: req.Latitude, Lng: req.Longitude},
 	})
 	if err != nil {
 		logger.Errorf("Error geocoding: %v", err)
@@ -61,8 +64,11 @@ func (g *Geocoding) Reverse(ctx context.Context, req *pb.Coordinates, rsp *pb.Ad
 		return ErrNoResults
 	}
 
+	rsp.Address = new(pb.Address)
+	rsp.Location = new(pb.Location)
+
 	// return the result
-	serializeResult(results[0], rsp)
+	serializeResult(results[0], rsp.Address, rsp.Location)
 	return nil
 }
 
@@ -77,8 +83,9 @@ func toString(a *pb.Address) string {
 	return strings.Join(comps, ", ")
 }
 
-func serializeResult(r maps.GeocodingResult, a *pb.Address) {
+func serializeResult(r maps.GeocodingResult, a *pb.Address, l *pb.Location) {
 	var street, number string
+
 	for _, c := range r.AddressComponents {
 		for _, t := range c.Types {
 			switch t {
@@ -99,6 +106,6 @@ func serializeResult(r maps.GeocodingResult, a *pb.Address) {
 	}
 
 	a.LineOne = strings.Join([]string{number, street}, " ")
-	a.Latitude = r.Geometry.Location.Lat
-	a.Longitude = r.Geometry.Location.Lng
+	l.Latitude = r.Geometry.Location.Lat
+	l.Longitude = r.Geometry.Location.Lng
 }
