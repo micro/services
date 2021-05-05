@@ -31,6 +31,14 @@
             }
         }
     }],
+    "delete": [{
+        "title": "Delete an invite",
+        "description": "Delete an invite by id",
+        "request": {
+            "id": "fb3a3552-3c7b-4a18-a1f8-08ab56940862"
+        },
+        "response": {}
+    }],
     "list": [{
         "title": "List invites",
         "description": "List invites for a group by id",
