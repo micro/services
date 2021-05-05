@@ -163,8 +163,6 @@ github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7a
 github.com/gogo/protobuf v1.3.2 h1:Ov1cvc58UF3b5XjBnZv7+opcTcQFZebYjWzi34vdm4Q=
 github.com/gogo/protobuf v1.3.2/go.mod h1:P1XiOD3dCwIKUDQYPy72D8LYyHL2YPYrpS2s69NZV8Q=
 github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d/go.mod h1:nnjvkQ9ptGaCkuDUx6wNykzzlUixGxvkme+H/lnzb+A=
-github.com/gojuno/go.osrm v0.1.0 h1:M9RH1raBe7D72preWxFOw9WafGftGBQyoGNkG6upAT0=
-github.com/gojuno/go.osrm v0.1.0/go.mod h1:XPCHB/Ir2/vHnqhKlfUxIiUGHFtTzgrRxD89JdkJhrs=
 github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4 h1:ZhyiVDRMAdbMPFmzJMAK3GVbUG5abPRUMC9jySXcfCU=
 github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4/go.mod h1:XPCHB/Ir2/vHnqhKlfUxIiUGHFtTzgrRxD89JdkJhrs=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekfRL6a582T4P37/31XEstQ5p58=
@@ -400,8 +398,6 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5
 github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa h1:1BoFPE4/NTF7WKLZWsEFImOsN143QAU7Dkw9J2/qFXA=
 github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa/go.mod h1:j/8E+ezN/ij7a9BXBHMKmLayFfUW1O4h/Owdv67B0X0=
 github.com/micro/micro/v3 v3.0.0-beta.6.0.20201016094841-ca8ffd563b2b/go.mod h1:RPJTp9meQAppzW/9jgQtfJmPpRJAySVPbz9uur4B3Ko=
-github.com/micro/micro/v3 v3.2.1-0.20210416134206-20d3a6b03014 h1:6yuX6VfXT8XZCK9PrFeh4KN/ZG7iaQeMbhl593C9SCE=
-github.com/micro/micro/v3 v3.2.1-0.20210416134206-20d3a6b03014/go.mod h1:UqfLMsy88SNqc31m7tNMQb6xLNGtsKkjJJFp3iHFXfs=
 github.com/micro/micro/v3 v3.2.2-0.20210502173659-359ab425002e h1:o58+WWFR5l85vktSL/mQQFrGwG88PPyeuGlaQF348yU=
 github.com/micro/micro/v3 v3.2.2-0.20210502173659-359ab425002e/go.mod h1:3jH/R5iGtpMyeKH09iHt3KIw8gSFN7aW3W4iGOWUucE=
 github.com/miekg/dns v1.1.15/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=

@@ -18,20 +18,25 @@ import (
 	"github.com/stoewer/go-strcase"
 )
 
-func saveMeta(service, readme, openapijson, examplejson string) error {
+func saveMeta(service, readme, openapiJSON, examplesJSON string, pricing map[string]int64) error {
 	client := &http.Client{}
 
+	apiSpec := map[string]interface{}{
+		"name":          service,
+		"description":   readme,
+		"open_api_json": openapiJSON,
+		"pricing":       pricing,
+		"examples_json": examplesJSON,
+	}
+
 	//Encode the data
-	postBody, _ := json.Marshal(map[string]string{
-		"serviceName":  service,
-		"readme":       readme,
-		"openAPIJSON":  openapijson,
-		"examplesJSON": examplejson,
+	postBody, _ := json.Marshal(map[string]interface{}{
+		"api": apiSpec,
 	})
 	rbody := bytes.NewBuffer(postBody)
 
 	//Leverage Go's HTTP Post function to make request
-	req, err := http.NewRequest("POST", "https://api.m3o.com/explore/SaveMeta", rbody)
+	req, err := http.NewRequest("POST", "https://api.m3o.com/publicapi/Publish", rbody)
 
 	// Add auth headers here if needed
 	req.Header.Add("Authorization", `Bearer `+os.Getenv("MICRO_ADMIN_TOKEN"))
@@ -126,9 +131,15 @@ func main() {
 			// not every service has examples
 			examples, _ := ioutil.ReadFile(filepath.Join(serviceDir, "examples.json"))
 
-			err = saveMeta(serviceName, string(dat), string(js), string(examples))
+			pricingRaw, _ := ioutil.ReadFile(filepath.Join(serviceDir, "pricing.json"))
+			pricing := map[string]int64{}
+			if len(pricingRaw) > 0 {
+				json.Unmarshal(pricingRaw, &pricing)
+			}
+
+			err = saveMeta(serviceName, string(dat), string(js), string(examples), pricing)
 			if err != nil {
-				fmt.Println("Failed to save meta to explore service", err)
+				fmt.Println("Failed to save data to publicapi service", err)
 				os.Exit(1)
 			}
 
