@@ -2,37 +2,21 @@ package handler_test
 
 import (
 	"context"
-	"database/sql"
-	"os"
 	"sort"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/auth"
+	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/micro/v3/service/store/memory"
 	"github.com/micro/services/groups/handler"
 	pb "github.com/micro/services/groups/proto"
 	"github.com/stretchr/testify/assert"
 )
 
 func testHandler(t *testing.T) *handler.Groups {
-	// connect to the database
-	addr := os.Getenv("POSTGRES_URL")
-	if len(addr) == 0 {
-		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
-	}
-	sqlDB, err := sql.Open("pgx", addr)
-	if err != nil {
-		t.Fatalf("Failed to open connection to DB %s", err)
-	}
-
-	// clean any data from a previous run
-	if _, err := sqlDB.Exec(`DROP TABLE IF EXISTS "micro_someID_groups", "micro_someID_memberships" CASCADE`); err != nil {
-		t.Fatalf("Error cleaning database: %v", err)
-	}
-
-	h := &handler.Groups{}
-	h.DBConn(sqlDB).Migrations(&handler.Group{}, &handler.Membership{})
-	return h
+	store.DefaultStore = memory.NewStore()
+	return &handler.Groups{}
 }
 func TestCreate(t *testing.T) {
 	h := testHandler(t)
