@@ -14,7 +14,7 @@ import (
 
 var (
 	ErrMissingName     = errors.BadRequest("MISSING_NAME", "Missing name")
-	ErrMissingID       = errors.BadRequest("MISSING_ID", "Missingroup.ID")
+	ErrMissingID       = errors.BadRequest("MISSING_ID", "Missing ID")
 	ErrMissingIDs      = errors.BadRequest("MISSING_IDS", "One or more IDs are required")
 	ErrMissingGroupID  = errors.BadRequest("MISSING_GROUP_ID", "Missing Group ID")
 	ErrMissingMemberID = errors.BadRequest("MISSING_MEMBER_ID", "Missing Member ID")
