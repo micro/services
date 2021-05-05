@@ -10,18 +10,16 @@
            "country": "uk"
         },
         "response": {
-            {
-                "address": {
-                    "line_one": "10 Russell Street",
-                    "city": "London",
-                    "country": "United Kingdom",
-                    "postcode": "WC2B 5HZ"
+            "address": {
+                "line_one": "10 Russell Street",
+                "city": "London",
+                "country": "United Kingdom",
+                "postcode": "WC2B 5HZ"
             },
-                "location": {
-                    "latitude": 51.5123064,
-                    "longitude": -0.1216235
-                }
-           }
+            "location": {
+                "latitude": 51.5123064,
+                "longitude": -0.1216235
+            }
         }
     }],
     "reverse": [{
@@ -32,18 +30,16 @@
 	    "longitude": -0.1216235
         },
         "response": {
-            {
-                "address": {
-                    "line_one": "10 Russell Street",
-                    "city": "London",
-                    "country": "United Kingdom",
-                    "postcode": "WC2B 5HZ"
+            "address": {
+                "line_one": "10 Russell Street",
+                "city": "London",
+                "country": "United Kingdom",
+                "postcode": "WC2B 5HZ"
             },
-                "location": {
-                    "latitude": 51.5123064,
-                    "longitude": -0.1216235
-                }
-           }
-        }
+            "location": {
+                "latitude": 51.5123064,
+                "longitude": -0.1216235
+            }
+       }
     }]
 }
