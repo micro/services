@@ -1,0 +1,49 @@
+
+{
+    "create": [{
+        "title": "Create an invite",
+        "description": "Create an invite for a user for a group",
+        "request": {
+            "group_id": "mygroup",
+            "email": "john@doe.com"
+        },
+        "response": {
+            "invite": {
+                "id": "fb3a3552-3c7b-4a18-a1f8-08ab56940862",
+                "group_id": "mygroup",
+                "email": "john@doe.com",
+                "code": "86285587"
+            }
+        }
+    }],
+    "read": [{
+        "title": "Read an invite",
+        "description": "Read an invite by code",
+        "request": {
+            "code": "86285587"
+        },
+        "response": {
+            "invite": {
+                "id": "fb3a3552-3c7b-4a18-a1f8-08ab56940862",
+                "group_id": "mygroup",
+                "email": "john@doe.com",
+                "code": "86285587"
+            }
+        }
+    }],
+    "list": [{
+        "title": "List invites",
+        "description": "List invites for a group by id",
+        "request": {
+            "group_id": "mygroup"
+        },
+        "response": {
+            "invites": [{
+                "id": "fb3a3552-3c7b-4a18-a1f8-08ab56940862",
+                "group_id": "myawesomegroup",
+                "email": "john@doe.com",
+                "code": "86285587"
+            }]
+       }
+    }]
+}
