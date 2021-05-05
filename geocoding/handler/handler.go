@@ -24,7 +24,7 @@ type Geocoding struct {
 
 func (g *Geocoding) Lookup(ctx context.Context, req *pb.LookupRequest, rsp *pb.LookupResponse) error {
 	// query google maps
-	results, err := g.Maps.Geocode(ctx, &maps.GeocodingRequest{Address: req.Address})
+	results, err := g.Maps.Geocode(ctx, &maps.GeocodingRequest{Address: toString(req)})
 	if err != nil {
 		logger.Errorf("Error geocoding: %v", err)
 		return ErrDownstream
@@ -72,9 +72,9 @@ func (g *Geocoding) Reverse(ctx context.Context, req *pb.ReverseRequest, rsp *pb
 	return nil
 }
 
-func toString(a *pb.Address) string {
+func toString(l *pb.LookupRequest) string {
 	var comps []string
-	for _, c := range []string{a.LineOne, a.LineTwo, a.City, a.Postcode, a.Country} {
+	for _, c := range []string{l.Address, l.City, l.Postcode, l.Country} {
 		t := strings.TrimSpace(c)
 		if len(t) > 0 {
 			comps = append(comps, t)

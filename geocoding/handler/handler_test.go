@@ -152,12 +152,6 @@ func TestGeocoding(t *testing.T) {
 			if len(tc.Address.LineTwo) > 0 {
 				address = fmt.Sprintf("%s, %s", address, tc.Address.LineTwo)
 			}
-			if len(tc.Address.Postcode) > 0 {
-				address = fmt.Sprintf("%s, %s", address, tc.Address.Postcode)
-			}
-			if len(tc.Address.Country) > 0 {
-				address = fmt.Sprintf("%s, %s", address, tc.Address.Country)
-			}
 			err = h.Lookup(context.TODO(), &pb.LookupRequest{
 				Address:  address,
 				Postcode: tc.Address.Postcode,
