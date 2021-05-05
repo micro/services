@@ -3,26 +3,46 @@ syntax = "proto3";
 package geocoding;
 option go_package = "./proto;geocoding";
 
-import "google/protobuf/wrappers.proto";
-
 service Geocoding {
-	// Geocode an address, the result will be the normalized address which contains coordinates
-	rpc Geocode(Address) returns (Address) {};
+	// Lookup an address, the result will be the normalized address which contains coordinates
+	rpc Lookup(LookupRequest) returns (LookupResponse) {};
 	// Reverse geocode coordinates to an address
-	rpc Reverse(Coordinates) returns (Address) {};
+	rpc Reverse(ReverseRequest) returns (ReverseResponse) {};
 }
 
 message Address {
-  string line_one = 1;
-  string line_two = 2;
-  string city = 3;
-  string country = 4;
-  string postcode = 5;
-  double latitude = 6;
-  double longitude = 7;
+	string line_one = 1;
+	string line_two = 2;
+	string city = 3;
+	string country = 4;
+	string postcode = 5;
 }
 
-message Coordinates {
-	google.protobuf.DoubleValue latitude = 1;
-	google.protobuf.DoubleValue longitude = 2;
+message Location {
+	double latitude = 1;
+	double longitude = 2;
+}
+
+// Lookup returns a geocoded address including normalized address and gps coordinates
+message LookupRequest {
+	string address = 1;
+	string city = 2;
+	string postcode = 3;
+	string country = 4;
+}
+
+message LookupResponse {
+	Address address = 1;
+	Location location = 2;
+}
+
+// Reverse lookup an address from gps coordinates
+message ReverseRequest {
+	double latitude = 1;
+	double longitude = 2;
+}
+
+message ReverseResponse {
+	Address address = 1;
+	Location location = 2;
 }

@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"googlemaps.github.io/maps"
 
 	"github.com/micro/services/geocoding/handler"
@@ -148,17 +147,31 @@ func TestGeocoding(t *testing.T) {
 			}
 			h := &handler.Geocoding{Maps: m}
 
-			var rsp pb.Address
-			err = h.Geocode(context.TODO(), tc.Address, &rsp)
+			var rsp pb.LookupResponse
+			address := tc.Address.LineOne
+			if len(tc.Address.LineTwo) > 0 {
+				address = fmt.Sprintf("%s, %s", address, tc.Address.LineTwo)
+			}
+			if len(tc.Address.Postcode) > 0 {
+				address = fmt.Sprintf("%s, %s", address, tc.Address.Postcode)
+			}
+			if len(tc.Address.Country) > 0 {
+				address = fmt.Sprintf("%s, %s", address, tc.Address.Country)
+			}
+			err = h.Lookup(context.TODO(), &pb.LookupRequest{
+				Address:  address,
+				Postcode: tc.Address.Postcode,
+				Country:  tc.Address.Country,
+			}, &rsp)
 			assert.Equal(t, tc.MapQuery, query)
 			assert.Equal(t, tc.Error, err)
 
 			if tc.Result != nil {
-				assert.Equal(t, tc.Result.LineOne, rsp.LineOne)
-				assert.Equal(t, tc.Result.LineTwo, rsp.LineTwo)
-				assert.Equal(t, tc.Result.City, rsp.City)
-				assert.Equal(t, tc.Result.Country, rsp.Country)
-				assert.Equal(t, tc.Result.Postcode, rsp.Postcode)
+				assert.Equal(t, tc.Result.LineOne, rsp.Address.LineOne)
+				assert.Equal(t, tc.Result.LineTwo, rsp.Address.LineTwo)
+				assert.Equal(t, tc.Result.City, rsp.Address.City)
+				assert.Equal(t, tc.Result.Country, rsp.Address.Country)
+				assert.Equal(t, tc.Result.Postcode, rsp.Address.Postcode)
 			}
 		})
 	}
@@ -171,34 +184,34 @@ func TestReverseGeocoding(t *testing.T) {
 		ResponseBody string
 		ResponseCode int
 		Error        error
-		Latitude     *wrapperspb.DoubleValue
-		Longitude    *wrapperspb.DoubleValue
+		Latitude     float64
+		Longitude    float64
 		Result       *pb.Address
 	}{
 		{
 			Name:     "Missing longitude",
-			Latitude: &wrapperspb.DoubleValue{Value: 51.522214},
+			Latitude: 51.522214,
 			Error:    handler.ErrMissingLongitude,
 		},
 		{
 			Name:      "Missing latitude",
-			Longitude: &wrapperspb.DoubleValue{Value: -0.113565},
+			Longitude: -0.113565,
 			Error:     handler.ErrMissingLatitude,
 		},
 		{
 			Name:         "Invalid address",
 			ResponseBody: noResultsReponse,
 			ResponseCode: http.StatusOK,
-			Latitude:     &wrapperspb.DoubleValue{Value: 999.999999},
-			Longitude:    &wrapperspb.DoubleValue{Value: 999.999999},
+			Latitude:     999.999999,
+			Longitude:    999.999999,
 			Error:        handler.ErrNoResults,
 		},
 		{
 			Name:         "Valid address",
 			ResponseBody: validReponse,
 			ResponseCode: http.StatusOK,
-			Latitude:     &wrapperspb.DoubleValue{Value: 51.522214},
-			Longitude:    &wrapperspb.DoubleValue{Value: -0.113565},
+			Latitude:     51.522214,
+			Longitude:    -0.113565,
 			Result: &pb.Address{
 				LineOne:  "160 Grays Inn Road",
 				LineTwo:  "Holborn",
@@ -208,8 +221,8 @@ func TestReverseGeocoding(t *testing.T) {
 		},
 		{
 			Name:         "Maps error",
-			Latitude:     &wrapperspb.DoubleValue{Value: 51.522214},
-			Longitude:    &wrapperspb.DoubleValue{Value: -0.113565},
+			Latitude:     51.522214,
+			Longitude:    -0.113565,
 			ResponseCode: http.StatusInternalServerError,
 			Error:        handler.ErrDownstream,
 			ResponseBody: "{}",
@@ -237,23 +250,23 @@ func TestReverseGeocoding(t *testing.T) {
 			}
 			h := &handler.Geocoding{Maps: m}
 
-			var rsp pb.Address
-			err = h.Reverse(context.TODO(), &pb.Coordinates{
+			var rsp pb.ReverseResponse
+			err = h.Reverse(context.TODO(), &pb.ReverseRequest{
 				Latitude: tc.Latitude, Longitude: tc.Longitude,
 			}, &rsp)
 			assert.Equal(t, tc.Error, err)
 
-			if tc.Latitude != nil && tc.Longitude != nil {
-				assert.Equal(t, fmt.Sprintf("%f", tc.Latitude.Value), lat)
-				assert.Equal(t, fmt.Sprintf("%f", tc.Longitude.Value), lng)
+			if tc.Latitude != 0.0 && tc.Longitude != 0.0 {
+				assert.Equal(t, fmt.Sprintf("%f", tc.Latitude), lat)
+				assert.Equal(t, fmt.Sprintf("%f", tc.Longitude), lng)
 			}
 
 			if tc.Result != nil {
-				assert.Equal(t, tc.Result.LineOne, rsp.LineOne)
-				assert.Equal(t, tc.Result.LineTwo, rsp.LineTwo)
-				assert.Equal(t, tc.Result.City, rsp.City)
-				assert.Equal(t, tc.Result.Country, rsp.Country)
-				assert.Equal(t, tc.Result.Postcode, rsp.Postcode)
+				assert.Equal(t, tc.Result.LineOne, rsp.Address.LineOne)
+				assert.Equal(t, tc.Result.LineTwo, rsp.Address.LineTwo)
+				assert.Equal(t, tc.Result.City, rsp.Address.City)
+				assert.Equal(t, tc.Result.Country, rsp.Address.Country)
+				assert.Equal(t, tc.Result.Postcode, rsp.Address.Postcode)
 			}
 		})
 	}

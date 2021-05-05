@@ -6,7 +6,6 @@ package geocoding
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/wrapperspb"
 	math "math"
 )
 
@@ -43,10 +42,10 @@ func NewGeocodingEndpoints() []*api.Endpoint {
 // Client API for Geocoding service
 
 type GeocodingService interface {
-	// Geocode an address, the result will be the normalized address which contains coordinates
-	Geocode(ctx context.Context, in *Address, opts ...client.CallOption) (*Address, error)
+	// Lookup an address, the result will be the normalized address which contains coordinates
+	Lookup(ctx context.Context, in *LookupRequest, opts ...client.CallOption) (*LookupResponse, error)
 	// Reverse geocode coordinates to an address
-	Reverse(ctx context.Context, in *Coordinates, opts ...client.CallOption) (*Address, error)
+	Reverse(ctx context.Context, in *ReverseRequest, opts ...client.CallOption) (*ReverseResponse, error)
 }
 
 type geocodingService struct {
@@ -61,9 +60,9 @@ func NewGeocodingService(name string, c client.Client) GeocodingService {
 	}
 }
 
-func (c *geocodingService) Geocode(ctx context.Context, in *Address, opts ...client.CallOption) (*Address, error) {
-	req := c.c.NewRequest(c.name, "Geocoding.Geocode", in)
-	out := new(Address)
+func (c *geocodingService) Lookup(ctx context.Context, in *LookupRequest, opts ...client.CallOption) (*LookupResponse, error) {
+	req := c.c.NewRequest(c.name, "Geocoding.Lookup", in)
+	out := new(LookupResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -71,9 +70,9 @@ func (c *geocodingService) Geocode(ctx context.Context, in *Address, opts ...cli
 	return out, nil
 }
 
-func (c *geocodingService) Reverse(ctx context.Context, in *Coordinates, opts ...client.CallOption) (*Address, error) {
+func (c *geocodingService) Reverse(ctx context.Context, in *ReverseRequest, opts ...client.CallOption) (*ReverseResponse, error) {
 	req := c.c.NewRequest(c.name, "Geocoding.Reverse", in)
-	out := new(Address)
+	out := new(ReverseResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,16 +83,16 @@ func (c *geocodingService) Reverse(ctx context.Context, in *Coordinates, opts ..
 // Server API for Geocoding service
 
 type GeocodingHandler interface {
-	// Geocode an address, the result will be the normalized address which contains coordinates
-	Geocode(context.Context, *Address, *Address) error
+	// Lookup an address, the result will be the normalized address which contains coordinates
+	Lookup(context.Context, *LookupRequest, *LookupResponse) error
 	// Reverse geocode coordinates to an address
-	Reverse(context.Context, *Coordinates, *Address) error
+	Reverse(context.Context, *ReverseRequest, *ReverseResponse) error
 }
 
 func RegisterGeocodingHandler(s server.Server, hdlr GeocodingHandler, opts ...server.HandlerOption) error {
 	type geocoding interface {
-		Geocode(ctx context.Context, in *Address, out *Address) error
-		Reverse(ctx context.Context, in *Coordinates, out *Address) error
+		Lookup(ctx context.Context, in *LookupRequest, out *LookupResponse) error
+		Reverse(ctx context.Context, in *ReverseRequest, out *ReverseResponse) error
 	}
 	type Geocoding struct {
 		geocoding
@@ -106,10 +105,10 @@ type geocodingHandler struct {
 	GeocodingHandler
 }
 
-func (h *geocodingHandler) Geocode(ctx context.Context, in *Address, out *Address) error {
-	return h.GeocodingHandler.Geocode(ctx, in, out)
+func (h *geocodingHandler) Lookup(ctx context.Context, in *LookupRequest, out *LookupResponse) error {
+	return h.GeocodingHandler.Lookup(ctx, in, out)
 }
 
-func (h *geocodingHandler) Reverse(ctx context.Context, in *Coordinates, out *Address) error {
+func (h *geocodingHandler) Reverse(ctx context.Context, in *ReverseRequest, out *ReverseResponse) error {
 	return h.GeocodingHandler.Reverse(ctx, in, out)
 }
