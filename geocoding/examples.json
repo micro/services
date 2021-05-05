@@ -1,0 +1,49 @@
+
+{
+    "lookup": [{
+        "title": "Geocode an address",
+        "description": "Lookup returns a normalized address and gps location",
+        "request": {
+           "address": "10 russell st",
+           "postcode": "wc2b",
+           "city": "london",
+           "country": "uk"
+        },
+        "response": {
+            {
+                "address": {
+                    "line_one": "10 Russell Street",
+                    "city": "London",
+                    "country": "United Kingdom",
+                    "postcode": "WC2B 5HZ"
+            },
+                "location": {
+                    "latitude": 51.5123064,
+                    "longitude": -0.1216235
+                }
+           }
+        }
+    }],
+    "reverse": [{
+        "title": "Reverse geocode location",
+        "description": "Reverse geocode a gps location to an address",
+        "request": {
+	    "latitude": 51.5123064,
+	    "longitude": -0.1216235
+        },
+        "response": {
+            {
+                "address": {
+                    "line_one": "10 Russell Street",
+                    "city": "London",
+                    "country": "United Kingdom",
+                    "postcode": "WC2B 5HZ"
+            },
+                "location": {
+                    "latitude": 51.5123064,
+                    "longitude": -0.1216235
+                }
+           }
+        }
+    }]
+}
