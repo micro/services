@@ -181,7 +181,9 @@ func (s *Seen) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 		recs, err = store.Read(key, store.ReadPrefix())
 	}
 
-	if err != nil {
+	if err == store.ErrNotFound {
+		return nil
+	} else if err != nil {
 		logger.Errorf("Error with store: %v", err)
 		return ErrStore
 	}
