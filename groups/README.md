@@ -1,6 +1,8 @@
+Manage group memberships
+
 # Groups Service
 
-The group serivce is a basic CRUD service for groups. You can use it to create groups, add members and lookup which groups a user is a member of.
+The group service is a basic CRUD service for group membership management. Create groups, add members and lookup which groups a user is a member of.
 
 Example usage:
 
