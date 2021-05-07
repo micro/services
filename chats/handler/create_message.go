@@ -46,14 +46,14 @@ func (c *Chats) SendMessage(ctx context.Context, req *pb.SendMessageRequest, rsp
 		Text:     req.Text,
 		AuthorID: req.AuthorId,
 		ChatID:   req.ChatId,
-		SentAt: c.Time(),
+		SentAt:   c.Time(),
 	}
 	if len(msg.ID) == 0 {
 		msg.ID = uuid.New().String()
 	}
 
 	// check if the message already exists
-	recs, err = store.Read(msg.Index(ctx), store.ReadLimit(1))
+	recs, err = store.Read(msg.Key(ctx), store.ReadLimit(1))
 	if err == nil && len(recs) == 1 {
 		// return the existing message
 		msg = &Message{}
@@ -74,7 +74,7 @@ func (c *Chats) SendMessage(ctx context.Context, req *pb.SendMessageRequest, rsp
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
 
-	// write the chat based index
+	// write the time based index
 	if err := store.Write(store.NewRecord(msg.Index(ctx), msg)); err == nil {
 		rsp.Message = msg.Serialize()
 		return nil

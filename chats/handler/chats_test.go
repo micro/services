@@ -42,7 +42,6 @@ func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
 	assert.True(t, exp.CreatedAt == act.CreatedAt)
 }
 
-
 func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 	if act == nil {
 		t.Errorf("Message not returned")

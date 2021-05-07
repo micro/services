@@ -85,9 +85,9 @@ func TestListMessages(t *testing.T) {
 	t.Run("OffsetAndLimit", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
-			ChatId:     chatRsp.Chat.Id,
+			ChatId: chatRsp.Chat.Id,
+			Limit:  5,
 			Offset: 15,
-			Limit:      5,
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -95,7 +95,7 @@ func TestListMessages(t *testing.T) {
 			t.Fatalf("Expected %v messages but got %v", 5, len(rsp.Messages))
 			return
 		}
-		expected := msgs[15:20]
+		expected := msgs[30:35]
 		sortMessages(rsp.Messages)
 		for i, msg := range rsp.Messages {
 			assertMessagesMatch(t, expected[i], msg)
@@ -106,7 +106,7 @@ func TestListMessages(t *testing.T) {
 // sortMessages by the time they were sent
 func sortMessages(msgs []*pb.Message) {
 	sort.Slice(msgs, func(i, j int) bool {
-		if msgs[i].SentAt == 0  || msgs[j].SentAt == 0 {
+		if msgs[i].SentAt == 0 || msgs[j].SentAt == 0 {
 			return true
 		}
 		return msgs[i].SentAt < msgs[j].SentAt

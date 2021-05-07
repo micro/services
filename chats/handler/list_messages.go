@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
@@ -60,7 +59,6 @@ func (c *Chats) ListMessages(ctx context.Context, req *pb.ListMessagesRequest, r
 	for _, rec := range recs {
 		m := &Message{}
 		rec.Decode(&m)
-		fmt.Println(rec.Key)
 		if len(m.ID) == 0 || m.ChatID != req.ChatId {
 			continue
 		}
