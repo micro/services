@@ -30,7 +30,6 @@ type Chat struct {
 	ID        string
 	UserIDs   []string
 	CreatedAt time.Time
-	Messages  []*Message
 }
 
 type Message struct {
@@ -96,26 +95,6 @@ func (m *Message) Index(ctx context.Context) string {
 		if len(m.ID) > 0 {
 			key = fmt.Sprintf("%s:%s", key, m.ID)
 		}
-	}
-
-	t, ok := tenant.FromContext(ctx)
-	if !ok {
-		return key
-	}
-
-	return fmt.Sprintf("%s/%s", t, key)
-}
-
-func (m *Message) Prefix(ctx context.Context) string {
-	key := "message:"
-
-	// set the chat id prefix
-	if len(m.ChatID) > 0 {
-		key = fmt.Sprintf("%s%s:", key, m.ChatID)
-	}
-	// set the message id prefix
-	if len(m.ID) > 0 {
-		key = fmt.Sprintf("%s%s", key, m.ID)
 	}
 
 	t, ok := tenant.FromContext(ctx)
