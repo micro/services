@@ -19,10 +19,22 @@ func FromContext(ctx context.Context) (string, bool) {
 
 // FromAccount returns a tenant from
 func FromAccount(acc *auth.Account) string {
+	id := acc.ID
+	issuer := acc.Issuer
 	owner := acc.Metadata["apikey_owner"]
-	if len(owner) == 0 {
-		owner = acc.ID
+
+	if len(id) == 0 {
+		id = "micro"
 	}
+
+	if len(issuer) == 0 {
+		issuer = "micro"
+	}
+
+	if len(owner) == 0 {
+		owner = id
+	}
+
 	return fmt.Sprintf("%s/%s", acc.Issuer, owner)
 }
 

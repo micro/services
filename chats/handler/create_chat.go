@@ -2,8 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
-	"regexp"
 	"sort"
 	"time"
 
@@ -11,6 +9,7 @@ import (
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/chats/proto"
 )
 
@@ -26,43 +25,56 @@ func (c *Chats) CreateChat(ctx context.Context, req *pb.CreateChatRequest, rsp *
 		return ErrMissingUserIDs
 	}
 
-	// sort the user ids and then marshal to json
+	// sort the user ids
 	sort.Strings(req.UserIds)
-	bytes, err := json.Marshal(req.UserIds)
-	if err != nil {
-		logger.Errorf("Error mashaling user ids: %v", err)
-		return errors.InternalServerError("ENCODING_ERROR", "Error encoding user ids")
+
+	id := uuid.New().String()
+	if len(req.Id) > 0 {
+		id = req.Id
 	}
 
 	// construct the chat
-	chat := Chat{
-		ID:        uuid.New().String(),
+	chat := &Chat{
+		ID:        id,
 		CreatedAt: time.Now(),
-		UserIDs:   string(bytes),
+		UserIDs:   req.UserIds,
 	}
 
-	db, err := c.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error connecting to DB: %v", err)
-		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
-	}
-	// write to the database, if we get a unique key error, the chat already exists
-	err = db.Create(&chat).Error
-	if err == nil {
+	// read the chat by the unique composition of ids
+	recs, err := store.Read(chat.Key(ctx), store.ReadLimit(1))
+	if err == nil && len(recs) == 1 {
+		// found an existing record
+		recs[0].Decode(&chat)
 		rsp.Chat = chat.Serialize()
 		return nil
 	}
 
-	if match, _ := regexp.MatchString(`idx_[\S]+_chats_user_ids`, err.Error()); !match {
+	// if not found check it exists by user index key
+	if err == store.ErrNotFound {
+		recs, err = store.Read(chat.Index(ctx), store.ReadLimit(1))
+		if err == nil && len(recs) > 0 {
+			recs[0].Decode(&chat)
+			rsp.Chat = chat.Serialize()
+			return nil
+		}
+	}
+
+	// ok otherwise we're creating an entirely new record
+	newRec := store.NewRecord(chat.Key(ctx), chat)
+	if err := store.Write(newRec); err != nil {
 		logger.Errorf("Error creating chat: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
 
-	var existing Chat
-	if err := db.Where(&Chat{UserIDs: chat.UserIDs}).First(&existing).Error; err != nil {
-		logger.Errorf("Error reading chat: %v", err)
+	// write the user composite key
+	newRec = store.NewRecord(chat.Index(ctx), chat)
+	if err := store.Write(newRec); err != nil {
+		logger.Errorf("Error creating chat: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
-	rsp.Chat = existing.Serialize()
+
+	// return the record
+	rsp.Chat = chat.Serialize()
+
 	return nil
 }

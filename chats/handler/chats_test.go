@@ -2,38 +2,20 @@ package handler_test
 
 import (
 	"context"
-	"database/sql"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/micro/micro/v3/service/auth"
+	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/micro/v3/service/store/memory"
 	"github.com/micro/services/chats/handler"
 	pb "github.com/micro/services/chats/proto"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
 func testHandler(t *testing.T) *handler.Chats {
-	// connect to the database
-	addr := os.Getenv("POSTGRES_URL")
-	if len(addr) == 0 {
-		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
-	}
-	sqlDB, err := sql.Open("pgx", addr)
-	if err != nil {
-		t.Fatalf("Failed to open connection to DB %s", err)
-	}
-
-	// clean any data from a previous run
-	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_chats, micro_messages CASCADE"); err != nil {
-		t.Fatalf("Error cleaning database: %v", err)
-	}
-
-	h := &handler.Chats{Time: func() time.Time { return time.Unix(1611327673, 0) }}
-	h.DBConn(sqlDB).Migrations(&handler.Chat{}, &handler.Message{})
-	return h
+	store.DefaultStore = memory.NewStore()
+	return &handler.Chats{Time: func() time.Time { return time.Unix(1611327673, 0) }}
 }
 
 func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
@@ -52,19 +34,14 @@ func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
 
 	assert.Equal(t, exp.UserIds, act.UserIds)
 
-	if act.CreatedAt == nil {
+	if act.CreatedAt == 0 {
 		t.Errorf("CreatedAt not set")
 		return
 	}
 
-	assert.True(t, microSecondTime(exp.CreatedAt).Equal(microSecondTime(act.CreatedAt)))
+	assert.True(t, exp.CreatedAt == act.CreatedAt)
 }
 
-// postgres has a resolution of 100microseconds so just test that it's accurate to the second
-func microSecondTime(t *timestamp.Timestamp) time.Time {
-	tt := t.AsTime()
-	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
-}
 
 func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 	if act == nil {
@@ -83,11 +60,12 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 	assert.Equal(t, exp.AuthorId, act.AuthorId)
 	assert.Equal(t, exp.ChatId, act.ChatId)
 
-	if act.SentAt == nil {
+	if act.SentAt == 0 {
 		t.Errorf("SentAt not set")
 		return
 	}
-	assert.True(t, microSecondTime(exp.SentAt).Equal(microSecondTime(act.SentAt)))
+
+	assert.True(t, exp.SentAt == act.SentAt)
 }
 
 func microAccountCtx() context.Context {

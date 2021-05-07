@@ -5,13 +5,12 @@ import (
 
 	"github.com/micro/services/chats/handler"
 	pb "github.com/micro/services/chats/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateMessage(t *testing.T) {
+func TestSendMessage(t *testing.T) {
 	h := testHandler(t)
 
 	// seed some data
@@ -82,8 +81,8 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
-			var rsp pb.CreateMessageResponse
-			err := h.CreateMessage(microAccountCtx(), &pb.CreateMessageRequest{
+			var rsp pb.SendMessageResponse
+			err := h.SendMessage(microAccountCtx(), &pb.SendMessageRequest{
 				AuthorId: tc.AuthorID,
 				ChatId:   tc.ChatID,
 				Text:     tc.Text,
@@ -99,7 +98,7 @@ func TestCreateMessage(t *testing.T) {
 			assertMessagesMatch(t, &pb.Message{
 				AuthorId: tc.AuthorID,
 				ChatId:   tc.ChatID,
-				SentAt:   timestamppb.New(h.Time()),
+				SentAt:   h.Time().UnixNano(),
 				Text:     tc.Text,
 				Id:       tc.ID,
 			}, rsp.Message)
