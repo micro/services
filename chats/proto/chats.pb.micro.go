@@ -6,8 +6,6 @@ package chats
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
-	_ "google.golang.org/protobuf/types/known/wrapperspb"
 	math "math"
 )
 
@@ -48,7 +46,7 @@ type ChatsService interface {
 	// chat will be returned
 	CreateChat(ctx context.Context, in *CreateChatRequest, opts ...client.CallOption) (*CreateChatResponse, error)
 	// Create a message within a chat
-	CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...client.CallOption) (*CreateMessageResponse, error)
+	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...client.CallOption) (*SendMessageResponse, error)
 	// List the messages within a chat in reverse chronological order, using sent_before to
 	// offset as older messages need to be loaded
 	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...client.CallOption) (*ListMessagesResponse, error)
@@ -76,9 +74,9 @@ func (c *chatsService) CreateChat(ctx context.Context, in *CreateChatRequest, op
 	return out, nil
 }
 
-func (c *chatsService) CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...client.CallOption) (*CreateMessageResponse, error) {
-	req := c.c.NewRequest(c.name, "Chats.CreateMessage", in)
-	out := new(CreateMessageResponse)
+func (c *chatsService) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...client.CallOption) (*SendMessageResponse, error) {
+	req := c.c.NewRequest(c.name, "Chats.SendMessage", in)
+	out := new(SendMessageResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -103,7 +101,7 @@ type ChatsHandler interface {
 	// chat will be returned
 	CreateChat(context.Context, *CreateChatRequest, *CreateChatResponse) error
 	// Create a message within a chat
-	CreateMessage(context.Context, *CreateMessageRequest, *CreateMessageResponse) error
+	SendMessage(context.Context, *SendMessageRequest, *SendMessageResponse) error
 	// List the messages within a chat in reverse chronological order, using sent_before to
 	// offset as older messages need to be loaded
 	ListMessages(context.Context, *ListMessagesRequest, *ListMessagesResponse) error
@@ -112,7 +110,7 @@ type ChatsHandler interface {
 func RegisterChatsHandler(s server.Server, hdlr ChatsHandler, opts ...server.HandlerOption) error {
 	type chats interface {
 		CreateChat(ctx context.Context, in *CreateChatRequest, out *CreateChatResponse) error
-		CreateMessage(ctx context.Context, in *CreateMessageRequest, out *CreateMessageResponse) error
+		SendMessage(ctx context.Context, in *SendMessageRequest, out *SendMessageResponse) error
 		ListMessages(ctx context.Context, in *ListMessagesRequest, out *ListMessagesResponse) error
 	}
 	type Chats struct {
@@ -130,8 +128,8 @@ func (h *chatsHandler) CreateChat(ctx context.Context, in *CreateChatRequest, ou
 	return h.ChatsHandler.CreateChat(ctx, in, out)
 }
 
-func (h *chatsHandler) CreateMessage(ctx context.Context, in *CreateMessageRequest, out *CreateMessageResponse) error {
-	return h.ChatsHandler.CreateMessage(ctx, in, out)
+func (h *chatsHandler) SendMessage(ctx context.Context, in *SendMessageRequest, out *SendMessageResponse) error {
+	return h.ChatsHandler.SendMessage(ctx, in, out)
 }
 
 func (h *chatsHandler) ListMessages(ctx context.Context, in *ListMessagesRequest, out *ListMessagesResponse) error {

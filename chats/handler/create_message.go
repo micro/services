@@ -2,18 +2,17 @@ package handler
 
 import (
 	"context"
-	"strings"
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/chats/proto"
-	"gorm.io/gorm"
 )
 
 // Create a message within a chat
-func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest, rsp *pb.CreateMessageResponse) error {
+func (c *Chats) SendMessage(ctx context.Context, req *pb.SendMessageRequest, rsp *pb.SendMessageResponse) error {
 	_, ok := auth.AccountFromContext(ctx)
 	if !ok {
 		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
@@ -29,14 +28,12 @@ func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest,
 		return ErrMissingText
 	}
 
-	db, err := c.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error connecting to DB: %v", err)
-		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	chat := &Chat{
+		ID: req.ChatId,
 	}
-	// lookup the chat
-	var conv Chat
-	if err := db.Where(&Chat{ID: req.ChatId}).First(&conv).Error; err == gorm.ErrRecordNotFound {
+
+	recs, err := store.Read(chat.Key(ctx), store.ReadLimit(1))
+	if err == store.ErrNotFound {
 		return ErrNotFound
 	} else if err != nil {
 		logger.Errorf("Error reading chat: %v", err)
@@ -46,28 +43,45 @@ func (c *Chats) CreateMessage(ctx context.Context, req *pb.CreateMessageRequest,
 	// create the message
 	msg := &Message{
 		ID:       req.Id,
-		SentAt:   c.Time(),
 		Text:     req.Text,
 		AuthorID: req.AuthorId,
 		ChatID:   req.ChatId,
+		SentAt:   c.Time(),
 	}
 	if len(msg.ID) == 0 {
 		msg.ID = uuid.New().String()
 	}
-	if err := db.Create(msg).Error; err == nil {
+
+	// check if the message already exists
+	recs, err = store.Read(msg.Key(ctx), store.ReadLimit(1))
+	if err == nil && len(recs) == 1 {
+		// return the existing message
+		msg = &Message{}
+		recs[0].Decode(&msg)
 		rsp.Message = msg.Serialize()
 		return nil
-	} else if !strings.Contains(err.Error(), "messages_pkey") {
+	}
+
+	// if there's an error then return
+	if err != nil && err != store.ErrNotFound {
 		logger.Errorf("Error creating message: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
 
-	// a message already exists with this id
-	var existing Message
-	if err := db.Where(&Message{ID: msg.ID}).First(&existing).Error; err != nil {
+	// otherwise write the record
+	if err := store.Write(store.NewRecord(msg.Key(ctx), msg)); err != nil {
 		logger.Errorf("Error creating message: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
-	rsp.Message = existing.Serialize()
+
+	// write the time based index
+	if err := store.Write(store.NewRecord(msg.Index(ctx), msg)); err == nil {
+		rsp.Message = msg.Serialize()
+		return nil
+	} else if err != nil {
+		logger.Errorf("Error creating message: %v", err)
+		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
+	}
+
 	return nil
 }

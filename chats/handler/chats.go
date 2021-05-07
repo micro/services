@@ -1,14 +1,16 @@
 package handler
 
 import (
-	"encoding/json"
+	"context"
+	"fmt"
+	"sort"
+	"strings"
 	"time"
 
 	pb "github.com/micro/services/chats/proto"
-	"github.com/micro/services/pkg/gorm"
+	"github.com/micro/services/pkg/tenant"
 
 	"github.com/micro/micro/v3/service/errors"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -21,13 +23,12 @@ var (
 )
 
 type Chats struct {
-	gorm.Helper
 	Time func() time.Time
 }
 
 type Chat struct {
 	ID        string
-	UserIDs   string `gorm:"uniqueIndex"` // sorted json array
+	UserIDs   []string
 	CreatedAt time.Time
 }
 
@@ -45,17 +46,69 @@ func (m *Message) Serialize() *pb.Message {
 		AuthorId: m.AuthorID,
 		ChatId:   m.ChatID,
 		Text:     m.Text,
-		SentAt:   timestamppb.New(m.SentAt),
+		SentAt:   m.SentAt.UnixNano(),
 	}
 }
 
-func (c *Chat) Serialize() *pb.Chat {
-	var userIDs []string
-	json.Unmarshal([]byte(c.UserIDs), &userIDs)
+func (c *Chat) Index(ctx context.Context) string {
+	sort.Strings(c.UserIDs)
+	users := strings.Join(c.UserIDs, "-")
 
+	key := fmt.Sprintf("chatByUserIDs:%s", users)
+
+	t, ok := tenant.FromContext(ctx)
+	if !ok {
+		return key
+	}
+
+	return fmt.Sprintf("%s/%s", t, key)
+}
+
+func (c *Chat) Key(ctx context.Context) string {
+	key := fmt.Sprintf("chat:%s", c.ID)
+
+	t, ok := tenant.FromContext(ctx)
+	if !ok {
+		return key
+	}
+
+	return fmt.Sprintf("%s/%s", t, key)
+}
+
+func (m *Message) Key(ctx context.Context) string {
+	key := fmt.Sprintf("message:%s:%s", m.ChatID, m.ID)
+
+	t, ok := tenant.FromContext(ctx)
+	if !ok {
+		return key
+	}
+
+	return fmt.Sprintf("%s/%s", t, key)
+}
+
+func (m *Message) Index(ctx context.Context) string {
+	key := fmt.Sprintf("messagesByChatID:%s", m.ChatID)
+
+	if !m.SentAt.IsZero() {
+		key = fmt.Sprintf("%s:%d", key, m.SentAt.UnixNano())
+
+		if len(m.ID) > 0 {
+			key = fmt.Sprintf("%s:%s", key, m.ID)
+		}
+	}
+
+	t, ok := tenant.FromContext(ctx)
+	if !ok {
+		return key
+	}
+
+	return fmt.Sprintf("%s/%s", t, key)
+}
+
+func (c *Chat) Serialize() *pb.Chat {
 	return &pb.Chat{
 		Id:        c.ID,
-		UserIds:   userIDs,
-		CreatedAt: timestamppb.New(c.CreatedAt),
+		UserIds:   c.UserIDs,
+		CreatedAt: c.CreatedAt.UnixNano(),
 	}
 }

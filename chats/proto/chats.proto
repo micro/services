@@ -4,57 +4,73 @@ package chats;
 
 option go_package = "./proto;chats";
 
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
-
 service Chats {
 	// Create a chat between two or more users, if a chat already exists for these users, the existing
 	// chat will be returned
 	rpc CreateChat(CreateChatRequest) returns (CreateChatResponse);
 	// Create a message within a chat
-	rpc CreateMessage(CreateMessageRequest) returns (CreateMessageResponse);
+	rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
 	// List the messages within a chat in reverse chronological order, using sent_before to
 	// offset as older messages need to be loaded
 	rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
 }
 
 message Chat {
+	// unique id of the chat
 	string id = 1;
+	// list of users in the chat
 	repeated string user_ids = 2;
-	google.protobuf.Timestamp created_at = 3;
+	// unix nanosecond timestamp
+	int64 created_at = 3;
 }
 
 message Message {
+	// unique id of the message
 	string id = 1;
+	// user id of the message
 	string author_id = 2;
+	// chat id the message belongs to
 	string chat_id = 3;
+	// text within the message
 	string text = 4;
-	google.protobuf.Timestamp sent_at = 5;
+	// unix nanosecond timestamp
+	int64 sent_at = 5;
 }
 
+// Create a new chat between mulitple users
 message CreateChatRequest {
-	repeated string user_ids = 1;
+	// The chat ID
+	string id = 1;
+	// List of users in the chat
+	repeated string user_ids = 2;
 }
 
 message CreateChatResponse {
 	Chat chat = 1;
 }
 
-message CreateMessageRequest {
+// Send a message to a chat room
+message SendMessageRequest {
 	string id = 1;
 	string chat_id = 2;
 	string author_id = 3;
 	string text = 4;
 }
 
-message CreateMessageResponse {
+message SendMessageResponse {
 	Message message = 1;
 }
 
+// List messages within a chat
 message ListMessagesRequest {
+	// unique id of the chat
 	string chat_id = 1;
-	google.protobuf.Timestamp sent_before = 2;
-	google.protobuf.Int32Value limit = 3;
+	// limit the number of messages
+	int64 limit = 2;
+	// offset for the messages
+	int64 offset = 3;
+	// order "asc" or "desc" (defaults to reverse chronological)
+	string order = 4;
 }
 
 message ListMessagesResponse {

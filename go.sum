@@ -400,6 +400,14 @@ github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa/go.mod h1:j/8E+ezN/ij7a9
 github.com/micro/micro/v3 v3.0.0-beta.6.0.20201016094841-ca8ffd563b2b/go.mod h1:RPJTp9meQAppzW/9jgQtfJmPpRJAySVPbz9uur4B3Ko=
 github.com/micro/micro/v3 v3.2.2-0.20210502173659-359ab425002e h1:o58+WWFR5l85vktSL/mQQFrGwG88PPyeuGlaQF348yU=
 github.com/micro/micro/v3 v3.2.2-0.20210502173659-359ab425002e/go.mod h1:3jH/R5iGtpMyeKH09iHt3KIw8gSFN7aW3W4iGOWUucE=
+github.com/micro/micro/v3 v3.2.2-0.20210506130842-249062b573c2 h1:ZBp8IJ2fjWq1OlFjTEMBN4kVXoYEbHeXPMJ1z43Igl8=
+github.com/micro/micro/v3 v3.2.2-0.20210506130842-249062b573c2/go.mod h1:3jH/R5iGtpMyeKH09iHt3KIw8gSFN7aW3W4iGOWUucE=
+github.com/micro/micro/v3 v3.2.2-0.20210507151653-da4405f8310f h1:MUgQhZj5BrIEPVliGNwV5flQQoMSvCXyirgS3kzAAwI=
+github.com/micro/micro/v3 v3.2.2-0.20210507151653-da4405f8310f/go.mod h1:3jH/R5iGtpMyeKH09iHt3KIw8gSFN7aW3W4iGOWUucE=
+github.com/micro/micro/v3 v3.2.2-0.20210507153404-9b089a4eaf70 h1:OxjaaG+dR7kIRl5mpXTR6WMmuVYGgnwK57mKHIaV5uA=
+github.com/micro/micro/v3 v3.2.2-0.20210507153404-9b089a4eaf70/go.mod h1:3jH/R5iGtpMyeKH09iHt3KIw8gSFN7aW3W4iGOWUucE=
+github.com/micro/micro/v3 v3.2.2-0.20210507154259-3dd1cd29e797 h1:0j1z+nxdjv2ImkiEa4qvm3r39yqKKW0663G1JPz7eTw=
+github.com/micro/micro/v3 v3.2.2-0.20210507154259-3dd1cd29e797/go.mod h1:3jH/R5iGtpMyeKH09iHt3KIw8gSFN7aW3W4iGOWUucE=
 github.com/miekg/dns v1.1.15/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/dns v1.1.27/go.mod h1:KNUDUusw/aVsxyTYZM1oqvCicbwhgbNgztCETuNZ7xM=
 github.com/miekg/dns v1.1.31 h1:sJFOl9BgwbYAWOGEwr61FU28pqsBNdpRBnhGXtO06Oo=

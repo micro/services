@@ -10,7 +10,6 @@ import (
 	"github.com/micro/services/chats/handler"
 	pb "github.com/micro/services/chats/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestListMessages(t *testing.T) {
@@ -29,8 +28,8 @@ func TestListMessages(t *testing.T) {
 
 	msgs := make([]*pb.Message, 50)
 	for i := 0; i < len(msgs); i++ {
-		var rsp pb.CreateMessageResponse
-		err := h.CreateMessage(microAccountCtx(), &pb.CreateMessageRequest{
+		var rsp pb.SendMessageResponse
+		err := h.SendMessage(microAccountCtx(), &pb.SendMessageRequest{
 			ChatId:   chatRsp.Chat.Id,
 			AuthorId: uuid.New().String(),
 			Text:     strconv.Itoa(i),
@@ -68,7 +67,7 @@ func TestListMessages(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
 			ChatId: chatRsp.Chat.Id,
-			Limit:  &wrapperspb.Int32Value{Value: 10},
+			Limit:  10,
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -86,9 +85,9 @@ func TestListMessages(t *testing.T) {
 	t.Run("OffsetAndLimit", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
-			ChatId:     chatRsp.Chat.Id,
-			Limit:      &wrapperspb.Int32Value{Value: 5},
-			SentBefore: msgs[20].SentAt,
+			ChatId: chatRsp.Chat.Id,
+			Limit:  5,
+			Offset: 15,
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -96,7 +95,7 @@ func TestListMessages(t *testing.T) {
 			t.Fatalf("Expected %v messages but got %v", 5, len(rsp.Messages))
 			return
 		}
-		expected := msgs[15:20]
+		expected := msgs[30:35]
 		sortMessages(rsp.Messages)
 		for i, msg := range rsp.Messages {
 			assertMessagesMatch(t, expected[i], msg)
@@ -107,9 +106,9 @@ func TestListMessages(t *testing.T) {
 // sortMessages by the time they were sent
 func sortMessages(msgs []*pb.Message) {
 	sort.Slice(msgs, func(i, j int) bool {
-		if msgs[i].SentAt == nil || msgs[j].SentAt == nil {
+		if msgs[i].SentAt == 0 || msgs[j].SentAt == 0 {
 			return true
 		}
-		return msgs[i].SentAt.AsTime().Before(msgs[j].SentAt.AsTime())
+		return msgs[i].SentAt < msgs[j].SentAt
 	})
 }
