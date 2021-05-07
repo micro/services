@@ -34,7 +34,7 @@ func assertChatsMatch(t *testing.T, exp, act *pb.Chat) {
 
 	assert.Equal(t, exp.UserIds, act.UserIds)
 
-	if act.CreatedAt == 0 {
+	if len(act.CreatedAt) == 0 {
 		t.Errorf("CreatedAt not set")
 		return
 	}
@@ -59,7 +59,7 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 	assert.Equal(t, exp.AuthorId, act.AuthorId)
 	assert.Equal(t, exp.ChatId, act.ChatId)
 
-	if act.SentAt == 0 {
+	if len(act.SentAt) == 0 {
 		t.Errorf("SentAt not set")
 		return
 	}

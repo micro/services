@@ -40,13 +40,25 @@ type Message struct {
 	SentAt   time.Time
 }
 
+func ParseTime(v string) time.Time {
+	t, err := time.Parse(time.RFC3339Nano, v)
+	if err == nil {
+		return t
+	}
+	t, err = time.Parse(time.RFC3339, v)
+	if err == nil {
+		return t
+	}
+	return time.Time{}
+}
+
 func (m *Message) Serialize() *pb.Message {
 	return &pb.Message{
 		Id:       m.ID,
 		AuthorId: m.AuthorID,
 		ChatId:   m.ChatID,
 		Text:     m.Text,
-		SentAt:   m.SentAt.UnixNano(),
+		SentAt:   m.SentAt.Format(time.RFC3339Nano),
 	}
 }
 
@@ -109,6 +121,6 @@ func (c *Chat) Serialize() *pb.Chat {
 	return &pb.Chat{
 		Id:        c.ID,
 		UserIds:   c.UserIDs,
-		CreatedAt: c.CreatedAt.UnixNano(),
+		CreatedAt: c.CreatedAt.Format(time.RFC3339Nano),
 	}
 }

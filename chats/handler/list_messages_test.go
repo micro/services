@@ -106,9 +106,9 @@ func TestListMessages(t *testing.T) {
 // sortMessages by the time they were sent
 func sortMessages(msgs []*pb.Message) {
 	sort.Slice(msgs, func(i, j int) bool {
-		if msgs[i].SentAt == 0 || msgs[j].SentAt == 0 {
+		if len(msgs[i].SentAt) == 0 || len(msgs[j].SentAt) == 0 {
 			return true
 		}
-		return msgs[i].SentAt < msgs[j].SentAt
+		return handler.ParseTime(msgs[i].SentAt).Before(handler.ParseTime(msgs[j].SentAt))
 	})
 }

@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/micro/services/chats/handler"
 	pb "github.com/micro/services/chats/proto"
@@ -98,7 +99,7 @@ func TestSendMessage(t *testing.T) {
 			assertMessagesMatch(t, &pb.Message{
 				AuthorId: tc.AuthorID,
 				ChatId:   tc.ChatID,
-				SentAt:   h.Time().UnixNano(),
+				SentAt:   h.Time().Format(time.RFC3339Nano),
 				Text:     tc.Text,
 				Id:       tc.ID,
 			}, rsp.Message)

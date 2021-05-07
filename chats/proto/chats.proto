@@ -20,8 +20,8 @@ message Chat {
 	string id = 1;
 	// list of users in the chat
 	repeated string user_ids = 2;
-	// unix nanosecond timestamp
-	int64 created_at = 3;
+	// RFC3339Nano timestamp
+	string created_at = 3;
 }
 
 message Message {
@@ -33,8 +33,8 @@ message Message {
 	string chat_id = 3;
 	// text within the message
 	string text = 4;
-	// unix nanosecond timestamp
-	int64 sent_at = 5;
+	// RFC3339Nano timestamp
+	string sent_at = 5;
 }
 
 // Create a new chat between mulitple users
