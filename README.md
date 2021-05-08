@@ -1,10 +1,10 @@
 # Micro Services
 
-This repo includes reusable Micro services.
+The canonical source for Micro services.
 
 ## Overview
 
-Services provides a home for real world examples for using Micro v3.
+Services provides a home for real world reusable Micro services.
 
 - [blog](blog) - A blog app composed as micro services
 - [chats](chats) - An instant messaging or group chat service
