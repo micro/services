@@ -116,6 +116,7 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 	if len(req.Base64) > 0 {
 		srcImage, err = base64ToImage(req.Base64)
 		if err != nil {
+			logger.Infof("err: %v", err)
 			return err
 		}
 	} else {
