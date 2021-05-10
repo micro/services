@@ -101,7 +101,7 @@ func base64ToImage(b64 string) (image.Image, error) {
 	case "data:image/jpg", "data:image/jpeg":
 		srcImage, err = jpeg.Decode(bytes.NewReader(res))
 	default:
-		errors.New("unrecognized base64 prefix: " + prefix)
+		return srcImage, errors.New("unrecognized base64 prefix: " + prefix)
 	}
 	return srcImage, nil
 }
