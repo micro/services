@@ -57,7 +57,7 @@ func (i *Invite) Key(ctx context.Context) string {
 	return fmt.Sprintf("%s/%s", t, key)
 }
 
-func (i *Invite) GroupKey(ctx context.Context) string {
+func (i *Invite) Index(ctx context.Context) string {
 	key := fmt.Sprintf("group:%s:%s", i.GroupID, i.Email)
 
 	t, ok := tenant.FromContext(ctx)
@@ -111,7 +111,7 @@ func (i *Invites) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Cre
 	// id/val
 	key := invite.Key(ctx)
 	// get group key
-	gkey := invite.GroupKey(ctx)
+	gkey := invite.Index(ctx)
 
 	// TODO: Use the micro/micro/v3/service/sync interface to lock
 
@@ -233,10 +233,10 @@ func (i *Invites) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRes
 	var err error
 
 	if len(invite.GroupID) > 0 && len(invite.Email) > 0 {
-		key := invite.GroupKey(ctx)
+		key := invite.Index(ctx)
 		recs, err = store.Read(key, store.ReadLimit(1))
 	} else if len(invite.GroupID) > 0 {
-		key := invite.GroupKey(ctx)
+		key := invite.Index(ctx)
 		recs, err = store.Read(key, store.ReadPrefix())
 	} else if len(invite.Email) > 0 {
 		// create a email suffix key
@@ -327,7 +327,7 @@ func (i *Invites) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Del
 	store.Delete(invite.Key(ctx))
 
 	// delete the record by group id
-	store.Delete(invite.GroupKey(ctx))
+	store.Delete(invite.Index(ctx))
 
 	return nil
 }
