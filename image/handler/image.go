@@ -14,6 +14,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	img "github.com/micro/services/image/proto"
 	"github.com/micro/services/pkg/tenant"
@@ -126,6 +127,7 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		}
 		defer response.Body.Close()
 	}
+	logger.Infof("yo %v", srcImage)
 	resultImage := imaging.Resize(srcImage, int(req.Width), int(req.Height), imaging.Lanczos)
 	buf := new(bytes.Buffer)
 	switch {
