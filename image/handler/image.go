@@ -103,7 +103,7 @@ func base64ToImage(b64 string) (image.Image, error) {
 	default:
 		return srcImage, errors.New("unrecognized base64 prefix: " + prefix)
 	}
-	return srcImage, nil
+	return srcImage, err
 }
 
 func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.ResizeResponse) error {
