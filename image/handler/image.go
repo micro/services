@@ -14,7 +14,6 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	img "github.com/micro/services/image/proto"
 	"github.com/micro/services/pkg/tenant"
@@ -49,7 +48,7 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	var srcImage image.Image
 	var err error
 	if len(req.Base64) > 0 {
-		srcImage, err = base64ToImage(req.Base64)
+		srcImage, _, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
@@ -83,26 +82,29 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	return nil
 }
 
-func base64ToImage(b64 string) (image.Image, error) {
+func base64ToImage(b64 string) (image.Image, string, error) {
 	var srcImage image.Image
+	ext := ""
 
 	parts := strings.Split(b64, ",")
 	prefix := parts[0]
 	b64 = strings.TrimSpace(parts[1])
 	res, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
-		return srcImage, err
+		return srcImage, ext, err
 	}
 
 	switch prefix {
 	case "data:image/png;base64":
 		srcImage, err = png.Decode(bytes.NewReader(res))
+		ext = "png"
 	case "data:image/jpg;base64", "data:image/jpeg;base64":
 		srcImage, err = jpeg.Decode(bytes.NewReader(res))
+		ext = "jpg"
 	default:
-		return srcImage, errors.New("unrecognized base64 prefix: " + prefix)
+		return srcImage, ext, errors.New("unrecognized base64 prefix: " + prefix)
 	}
-	return srcImage, err
+	return srcImage, ext, err
 }
 
 func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.ResizeResponse) error {
@@ -112,10 +114,10 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 	}
 	var srcImage image.Image
 	var err error
+	var ext string
 	if len(req.Base64) > 0 {
-		srcImage, err = base64ToImage(req.Base64)
+		srcImage, ext, err = base64ToImage(req.Base64)
 		if err != nil {
-			logger.Infof("err: %v", err)
 			return err
 		}
 	} else {
@@ -134,14 +136,17 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		}
 		defer response.Body.Close()
 	}
-	logger.Infof("yo %v", srcImage)
+
 	resultImage := imaging.Resize(srcImage, int(req.Width), int(req.Height), imaging.Lanczos)
 	buf := new(bytes.Buffer)
+
 	switch {
-	case strings.HasSuffix(req.ImageID, ".png"):
+	case strings.HasSuffix(req.ImageID, ".png") || ext == "png":
 		err = png.Encode(buf, resultImage)
-	case strings.HasSuffix(req.ImageID, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
+	case strings.HasSuffix(req.ImageID, ".jpg") || strings.HasSuffix(req.Url, ".jpeg") || ext == "jpg":
 		err = jpeg.Encode(buf, resultImage, nil)
+	default:
+		return errors.New("could not determine extension")
 	}
 
 	if err != nil {
@@ -154,9 +159,7 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		}
 		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.ImageID)
 	} else {
-		dst := []byte{}
-		base64.StdEncoding.Encode(dst, buf.Bytes())
-		rsp.Base64 = string(dst)
+		rsp.Base64 = base64.StdEncoding.EncodeToString(buf.Bytes())
 		return nil
 	}
 	return nil
@@ -170,7 +173,7 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 	var srcImage image.Image
 	var err error
 	if len(req.Base64) > 0 {
-		srcImage, err = base64ToImage(req.Base64)
+		srcImage, _, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
