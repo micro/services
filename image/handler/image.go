@@ -159,7 +159,11 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		}
 		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.ImageID)
 	} else {
-		rsp.Base64 = base64.StdEncoding.EncodeToString(buf.Bytes())
+		prefix := "data:image/png;base64, "
+		if ext == "jpg" {
+			prefix = "data:image/jpg;base64, "
+		}
+		rsp.Base64 = prefix + base64.StdEncoding.EncodeToString(buf.Bytes())
 		return nil
 	}
 	return nil
