@@ -1,5 +1,5 @@
-A simple hello world service
+Returns personalised hello world
 
 # Helloworld Service
 
-Helloworld simply returns a personalized message in response to a name.
+Helloworld simply returns a personalized message in response to a name. Use it for testing purposes.
