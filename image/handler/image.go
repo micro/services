@@ -86,11 +86,10 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 func base64ToImage(b64 string) (image.Image, error) {
 	var srcImage image.Image
 
-	res := []byte{}
 	parts := strings.Split(b64, ",")
 	prefix := parts[0]
 	b64 = strings.TrimSpace(parts[1])
-	_, err := base64.StdEncoding.Decode([]byte(b64), res)
+	res, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
 		return srcImage, err
 	}
