@@ -85,6 +85,7 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 
 func base64ToImage(b64 string) (image.Image, error) {
 	var srcImage image.Image
+
 	res := []byte{}
 	parts := strings.Split(b64, ",")
 	prefix := parts[0]
@@ -93,11 +94,14 @@ func base64ToImage(b64 string) (image.Image, error) {
 	if err != nil {
 		return srcImage, err
 	}
+
 	switch prefix {
 	case "data:image/png":
 		srcImage, err = png.Decode(bytes.NewReader(res))
 	case "data:image/jpg", "data:image/jpeg":
 		srcImage, err = jpeg.Decode(bytes.NewReader(res))
+	default:
+		errors.New("unrecognized base64 prefix: " + prefix)
 	}
 	return srcImage, nil
 }
