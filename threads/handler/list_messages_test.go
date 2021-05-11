@@ -10,7 +10,6 @@ import (
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestListMessages(t *testing.T) {
@@ -18,8 +17,8 @@ func TestListMessages(t *testing.T) {
 	h.Time = time.Now
 
 	// seed some data
-	var convRsp pb.CreateConversationResponse
-	err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
+	var convRsp pb.CreateThreadResponse
+	err := h.CreateThread(microAccountCtx(), &pb.CreateThreadRequest{
 		Topic: "TestListMessages", GroupId: uuid.New().String(),
 	}, &convRsp)
 	assert.NoError(t, err)
@@ -31,25 +30,25 @@ func TestListMessages(t *testing.T) {
 	for i := 0; i < len(msgs); i++ {
 		var rsp pb.CreateMessageResponse
 		err := h.CreateMessage(microAccountCtx(), &pb.CreateMessageRequest{
-			ConversationId: convRsp.Conversation.Id,
-			AuthorId:       uuid.New().String(),
-			Text:           strconv.Itoa(i),
+			ThreadId: convRsp.Thread.Id,
+			AuthorId: uuid.New().String(),
+			Text:     strconv.Itoa(i),
 		}, &rsp)
 		assert.NoError(t, err)
 		msgs[i] = rsp.Message
 	}
 
-	t.Run("MissingConversationID", func(t *testing.T) {
+	t.Run("MissingThreadID", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{}, &rsp)
-		assert.Equal(t, handler.ErrMissingConversationID, err)
+		assert.Equal(t, handler.ErrMissingThreadID, err)
 		assert.Nil(t, rsp.Messages)
 	})
 
 	t.Run("NoOffset", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
-			ConversationId: convRsp.Conversation.Id,
+			ThreadId: convRsp.Thread.Id,
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -67,8 +66,8 @@ func TestListMessages(t *testing.T) {
 	t.Run("LimitSet", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
-			ConversationId: convRsp.Conversation.Id,
-			Limit:          &wrapperspb.Int32Value{Value: 10},
+			ThreadId: convRsp.Thread.Id,
+			Limit:    10,
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -86,9 +85,9 @@ func TestListMessages(t *testing.T) {
 	t.Run("OffsetAndLimit", func(t *testing.T) {
 		var rsp pb.ListMessagesResponse
 		err := h.ListMessages(microAccountCtx(), &pb.ListMessagesRequest{
-			ConversationId: convRsp.Conversation.Id,
-			Limit:          &wrapperspb.Int32Value{Value: 5},
-			SentBefore:     msgs[20].SentAt,
+			ThreadId: convRsp.Thread.Id,
+			Limit:    5,
+			Offset:   30,
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -107,9 +106,9 @@ func TestListMessages(t *testing.T) {
 // sortMessages by the time they were sent
 func sortMessages(msgs []*pb.Message) {
 	sort.Slice(msgs, func(i, j int) bool {
-		if msgs[i].SentAt == nil || msgs[j].SentAt == nil {
+		if msgs[i].SentAt == "" || msgs[j].SentAt == "" {
 			return true
 		}
-		return msgs[i].SentAt.AsTime().Before(msgs[j].SentAt.AsTime())
+		return handler.ParseTime(msgs[i].SentAt).Before(handler.ParseTime(msgs[j].SentAt))
 	})
 }

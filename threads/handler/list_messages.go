@@ -6,12 +6,13 @@ import (
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/threads/proto"
 )
 
 const DefaultLimit = 25
 
-// List the messages within a conversation in reverse chronological order, using sent_before to
+// List the messages within a thread in reverse chronological order, using sent_before to
 // offset as older messages need to be loaded
 func (s *Threads) ListMessages(ctx context.Context, req *pb.ListMessagesRequest, rsp *pb.ListMessagesResponse) error {
 	_, ok := auth.AccountFromContext(ctx)
@@ -19,37 +20,50 @@ func (s *Threads) ListMessages(ctx context.Context, req *pb.ListMessagesRequest,
 		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
 	}
 	// validate the request
-	if len(req.ConversationId) == 0 {
-		return ErrMissingConversationID
+	if len(req.ThreadId) == 0 {
+		return ErrMissingThreadID
 	}
 
-	db, err := s.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error connecting to DB: %v", err)
-		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
+	// default order is descending
+	order := store.OrderDesc
+	if req.Order == "asc" {
+		order = store.OrderAsc
 	}
-	// construct the query
-	q := db.Where(&Message{ConversationID: req.ConversationId}).Order("sent_at DESC")
-	if req.SentBefore != nil {
-		q = q.Where("sent_at < ?", req.SentBefore.AsTime())
+
+	opts := []store.ReadOption{
+		store.ReadPrefix(),
+		store.ReadOrder(order),
 	}
-	if req.Limit != nil {
-		q.Limit(int(req.Limit.Value))
+
+	if req.Limit > 0 {
+		opts = append(opts, store.ReadLimit(uint(req.Limit)))
 	} else {
-		q.Limit(DefaultLimit)
+		opts = append(opts, store.ReadLimit(uint(DefaultLimit)))
+	}
+	if req.Offset > 0 {
+		opts = append(opts, store.ReadOffset(uint(req.Offset)))
 	}
 
-	// execute the query
-	var msgs []Message
-	if err := q.Find(&msgs).Error; err != nil {
+	message := &Message{
+		ThreadID: req.ThreadId,
+	}
+
+	// read all the records with the chat ID suffix
+	recs, err := store.Read(message.Index(ctx), opts...)
+	if err != nil {
 		logger.Errorf("Error reading messages: %v", err)
 		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 	}
 
-	// serialize the response
-	rsp.Messages = make([]*pb.Message, len(msgs))
-	for i, m := range msgs {
-		rsp.Messages[i] = m.Serialize()
+	// return all the messages
+	for _, rec := range recs {
+		m := &Message{}
+		rec.Decode(&m)
+		if len(m.ID) == 0 || m.ThreadID != req.ThreadId {
+			continue
+		}
+		rsp.Messages = append(rsp.Messages, m.Serialize())
 	}
+
 	return nil
 }

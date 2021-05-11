@@ -2,43 +2,25 @@ package handler_test
 
 import (
 	"context"
-	"database/sql"
-	"os"
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/micro/micro/v3/service/auth"
+	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/micro/v3/service/store/memory"
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
 	"github.com/stretchr/testify/assert"
 )
 
 func testHandler(t *testing.T) *handler.Threads {
-	// connect to the database
-	addr := os.Getenv("POSTGRES_URL")
-	if len(addr) == 0 {
-		addr = "postgresql://postgres@localhost:5432/postgres?sslmode=disable"
-	}
-	sqlDB, err := sql.Open("pgx", addr)
-	if err != nil {
-		t.Fatalf("Failed to open connection to DB %s", err)
-	}
-
-	// clean any data from a previous run
-	if _, err := sqlDB.Exec("DROP TABLE IF EXISTS micro_conversations, micro_messages CASCADE"); err != nil {
-		t.Fatalf("Error cleaning database: %v", err)
-	}
-
-	h := &handler.Threads{Time: func() time.Time { return time.Unix(1611327673, 0) }}
-	h.DBConn(sqlDB).Migrations(&handler.Conversation{}, &handler.Message{})
-
-	return h
+	store.DefaultStore = memory.NewStore()
+	return &handler.Threads{Time: func() time.Time { return time.Unix(1611327673, 0) }}
 }
 
-func assertConversationsMatch(t *testing.T, exp, act *pb.Conversation) {
+func assertThreadsMatch(t *testing.T, exp, act *pb.Thread) {
 	if act == nil {
-		t.Errorf("Conversation not returned")
+		t.Errorf("Thread not returned")
 		return
 	}
 
@@ -53,7 +35,7 @@ func assertConversationsMatch(t *testing.T, exp, act *pb.Conversation) {
 	assert.Equal(t, exp.Topic, act.Topic)
 	assert.Equal(t, exp.GroupId, act.GroupId)
 
-	if act.CreatedAt == nil {
+	if act.CreatedAt == "" {
 		t.Errorf("CreatedAt not set")
 		return
 	}
@@ -77,9 +59,9 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 
 	assert.Equal(t, exp.Text, act.Text)
 	assert.Equal(t, exp.AuthorId, act.AuthorId)
-	assert.Equal(t, exp.ConversationId, act.ConversationId)
+	assert.Equal(t, exp.ThreadId, act.ThreadId)
 
-	if act.SentAt == nil {
+	if act.SentAt == "" {
 		t.Errorf("SentAt not set")
 		return
 	}
@@ -88,8 +70,8 @@ func assertMessagesMatch(t *testing.T, exp, act *pb.Message) {
 }
 
 // postgres has a resolution of 100microseconds so just test that it's accurate to the second
-func microSecondTime(t *timestamp.Timestamp) time.Time {
-	tt := t.AsTime()
+func microSecondTime(t string) time.Time {
+	tt := handler.ParseTime(t)
 	return time.Unix(tt.Unix(), int64(tt.Nanosecond()-tt.Nanosecond()%1000))
 }
 

@@ -5,7 +5,6 @@ import (
 
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -15,68 +14,68 @@ func TestCreateMessage(t *testing.T) {
 	h := testHandler(t)
 
 	// seed some data
-	var cRsp pb.CreateConversationResponse
-	err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
+	var cRsp pb.CreateThreadResponse
+	err := h.CreateThread(microAccountCtx(), &pb.CreateThreadRequest{
 		Topic: "HelloWorld", GroupId: uuid.New().String(),
 	}, &cRsp)
 	if err != nil {
-		t.Fatalf("Error creating conversation: %v", err)
+		t.Fatalf("Error creating thread: %v", err)
 		return
 	}
 
 	iid := uuid.New().String()
 	tt := []struct {
-		Name           string
-		AuthorID       string
-		ConversationID string
-		ID             string
-		Text           string
-		Error          error
+		Name     string
+		AuthorID string
+		ThreadID string
+		ID       string
+		Text     string
+		Error    error
 	}{
 		{
-			Name:     "MissingConversationID",
+			Name:     "MissingThreadID",
 			Text:     "HelloWorld",
 			AuthorID: uuid.New().String(),
-			Error:    handler.ErrMissingConversationID,
+			Error:    handler.ErrMissingThreadID,
 		},
 		{
-			Name:           "MissingAuthorID",
-			ConversationID: uuid.New().String(),
-			Text:           "HelloWorld",
-			Error:          handler.ErrMissingAuthorID,
+			Name:     "MissingAuthorID",
+			ThreadID: uuid.New().String(),
+			Text:     "HelloWorld",
+			Error:    handler.ErrMissingAuthorID,
 		},
 		{
-			Name:           "MissingText",
-			ConversationID: uuid.New().String(),
-			AuthorID:       uuid.New().String(),
-			Error:          handler.ErrMissingText,
+			Name:     "MissingText",
+			ThreadID: uuid.New().String(),
+			AuthorID: uuid.New().String(),
+			Error:    handler.ErrMissingText,
 		},
 		{
-			Name:           "ConversationNotFound",
-			ConversationID: uuid.New().String(),
-			AuthorID:       uuid.New().String(),
-			Text:           "HelloWorld",
-			Error:          handler.ErrNotFound,
+			Name:     "ThreadNotFound",
+			ThreadID: uuid.New().String(),
+			AuthorID: uuid.New().String(),
+			Text:     "HelloWorld",
+			Error:    handler.ErrNotFound,
 		},
 		{
-			Name:           "NoID",
-			ConversationID: cRsp.Conversation.Id,
-			AuthorID:       uuid.New().String(),
-			Text:           "HelloWorld",
+			Name:     "NoID",
+			ThreadID: cRsp.Thread.Id,
+			AuthorID: uuid.New().String(),
+			Text:     "HelloWorld",
 		},
 		{
-			Name:           "WithID",
-			ConversationID: cRsp.Conversation.Id,
-			Text:           "HelloWorld",
-			AuthorID:       "johndoe",
-			ID:             iid,
+			Name:     "WithID",
+			ThreadID: cRsp.Thread.Id,
+			Text:     "HelloWorld",
+			AuthorID: "johndoe",
+			ID:       iid,
 		},
 		{
-			Name:           "RepeatID",
-			ConversationID: cRsp.Conversation.Id,
-			Text:           "HelloWorld",
-			AuthorID:       "johndoe",
-			ID:             iid,
+			Name:     "RepeatID",
+			ThreadID: cRsp.Thread.Id,
+			Text:     "HelloWorld",
+			AuthorID: "johndoe",
+			ID:       iid,
 		},
 	}
 
@@ -84,10 +83,10 @@ func TestCreateMessage(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			var rsp pb.CreateMessageResponse
 			err := h.CreateMessage(microAccountCtx(), &pb.CreateMessageRequest{
-				AuthorId:       tc.AuthorID,
-				ConversationId: tc.ConversationID,
-				Text:           tc.Text,
-				Id:             tc.ID,
+				AuthorId: tc.AuthorID,
+				ThreadId: tc.ThreadID,
+				Text:     tc.Text,
+				Id:       tc.ID,
 			}, &rsp)
 
 			assert.Equal(t, tc.Error, err)
@@ -97,11 +96,11 @@ func TestCreateMessage(t *testing.T) {
 			}
 
 			assertMessagesMatch(t, &pb.Message{
-				Id:             tc.ID,
-				AuthorId:       tc.AuthorID,
-				ConversationId: tc.ConversationID,
-				SentAt:         timestamppb.New(h.Time()),
-				Text:           tc.Text,
+				Id:       tc.ID,
+				AuthorId: tc.AuthorID,
+				ThreadId: tc.ThreadID,
+				SentAt:   handler.FormatTime(h.Time()),
+				Text:     tc.Text,
 			}, rsp.Message)
 		})
 	}

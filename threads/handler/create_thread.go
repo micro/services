@@ -7,11 +7,12 @@ import (
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/pkg/model"
 	pb "github.com/micro/services/threads/proto"
 )
 
-// Create a conversation
-func (s *Threads) CreateConversation(ctx context.Context, req *pb.CreateConversationRequest, rsp *pb.CreateConversationResponse) error {
+// Create a thread
+func (s *Threads) CreateThread(ctx context.Context, req *pb.CreateThreadRequest, rsp *pb.CreateThreadResponse) error {
 	_, ok := auth.AccountFromContext(ctx)
 	if !ok {
 		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
@@ -24,24 +25,21 @@ func (s *Threads) CreateConversation(ctx context.Context, req *pb.CreateConversa
 		return ErrMissingTopic
 	}
 
-	// write the conversation to the database
-	conv := &Conversation{
+	// write the thread to the database
+	thread := &Thread{
 		ID:        uuid.New().String(),
 		Topic:     req.Topic,
 		GroupID:   req.GroupId,
 		CreatedAt: s.Time(),
 	}
-	db, err := s.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error connecting to DB: %v", err)
-		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
-	}
-	if err := db.Create(conv).Error; err != nil {
-		logger.Errorf("Error creating conversation: %v", err)
-		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
+
+	// write the thread to the database
+	if err := model.Create(ctx, thread); err != nil {
+		logger.Errorf("Error creating thread: %v", err)
+		return err
 	}
 
 	// serialize the response
-	rsp.Conversation = conv.Serialize()
+	rsp.Thread = thread.Serialize()
 	return nil
 }
