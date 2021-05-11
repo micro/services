@@ -7,28 +7,27 @@ import (
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func TestReadConversation(t *testing.T) {
+func TestReadThread(t *testing.T) {
 	h := testHandler(t)
 
 	// seed some data
-	var cRsp pb.CreateConversationResponse
-	err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
+	var cRsp pb.CreateThreadResponse
+	err := h.CreateThread(microAccountCtx(), &pb.CreateThreadRequest{
 		Topic: "HelloWorld", GroupId: uuid.New().String(),
 	}, &cRsp)
 	if err != nil {
-		t.Fatalf("Error creating conversation: %v", err)
+		t.Fatalf("Error creating thread: %v", err)
 		return
 	}
 
 	tt := []struct {
 		Name    string
 		ID      string
-		GroupID *wrapperspb.StringValue
+		GroupID string
 		Error   error
-		Result  *pb.Conversation
+		Result  *pb.Thread
 	}{
 		{
 			Name:  "MissingID",
@@ -41,28 +40,28 @@ func TestReadConversation(t *testing.T) {
 		},
 		{
 			Name:   "FoundUsingIDOnly",
-			ID:     cRsp.Conversation.Id,
-			Result: cRsp.Conversation,
+			ID:     cRsp.Thread.Id,
+			Result: cRsp.Thread,
 		},
 		{
 			Name:    "IncorrectGroupID",
-			ID:      cRsp.Conversation.Id,
+			ID:      cRsp.Thread.Id,
 			Error:   handler.ErrNotFound,
-			GroupID: &wrapperspb.StringValue{Value: uuid.New().String()},
+			GroupID: uuid.New().String(),
 		},
 	}
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
-			var rsp pb.ReadConversationResponse
-			err := h.ReadConversation(microAccountCtx(), &pb.ReadConversationRequest{
+			var rsp pb.ReadThreadResponse
+			err := h.ReadThread(microAccountCtx(), &pb.ReadThreadRequest{
 				Id: tc.ID, GroupId: tc.GroupID,
 			}, &rsp)
 			assert.Equal(t, tc.Error, err)
 
 			if tc.Result == nil {
-				assert.Nil(t, rsp.Conversation)
+				assert.Nil(t, rsp.Thread)
 			} else {
-				assertConversationsMatch(t, tc.Result, rsp.Conversation)
+				assertThreadsMatch(t, tc.Result, rsp.Thread)
 			}
 		})
 	}

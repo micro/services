@@ -6,8 +6,6 @@ package threads
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
-	_ "google.golang.org/protobuf/types/known/wrapperspb"
 	math "math"
 )
 
@@ -44,24 +42,24 @@ func NewThreadsEndpoints() []*api.Endpoint {
 // Client API for Threads service
 
 type ThreadsService interface {
-	// Create a conversation
-	CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...client.CallOption) (*CreateConversationResponse, error)
-	// Read a conversation using its ID, can filter using group ID if provided
-	ReadConversation(ctx context.Context, in *ReadConversationRequest, opts ...client.CallOption) (*ReadConversationResponse, error)
-	// Update a conversations topic
-	UpdateConversation(ctx context.Context, in *UpdateConversationRequest, opts ...client.CallOption) (*UpdateConversationResponse, error)
-	// Delete a conversation and all the messages within
-	DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...client.CallOption) (*DeleteConversationResponse, error)
-	// List all the conversations for a group
-	ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...client.CallOption) (*ListConversationsResponse, error)
-	// Create a message within a conversation
+	// Create a thread
+	CreateThread(ctx context.Context, in *CreateThreadRequest, opts ...client.CallOption) (*CreateThreadResponse, error)
+	// Read a thread using its ID, can filter using group ID if provided
+	ReadThread(ctx context.Context, in *ReadThreadRequest, opts ...client.CallOption) (*ReadThreadResponse, error)
+	// Update a threads topic
+	UpdateThread(ctx context.Context, in *UpdateThreadRequest, opts ...client.CallOption) (*UpdateThreadResponse, error)
+	// Delete a thread and all the messages within
+	DeleteThread(ctx context.Context, in *DeleteThreadRequest, opts ...client.CallOption) (*DeleteThreadResponse, error)
+	// List all the threads for a group
+	ListThreads(ctx context.Context, in *ListThreadsRequest, opts ...client.CallOption) (*ListThreadsResponse, error)
+	// Create a message within a thread
 	CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...client.CallOption) (*CreateMessageResponse, error)
-	// List the messages within a conversation in reverse chronological order, using sent_before to
+	// List the messages within a thread in reverse chronological order, using sent_before to
 	// offset as older messages need to be loaded
 	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...client.CallOption) (*ListMessagesResponse, error)
-	// RecentMessages returns the most recent messages in a group of conversations. By default the
-	// most messages retrieved per conversation is 25, however this can be overriden using the
-	// limit_per_conversation option
+	// RecentMessages returns the most recent messages in a group of threads. By default the
+	// most messages retrieved per thread is 25, however this can be overriden using the
+	// limit_per_thread option
 	RecentMessages(ctx context.Context, in *RecentMessagesRequest, opts ...client.CallOption) (*RecentMessagesResponse, error)
 }
 
@@ -77,9 +75,9 @@ func NewThreadsService(name string, c client.Client) ThreadsService {
 	}
 }
 
-func (c *threadsService) CreateConversation(ctx context.Context, in *CreateConversationRequest, opts ...client.CallOption) (*CreateConversationResponse, error) {
-	req := c.c.NewRequest(c.name, "Threads.CreateConversation", in)
-	out := new(CreateConversationResponse)
+func (c *threadsService) CreateThread(ctx context.Context, in *CreateThreadRequest, opts ...client.CallOption) (*CreateThreadResponse, error) {
+	req := c.c.NewRequest(c.name, "Threads.CreateThread", in)
+	out := new(CreateThreadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -87,9 +85,9 @@ func (c *threadsService) CreateConversation(ctx context.Context, in *CreateConve
 	return out, nil
 }
 
-func (c *threadsService) ReadConversation(ctx context.Context, in *ReadConversationRequest, opts ...client.CallOption) (*ReadConversationResponse, error) {
-	req := c.c.NewRequest(c.name, "Threads.ReadConversation", in)
-	out := new(ReadConversationResponse)
+func (c *threadsService) ReadThread(ctx context.Context, in *ReadThreadRequest, opts ...client.CallOption) (*ReadThreadResponse, error) {
+	req := c.c.NewRequest(c.name, "Threads.ReadThread", in)
+	out := new(ReadThreadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -97,9 +95,9 @@ func (c *threadsService) ReadConversation(ctx context.Context, in *ReadConversat
 	return out, nil
 }
 
-func (c *threadsService) UpdateConversation(ctx context.Context, in *UpdateConversationRequest, opts ...client.CallOption) (*UpdateConversationResponse, error) {
-	req := c.c.NewRequest(c.name, "Threads.UpdateConversation", in)
-	out := new(UpdateConversationResponse)
+func (c *threadsService) UpdateThread(ctx context.Context, in *UpdateThreadRequest, opts ...client.CallOption) (*UpdateThreadResponse, error) {
+	req := c.c.NewRequest(c.name, "Threads.UpdateThread", in)
+	out := new(UpdateThreadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -107,9 +105,9 @@ func (c *threadsService) UpdateConversation(ctx context.Context, in *UpdateConve
 	return out, nil
 }
 
-func (c *threadsService) DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...client.CallOption) (*DeleteConversationResponse, error) {
-	req := c.c.NewRequest(c.name, "Threads.DeleteConversation", in)
-	out := new(DeleteConversationResponse)
+func (c *threadsService) DeleteThread(ctx context.Context, in *DeleteThreadRequest, opts ...client.CallOption) (*DeleteThreadResponse, error) {
+	req := c.c.NewRequest(c.name, "Threads.DeleteThread", in)
+	out := new(DeleteThreadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -117,9 +115,9 @@ func (c *threadsService) DeleteConversation(ctx context.Context, in *DeleteConve
 	return out, nil
 }
 
-func (c *threadsService) ListConversations(ctx context.Context, in *ListConversationsRequest, opts ...client.CallOption) (*ListConversationsResponse, error) {
-	req := c.c.NewRequest(c.name, "Threads.ListConversations", in)
-	out := new(ListConversationsResponse)
+func (c *threadsService) ListThreads(ctx context.Context, in *ListThreadsRequest, opts ...client.CallOption) (*ListThreadsResponse, error) {
+	req := c.c.NewRequest(c.name, "Threads.ListThreads", in)
+	out := new(ListThreadsResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -160,34 +158,34 @@ func (c *threadsService) RecentMessages(ctx context.Context, in *RecentMessagesR
 // Server API for Threads service
 
 type ThreadsHandler interface {
-	// Create a conversation
-	CreateConversation(context.Context, *CreateConversationRequest, *CreateConversationResponse) error
-	// Read a conversation using its ID, can filter using group ID if provided
-	ReadConversation(context.Context, *ReadConversationRequest, *ReadConversationResponse) error
-	// Update a conversations topic
-	UpdateConversation(context.Context, *UpdateConversationRequest, *UpdateConversationResponse) error
-	// Delete a conversation and all the messages within
-	DeleteConversation(context.Context, *DeleteConversationRequest, *DeleteConversationResponse) error
-	// List all the conversations for a group
-	ListConversations(context.Context, *ListConversationsRequest, *ListConversationsResponse) error
-	// Create a message within a conversation
+	// Create a thread
+	CreateThread(context.Context, *CreateThreadRequest, *CreateThreadResponse) error
+	// Read a thread using its ID, can filter using group ID if provided
+	ReadThread(context.Context, *ReadThreadRequest, *ReadThreadResponse) error
+	// Update a threads topic
+	UpdateThread(context.Context, *UpdateThreadRequest, *UpdateThreadResponse) error
+	// Delete a thread and all the messages within
+	DeleteThread(context.Context, *DeleteThreadRequest, *DeleteThreadResponse) error
+	// List all the threads for a group
+	ListThreads(context.Context, *ListThreadsRequest, *ListThreadsResponse) error
+	// Create a message within a thread
 	CreateMessage(context.Context, *CreateMessageRequest, *CreateMessageResponse) error
-	// List the messages within a conversation in reverse chronological order, using sent_before to
+	// List the messages within a thread in reverse chronological order, using sent_before to
 	// offset as older messages need to be loaded
 	ListMessages(context.Context, *ListMessagesRequest, *ListMessagesResponse) error
-	// RecentMessages returns the most recent messages in a group of conversations. By default the
-	// most messages retrieved per conversation is 25, however this can be overriden using the
-	// limit_per_conversation option
+	// RecentMessages returns the most recent messages in a group of threads. By default the
+	// most messages retrieved per thread is 25, however this can be overriden using the
+	// limit_per_thread option
 	RecentMessages(context.Context, *RecentMessagesRequest, *RecentMessagesResponse) error
 }
 
 func RegisterThreadsHandler(s server.Server, hdlr ThreadsHandler, opts ...server.HandlerOption) error {
 	type threads interface {
-		CreateConversation(ctx context.Context, in *CreateConversationRequest, out *CreateConversationResponse) error
-		ReadConversation(ctx context.Context, in *ReadConversationRequest, out *ReadConversationResponse) error
-		UpdateConversation(ctx context.Context, in *UpdateConversationRequest, out *UpdateConversationResponse) error
-		DeleteConversation(ctx context.Context, in *DeleteConversationRequest, out *DeleteConversationResponse) error
-		ListConversations(ctx context.Context, in *ListConversationsRequest, out *ListConversationsResponse) error
+		CreateThread(ctx context.Context, in *CreateThreadRequest, out *CreateThreadResponse) error
+		ReadThread(ctx context.Context, in *ReadThreadRequest, out *ReadThreadResponse) error
+		UpdateThread(ctx context.Context, in *UpdateThreadRequest, out *UpdateThreadResponse) error
+		DeleteThread(ctx context.Context, in *DeleteThreadRequest, out *DeleteThreadResponse) error
+		ListThreads(ctx context.Context, in *ListThreadsRequest, out *ListThreadsResponse) error
 		CreateMessage(ctx context.Context, in *CreateMessageRequest, out *CreateMessageResponse) error
 		ListMessages(ctx context.Context, in *ListMessagesRequest, out *ListMessagesResponse) error
 		RecentMessages(ctx context.Context, in *RecentMessagesRequest, out *RecentMessagesResponse) error
@@ -203,24 +201,24 @@ type threadsHandler struct {
 	ThreadsHandler
 }
 
-func (h *threadsHandler) CreateConversation(ctx context.Context, in *CreateConversationRequest, out *CreateConversationResponse) error {
-	return h.ThreadsHandler.CreateConversation(ctx, in, out)
+func (h *threadsHandler) CreateThread(ctx context.Context, in *CreateThreadRequest, out *CreateThreadResponse) error {
+	return h.ThreadsHandler.CreateThread(ctx, in, out)
 }
 
-func (h *threadsHandler) ReadConversation(ctx context.Context, in *ReadConversationRequest, out *ReadConversationResponse) error {
-	return h.ThreadsHandler.ReadConversation(ctx, in, out)
+func (h *threadsHandler) ReadThread(ctx context.Context, in *ReadThreadRequest, out *ReadThreadResponse) error {
+	return h.ThreadsHandler.ReadThread(ctx, in, out)
 }
 
-func (h *threadsHandler) UpdateConversation(ctx context.Context, in *UpdateConversationRequest, out *UpdateConversationResponse) error {
-	return h.ThreadsHandler.UpdateConversation(ctx, in, out)
+func (h *threadsHandler) UpdateThread(ctx context.Context, in *UpdateThreadRequest, out *UpdateThreadResponse) error {
+	return h.ThreadsHandler.UpdateThread(ctx, in, out)
 }
 
-func (h *threadsHandler) DeleteConversation(ctx context.Context, in *DeleteConversationRequest, out *DeleteConversationResponse) error {
-	return h.ThreadsHandler.DeleteConversation(ctx, in, out)
+func (h *threadsHandler) DeleteThread(ctx context.Context, in *DeleteThreadRequest, out *DeleteThreadResponse) error {
+	return h.ThreadsHandler.DeleteThread(ctx, in, out)
 }
 
-func (h *threadsHandler) ListConversations(ctx context.Context, in *ListConversationsRequest, out *ListConversationsResponse) error {
-	return h.ThreadsHandler.ListConversations(ctx, in, out)
+func (h *threadsHandler) ListThreads(ctx context.Context, in *ListThreadsRequest, out *ListThreadsResponse) error {
+	return h.ThreadsHandler.ListThreads(ctx, in, out)
 }
 
 func (h *threadsHandler) CreateMessage(ctx context.Context, in *CreateMessageRequest, out *CreateMessageResponse) error {

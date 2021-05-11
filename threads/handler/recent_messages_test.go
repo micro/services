@@ -9,7 +9,6 @@ import (
 	"github.com/micro/services/threads/handler"
 	pb "github.com/micro/services/threads/proto"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestRecentMessages(t *testing.T) {
@@ -20,8 +19,8 @@ func TestRecentMessages(t *testing.T) {
 	ids := make([]string, 3)
 	convos := make(map[string][]*pb.Message, 3)
 	for i := 0; i < 3; i++ {
-		var convRsp pb.CreateConversationResponse
-		err := h.CreateConversation(microAccountCtx(), &pb.CreateConversationRequest{
+		var convRsp pb.CreateThreadResponse
+		err := h.CreateThread(microAccountCtx(), &pb.CreateThreadRequest{
 			Topic: "TestRecentMessages", GroupId: uuid.New().String(),
 		}, &convRsp)
 		assert.NoError(t, err)
@@ -29,33 +28,33 @@ func TestRecentMessages(t *testing.T) {
 			return
 		}
 
-		convos[convRsp.Conversation.Id] = make([]*pb.Message, 50)
-		ids[i] = convRsp.Conversation.Id
+		convos[convRsp.Thread.Id] = make([]*pb.Message, 50)
+		ids[i] = convRsp.Thread.Id
 
 		for j := 0; j < 50; j++ {
 			var rsp pb.CreateMessageResponse
 			err := h.CreateMessage(microAccountCtx(), &pb.CreateMessageRequest{
-				ConversationId: convRsp.Conversation.Id,
-				AuthorId:       uuid.New().String(),
-				Text:           fmt.Sprintf("Conversation %v, Message %v", i, j),
+				ThreadId: convRsp.Thread.Id,
+				AuthorId: uuid.New().String(),
+				Text:     fmt.Sprintf("Thread %v, Message %v", i, j),
 			}, &rsp)
 			assert.NoError(t, err)
-			convos[convRsp.Conversation.Id][j] = rsp.Message
+			convos[convRsp.Thread.Id][j] = rsp.Message
 		}
 	}
 
-	t.Run("MissingConversationIDs", func(t *testing.T) {
+	t.Run("MissingThreadIDs", func(t *testing.T) {
 		var rsp pb.RecentMessagesResponse
 		err := h.RecentMessages(microAccountCtx(), &pb.RecentMessagesRequest{}, &rsp)
-		assert.Equal(t, handler.ErrMissingConversationIDs, err)
+		assert.Equal(t, handler.ErrMissingThreadIDs, err)
 		assert.Nil(t, rsp.Messages)
 	})
 
 	t.Run("LimitSet", func(t *testing.T) {
 		var rsp pb.RecentMessagesResponse
 		err := h.RecentMessages(microAccountCtx(), &pb.RecentMessagesRequest{
-			ConversationIds:      ids,
-			LimitPerConversation: &wrapperspb.Int32Value{Value: 10},
+			ThreadIds:      ids,
+			LimitPerThread: 10,
 		}, &rsp)
 		assert.NoError(t, err)
 
@@ -79,7 +78,7 @@ func TestRecentMessages(t *testing.T) {
 
 		var rsp pb.RecentMessagesResponse
 		err := h.RecentMessages(microAccountCtx(), &pb.RecentMessagesRequest{
-			ConversationIds: reducedIDs,
+			ThreadIds: reducedIDs,
 		}, &rsp)
 		assert.NoError(t, err)
 

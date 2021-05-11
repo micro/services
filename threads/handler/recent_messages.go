@@ -6,54 +6,42 @@ import (
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/pkg/model"
 	pb "github.com/micro/services/threads/proto"
-	"gorm.io/gorm"
 )
 
-// RecentMessages returns the most recent messages in a group of conversations. By default the
-// most messages retrieved per conversation is 25, however this can be overriden using the
-// limit_per_conversation option
+// RecentMessages returns the most recent messages in a group of threads. By default the
+// most messages retrieved per thread is 25, however this can be overriden using the
+// limit_per_thread option
 func (s *Threads) RecentMessages(ctx context.Context, req *pb.RecentMessagesRequest, rsp *pb.RecentMessagesResponse) error {
 	_, ok := auth.AccountFromContext(ctx)
 	if !ok {
 		errors.Unauthorized("UNAUTHORIZED", "Unauthorized")
 	}
 	// validate the request
-	if len(req.ConversationIds) == 0 {
-		return ErrMissingConversationIDs
+	if len(req.ThreadIds) == 0 {
+		return ErrMissingThreadIDs
 	}
 
-	limit := DefaultLimit
-	if req.LimitPerConversation != nil {
-		limit = int(req.LimitPerConversation.Value)
+	limit := uint(DefaultLimit)
+	if req.LimitPerThread > 0 {
+		limit = uint(req.LimitPerThread)
 	}
 
-	db, err := s.GetDBConn(ctx)
-	if err != nil {
-		logger.Errorf("Error connecting to DB: %v", err)
-		return errors.InternalServerError("DB_ERROR", "Error connecting to DB")
-	}
-	// query the database
-	var msgs []Message
-	err = db.Transaction(func(tx *gorm.DB) error {
-		for _, id := range req.ConversationIds {
-			var cms []Message
-			if err := tx.Where(&Message{ConversationID: id}).Order("sent_at DESC").Limit(limit).Find(&cms).Error; err != nil {
-				return err
-			}
-			msgs = append(msgs, cms...)
+	for _, thread := range req.ThreadIds {
+		q := model.Query{Limit: limit, Order: "desc"}
+		m := &Message{ThreadID: thread}
+		var messages []*Message
+
+		if err := model.List(ctx, m, &messages, q); err != nil {
+			logger.Errorf("Error reading messages: %v", err)
+			return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
 		}
-		return nil
-	})
-	if err != nil {
-		logger.Errorf("Error reading messages: %v", err)
-		return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
+
+		for _, msg := range messages {
+			rsp.Messages = append(rsp.Messages, msg.Serialize())
+		}
 	}
 
-	// serialize the response
-	rsp.Messages = make([]*pb.Message, len(msgs))
-	for i, m := range msgs {
-		rsp.Messages[i] = m.Serialize()
-	}
 	return nil
 }

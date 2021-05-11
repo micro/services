@@ -1,91 +1,90 @@
 syntax = "proto3";
 
 package threads;
+
 option go_package = "./proto;threads";
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
 
 service Threads {
-	// Create a conversation
-	rpc CreateConversation(CreateConversationRequest) returns (CreateConversationResponse);
-	// Read a conversation using its ID, can filter using group ID if provided
-	rpc ReadConversation(ReadConversationRequest) returns (ReadConversationResponse);
-	// Update a conversations topic
-	rpc UpdateConversation(UpdateConversationRequest) returns (UpdateConversationResponse);
-	// Delete a conversation and all the messages within
-	rpc DeleteConversation(DeleteConversationRequest) returns (DeleteConversationResponse);
-	// List all the conversations for a group
-	rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse);
-	// Create a message within a conversation
+	// Create a thread
+	rpc CreateThread(CreateThreadRequest) returns (CreateThreadResponse);
+	// Read a thread using its ID, can filter using group ID if provided
+	rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
+	// Update a threads topic
+	rpc UpdateThread(UpdateThreadRequest) returns (UpdateThreadResponse);
+	// Delete a thread and all the messages within
+	rpc DeleteThread(DeleteThreadRequest) returns (DeleteThreadResponse);
+	// List all the threads for a group
+	rpc ListThreads(ListThreadsRequest) returns (ListThreadsResponse);
+	// Create a message within a thread
 	rpc CreateMessage(CreateMessageRequest) returns (CreateMessageResponse);
-	// List the messages within a conversation in reverse chronological order, using sent_before to
+	// List the messages within a thread in reverse chronological order, using sent_before to
 	// offset as older messages need to be loaded
 	rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
-	// RecentMessages returns the most recent messages in a group of conversations. By default the 
-	// most messages retrieved per conversation is 25, however this can be overriden using the 
-	// limit_per_conversation option
+	// RecentMessages returns the most recent messages in a group of threads. By default the 
+	// most messages retrieved per thread is 25, however this can be overriden using the 
+	// limit_per_thread option
 	rpc RecentMessages(RecentMessagesRequest) returns (RecentMessagesResponse);
 }
 
-message Conversation {
+message Thread {
 	string id = 1;
 	string group_id = 2;
 	string topic = 3;
-	google.protobuf.Timestamp created_at = 4;
+	string created_at = 4;
 }
 
 message Message {
 	string id = 1;
 	string author_id = 2;
-	string conversation_id = 3;
+	string thread_id = 3;
 	string text = 4;
-	google.protobuf.Timestamp sent_at = 5;
+	string sent_at = 5;
 }
 
-message CreateConversationRequest {
+message CreateThreadRequest {
 	string group_id = 1;
 	string topic = 2;
 }
 
-message CreateConversationResponse {
-	Conversation conversation = 1;
+message CreateThreadResponse {
+	Thread thread = 1;
 }
 
-message ReadConversationRequest {
+message ReadThreadRequest {
 	string id = 1;
-	google.protobuf.StringValue group_id = 2;
+	string group_id = 2;
 }
 
-message ReadConversationResponse {
-	Conversation conversation = 1;
+message ReadThreadResponse {
+	Thread thread = 1;
 }
 
-message ListConversationsRequest {
+message ListThreadsRequest {
 	string group_id = 1;
 }
 
-message ListConversationsResponse {
-	repeated Conversation conversations = 1;
+message ListThreadsResponse {
+	repeated Thread threads = 1;
 }
 
-message UpdateConversationRequest {
+message UpdateThreadRequest {
 	string id = 1;
 	string topic = 2;
 }
 
-message UpdateConversationResponse {
-	Conversation conversation = 1;
+message UpdateThreadResponse {
+	Thread thread = 1;
 }
 
-message DeleteConversationRequest {
+message DeleteThreadRequest {
 	string id = 1;
 }
 
-message DeleteConversationResponse {}
+message DeleteThreadResponse {}
 
 message CreateMessageRequest {
 	string id = 1;
-	string conversation_id = 2;
+	string thread_id = 2;
 	string author_id = 3;
 	string text = 4;
 }
@@ -95,9 +94,10 @@ message CreateMessageResponse {
 }
 
 message ListMessagesRequest {
-	string conversation_id = 1;
-	google.protobuf.Timestamp sent_before = 2;
-	google.protobuf.Int32Value limit = 3;
+	string thread_id = 1;
+	int64 limit = 2;
+	int64 offset = 3;
+	string order = 4;
 }
 
 message ListMessagesResponse {
@@ -105,8 +105,8 @@ message ListMessagesResponse {
 }
 
 message RecentMessagesRequest {
-	repeated string conversation_ids = 1;
-	google.protobuf.Int32Value limit_per_conversation = 2;
+	repeated string thread_ids = 1;
+	int64 limit_per_thread = 2;
 }
 
 message RecentMessagesResponse {
