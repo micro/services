@@ -105,8 +105,9 @@ message ListMessagesResponse {
 }
 
 message RecentMessagesRequest {
-	repeated string thread_ids = 1;
-	int64 limit_per_thread = 2;
+	string group_id = 1;
+	repeated string thread_ids = 2;
+	int64 limit_per_thread = 3;
 }
 
 message RecentMessagesResponse {
