@@ -153,7 +153,7 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		return err
 	}
 	if req.OutputURL {
-		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf)
+		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
 		if err != nil {
 			return err
 		}

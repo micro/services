@@ -408,6 +408,8 @@ github.com/micro/micro/v3 v3.2.2-0.20210507153404-9b089a4eaf70 h1:OxjaaG+dR7kIRl
 github.com/micro/micro/v3 v3.2.2-0.20210507153404-9b089a4eaf70/go.mod h1:3jH/R5iGtpMyeKH09iHt3KIw8gSFN7aW3W4iGOWUucE=
 github.com/micro/micro/v3 v3.2.2-0.20210507154259-3dd1cd29e797 h1:0j1z+nxdjv2ImkiEa4qvm3r39yqKKW0663G1JPz7eTw=
 github.com/micro/micro/v3 v3.2.2-0.20210507154259-3dd1cd29e797/go.mod h1:3jH/R5iGtpMyeKH09iHt3KIw8gSFN7aW3W4iGOWUucE=
+github.com/micro/micro/v3 v3.2.2-0.20210511151324-19ced9676163 h1:A2URe8wHvniwDKIeYaMCpH+FD4yAifqdkXBzaCIhj0Q=
+github.com/micro/micro/v3 v3.2.2-0.20210511151324-19ced9676163/go.mod h1:BQpuGyfMjBsp6843CpQz/u5lHWT1rgzsV6xW4pHf41o=
 github.com/miekg/dns v1.1.15/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/dns v1.1.27/go.mod h1:KNUDUusw/aVsxyTYZM1oqvCicbwhgbNgztCETuNZ7xM=
 github.com/miekg/dns v1.1.31 h1:sJFOl9BgwbYAWOGEwr61FU28pqsBNdpRBnhGXtO06Oo=
@@ -756,6 +758,7 @@ golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 h1:8qxJSnu+7dRq6upnbntrmriWByIakBuct5OM/MdQC1M=
 golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/term v0.0.0-20201117132131-f5c789dd3221 h1:/ZHdbVpdR/jk3g30/d4yUL0JU9kksj8+F/bnQUVLGDM=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/text v0.0.0-20170915032832-14c0d48ead0c/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
