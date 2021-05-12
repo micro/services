@@ -6,12 +6,11 @@ The canonical source for Micro services.
 
 Services provides a home for real world reusable Micro services.
 
-- [blog](blog) - A blog app composed as micro services
-- [chats](chats) - An instant messaging or group chat service
-- [helloworld](helloworld) - A simple helloworld service
-- [mail](mail) - An inbox for text based mail
-- [notes](notes) - A note taking service
-- [users](users) - User management and basic auth
+- [feeds](feeds) - RSS feed crawling and indexing
+- [routing](routing) - etas, routes and turn by turn directions
+- [geocoding](geocoding) - address to gps location and reverse
+- [location](location) - gps point location tracking
+- [otp](otp) - one time password generation
 
 ## Usage
 
