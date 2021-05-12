@@ -8,7 +8,11 @@ init:
 .PHONY: proto
 proto:
 	protoc --proto_path=. --micro_out=. --go_out=:. proto/users.proto
-	
+
+docs:
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=. proto/users.proto
+	@redoc-cli bundle api-users.json
+
 .PHONY: build
 build:
 	go build -o users *.go
