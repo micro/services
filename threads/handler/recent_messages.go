@@ -28,6 +28,21 @@ func (s *Threads) RecentMessages(ctx context.Context, req *pb.RecentMessagesRequ
 		limit = uint(req.LimitPerThread)
 	}
 
+	// if group id is present then list threads by group
+	if len(req.GroupId) > 0 && len(req.ThreadIds) == 0 {
+		var threads []*Thread
+		thread := &Thread{GroupID: req.GroupId}
+		if err := model.List(ctx, thread, &threads, model.Query{}); err != nil {
+			logger.Errorf("Error reading threads: %v", err)
+			return errors.InternalServerError("DATABASE_ERROR", "Error connecting to database")
+		}
+
+		// create the thread ids
+		for _, thread := range threads {
+			req.ThreadIds = append(req.ThreadIds, thread.ID)
+		}
+	}
+
 	for _, thread := range req.ThreadIds {
 		q := model.Query{Limit: limit, Order: "desc"}
 		m := &Message{ThreadID: thread}
