@@ -20,7 +20,7 @@ import (
 )
 
 const pathPrefix = "images"
-const hostPrefix = "https://micro-store-bucket-125b9f0.ams3.cdn.digitaloceanspaces.com"
+const hostPrefix = "https://cdn.m3ocontent.com"
 
 type Image struct {
 	hostPrefix string
@@ -32,7 +32,7 @@ func NewImage() *Image {
 	if err != nil {
 		hp = cfg.String(hostPrefix)
 	}
-	if len(hp) == 0 {
+	if len(strings.TrimSpace(hp)) == 0 {
 		hp = hostPrefix
 	}
 	return &Image{
@@ -48,7 +48,7 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	var srcImage image.Image
 	var err error
 	if len(req.Base64) > 0 {
-		srcImage, err = base64ToImage(req.Base64)
+		srcImage, _, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
@@ -74,7 +74,7 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 		return err
 	}
 
-	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf)
+	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
 	if err != nil {
 		return err
 	}
@@ -82,20 +82,29 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	return nil
 }
 
-func base64ToImage(b64 string) (image.Image, error) {
+func base64ToImage(b64 string) (image.Image, string, error) {
 	var srcImage image.Image
-	res := []byte{}
-	_, err := base64.StdEncoding.Decode([]byte(strings.Split(b64, ",")[1]), res)
+	ext := ""
+
+	parts := strings.Split(b64, ",")
+	prefix := parts[0]
+	b64 = strings.TrimSpace(parts[1])
+	res, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
-		return srcImage, err
+		return srcImage, ext, err
 	}
-	switch {
-	case strings.HasPrefix("data:image/png", b64):
+
+	switch prefix {
+	case "data:image/png;base64":
 		srcImage, err = png.Decode(bytes.NewReader(res))
-	case strings.HasPrefix("data:image/jpg", b64) || strings.HasPrefix("data:image/jpeg", b64):
+		ext = "png"
+	case "data:image/jpg;base64", "data:image/jpeg;base64":
 		srcImage, err = jpeg.Decode(bytes.NewReader(res))
+		ext = "jpg"
+	default:
+		return srcImage, ext, errors.New("unrecognized base64 prefix: " + prefix)
 	}
-	return srcImage, nil
+	return srcImage, ext, err
 }
 
 func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.ResizeResponse) error {
@@ -105,8 +114,9 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 	}
 	var srcImage image.Image
 	var err error
+	var ext string
 	if len(req.Base64) > 0 {
-		srcImage, err = base64ToImage(req.Base64)
+		srcImage, ext, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
@@ -126,28 +136,34 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		}
 		defer response.Body.Close()
 	}
+
 	resultImage := imaging.Resize(srcImage, int(req.Width), int(req.Height), imaging.Lanczos)
 	buf := new(bytes.Buffer)
+
 	switch {
-	case strings.HasSuffix(req.ImageID, ".png"):
+	case strings.HasSuffix(req.ImageID, ".png") || ext == "png":
 		err = png.Encode(buf, resultImage)
-	case strings.HasSuffix(req.ImageID, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
+	case strings.HasSuffix(req.ImageID, ".jpg") || strings.HasSuffix(req.Url, ".jpeg") || ext == "jpg":
 		err = jpeg.Encode(buf, resultImage, nil)
+	default:
+		return errors.New("could not determine extension")
 	}
 
 	if err != nil {
 		return err
 	}
 	if req.OutputURL {
-		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf)
+		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
 		if err != nil {
 			return err
 		}
 		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.ImageID)
 	} else {
-		dst := []byte{}
-		base64.StdEncoding.Encode(dst, buf.Bytes())
-		rsp.Base64 = string(dst)
+		prefix := "data:image/png;base64, "
+		if ext == "jpg" {
+			prefix = "data:image/jpg;base64, "
+		}
+		rsp.Base64 = prefix + base64.StdEncoding.EncodeToString(buf.Bytes())
 		return nil
 	}
 	return nil
@@ -161,7 +177,7 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 	var srcImage image.Image
 	var err error
 	if len(req.Base64) > 0 {
-		srcImage, err = base64ToImage(req.Base64)
+		srcImage, _, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
@@ -194,7 +210,7 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		return err
 	}
 	if req.OutputURL {
-		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf)
+		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
 		if err != nil {
 			return err
 		}

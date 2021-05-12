@@ -16,7 +16,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterImageHandler(srv.Server(), new(handler.Image))
+	pb.RegisterImageHandler(srv.Server(), handler.NewImage())
 
 	// Run service
 	if err := srv.Run(); err != nil {
