@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+service Users {
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {}
+	rpc Login(LoginRequest) returns (LoginResponse) {}
+	rpc Logout(LogoutRequest) returns (LogoutResponse) {}
+	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
+}
+
+message User {
+	string id = 1;		// uuid
+	string username = 2;	// alphanumeric user or org
+	string email = 3;
+	int64 created = 4;	// unix
+	int64 updated = 5;	// unix
+}
+
+message Session {
+    string id = 1;
+    string username = 2;
+	string email = 3;
+    int64 created = 4;      // unix
+    int64 expires = 5;      // unix
+}
+
+message CreateRequest {
+	string id = 1;			// uuid
+	string username = 2;	// alphanumeric user or org
+	string email = 3;
+    string password = 4;
+}
+
+message CreateResponse {
+}
+
+message DeleteRequest {
+	string id = 1;
+}
+
+message DeleteResponse {
+}
+
+message ReadRequest {
+	string id = 1;
+}
+
+message ReadResponse {
+	User user = 1;
+}
+
+message UpdateRequest {
+	string id = 1;			// uuid
+	string username = 2;	// alphanumeric user or org
+	string email = 3;
+}
+
+message UpdateResponse {
+}
+
+message UpdatePasswordRequest {
+    string userId = 1;
+    string oldPassword = 2;
+    string newPassword = 3;
+    string confirm_password = 4;
+}
+
+message UpdatePasswordResponse {
+}
+
+message SearchRequest {
+	string username = 1; 
+	string email = 2; 
+	int64 limit = 3;
+	int64 offset = 4;
+}
+
+message SearchResponse {
+	repeated User users = 1;
+}
+
+message ReadSessionRequest {
+    string sessionId = 1;
+}
+
+message ReadSessionResponse {
+    Session session = 1;
+}
+
+message LoginRequest {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message LoginResponse {
+    Session session = 1;
+}
+
+message LogoutRequest {
+    string sessionId = 1;
+}
+
+message LogoutResponse {
+}
+
