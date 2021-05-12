@@ -20,7 +20,7 @@ import (
 )
 
 const pathPrefix = "images"
-const hostPrefix = "https://micro-store-bucket-125b9f0.ams3.cdn.digitaloceanspaces.com"
+const hostPrefix = "https://cdn.m3ocontent.com"
 
 type Image struct {
 	hostPrefix string
@@ -32,7 +32,7 @@ func NewImage() *Image {
 	if err != nil {
 		hp = cfg.String(hostPrefix)
 	}
-	if len(hp) == 0 {
+	if len(strings.TrimSpace(hp)) == 0 {
 		hp = hostPrefix
 	}
 	return &Image{
@@ -74,7 +74,7 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 		return err
 	}
 
-	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf)
+	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
 	if err != nil {
 		return err
 	}
