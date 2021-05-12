@@ -15,13 +15,13 @@ require (
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
-	github.com/micro/micro/v3 v3.2.2-0.20210511151324-19ced9676163
+	github.com/micro/micro/v3 v3.2.2-0.20210512111443-2c40b42cb419
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/nats-io/nats-streaming-server v0.21.1
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
 	github.com/pquerna/otp v1.3.0
 	github.com/stoewer/go-strcase v1.2.0
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974
