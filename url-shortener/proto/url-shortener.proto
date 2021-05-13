@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package urlshortener;
+
+option go_package = "github.com/micro/services/url-shortener/proto;urlshortener";
+
+service UrlShortener {
+	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
+	rpc	List(ListRequest) returns (ListResponse) {}
+	rpc Get(GetRequest) returns (GetResponse) {}
+}
+
+message ShortenRequest {
+	string destinationURL = 1;
+}
+
+message ShortenResponse {
+	string shortURL = 1;
+}
+
+message URLPair {
+	string destinationURL = 1;
+	string shortURL = 2;
+	string owner = 3;
+}
+
+message ListRequest {
+}
+
+message ListResponse {
+	repeated URLPair urlPairs = 1;
+}
+
+message GetRequest {
+	string shortURL = 1;
+}
+
+message GetResponse {
+	string destinationURL = 1;
+}
