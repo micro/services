@@ -15,7 +15,7 @@ require (
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
-	github.com/micro/micro/v3 v3.2.2-0.20210513153354-f60f6c102c0a
+	github.com/micro/micro/v3 v3.2.2-0.20210514120220-1ee39904d3dd
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
 	github.com/pquerna/otp v1.3.0
