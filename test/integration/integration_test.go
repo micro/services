@@ -4,4 +4,4 @@ import (
 	"testing"
 )
 
-func TestIntegrations(t *Testing) {}
+func TestIntegrations(t *testing.T) {}
