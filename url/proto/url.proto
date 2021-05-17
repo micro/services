@@ -10,6 +10,7 @@ service Url {
 	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
 }
 
+// Shortens a destination URL and returns a full short URL.
 message ShortenRequest {
 	string destinationURL = 1;
 }
@@ -24,6 +25,8 @@ message URLPair {
 	string owner = 3;
 }
 
+// List shortened URLs. It has no input parameters, as it will take
+// the user ID from the token and list the user's (caller's) shortened URLs.
 message ListRequest {
 }
 
@@ -31,7 +34,12 @@ message ListResponse {
 	repeated URLPair urlPairs = 1;
 }
 
+// Proxy returns the destination URL of a short URL.
+// Proxy resolves even URLs not owned by the token holder,
+// unlike the List endpoint.
 message ProxyRequest {
+	// short url ID, without the domain, eg. if your short URL is
+	// `m3o.one/u/someshorturlid` then pass in `someshorturlid`
 	string shortURL = 1;
 }
 
