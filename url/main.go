@@ -11,12 +11,12 @@ import (
 func main() {
 	// Create service
 	srv := service.New(
-		service.Name("url-shortener"),
+		service.Name("url"),
 		service.Version("latest"),
 	)
 
 	// Register handler
-	pb.RegisterUrlShortenerHandler(srv.Server(), handler.NewUrl())
+	pb.RegisterUrlHandler(srv.Server(), handler.NewUrl())
 
 	// Run service
 	if err := srv.Run(); err != nil {
