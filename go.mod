@@ -4,14 +4,11 @@ go 1.14
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
-	github.com/PuerkitoBio/goquery v1.6.1
-	github.com/SlyMarbo/rss v1.0.1
 	github.com/disintegration/imaging v1.6.2
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang/protobuf v1.5.1
 	github.com/google/uuid v1.1.2
-	github.com/gosimple/slug v1.9.0
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
