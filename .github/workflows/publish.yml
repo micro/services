@@ -1,4 +1,4 @@
-name: Generate docs
+name: Publish APIs & Clients
 on:
   push:
     branches: [master]
