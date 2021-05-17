@@ -18,7 +18,6 @@ require (
 	github.com/pquerna/otp v1.3.0
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.7.0
-	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974
