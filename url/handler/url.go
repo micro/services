@@ -23,7 +23,7 @@ type Url struct {
 
 func NewUrl() *Url {
 	var hp string
-	cfg, err := config.Get("micro.url_shortener.host_prefix")
+	cfg, err := config.Get("micro.url.host_prefix")
 	if err != nil {
 		hp = cfg.String(hostPrefix)
 	}

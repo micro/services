@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package urlshortener;
+package url;
 
-option go_package = "github.com/micro/services/url-shortener/proto;urlshortener";
+option go_package = "github.com/micro/services/url/proto;url";
 
-service UrlShortener {
+service Url {
 	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
 	rpc	List(ListRequest) returns (ListResponse) {}
 	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
