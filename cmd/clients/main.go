@@ -16,11 +16,6 @@ import (
 	"github.com/stoewer/go-strcase"
 )
 
-const (
-	postContentPath = "docs/hugo-tania/site/content/post"
-	docsURL         = "services.m3o.com"
-)
-
 func main() {
 	files, err := ioutil.ReadDir(os.Args[1])
 	if err != nil {

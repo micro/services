@@ -1,0 +1,103 @@
+name: Publish APIs & Clients
+on:
+  push:
+    branches: [master]
+
+jobs:
+  docs:
+    name: Generate docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.13
+        id: go
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@master
+
+      - name: Check out this code
+        uses: actions/checkout@v2
+        with:
+          path: services
+
+      - name: Check out micro code
+        uses: actions/checkout@v2
+        with:
+          repository: 'micro/micro'
+          path: 'micro'
+          ref: 'master'
+
+      - name: Enable caching
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install protoc gen micro plugin
+        working-directory: micro/cmd/protoc-gen-micro
+        run: |
+          go get -u github.com/golang/protobuf/protoc-gen-go
+          go install
+
+      - name: Install redoc cli
+        run: |
+          # https://github.com/actions/virtual-environments/issues/599
+          sudo npm install -g redoc-cli
+
+      - name: Install openapi plugin
+        working-directory: micro/cmd/protoc-gen-openapi
+        run: |
+          go install
+
+#      - name: Install hugo
+#        run: sudo snap install hugo --channel=extended
+
+      - name: Generate openapi spec and publish the api
+        working-directory: services
+        run: |
+          go run cmd/publisher/main.go .
+        env:
+          MICRO_ADMIN_TOKEN: ${{ secrets.MICRO_ADMIN_TOKEN }}
+
+#      - name: Deploy
+#        if: github.ref == 'refs/heads/master'
+#        uses: s0/git-publish-subdir-action@develop
+#        env:
+#          REPO: self
+#          BRANCH: gh-pages
+#          FOLDER: services/docs
+#          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      
+      - name: Generate package
+        working-directory: services
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          go run cmd/clients/main.go .
+
+      # publish to github first under micro/services
+      # .npmrc has settings for it
+      - uses: JS-DevTools/npm-publish@v1
+        #if: github.ref == 'refs/heads/master'
+        with:
+          access: public
+          package: services/clients/ts/package.json
+          token: ${{ secrets.NPM_TOKEN }}
+
+      # publish to npm m3o/services
+      - name: Change npm settings
+        working-directory: services
+        run: |
+          rm clients/ts/.npmrc
+          sed -i 's/micro/m3o/g' clients/ts/package.json
+
+      - uses: JS-DevTools/npm-publish@v1
+        #if: github.ref == 'refs/heads/master'
+        with:
+          access: public
+          package: services/clients/ts/package.json
+          token: ${{ secrets.NPM_SITE_TOKEN }}
