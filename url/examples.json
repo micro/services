@@ -1,0 +1,33 @@
+{
+    "list": [{
+        "title": "List your shortened URLs",
+        "description": "List the token holder's shortened URLs",
+        "request": {
+        },
+        "response": {
+            "urlPairs": [{
+                "shortURL": "https://m3o.one/u/f8f3f83f3f83g",
+                "destinationURL": "https://mysite.com/this-is-a-rather-long-web-address",
+                "owner": "owner-id"
+            }]
+        }
+    }],
+    "shorten": [{
+        "title": "Shorten a long URL",
+        "request": {
+            "destinationURL": "https://mysite.com/this-is-a-rather-long-web-address"
+        },
+        "response": {
+            "shortURL": "https://m3o.one/u/f8f3f83f3f83g"
+        }
+    }],
+    "proxy": [{
+        "title": "Resolve a short URL to a long destination URL",
+        "request": {
+            "shortURL": "f8f3f83f3f83g"
+        },
+        "response": {
+            "destinationURL": "https://mysite.com/this-is-a-rather-long-web-address"
+        }
+    }]
+}
