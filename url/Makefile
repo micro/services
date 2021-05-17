@@ -13,6 +13,11 @@ proto:
 build:
 	go build -o url *.go
 
+.PHONY: docs
+docs:
+	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/url.proto
+	@redoc-cli bundle api-url.json
+
 .PHONY: test
 test:
 	go test -v ./... -cover
