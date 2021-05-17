@@ -7,11 +7,11 @@ init:
 	go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/url-shortener.proto
+	protoc --proto_path=. --micro_out=. --go_out=:. proto/url.proto
 	
 .PHONY: build
 build:
-	go build -o url-shortener *.go
+	go build -o url *.go
 
 .PHONY: test
 test:
@@ -19,4 +19,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t url-shortener:latest
+	docker build . -t url:latest

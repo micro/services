@@ -10,18 +10,18 @@ import (
 	"github.com/teris-io/shortid"
 
 	"github.com/micro/services/pkg/tenant"
-	urlshortener "github.com/micro/services/url-shortener/proto"
+	url "github.com/micro/services/url/proto"
 )
 
-const hostPrefix = "https://cdn.m3ocontent.com"
+const hostPrefix = "https://m3o.one/u"
 
-type UrlShortener struct {
+type Url struct {
 	pairs      model.Model
 	ownerIndex model.Index
 	hostPrefix string
 }
 
-func NewUrlShortener() *UrlShortener {
+func NewUrl() *Url {
 	var hp string
 	cfg, err := config.Get("micro.url_shortener.host_prefix")
 	if err != nil {
@@ -34,7 +34,7 @@ func NewUrlShortener() *UrlShortener {
 	ownerIndex := model.ByEquality("Owner")
 	ownerIndex.Order.Type = model.OrderTypeUnordered
 
-	return &UrlShortener{
+	return &Url{
 		pairs: model.NewModel(
 			model.WithKey("ShortURL"),
 			model.WithIndexes(ownerIndex),
@@ -43,7 +43,7 @@ func NewUrlShortener() *UrlShortener {
 	}
 }
 
-func (e *UrlShortener) Shorten(ctx context.Context, req *urlshortener.ShortenRequest, rsp *urlshortener.ShortenResponse) error {
+func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.ShortenResponse) error {
 	tenantID, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.New("Not authorized")
@@ -57,20 +57,20 @@ func (e *UrlShortener) Shorten(ctx context.Context, req *urlshortener.ShortenReq
 	if err != nil {
 		return err
 	}
-	return e.pairs.Create(&urlshortener.URLPair{
+	return e.pairs.Create(&url.URLPair{
 		DestinationURL: req.DestinationURL,
 		ShortURL:       id,
 		Owner:          tenantID,
 	})
 }
 
-func (e *UrlShortener) List(ctx context.Context, req *urlshortener.ListRequest, rsp *urlshortener.ListResponse) error {
+func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListResponse) error {
 	tenantID, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.New("Not authorized")
 	}
 
-	rsp.UrlPairs = []*urlshortener.URLPair{}
+	rsp.UrlPairs = []*url.URLPair{}
 	err := e.pairs.Read(e.ownerIndex.ToQuery(e.ownerIndex.ToQuery(tenantID)), &rsp.UrlPairs)
 	if err != nil {
 		return err
@@ -81,19 +81,11 @@ func (e *UrlShortener) List(ctx context.Context, req *urlshortener.ListRequest, 
 	return nil
 }
 
-func (e *UrlShortener) Get(ctx context.Context, req *urlshortener.GetRequest, rsp *urlshortener.GetResponse) error {
-	tenantID, ok := tenant.FromContext(ctx)
-	if !ok {
-		return errors.New("Not authorized")
-	}
-
-	var pair urlshortener.URLPair
+func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyResponse) error {
+	var pair url.URLPair
 	err := e.pairs.Read(e.ownerIndex.ToQuery(model.QueryEquals("ShortURL", e.hostPrefix+"/"+req.ShortURL)), pair)
 	if err != nil {
 		return err
-	}
-	if pair.Owner != tenantID {
-		return errors.New("not authorized")
 	}
 
 	rsp.DestinationURL = pair.DestinationURL

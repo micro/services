@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/micro/services/url-shortener/handler"
-	pb "github.com/micro/services/url-shortener/proto"
+	"github.com/micro/services/url/handler"
+	pb "github.com/micro/services/url/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
@@ -16,7 +16,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterUrlShortenerHandler(srv.Server(), handler.NewUrlShortener())
+	pb.RegisterUrlShortenerHandler(srv.Server(), handler.NewUrl())
 
 	// Run service
 	if err := srv.Run(); err != nil {

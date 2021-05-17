@@ -7,7 +7,7 @@ option go_package = "github.com/micro/services/url-shortener/proto;urlshortener"
 service UrlShortener {
 	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
 	rpc	List(ListRequest) returns (ListResponse) {}
-	rpc Get(GetRequest) returns (GetResponse) {}
+	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
 }
 
 message ShortenRequest {
@@ -31,10 +31,10 @@ message ListResponse {
 	repeated URLPair urlPairs = 1;
 }
 
-message GetRequest {
+message ProxyRequest {
 	string shortURL = 1;
 }
 
-message GetResponse {
+message ProxyResponse {
 	string destinationURL = 1;
 }
