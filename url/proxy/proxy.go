@@ -1,11 +1,21 @@
 package proxy
 
 import (
+	"os"
+
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+)
+
+var (
+	// API Key
+	APIKey = os.Getenv("MICRO_API_KEY")
+
+	// API Url
+	APIHost = "https://api.m3o.com"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -30,8 +40,23 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		Path:   r.URL.Path,
 	}
 
+	header := make(http.Header)
+	apiURL := APIHost + "/url/proxy"
+
+	// use /v1/
+	if len(APIKey) > 0 {
+		apiURL = APIHost + "/v1/url/proxy"
+		header.Set("Authorization", "Bearer "+APIKey)
+	}
+
+	// make new request
+	req, err := http.NewRequest("GET", apiURL+"?shortURL="+uri.String(), nil)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	// call the backend for the url
-	rsp, err := http.Get("https://api.m3o.com/url/proxy?shortURL=" + uri.String())
+	rsp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
