@@ -57,7 +57,7 @@ func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.Sho
 	if err != nil {
 		return err
 	}
-	return e.pairs.Create(&url.URLPair{
+	return e.pairs.Create(url.URLPair{
 		DestinationURL: req.DestinationURL,
 		ShortURL:       id,
 		Owner:          tenantID,
