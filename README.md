@@ -6,11 +6,9 @@ The canonical source for Micro services.
 
 Services provides a home for real world reusable Micro services.
 
-- [feeds](feeds) - RSS feed crawling and indexing
 - [routing](routing) - etas, routes and turn by turn directions
 - [geocoding](geocoding) - address to gps location and reverse
 - [location](location) - gps point location tracking
-- [places](places) - points of interest search
 
 ## Usage
 
