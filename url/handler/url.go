@@ -42,6 +42,7 @@ func NewUrl() *Url {
 	return &Url{
 		pairs:      m,
 		ownerIndex: ownerIndex,
+		hostPrefix: hp,
 	}
 }
 
