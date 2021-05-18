@@ -14,7 +14,7 @@ import (
 	url "github.com/micro/services/url/proto"
 )
 
-const hostPrefix = "https://m3o.one/u"
+const hostPrefix = "https://m3o.one/u/"
 
 type Url struct {
 	pairs      model.Model
