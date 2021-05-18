@@ -40,13 +40,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		Path:   r.URL.Path,
 	}
 
-	header := make(http.Header)
 	apiURL := APIHost + "/url/proxy"
 
 	// use /v1/
 	if len(APIKey) > 0 {
 		apiURL = APIHost + "/v1/url/proxy"
-		header.Set("Authorization", "Bearer "+APIKey)
 	}
 
 	// make new request
@@ -55,6 +53,16 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	if req.Header == nil {
+		req.Header = make(http.Header)
+	}
+
+	// set the api key after we're given the header
+	if len(APIKey) > 0 {
+		req.Header.Set("Authorization", "Bearer "+APIKey)
+	}
+
 	// call the backend for the url
 	rsp, err := http.DefaultClient.Do(req)
 	if err != nil {
