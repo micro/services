@@ -24,7 +24,7 @@
     "proxy": [{
         "title": "Resolve a short URL to a long destination URL",
         "request": {
-            "shortURL": "f8f3f83f3f83g"
+            "shortURL": "https://m3o.one/u3zS8YHmYp"
         },
         "response": {
             "destinationURL": "https://mysite.com/this-is-a-rather-long-web-address"

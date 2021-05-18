@@ -90,7 +90,7 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 
 func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyResponse) error {
 	var pair url.URLPair
-	err := e.pairs.Read(e.ownerIndex.ToQuery(model.QueryEquals("shortURL", strings.Replace(req.ShortURL, e.hostPrefix, "", -1))), &pair)
+	err := e.pairs.Read(model.QueryEquals("shortURL", strings.Replace(req.ShortURL, e.hostPrefix, "", -1)), &pair)
 	if err != nil {
 		return err
 	}
