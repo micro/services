@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/model"
@@ -31,15 +32,18 @@ func NewUrl() *Url {
 		hp = hostPrefix
 	}
 
-	ownerIndex := model.ByEquality("Owner")
+	ownerIndex := model.ByEquality("owner")
 	ownerIndex.Order.Type = model.OrderTypeUnordered
 
+	m := model.NewModel(
+		model.WithKey("shortURL"),
+		model.WithIndexes(ownerIndex),
+	)
+	m.Register(&url.URLPair{})
 	return &Url{
-		pairs: model.NewModel(
-			model.WithKey("ShortURL"),
-			model.WithIndexes(ownerIndex),
-		),
+		pairs:      m,
 		ownerIndex: ownerIndex,
+		hostPrefix: hp,
 	}
 }
 
@@ -57,11 +61,16 @@ func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.Sho
 	if err != nil {
 		return err
 	}
-	return e.pairs.Create(&url.URLPair{
+
+	p := &url.URLPair{
 		DestinationURL: req.DestinationURL,
 		ShortURL:       id,
 		Owner:          tenantID,
-	})
+		Created:        time.Now().Unix(),
+	}
+	rsp.ShortURL = e.hostPrefix + id
+
+	return e.pairs.Create(p)
 }
 
 func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListResponse) error {
@@ -71,7 +80,7 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 	}
 
 	rsp.UrlPairs = []*url.URLPair{}
-	err := e.pairs.Read(e.ownerIndex.ToQuery(e.ownerIndex.ToQuery(tenantID)), &rsp.UrlPairs)
+	err := e.pairs.Read(e.ownerIndex.ToQuery(tenantID), &rsp.UrlPairs)
 	if err != nil {
 		return err
 	}
@@ -83,7 +92,7 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 
 func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyResponse) error {
 	var pair url.URLPair
-	err := e.pairs.Read(e.ownerIndex.ToQuery(model.QueryEquals("ShortURL", e.hostPrefix+"/"+req.ShortURL)), pair)
+	err := e.pairs.Read(model.QueryEquals("shortURL", strings.Replace(req.ShortURL, e.hostPrefix, "", -1)), &pair)
 	if err != nil {
 		return err
 	}
