@@ -23,6 +23,7 @@ message URLPair {
 	string destinationURL = 1;
 	string shortURL = 2;
 	string owner = 3;
+	int64 created = 4;
 }
 
 // List shortened URLs. It has no input parameters, as it will take

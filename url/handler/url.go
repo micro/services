@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/model"
@@ -65,6 +66,7 @@ func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.Sho
 		DestinationURL: req.DestinationURL,
 		ShortURL:       id,
 		Owner:          tenantID,
+		Created:        time.Now().Unix(),
 	}
 	rsp.ShortURL = e.hostPrefix + id
 
