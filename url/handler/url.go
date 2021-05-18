@@ -59,11 +59,15 @@ func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.Sho
 	if err != nil {
 		return err
 	}
-	return e.pairs.Create(url.URLPair{
+
+	p := &url.URLPair{
 		DestinationURL: req.DestinationURL,
 		ShortURL:       id,
 		Owner:          tenantID,
-	})
+	}
+	rsp.ShortURL = e.hostPrefix + id
+
+	return e.pairs.Create(p)
 }
 
 func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListResponse) error {
