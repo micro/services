@@ -16,6 +16,9 @@ var (
 
 	// API Url
 	APIHost = "https://api.m3o.com"
+
+	// host to proxy for
+	Host = "m3o.one"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +41,22 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		Scheme: r.URL.Scheme,
 		Host:   r.URL.Host,
 		Path:   r.URL.Path,
+	}
+
+	// if the host is blank we have to set it
+	if len(uri.Host) == 0 {
+		if len(r.Host) > 0 {
+			log.Printf("[url/proxy] Host is set from r.Host %v", r.Host)
+			uri.Host = r.Host
+		} else {
+			log.Printf("[url/proxy] Host is nil, defaulting to: %v", Host)
+			uri.Host = Host
+			uri.Scheme = "https"
+		}
+	}
+
+	if len(uri.Scheme) == 0 {
+		uri.Scheme = "https"
 	}
 
 	apiURL := APIHost + "/url/proxy"
