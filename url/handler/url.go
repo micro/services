@@ -34,11 +34,13 @@ func NewUrl() *Url {
 	ownerIndex := model.ByEquality("owner")
 	ownerIndex.Order.Type = model.OrderTypeUnordered
 
+	m := model.NewModel(
+		model.WithKey("shortURL"),
+		model.WithIndexes(ownerIndex),
+	)
+	m.Register(&url.URLPair{})
 	return &Url{
-		pairs: model.NewModel(
-			model.WithKey("shortURL"),
-			model.WithIndexes(ownerIndex),
-		),
+		pairs:      m,
 		ownerIndex: ownerIndex,
 	}
 }
