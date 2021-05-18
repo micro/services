@@ -36,7 +36,7 @@ func NewUrl() *Url {
 
 	return &Url{
 		pairs: model.NewModel(
-			model.WithKey("ShortURL"),
+			model.WithKey("shortURL"),
 			model.WithIndexes(ownerIndex),
 		),
 		ownerIndex: ownerIndex,
@@ -83,7 +83,7 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 
 func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyResponse) error {
 	var pair url.URLPair
-	err := e.pairs.Read(e.ownerIndex.ToQuery(model.QueryEquals("ShortURL", e.hostPrefix+"/"+req.ShortURL)), pair)
+	err := e.pairs.Read(e.ownerIndex.ToQuery(model.QueryEquals("shortURL", e.hostPrefix+"/"+req.ShortURL)), pair)
 	if err != nil {
 		return err
 	}
