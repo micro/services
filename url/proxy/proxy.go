@@ -1,12 +1,12 @@
 package proxy
 
 import (
-	"os"
-
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -71,18 +71,19 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rsp.Body.Close()
 
-	if rsp.StatusCode != 200 {
-		http.Error(w, "unexpected error", 500)
-		return
-	}
-
-	result := map[string]interface{}{}
-
 	b, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
+	if rsp.StatusCode != 200 {
+		log.Printf("Error calling api: status: %v %v", rsp.StatusCode, string(b))
+		http.Error(w, "unexpected error", 500)
+		return
+	}
+
+	result := map[string]interface{}{}
 
 	if err := json.Unmarshal(b, &result); err != nil {
 		http.Error(w, err.Error(), 500)
