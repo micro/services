@@ -48,7 +48,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// make new request
-	log.Printf("Calling: %v", apiURL+"?shortURL="+uri.String())
+	log.Printf("[url/proxy] Calling: %v", apiURL+"?shortURL="+uri.String())
 	req, err := http.NewRequest("GET", apiURL+"?shortURL="+uri.String(), nil)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -79,7 +79,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if rsp.StatusCode != 200 {
-		log.Printf("Error calling api: status: %v %v", rsp.StatusCode, string(b))
+		log.Printf("[url/proxy] Error calling api: status: %v %v", rsp.StatusCode, string(b))
 		http.Error(w, "unexpected error", 500)
 		return
 	}
