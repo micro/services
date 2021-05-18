@@ -31,7 +31,7 @@ func NewUrl() *Url {
 		hp = hostPrefix
 	}
 
-	ownerIndex := model.ByEquality("Owner")
+	ownerIndex := model.ByEquality("owner")
 	ownerIndex.Order.Type = model.OrderTypeUnordered
 
 	return &Url{
