@@ -14,7 +14,7 @@ import (
 	url "github.com/micro/services/url/proto"
 )
 
-const hostPrefix = "https://m3o.one/u"
+const hostPrefix = "https://m3o.one/u/"
 
 type Url struct {
 	pairs      model.Model
@@ -85,7 +85,7 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 		return err
 	}
 	for _, v := range rsp.UrlPairs {
-		v.ShortURL = e.hostPrefix + "/" + v.ShortURL
+		v.ShortURL = e.hostPrefix + v.ShortURL
 	}
 	return nil
 }
