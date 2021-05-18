@@ -1,4 +1,4 @@
-One time password service
+One time password generation
 
 # OTP Service
 
