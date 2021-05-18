@@ -48,6 +48,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// make new request
+	log.Printf("Calling: %v", apiURL+"?shortURL="+uri.String())
 	req, err := http.NewRequest("GET", apiURL+"?shortURL="+uri.String(), nil)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
