@@ -6,7 +6,7 @@ option go_package = "github.com/micro/services/url/proto;url";
 
 service Url {
 	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
-	rpc	List(ListRequest) returns (ListResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
 }
 
