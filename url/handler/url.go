@@ -108,6 +108,8 @@ func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyRe
 		return err
 	}
 	v, found := e.cache.Get(id)
+	// @todo there is an ABA problem with this solution
+	// when it comes to the hit counter
 	if !found {
 		e.cache.Set(id, int64(1), cache.NoExpiration)
 	} else {
