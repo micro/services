@@ -8,15 +8,15 @@ init:
 	go get github.com/micro/micro/v3/cmd/protoc-gen-openapi
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/users.proto
+	protoc --proto_path=. --micro_out=. --go_out=:. proto/user.proto
 
 .PHONY: api
 api:
-	protoc --openapi_out=. --proto_path=. proto/users.proto
+	protoc --openapi_out=. --proto_path=. proto/user.proto
 
 .PHONY: build
 build:
-	go build -o users *.go
+	go build -o user *.go
 
 .PHONY: test
 test:
@@ -24,4 +24,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t users:latest
+	docker build . -t user:latest
