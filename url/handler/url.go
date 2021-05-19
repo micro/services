@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/model"
+	cache "github.com/patrickmn/go-cache"
 	"github.com/teris-io/shortid"
 
 	"github.com/micro/services/pkg/tenant"
@@ -19,6 +21,7 @@ const hostPrefix = "https://m3o.one/u/"
 type Url struct {
 	pairs      model.Model
 	ownerIndex model.Index
+	cache      *cache.Cache
 	hostPrefix string
 }
 
@@ -44,6 +47,7 @@ func NewUrl() *Url {
 		pairs:      m,
 		ownerIndex: ownerIndex,
 		hostPrefix: hp,
+		cache:      cache.New(cache.NoExpiration, cache.NoExpiration),
 	}
 }
 
@@ -85,6 +89,12 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 		return err
 	}
 	for _, v := range rsp.UrlPairs {
+		// get the counter and add it to db value to improve
+		// accuracy
+		count, ok := e.cache.Get(v.ShortURL)
+		if ok {
+			v.HitCount += count.(int64)
+		}
 		v.ShortURL = e.hostPrefix + v.ShortURL
 	}
 	return nil
@@ -92,9 +102,28 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 
 func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyResponse) error {
 	var pair url.URLPair
-	err := e.pairs.Read(model.QueryEquals("shortURL", strings.Replace(req.ShortURL, e.hostPrefix, "", -1)), &pair)
+	id := strings.Replace(req.ShortURL, e.hostPrefix, "", -1)
+	err := e.pairs.Read(model.QueryEquals("shortURL", id), &pair)
 	if err != nil {
 		return err
+	}
+	v, found := e.cache.Get(id)
+	if !found {
+		e.cache.Set(id, int64(1), cache.NoExpiration)
+	} else {
+		// we null out the counter
+		e.cache.Set(id, 0, cache.NoExpiration)
+		if v.(int64)%10 == 0 {
+			go func() {
+				// We add instead of set in case the service runs in multiple
+				// instances
+				pair.HitCount += v.(int64) + int64(1)
+				err = e.pairs.Update(pair)
+				if err != nil {
+					logger.Error(err)
+				}
+			}()
+		}
 	}
 
 	rsp.DestinationURL = pair.DestinationURL
