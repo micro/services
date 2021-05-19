@@ -84,7 +84,12 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 	}
 
 	rsp.UrlPairs = []*url.URLPair{}
-	err := e.pairs.Read(e.ownerIndex.ToQuery(tenantID), &rsp.UrlPairs)
+	var err error
+	if req.ShortURL != "" {
+		err = e.pairs.Read(model.QueryEquals("shortURL", req.ShortURL), &rsp.UrlPairs)
+	} else {
+		err = e.pairs.Read(e.ownerIndex.ToQuery(tenantID), &rsp.UrlPairs)
+	}
 	if err != nil {
 		return err
 	}
