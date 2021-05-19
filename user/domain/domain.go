@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	user "github.com/micro/services/users/proto"
 	"github.com/micro/micro/v3/service/model"
+	user "github.com/micro/services/user/proto"
 )
 
 type pw struct {
@@ -15,7 +15,7 @@ type pw struct {
 }
 
 type Domain struct {
-	users     model.Model
+	user      model.Model
 	sessions  model.Model
 	passwords model.Model
 
@@ -39,7 +39,7 @@ func New() *Domain {
 	idIndex.Order.Type = model.OrderTypeUnordered
 
 	return &Domain{
-		users: model.New(user.User{}, &model.Options{
+		user: model.New(user.Account{}, &model.Options{
 			Indexes: []model.Index{nameIndex, emailIndex},
 		}),
 		sessions:   model.New(user.Session{}, nil),
@@ -72,10 +72,10 @@ func (domain *Domain) ReadSession(id string) (*user.Session, error) {
 	return sess, domain.sessions.Read(domain.idIndex.ToQuery(id), &sess)
 }
 
-func (domain *Domain) Create(user *user.User, salt string, password string) error {
+func (domain *Domain) Create(user *user.Account, salt string, password string) error {
 	user.Created = time.Now().Unix()
 	user.Updated = time.Now().Unix()
-	err := domain.users.Create(user)
+	err := domain.user.Create(user)
 	if err != nil {
 		return err
 	}
@@ -87,20 +87,20 @@ func (domain *Domain) Create(user *user.User, salt string, password string) erro
 }
 
 func (domain *Domain) Delete(id string) error {
-	return domain.users.Delete(domain.idIndex.ToQuery(id))
+	return domain.user.Delete(domain.idIndex.ToQuery(id))
 }
 
-func (domain *Domain) Update(user *user.User) error {
+func (domain *Domain) Update(user *user.Account) error {
 	user.Updated = time.Now().Unix()
-	return domain.users.Create(user)
+	return domain.user.Create(user)
 }
 
-func (domain *Domain) Read(id string) (*user.User, error) {
-	user := &user.User{}
-	return user, domain.users.Read(domain.idIndex.ToQuery(id), user)
+func (domain *Domain) Read(id string) (*user.Account, error) {
+	user := &user.Account{}
+	return user, domain.user.Read(domain.idIndex.ToQuery(id), user)
 }
 
-func (domain *Domain) Search(username, email string, limit, offset int64) ([]*user.User, error) {
+func (domain *Domain) Search(username, email string, limit, offset int64) ([]*user.Account, error) {
 	var query model.Query
 	if len(username) > 0 {
 		query = domain.nameIndex.ToQuery(username)
@@ -110,8 +110,8 @@ func (domain *Domain) Search(username, email string, limit, offset int64) ([]*us
 		return nil, errors.New("username and email cannot be blank")
 	}
 
-	users := []*user.User{}
-	return users, domain.users.Read(query, &users)
+	user := []*user.Account{}
+	return user, domain.user.Read(query, &user)
 }
 
 func (domain *Domain) UpdatePassword(id string, salt string, password string) error {
@@ -132,8 +132,8 @@ func (domain *Domain) SaltAndPassword(username, email string) (string, string, e
 		return "", "", errors.New("username and email cannot be blank")
 	}
 
-	user := &user.User{}
-	err := domain.users.Read(query, &user)
+	user := &user.Account{}
+	err := domain.user.Read(query, &user)
 	if err != nil {
 		return "", "", err
 	}

@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package users;
+package user;
 
-option go_package = "./proto;users";
+option go_package = "./proto;user";
 
-service Users {
+service User {
 	rpc Create(CreateRequest) returns (CreateResponse) {}
 	rpc Read(ReadRequest) returns (ReadResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
@@ -16,66 +16,95 @@ service Users {
 	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
 }
 
-message User {
-	string id = 1;		// uuid
-	string username = 2;	// alphanumeric user or org
+message Account {
+	// unique account id
+	string id = 1;
+	// alphanumeric username
+	string username = 2;
+	// an email address
 	string email = 3;
-	int64 created = 4;	// unix
-	int64 updated = 5;	// unix
+	// unix timestamp
+	int64 created = 4;
+	// unix timestamp
+	int64 updated = 5;
 }
 
 message Session {
-    string id = 1;
-    string username = 2;
+	// the session id
+	string id = 1;
+	// account username
+	string username = 2;
+	// account email
 	string email = 3;
-    int64 created = 4;      // unix
-    int64 expires = 5;      // unix
+	// unix timestamp
+	int64 created = 4;
+	// unix timestamp
+	int64 expires = 5;
 }
 
+// Create a new user account
 message CreateRequest {
-	string id = 1;			// uuid
-	string username = 2;	// alphanumeric user or org
+	// the acccount id
+	string id = 1;
+	// the username
+	string username = 2;
+	// the email address
 	string email = 3;
-    string password = 4;
+	// the user password
+	string password = 4;
 }
 
 message CreateResponse {
 }
 
+// Delete an account by id
 message DeleteRequest {
+	// the account id
 	string id = 1;
 }
 
 message DeleteResponse {
 }
 
+// Read an account by id
 message ReadRequest {
+	// the account id
 	string id = 1;
 }
 
 message ReadResponse {
-	User user = 1;
+	Account account = 1;
 }
 
+// Update the account username or email
 message UpdateRequest {
-	string id = 1;			// uuid
-	string username = 2;	// alphanumeric user or org
+	// the account id
+	string id = 1;
+	// the new username
+	string username = 2;
+	// the new email address
 	string email = 3;
 }
 
 message UpdateResponse {
 }
 
+// Update the account password
 message UpdatePasswordRequest {
-    string userId = 1;
-    string oldPassword = 2;
-    string newPassword = 3;
-    string confirm_password = 4;
+	// the account id
+	string userId = 1;
+	// the old password
+	string oldPassword = 2;
+	// the new password
+	string newPassword = 3;
+	// confirm new password
+	string confirm_password = 4;
 }
 
 message UpdatePasswordResponse {
 }
 
+// Search for an account
 message SearchRequest {
 	string username = 1; 
 	string email = 2; 
@@ -84,9 +113,10 @@ message SearchRequest {
 }
 
 message SearchResponse {
-	repeated User users = 1;
+	repeated Account accounts = 1;
 }
 
+// Read a session by id
 message ReadSessionRequest {
     string sessionId = 1;
 }
@@ -95,6 +125,8 @@ message ReadSessionResponse {
     Session session = 1;
 }
 
+
+// Login a user account
 message LoginRequest {
     string username = 1;
     string email = 2;
@@ -105,6 +137,7 @@ message LoginResponse {
     Session session = 1;
 }
 
+// Logout a user account
 message LogoutRequest {
     string sessionId = 1;
 }
