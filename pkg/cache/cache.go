@@ -110,6 +110,16 @@ func (c *cache) Get(key string, val interface{}) error {
 	if err := json.Unmarshal(recs[0].Value, val); err != nil {
 		return err
 	}
+
+	// put it in the cache for future use
+	// set in the lru
+	rec := recs[0]
+	expires := time.Time{}
+	if rec.Expiry > time.Duration(0) {
+		expires = time.Now().Add(rec.Expiry)
+	}
+	c.LRU.Add(rec.Key, &item{key: rec.Key, val: rec.Value, expires: expires})
+
 	return nil
 }
 
