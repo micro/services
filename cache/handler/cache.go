@@ -19,9 +19,14 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 	item := new(pb.Item)
 	item.Key = req.Key
 
-	if err := cache.Context(ctx).Get(req.Key, &item.Value); err != nil {
+	var value string
+
+	if err := cache.Context(ctx).Get(req.Key, &value); err != nil {
 		return errors.InternalServerError("cache.get", err.Error())
 	}
+
+	// set the value
+	item.Value = value
 
 	return nil
 }
@@ -41,7 +46,7 @@ func (c *Cache) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse
 		return errors.InternalServerError("cache.set", err.Error())
 	}
 
-	rsp.Status == "ok"
+	rsp.Status = "ok"
 
 	return nil
 }
