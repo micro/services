@@ -43,35 +43,12 @@ jobs:
           go get -u github.com/golang/protobuf/protoc-gen-go
           go install
 
-      - name: Install redoc cli
-        run: |
-          # https://github.com/actions/virtual-environments/issues/599
-          sudo npm install -g redoc-cli
-
-      - name: Install openapi plugin
-        working-directory: micro/cmd/protoc-gen-openapi
-        run: |
-          go install
-
-#      - name: Install hugo
-#        run: sudo snap install hugo --channel=extended
-
       - name: Generate openapi spec and publish the api
         working-directory: services
         run: |
           go run cmd/publisher/main.go .
         env:
           MICRO_ADMIN_TOKEN: ${{ secrets.MICRO_ADMIN_TOKEN }}
-
-#      - name: Deploy
-#        if: github.ref == 'refs/heads/master'
-#        uses: s0/git-publish-subdir-action@develop
-#        env:
-#          REPO: self
-#          BRANCH: gh-pages
-#          FOLDER: services/docs
-#          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-      
       - name: Generate package
         working-directory: services
         env:

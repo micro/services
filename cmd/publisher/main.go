@@ -75,12 +75,12 @@ func main() {
 			}
 
 			fmt.Println("Processing folder", serviceDir)
-			makeProto := exec.Command("make", "docs")
+			makeProto := exec.Command("make", "api")
 			makeProto.Dir = serviceDir
 			fmt.Println(serviceDir)
 			outp, err := makeProto.CombinedOutput()
 			if err != nil {
-				fmt.Println("Failed to make docs", string(outp))
+				fmt.Println("Failed to make api", string(outp))
 				os.Exit(1)
 			}
 			serviceName := f.Name()

@@ -38,7 +38,7 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 
 		secret = key.Secret()
 
-		if err := cache.Context(ctx).Put(req.Id, secret, time.Now().Add(time.Minute*5)); err != nil {
+		if err := cache.Context(ctx).Set(req.Id, secret, time.Now().Add(time.Minute*5)); err != nil {
 			logger.Error("Failed to store secret: %v", err)
 			return errors.InternalServerError("otp.generate", "failed to generate code")
 		}

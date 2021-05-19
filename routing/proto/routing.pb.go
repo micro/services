@@ -25,7 +25,9 @@ type Point struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Latitude  float64 `protobuf:"fixed64,1,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	// Lat e.g 52.523219
+	Latitude float64 `protobuf:"fixed64,1,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	// Long e.g 13.428555
 	Longitude float64 `protobuf:"fixed64,2,opt,name=longitude,proto3" json:"longitude,omitempty"`
 }
 
@@ -368,12 +370,15 @@ func (x *Direction) GetIntersections() []*Intersection {
 	return nil
 }
 
+// Turn by turn directions from a starting and endpoint including maneuvers and bearings
 type DirectionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Origin      *Point `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
+	// The staring point for the journey
+	Origin *Point `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
+	// The destinationg of the journey
 	Destination *Point `protobuf:"bytes,2,opt,name=destination,proto3" json:"destination,omitempty"`
 }
 
@@ -498,12 +503,15 @@ func (x *DirectionsResponse) GetDuration() float64 {
 	return 0
 }
 
+// Get the eta for a route from origin to destination. The eta is an estimated time based on car routes
 type EtaRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Origin      *Point `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
+	// The starting point for the eta calculation
+	Origin *Point `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
+	// The end point for the eta calculation
 	Destination *Point `protobuf:"bytes,2,opt,name=destination,proto3" json:"destination,omitempty"`
 	// type of transport e.g car, foot, bicycle
 	Type string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
@@ -619,6 +627,7 @@ func (x *EtaResponse) GetDuration() float64 {
 	return 0
 }
 
+// Retrieve a route as a simple list of gps points along with total distance and estimated duration
 type RouteRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
