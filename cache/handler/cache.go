@@ -27,6 +27,9 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 
 	// set the value
 	item.Value = value
+	// set the item
+	rsp.Item = item
+
 
 	return nil
 }
