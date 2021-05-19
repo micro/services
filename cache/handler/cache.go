@@ -16,20 +16,15 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 		return errors.BadRequest("cache.get", "missing key")
 	}
 
-	item := new(pb.Item)
-	item.Key = req.Key
-
 	var value string
 
 	if err := cache.Context(ctx).Get(req.Key, &value); err != nil {
 		return errors.InternalServerError("cache.get", err.Error())
 	}
 
+	rsp.Key = req.Key
 	// set the value
-	item.Value = value
-	// set the item
-	rsp.Item = item
-
+	rsp.Value = value
 
 	return nil
 }

@@ -12,15 +12,6 @@ service Cache {
 	rpc Decrement(DecrementRequest) returns (DecrementResponse) {}
 }
 
-message Item {
-	// The key
-	string key = 1;
-	// The value
-	string value = 2;
-	// Time to live in seconds
-	int64 ttl = 3;
-}
-
 // Get an item from the cache by key
 message GetRequest {
 	// The key to retrieve
@@ -28,8 +19,12 @@ message GetRequest {
 }
 
 message GetResponse {
-	// The item in the cache
-	Item item = 1;
+	// The key
+	string key = 1;
+	// The value
+	string value = 2;
+	// Time to live in seconds
+	int64 ttl = 3;
 }
 
 // Set an item in the cache
