@@ -1,23 +1,5 @@
+Simple key-value storage
+
 # Cache Service
 
-This is the Cache service
-
-Generated with
-
-```
-micro new cache
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+The cache service provides simple get/set/delete key-value storage along with ttl support.
