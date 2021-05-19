@@ -23,7 +23,7 @@
             "status": "ok"
         }
     }],
-    "set": [{
+    "delete": [{
         "title": "Delete a value",
         "description": "Delete a value from the cache",
         "request": {
