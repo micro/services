@@ -66,6 +66,7 @@ func (c *cache) Context(ctx context.Context) Cache {
 		return c
 	}
 	return &cache{
+		LRU: c.LRU,
 		Store:  c.Store,
 		Prefix: t,
 	}
