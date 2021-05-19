@@ -13,7 +13,9 @@ service Routing {
 }
 
 message Point {
+	// Lat e.g 52.523219
 	double latitude = 1;
+	// Long e.g 13.428555
 	double longitude = 2;
 }
 
@@ -54,8 +56,11 @@ message Direction {
 	repeated Intersection intersections = 7;
 }
 
+// Turn by turn directions from a starting and endpoint including maneuvers and bearings
 message DirectionsRequest {
+	// The staring point for the journey
 	Point origin = 1;
+	// The destinationg of the journey
 	Point destination = 2;
 }
 
@@ -70,8 +75,11 @@ message DirectionsResponse {
 	double duration = 4;
 }
 
+// Get the eta for a route from origin to destination. The eta is an estimated time based on car routes
 message EtaRequest {
+	// The starting point for the eta calculation
 	Point origin = 1;
+	// The end point for the eta calculation
 	Point destination = 2;
 	// type of transport e.g car, foot, bicycle
 	string type = 3;
@@ -84,6 +92,7 @@ message EtaResponse {
 	double duration = 1;
 }
 
+// Retrieve a route as a simple list of gps points along with total distance and estimated duration
 message RouteRequest {
 	// Point of origin for the trip
 	Point origin = 1;
