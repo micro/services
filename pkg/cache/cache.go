@@ -4,9 +4,12 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"sync"
 	"time"
 
+	"github.com/hashicorp/golang-lru"
 	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/pkg/tenant"
 )
@@ -15,21 +18,38 @@ type Cache interface {
 	// Context returns a tenant scoped Cache
 	Context(ctx context.Context) Cache
 	Get(key string, val interface{}) error
-	Put(key string, val interface{}, expires time.Time) error
+	Set(key string, val interface{}, expires time.Time) error
 	Delete(key string) error
+	Increment(key, val int64) (int64, error)
+	Decrement(key, val int64) (int64, error)
 }
 
 type cache struct {
+	sync.Mutex
+	LRU    *lru.Cache
 	Store  store.Store
 	Prefix string
 }
 
+type item struct {
+	key     string
+	val     []byte
+	expires time.Time
+}
+
 var (
+	DefaultCacheSize = 1000
+
 	DefaultCache = New(nil)
+
+	ErrNotFound = errors.New("not found")
 )
 
 func New(st store.Store) Cache {
-	return &cache{Store: st}
+	return &cache{
+		LRU:   lru.New(DefaultCacheSize),
+		Store: st,
+	}
 }
 
 func (c *cache) Key(k string) string {
@@ -51,6 +71,29 @@ func (c *cache) Context(ctx context.Context) Cache {
 }
 
 func (c *cache) Get(key string, val interface{}) error {
+	k := c.Key(key)
+
+	// try the LRU
+	v, ok := c.LRU.Get()
+	if ok {
+		i := v.(*item)
+
+		// check if the item expired
+		if !i.expires.IsZero() && i.expires.Sub(time.Now()).Seconds() < 0 {
+			// remove it
+			c.LRU.Remove(k)
+			return ErrNotFound
+		}
+
+		// otherwise unmarshal and return it
+		if err := json.Unmarshal(i.val.([]byte), val); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	// otherwise check  the store
 	if c.Store == nil {
 		c.Store = store.DefaultStore
 	}
@@ -60,7 +103,7 @@ func (c *cache) Get(key string, val interface{}) error {
 		return err
 	}
 	if len(recs) == 0 {
-		return store.ErrNotFound
+		return ErrNotFound
 	}
 	if err := json.Unmarshal(recs[0].Value, val); err != nil {
 		return err
@@ -68,7 +111,7 @@ func (c *cache) Get(key string, val interface{}) error {
 	return nil
 }
 
-func (c *cache) Put(key string, val interface{}, expires time.Time) error {
+func (c *cache) Set(key string, val interface{}, expires time.Time) error {
 	if c.Store == nil {
 		c.Store = store.DefaultStore
 	}
@@ -80,18 +123,60 @@ func (c *cache) Put(key string, val interface{}, expires time.Time) error {
 	if expiry < time.Duration(0) {
 		expiry = time.Duration(0)
 	}
-	return c.Store.Write(&store.Record{
+	rec := &store.Record{
 		Key:    c.Key(key),
 		Value:  b,
 		Expiry: expiry,
-	})
+	}
+	if err := c.Store.Write(rec); err != nil {
+		return err
+	}
+
+	// set in the lru
+	c.LRU.Add(rec.Key, &item{key: rec.Key, val: rec.Value, expires: expires})
+	return nil
 }
 
 func (c *cache) Delete(key string) error {
 	if c.Store == nil {
 		c.Store = store.DefaultStore
 	}
-	return c.Store.Delete(c.Key(key))
+
+	k := c.Key(key)
+	// remove from the lru
+	c.LRU.Remove(k)
+	// delete from the store
+	return c.Store.Delete(k)
+}
+
+func (c *Cache) Increment(key string, value int64) (int64, error) {
+	c.Lock()
+	defer c.Unlock()
+
+	var val int64
+	if err := c.Get(key, &val); err != nil {
+		return 0, err
+	}
+	val += value
+	if err := c.Set(key, val); err != nil {
+		return err
+	}
+	return val, nil
+}
+
+func (c *Cache) Decrement(key string, value int64) (int64, error) {
+	c.Lock()
+	defer c.Unlock()
+
+	var val int64
+	if err := c.Get(key, &val); err != nil {
+		return 0, err
+	}
+	val -= value
+	if err := c.Set(key, val); err != nil {
+		return err
+	}
+	return val, nil
 }
 
 func Context(ctx context.Context) Cache {
@@ -102,10 +187,18 @@ func Get(key string, val interface{}) error {
 	return DefaultCache.Get(key, val)
 }
 
-func Put(key string, val interface{}, expires time.Time) error {
-	return DefaultCache.Put(key, val, expires)
+func Set(key string, val interface{}, expires time.Time) error {
+	return DefaultCache.Set(key, val, expires)
 }
 
 func Delete(key string) error {
 	return DefaultCache.Delete(key)
+}
+
+func Increment(key string, val int64) (int64, error) {
+	return DefaultCache.Increment(key, val)
+}
+
+func Decrement(key string, val int64) (int64, error) {
+	return DefaultCache.Decrement(key, val)
 }
