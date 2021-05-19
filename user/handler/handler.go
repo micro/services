@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/services/users/domain"
-	pb "github.com/micro/services/users/proto"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/services/user/domain"
+	pb "github.com/micro/services/user/proto"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 )
@@ -33,101 +33,101 @@ func random(i int) string {
 	return "ughwhy?!!!"
 }
 
-type Users struct {
+type User struct {
 	domain *domain.Domain
 }
 
-func NewUsers() *Users {
-	return &Users{
+func NewUser() *User {
+	return &User{
 		domain: domain.New(),
 	}
 }
 
-func (s *Users) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
+func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
 	if len(req.Password) < 8 {
-		return errors.InternalServerError("users.Create.Check", "Password is less than 8 characters")
+		return errors.InternalServerError("user.Create.Check", "Password is less than 8 characters")
 	}
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.Password), 10)
 	if err != nil {
-		return errors.InternalServerError("users.Create", err.Error())
+		return errors.InternalServerError("user.Create", err.Error())
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
-	return s.domain.Create(&pb.User{
+	return s.domain.Create(&pb.Account{
 		Id:       req.Id,
 		Username: strings.ToLower(req.Username),
 		Email:    strings.ToLower(req.Email),
 	}, salt, pp)
 }
 
-func (s *Users) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
-	user, err := s.domain.Read(req.Id)
+func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
+	account, err := s.domain.Read(req.Id)
 	if err != nil {
 		return err
 	}
-	rsp.User = user
+	rsp.Account = account
 	return nil
 }
 
-func (s *Users) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
-	return s.domain.Update(&pb.User{
+func (s *User) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
+	return s.domain.Update(&pb.Account{
 		Id:       req.Id,
 		Username: strings.ToLower(req.Username),
 		Email:    strings.ToLower(req.Email),
 	})
 }
 
-func (s *Users) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
+func (s *User) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	return s.domain.Delete(req.Id)
 }
 
-func (s *Users) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.SearchResponse) error {
-	users, err := s.domain.Search(req.Username, req.Email, req.Limit, req.Offset)
+func (s *User) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.SearchResponse) error {
+	accounts, err := s.domain.Search(req.Username, req.Email, req.Limit, req.Offset)
 	if err != nil {
 		return err
 	}
-	rsp.Users = users
+	rsp.Accounts = accounts
 	return nil
 }
 
-func (s *Users) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest, rsp *pb.UpdatePasswordResponse) error {
+func (s *User) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest, rsp *pb.UpdatePasswordResponse) error {
 	usr, err := s.domain.Read(req.UserId)
 	if err != nil {
-		return errors.InternalServerError("users.updatepassword", err.Error())
+		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
 	if req.NewPassword != req.ConfirmPassword {
-		return errors.InternalServerError("users.updatepassword", "Passwords don't math")
+		return errors.InternalServerError("user.updatepassword", "Passwords don't math")
 	}
 
 	salt, hashed, err := s.domain.SaltAndPassword(usr.Username, usr.Email)
 	if err != nil {
-		return errors.InternalServerError("users.updatepassword", err.Error())
+		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
 
 	hh, err := base64.StdEncoding.DecodeString(hashed)
 	if err != nil {
-		return errors.InternalServerError("users.updatepassword", err.Error())
+		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
 
 	if err := bcrypt.CompareHashAndPassword(hh, []byte(x+salt+req.OldPassword)); err != nil {
-		return errors.Unauthorized("users.updatepassword", err.Error())
+		return errors.Unauthorized("user.updatepassword", err.Error())
 	}
 
 	salt = random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.NewPassword), 10)
 	if err != nil {
-		return errors.InternalServerError("users.updatepassword", err.Error())
+		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
 	if err := s.domain.UpdatePassword(req.UserId, salt, pp); err != nil {
-		return errors.InternalServerError("users.updatepassword", err.Error())
+		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
 	return nil
 }
 
-func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginResponse) error {
+func (s *User) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginResponse) error {
 	username := strings.ToLower(req.Username)
 	email := strings.ToLower(req.Email)
 
@@ -138,11 +138,11 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 
 	hh, err := base64.StdEncoding.DecodeString(hashed)
 	if err != nil {
-		return errors.InternalServerError("users.Login", err.Error())
+		return errors.InternalServerError("user.Login", err.Error())
 	}
 
 	if err := bcrypt.CompareHashAndPassword(hh, []byte(x+salt+req.Password)); err != nil {
-		return errors.Unauthorized("users.login", err.Error())
+		return errors.Unauthorized("user.login", err.Error())
 	}
 	// save session
 	sess := &pb.Session{
@@ -154,17 +154,17 @@ func (s *Users) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRe
 	}
 
 	if err := s.domain.CreateSession(sess); err != nil {
-		return errors.InternalServerError("users.Login", err.Error())
+		return errors.InternalServerError("user.Login", err.Error())
 	}
 	rsp.Session = sess
 	return nil
 }
 
-func (s *Users) Logout(ctx context.Context, req *pb.LogoutRequest, rsp *pb.LogoutResponse) error {
+func (s *User) Logout(ctx context.Context, req *pb.LogoutRequest, rsp *pb.LogoutResponse) error {
 	return s.domain.DeleteSession(req.SessionId)
 }
 
-func (s *Users) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp *pb.ReadSessionResponse) error {
+func (s *User) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp *pb.ReadSessionResponse) error {
 	sess, err := s.domain.ReadSession(req.SessionId)
 	if err != nil {
 		return err
