@@ -1,0 +1,24 @@
+
+{
+    "generate": [{
+        "title": "Generate OTP",
+        "description": "Generate a one time password for a unique id, email or user",
+        "request": {
+            "id": "asim@example.com"
+        },
+        "response": {
+            "code": "656211"
+        }
+    }],
+    "validate": [{
+        "title": "Validate OTP",
+        "description": "Validate the one time password created via generate",
+        "request": {
+            "id": "asim@example.com",
+            "code": "656211"
+        },
+        "response": {
+            "success": true
+        }
+    }]
+}
