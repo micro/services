@@ -20,8 +20,8 @@ type Cache interface {
 	Get(key string, val interface{}) error
 	Set(key string, val interface{}, expires time.Time) error
 	Delete(key string) error
-	Increment(key, val int64) (int64, error)
-	Decrement(key, val int64) (int64, error)
+	Increment(key string, val int64) (int64, error)
+	Decrement(key string, val int64) (int64, error)
 }
 
 type cache struct {
@@ -46,8 +46,9 @@ var (
 )
 
 func New(st store.Store) Cache {
+	l, _ := lru.New(DefaultCacheSize)
 	return &cache{
-		LRU:   lru.New(DefaultCacheSize),
+		LRU:   l,
 		Store: st,
 	}
 }
@@ -74,7 +75,7 @@ func (c *cache) Get(key string, val interface{}) error {
 	k := c.Key(key)
 
 	// try the LRU
-	v, ok := c.LRU.Get()
+	v, ok := c.LRU.Get(key)
 	if ok {
 		i := v.(*item)
 
@@ -86,7 +87,7 @@ func (c *cache) Get(key string, val interface{}) error {
 		}
 
 		// otherwise unmarshal and return it
-		if err := json.Unmarshal(i.val.([]byte), val); err != nil {
+		if err := json.Unmarshal(i.val, val); err != nil {
 			return err
 		}
 
@@ -149,7 +150,7 @@ func (c *cache) Delete(key string) error {
 	return c.Store.Delete(k)
 }
 
-func (c *Cache) Increment(key string, value int64) (int64, error) {
+func (c *cache) Increment(key string, value int64) (int64, error) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -158,13 +159,13 @@ func (c *Cache) Increment(key string, value int64) (int64, error) {
 		return 0, err
 	}
 	val += value
-	if err := c.Set(key, val); err != nil {
-		return err
+	if err := c.Set(key, val, time.Time{}); err != nil {
+		return val, err
 	}
 	return val, nil
 }
 
-func (c *Cache) Decrement(key string, value int64) (int64, error) {
+func (c *cache) Decrement(key string, value int64) (int64, error) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -173,8 +174,8 @@ func (c *Cache) Decrement(key string, value int64) (int64, error) {
 		return 0, err
 	}
 	val -= value
-	if err := c.Set(key, val); err != nil {
-		return err
+	if err := c.Set(key, val, time.Time{}); err != nil {
+		return val, err
 	}
 	return val, nil
 }
