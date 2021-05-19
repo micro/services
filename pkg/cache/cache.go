@@ -101,8 +101,9 @@ func (c *cache) Get(key string, val interface{}) error {
 	}
 
 	recs, err := c.Store.Read(c.Key(key), store.ReadLimit(1))
-	if err != nil {
-		return err
+	if err != nil && err == store.ErrNotFound {
+		return ErrNotFound
+	} else if err != nil {
 	}
 	if len(recs) == 0 {
 		return ErrNotFound
