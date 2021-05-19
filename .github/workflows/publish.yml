@@ -43,6 +43,11 @@ jobs:
           go get -u github.com/golang/protobuf/protoc-gen-go
           go install
 
+      - name: Install openapi plugin
+        working-directory: micro/cmd/protoc-gen-openapi
+        run: |
+          go install
+
       - name: Generate openapi spec and publish the api
         working-directory: services
         run: |
