@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/micro/services/files/handler"
-	pb "github.com/micro/services/files/proto"
+	"github.com/micro/services/file/handler"
+	pb "github.com/micro/services/file/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
@@ -11,12 +11,12 @@ import (
 func main() {
 	// Create service
 	srv := service.New(
-		service.Name("files"),
+		service.Name("file"),
 		service.Version("latest"),
 	)
 
 	// Register handler
-	pb.RegisterFilesHandler(srv.Server(), handler.NewFiles())
+	pb.RegisterFileHandler(srv.Server(), handler.NewFile())
 
 	// Run service
 	if err := srv.Run(); err != nil {

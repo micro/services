@@ -1,18 +1,18 @@
 syntax = "proto3";
 
-package files;
+package file;
 
-option go_package = "./proto;files";
+option go_package = "./proto;file";
 
-service Files {
+service File {
 	rpc Save(SaveRequest) returns (SaveResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 }
 
-message File {
+message Record {
 	string id = 1;
 	// A custom string for namespacing purposes
-	// eg. files-of-mywebsite.com
+	// eg. file-of-mywebsite.com
 	string project = 2;
 	// Name of folder or file.
 	string name = 3;
@@ -27,25 +27,25 @@ message File {
 	string owner = 9;
 }
 
-// The save endpoint lets you batch save text files.
+// The save endpoint lets you batch save text file.
 message SaveRequest {
-	repeated File files = 1;
+	repeated Record files = 1;
 }
 
 message SaveResponse {
 }
 
-// List files by their project and optionally a path.
+// List file by their project and optionally a path.
 message ListRequest {
 	// Project, required for listing.
 	string project = 1;
 	// Defaults to '/', ie. lists all files in a project.
 	// Supply path if of a folder if you want to list
-	// file inside that folder
+	// files inside that folder
 	// eg. '/docs'
 	string path = 2;
 }
 
 message ListResponse {
-	repeated File files = 1;
+	repeated Record files = 1;
 }
