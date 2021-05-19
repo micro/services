@@ -91,6 +91,8 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 	for _, v := range rsp.UrlPairs {
 		// get the counter and add it to db value to improve
 		// accuracy
+		// A thing to keep in mind is that in memory cache hits
+		// from other nodes wont be added to this. Still, hopefully good enough
 		count, ok := e.cache.Get(v.ShortURL)
 		if ok {
 			v.HitCount += count.(int64)
