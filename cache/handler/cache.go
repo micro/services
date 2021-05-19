@@ -19,7 +19,7 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 	item := new(pb.Item)
 	item.Key = req.Key
 
-	if err := cache.Context(ctx).Get(req.Key, item.Value); err != nil {
+	if err := cache.Context(ctx).Get(req.Key, &item.Value); err != nil {
 		return errors.InternalServerError("cache.get", err.Error())
 	}
 
@@ -41,6 +41,8 @@ func (c *Cache) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse
 		return errors.InternalServerError("cache.set", err.Error())
 	}
 
+	rsp.Status == "ok"
+
 	return nil
 }
 
@@ -51,6 +53,9 @@ func (c *Cache) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delet
 	if err := cache.Context(ctx).Delete(req.Key); err != nil {
 		return errors.InternalServerError("cache.delete", err.Error())
 	}
+
+	rsp.Status = "ok"
+
 	return nil
 }
 
