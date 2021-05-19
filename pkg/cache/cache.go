@@ -66,7 +66,7 @@ func (c *cache) Context(ctx context.Context) Cache {
 		return c
 	}
 	return &cache{
-		LRU: c.LRU,
+		LRU:    c.LRU,
 		Store:  c.Store,
 		Prefix: t,
 	}
@@ -156,7 +156,7 @@ func (c *cache) Increment(key string, value int64) (int64, error) {
 	defer c.Unlock()
 
 	var val int64
-	if err := c.Get(key, &val); err != nil {
+	if err := c.Get(key, &val); err != nil && err != ErrNotFound {
 		return 0, err
 	}
 	val += value
@@ -171,7 +171,7 @@ func (c *cache) Decrement(key string, value int64) (int64, error) {
 	defer c.Unlock()
 
 	var val int64
-	if err := c.Get(key, &val); err != nil {
+	if err := c.Get(key, &val); err != nil && err != ErrNotFound {
 		return 0, err
 	}
 	val -= value
