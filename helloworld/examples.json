@@ -7,7 +7,7 @@
             "name": "John"
         },
         "response": {
-            "msg": "Hello John"
+            "message": "Hello John"
         }
     }]
 }
