@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/hashicorp/golang-lru"
 	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/pkg/tenant"
@@ -88,19 +89,17 @@ func (c *cache) Get(key string, val interface{}) error {
 		}
 
 		// otherwise unmarshal and return it
-		if err := json.Unmarshal(i.val, val); err != nil {
-			return err
-		}
-
-		return nil
+		return json.Unmarshal(i.val, val)
 	}
+
+	logger.Infof("Cache miss for %v", k)
 
 	// otherwise check  the store
 	if c.Store == nil {
 		c.Store = store.DefaultStore
 	}
 
-	recs, err := c.Store.Read(c.Key(key), store.ReadLimit(1))
+	recs, err := c.Store.Read(k, store.ReadLimit(1))
 	if err != nil && err == store.ErrNotFound {
 		return ErrNotFound
 	} else if err != nil {
