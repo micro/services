@@ -76,7 +76,7 @@ func (c *cache) Get(key string, val interface{}) error {
 	k := c.Key(key)
 
 	// try the LRU
-	v, ok := c.LRU.Get(key)
+	v, ok := c.LRU.Get(k)
 	if ok {
 		i := v.(*item)
 
