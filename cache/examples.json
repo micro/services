@@ -32,5 +32,29 @@
         "response": {
             "status": "ok"
         }
+    }],
+    "increment": [{
+        "title": "Increment a value",
+        "description": "Increment a value by 2",
+        "request": {
+            "key": "counter",
+            "value": 2
+        },
+        "response": {
+            "key": "counter",
+            "value": 2
+        }
+    }],
+    "decrement": [{
+        "title": "Decrement a value",
+        "description": "Decrement a value by 2",
+        "request": {
+            "key": "counter",
+            "value": 2
+        },
+        "response": {
+            "key": "counter",
+            "value": 0
+        }
     }]
 }
