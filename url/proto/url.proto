@@ -24,11 +24,17 @@ message URLPair {
 	string shortURL = 2;
 	string owner = 3;
 	int64 created = 4;
+	// HitCount keeps track many times the short URL has been resolved.
+	// Hitcount only gets saved to disk (database) after every 10th hit, so
+	// its not intended to be 100% accurate, more like an almost correct estimate.
+	int64 hitCount = 5;
 }
 
 // List shortened URLs. It has no input parameters, as it will take
 // the user ID from the token and list the user's (caller's) shortened URLs.
 message ListRequest {
+	// filter by short URL, optional
+	string shortURL = 2;
 }
 
 message ListResponse {
