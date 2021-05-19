@@ -10,6 +10,7 @@ require (
 	github.com/golang/protobuf v1.5.1
 	github.com/google/uuid v1.1.2
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
+	github.com/hashicorp/golang-lru v0.5.3
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
 	github.com/micro/micro/v3 v3.2.2-0.20210514120220-1ee39904d3dd

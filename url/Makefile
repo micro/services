@@ -5,6 +5,7 @@ init:
 	go get -u github.com/golang/protobuf/proto
 	go get -u github.com/golang/protobuf/protoc-gen-go
 	go get github.com/micro/micro/v3/cmd/protoc-gen-micro
+	go get github.com/micro/micro/v3/cmd/protoc-gen-openapi
 .PHONY: proto
 proto:
 	protoc --proto_path=. --micro_out=. --go_out=:. proto/url.proto
@@ -13,10 +14,9 @@ proto:
 build:
 	go build -o url *.go
 
-.PHONY: docs
-docs:
-	protoc --openapi_out=. --proto_path=. --micro_out=. --go_out=:. proto/url.proto
-	@redoc-cli bundle api-url.json
+.PHONY: api
+api:
+	protoc --openapi_out=. --proto_path=. proto/url.proto
 
 .PHONY: test
 test:
