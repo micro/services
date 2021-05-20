@@ -41,6 +41,7 @@ message Entry {
 	string date = 7;
 }
 
+// Add a new RSS feed with a name, url and category
 message AddRequest {
 	// rss feed name
 	// eg. a16z
@@ -55,6 +56,7 @@ message AddRequest {
 message AddResponse {
 }
 
+// Get an RSS feed by name. Default limit is 25 entries.
 message FeedRequest {
 	// rss feed name
 	string name = 1;
@@ -68,12 +70,14 @@ message FeedResponse {
 	repeated Entry entries = 1;
 }
 
+// List the saved RSS fields
 message ListRequest {}
 
 message ListResponse {
 	repeated Feed feeds = 1;
 }
 
+// Remove an RSS feed by name
 message RemoveRequest {
 	// rss feed name
 	// eg. a16z
