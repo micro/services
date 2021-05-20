@@ -58,6 +58,12 @@ message AddResponse {
 message FeedRequest {
 	// rss feed name
 	string name = 1;
+	// order to return. asc or desc
+	string order = 2;
+	// limit entries returned
+	int64 limit = 3;
+	// offset entries
+	int64 offset = 4;
 }
 
 message FeedResponse {

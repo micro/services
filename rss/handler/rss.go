@@ -118,6 +118,21 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 	feed := new(pb.Feed)
 	id := tenantID + "/" + idFromName(req.Name)
 	q := model.QueryEquals("ID", id)
+	q.Limit = int64(25)
+	q.Order = model.Order{
+		Type:      model.OrderTypeDesc,
+		FieldName: "ID",
+	}
+
+	if req.Limit > 0 {
+		q.Limit = req.Limit
+	}
+	if req.Offset > 0 {
+		q.Offset = req.Offset
+	}
+	if req.Order == "asc" {
+		q.Order.Type = model.OrderTypeAsc
+	}
 
 	// get the feed
 	if err := e.feeds.Read(q, feed); err != nil {
