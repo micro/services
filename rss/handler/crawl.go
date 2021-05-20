@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	rssSync sync.RWMutex
-	rssFeeds  = map[string]*rss.Feed{}
+	rssSync  sync.RWMutex
+	rssFeeds = map[string]*rss.Feed{}
 )
 
 func (e *Rss) fetchAll() {

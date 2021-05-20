@@ -12,14 +12,16 @@ service Rss {
 }
 
 message Feed {
+	// unique id
+	string id = 1;
 	// rss feed name
 	// eg. a16z
-	string name = 1;
+	string name = 2;
 	// rss feed url
 	// eg. http://a16z.com/feed/
-	string url = 2;
+	string url = 3;
 	// category of the feed
-	string category = 3;
+	string category = 4;
 }
 
 message Entry {

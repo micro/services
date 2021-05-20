@@ -2,11 +2,15 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"hash/fnv"
+	"strings"
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/model"
+	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/rss/proto"
 )
 
@@ -19,12 +23,17 @@ type Rss struct {
 	entriesURLIndex  model.Index
 }
 
+func idFromName(name string) string {
+	hash := fnv.New64a()
+	hash.Write([]byte(name))
+	return fmt.Sprintf("%d", hash.Sum64())
+}
+
 func NewRss() *Rss {
-	idIndex := model.ByEquality("url")
+	idIndex := model.ByEquality("id")
 	idIndex.Order.Type = model.OrderTypeUnordered
 
 	nameIndex := model.ByEquality("name")
-	nameIndex.Unique = true
 	nameIndex.Order.Type = model.OrderTypeUnordered
 
 	dateIndex := model.ByEquality("date")
@@ -36,9 +45,8 @@ func NewRss() *Rss {
 
 	f := &Rss{
 		feeds: model.NewModel(
-			model.WithKey("Name"),
 			model.WithNamespace("feeds"),
-			model.WithIndexes(nameIndex),
+			model.WithIndexes(idIndex, nameIndex),
 		),
 		entries: model.NewModel(
 			model.WithNamespace("entries"),
@@ -73,15 +81,14 @@ func (e *Rss) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) 
 		return errors.BadRequest("rss.add", "require name")
 	}
 
-	rssSync.RLock()
-	defer rssSync.RUnlock()
-
-	// check if the feed already exists
-	if _, ok := rssRss[req.Name]; ok {
-		return errors.BadRequest("rss.add", "%s already exists", req.Name)
+	// get the tenantID
+	tenantID, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantID = "micro"
 	}
 
 	f := pb.Feed{
+		Id:       tenantID + "/" + idFromName(req.Name),
 		Name:     req.Name,
 		Url:      req.Url,
 		Category: req.Category,
@@ -102,8 +109,15 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 		return errors.BadRequest("rss.feed", "missing feed name")
 	}
 
+	// get the tenantID
+	tenantID, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantID = "micro"
+	}
+
 	feed := new(pb.Feed)
-	q := model.QueryEquals("Name", req.Name)
+	id := tenantID + "/" + idFromName(req.Name)
+	q := model.QueryEquals("ID", id)
 
 	// get the feed
 	if err := e.feeds.Read(q, feed); err != nil {
@@ -117,13 +131,28 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 func (e *Rss) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	var feeds []*pb.Feed
 	q := model.QueryAll()
-	q.Index.FieldName = "Name"
+
+	// TODO: find a way to query only by tenant
 	err := e.feeds.Read(q, &feeds)
 	if err != nil {
 		return errors.InternalServerError("rss.list", "failed to read list of feeds: %v", err)
 	}
 
-	rsp.Feeds = feeds
+	// get the tenantID
+	tenantID, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantID = "micro"
+	}
+
+	for _, feed := range feeds {
+		// filter for the tenant
+		if !strings.HasPrefix(feed.Id, tenantID+"/") {
+			continue
+		}
+
+		rsp.Feeds = append(rsp.Feeds, feed)
+	}
+
 	return nil
 }
 
@@ -132,6 +161,14 @@ func (e *Rss) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.RemoveR
 		return errors.BadRequest("rss.remove", "blank name provided")
 	}
 
-	e.feeds.Delete(model.QueryEquals("name", req.Name))
+	// get the tenantID
+	tenantID, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantID = "micro"
+	}
+
+	id := tenantID + "/" + idFromName(req.Name)
+
+	e.feeds.Delete(model.QueryEquals("ID", id))
 	return nil
 }
