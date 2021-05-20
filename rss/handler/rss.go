@@ -121,7 +121,7 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 		q := model.QueryEquals("ID", id)
 
 		// get the feed
-		if err := e.feeds.Read(q, feed); err != nil {
+		if err := e.feeds.Read(q, &feed); err != nil {
 			return errors.InternalServerError("rss.feeds", "could not read feed")
 		}
 
@@ -151,7 +151,7 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 
 	// if the need is not nil, then use one url
 	if feed != nil {
-		q = e.entriesURLIndex.ToQuery(feed.Feed)
+		q = e.entriesURLIndex.ToQuery(feed.Url)
 	}
 
 	q.Limit = req.Limit
