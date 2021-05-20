@@ -114,9 +114,9 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 
 	// feeds by url
 	feedUrls := map[string]bool{}
+	var feed *pb.Feed
 
 	if len(req.Name) > 0 {
-		feed := new(pb.Feed)
 		id := tenantID + "/" + idFromName(req.Name)
 		q := model.QueryEquals("ID", id)
 
@@ -124,6 +124,8 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 		if err := e.feeds.Read(q, feed); err != nil {
 			return errors.InternalServerError("rss.feeds", "could not read feed")
 		}
+
+		feedUrls[feed.Url] = true
 	} else {
 		// get all the feeds for a user
 		var feeds []*pb.Feed
@@ -143,7 +145,15 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 		req.Limit = int64(25)
 	}
 
+
+	// default query all
 	q := model.QueryAll()
+
+	// if the need is not nil, then use one url
+	if feed != nil {
+		q = e.entriesURLIndex.ToQuery(feed.Url)
+	}
+
 	q.Limit = req.Limit
 	q.Offset = req.Offset
 
@@ -155,6 +165,7 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 		if err != nil {
 			return errors.InternalServerError("rss.feeds", "could not read feed")
 		}
+
 		// find the relevant entries
 		for _, entry := range entries {
 			// check its a url we care about
