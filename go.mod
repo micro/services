@@ -17,6 +17,7 @@ require (
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
 	github.com/micro/micro/v3 v3.2.2-0.20210514120220-1ee39904d3dd
 	github.com/miekg/dns v1.1.31 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
 	github.com/pquerna/otp v1.3.0
 	github.com/stoewer/go-strcase v1.2.0
