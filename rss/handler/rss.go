@@ -148,6 +148,10 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 
 	// default query all
 	q := model.QueryAll()
+	q.Order = model.Order{
+		Type: model.OrderTypeDesc,
+		FieldName: "date",
+	}
 
 	// if the need is not nil, then use one url
 	if feed != nil {
