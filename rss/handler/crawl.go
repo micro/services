@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	rssSync  sync.RWMutex
-	rssRss = map[string]*rss.Feed{}
+	rssSync sync.RWMutex
+	rssRss  = map[string]*rss.Feed{}
 )
 
 func (e *Rss) fetchAll() {
@@ -87,7 +87,7 @@ func (e *Rss) fetch(f *pb.Feed) error {
 		err = e.entries.Create(pb.Entry{
 			Id:       id,
 			Title:    item.Title,
-			Summary: item.Summary,
+			Summary:  item.Summary,
 			Url:      item.Link,
 			Domain:   domain,
 			Content:  content,

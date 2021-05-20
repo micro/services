@@ -103,10 +103,10 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 	}
 
 	feed := new(pb.Feed)
-        q := model.QueryEquals("Name", req.Name)
+	q := model.QueryEquals("Name", req.Name)
 
 	// get the feed
-        if err := e.feeds.Read(q, feed); err != nil {
+	if err := e.feeds.Read(q, feed); err != nil {
 		return errors.InternalServerError("rss.feeds", "could not read feed")
 	}
 

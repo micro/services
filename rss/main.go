@@ -1,10 +1,10 @@
 package main
 
 import (
-	pb "github.com/micro/services/rss/proto"
-	"github.com/micro/services/rss/handler"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/rss/handler"
+	pb "github.com/micro/services/rss/proto"
 )
 
 func main() {
