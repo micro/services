@@ -38,7 +38,7 @@ message Entry {
 	// article content
 	string content = 6;
 	// data of the entry
-	int64 date = 7;
+	string date = 7;
 }
 
 message AddRequest {

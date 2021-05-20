@@ -90,7 +90,7 @@ func (e *Rss) fetch(f *pb.Feed) error {
 			Feed:      f.Url,
 			Link: item.Link,
 			Content:  content,
-			Date:     item.Date.Unix(),
+			Date:     item.Date.Format(time.RFC3339Nano),
 		})
 		if err != nil {
 			return fmt.Errorf("Error saving item: %v", err)
