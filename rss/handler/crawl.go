@@ -68,7 +68,6 @@ func (e *Rss) fetch(f *pb.Feed) error {
 
 	// set the refresh time
 	fd.Refresh = time.Now()
-	domain := getDomain(url)
 
 	// range over the feed and save the items
 	for _, item := range fd.Items {
@@ -88,11 +87,10 @@ func (e *Rss) fetch(f *pb.Feed) error {
 			Id:       id,
 			Title:    item.Title,
 			Summary:  item.Summary,
-			Url:      item.Link,
-			Domain:   domain,
+			Feed:      f.Url,
+			Link: item.Link,
 			Content:  content,
 			Date:     item.Date.Unix(),
-			Category: f.Category,
 		})
 		if err != nil {
 			return fmt.Errorf("Error saving item: %v", err)

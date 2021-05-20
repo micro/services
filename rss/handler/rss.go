@@ -39,7 +39,7 @@ func NewRss() *Rss {
 	dateIndex := model.ByEquality("date")
 	dateIndex.Order.Type = model.OrderTypeDesc
 
-	entriesURLIndex := model.ByEquality("url")
+	entriesURLIndex := model.ByEquality("feed")
 	entriesURLIndex.Order.Type = model.OrderTypeDesc
 	entriesURLIndex.Order.FieldName = "date"
 
