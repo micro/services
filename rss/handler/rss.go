@@ -128,7 +128,7 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 	q.Limit = int64(25)
 	q.Order = model.Order{
 		Type:      model.OrderTypeDesc,
-		FieldName: "ID",
+		FieldName: "Date",
 	}
 
 	if req.Limit > 0 {
