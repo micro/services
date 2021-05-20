@@ -25,14 +25,20 @@ message Feed {
 }
 
 message Entry {
+	// unique id of the entry
 	string id = 1;
-	string domain = 2;
-	string url = 3;
+	// the rss feed where it came from
+	string feed = 2;
+	// rss feed url of the entry
+	string link = 3;
+	// title of the entry
 	string title = 4;
+	// article summary
 	string summary = 5;
+	// article content
 	string content = 6;
+	// data of the entry
 	int64 date = 7;
-	string category = 8;
 }
 
 message AddRequest {
