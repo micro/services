@@ -118,6 +118,13 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 	feed := new(pb.Feed)
 	id := tenantID + "/" + idFromName(req.Name)
 	q := model.QueryEquals("ID", id)
+
+	// get the feed
+	if err := e.feeds.Read(q, feed); err != nil {
+		return errors.InternalServerError("rss.feeds", "could not read feed")
+	}
+
+	q = e.entriesURLIndex.ToQuery(feed.Url)
 	q.Limit = int64(25)
 	q.Order = model.Order{
 		Type:      model.OrderTypeDesc,
@@ -132,11 +139,6 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 	}
 	if req.Order == "asc" {
 		q.Order.Type = model.OrderTypeAsc
-	}
-
-	// get the feed
-	if err := e.feeds.Read(q, feed); err != nil {
-		return errors.InternalServerError("rss.feeds", "could not read feed")
 	}
 
 	// get the entries for each
