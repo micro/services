@@ -1,6 +1,6 @@
-A single uniform API for crawling and indexing RSS feeds
+RSS feed crawler and reader
 
-# Feeds Service
+# RSS Service
 
-Designed to populate the posts service with RSS feeds from other blogs. Useful for migration or just to get outside content into the posts service.
+Provides a simple way to crawl and index RSS feeds making them accessibly via a simple unified API.
 
