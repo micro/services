@@ -115,27 +115,75 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 		tenantID = "micro"
 	}
 
-	feed := new(pb.Feed)
-	id := tenantID + "/" + idFromName(req.Name)
-	q := model.QueryEquals("ID", id)
+	// feeds by url
+	feedUrls := map[string]bool{}
 
-	// get the feed
-	if err := e.feeds.Read(q, feed); err != nil {
-		return errors.InternalServerError("rss.feeds", "could not read feed")
+	if len(req.Name) > 0 {
+		feed := new(pb.Feed)
+		id := tenantID + "/" + idFromName(req.Name)
+		q := model.QueryEquals("ID", id)
+
+		// get the feed
+		if err := e.feeds.Read(q, feed); err != nil {
+			return errors.InternalServerError("rss.feeds", "could not read feed")
+		}
+	} else {
+		// get all the feeds for a user
+		var feeds []*pb.Feed
+		q := model.QueryAll()
+		if err := e.feeds.Read(q, &feeds); err != nil {
+			return errors.InternalServerError("rss.feeds", "could not read feed")
+		}
+		for _, feed := range feeds {
+			if !strings.HasPrefix(feed.Id, tenantID+"/") {
+				continue
+			}
+			feedUrls[feed.Url] = true
+		}
 	}
 
-	q = e.entriesURLIndex.ToQuery(feed.Url)
-	q.Limit = int64(25)
-
-	if req.Limit > 0 {
-		q.Limit = req.Limit
-	}
-	if req.Offset > 0 {
-		q.Offset = req.Offset
+	if req.Limit == 0 {
+		req.Limit = int64(25)
 	}
 
-	// get the entries for each
-	return e.entries.Read(q, &rsp.Entries)
+	q := model.QueryAll()
+	q.Limit = req.Limit
+	q.Offset = req.Offset
+
+	// iterate until entries hits the limit
+	for len(rsp.Entries) < int(req.Limit) {
+		var entries []*pb.Entry
+		// get the entries for each
+		err := e.entries.Read(q, &entries)
+		if err != nil {
+			return errors.InternalServerError("rss.feeds", "could not read feed")
+		}
+		// find the relevant entries
+		for _, entry := range entries {
+			// check its a url we care about
+			if _, ok := feedUrls[entry.Feed]; !ok {
+				continue
+			}
+
+			// add the entry
+			rsp.Entries = append(rsp.Entries, entry)
+
+			// once you hit the limit return
+			if len(rsp.Entries) == int(req.Limit) {
+				return nil
+			}
+		}
+
+		// no more entries or less than the limit
+		if len(entries) == 0 || len(entries) < int(req.Limit) {
+			return nil
+		}
+
+		// increase the offset
+		q.Offset += q.Limit
+	}
+
+	return nil
 }
 
 func (e *Rss) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
