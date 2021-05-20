@@ -56,7 +56,7 @@ message AddRequest {
 message AddResponse {
 }
 
-// Get an RSS feed by name. Default limit is 25 entries.
+// Get an RSS feed by name. If no name is given, all feeds are returned. Default limit is 25 entries.
 message FeedRequest {
 	// rss feed name
 	string name = 1;
