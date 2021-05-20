@@ -20,7 +20,7 @@ message Feed {
 	// rss feed url
 	// eg. http://a16z.com/feed/
 	string url = 3;
-	// category of the feed
+	// category of the feed e.g news
 	string category = 4;
 }
 
@@ -48,7 +48,7 @@ message AddRequest {
 	// rss feed url
 	// eg. http://a16z.com/feed/
 	string url = 2;
-	// category to add
+	// category to add e.g news
 	string category = 3;
 }
 
