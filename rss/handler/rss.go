@@ -126,19 +126,12 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 
 	q = e.entriesURLIndex.ToQuery(feed.Url)
 	q.Limit = int64(25)
-	q.Order = model.Order{
-		Type:      model.OrderTypeDesc,
-		FieldName: "Date",
-	}
 
 	if req.Limit > 0 {
 		q.Limit = req.Limit
 	}
 	if req.Offset > 0 {
 		q.Offset = req.Offset
-	}
-	if req.Order == "asc" {
-		q.Order.Type = model.OrderTypeAsc
 	}
 
 	// get the entries for each
