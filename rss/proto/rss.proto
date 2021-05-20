@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package rss;
+
+option go_package = "./proto;rss";
+
+service Rss {
+	rpc Add(AddRequest) returns (AddResponse) {}
+	rpc Remove(RemoveRequest) returns (RemoveResponse) {}
+	rpc Feed(FeedRequest) returns (FeedResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+}
+
+message Feed {
+	// rss feed name
+	// eg. a16z
+	string name = 1;
+	// rss feed url
+	// eg. http://a16z.com/feed/
+	string url = 2;
+	// category of the feed
+	string category = 3;
+}
+
+message Entry {
+	string id = 1;
+	string domain = 2;
+	string url = 3;
+	string title = 4;
+	string summary = 5;
+	string content = 6;
+	int64 date = 7;
+	string category = 8;
+}
+
+message AddRequest {
+	// rss feed name
+	// eg. a16z
+	string name = 1;
+	// rss feed url
+	// eg. http://a16z.com/feed/
+	string url = 2;
+	// category to add
+	string category = 3;
+}
+
+message AddResponse {
+}
+
+message FeedRequest {
+	// rss feed name
+	string name = 1;
+}
+
+message FeedResponse {
+	repeated Entry entries = 1;
+}
+
+message ListRequest {}
+
+message ListResponse {
+	repeated Feed feeds = 1;
+}
+
+message RemoveRequest {
+	// rss feed name
+	// eg. a16z
+	string name = 1;
+}
+
+message RemoveResponse {
+}
+
