@@ -105,9 +105,6 @@ func (e *Rss) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) 
 
 func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedResponse) error {
 	log.Info("Received Rss.Entries request")
-	if len(req.Name) == 0 {
-		return errors.BadRequest("rss.feed", "missing feed name")
-	}
 
 	// get the tenantID
 	tenantID, ok := tenant.FromContext(ctx)
