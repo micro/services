@@ -15,7 +15,7 @@ import (
 
 var (
 	rssSync sync.RWMutex
-	rssRss  = map[string]*rss.Feed{}
+	rssFeeds  = map[string]*rss.Feed{}
 )
 
 func (e *Rss) fetchAll() {
@@ -43,7 +43,7 @@ func (e *Rss) fetch(f *pb.Feed) error {
 
 	// see if there's an existing rss feed
 	rssSync.RLock()
-	fd, ok := rssRss[f.Name]
+	fd, ok := rssFeeds[f.Url]
 	rssSync.RUnlock()
 
 	if !ok {
@@ -55,7 +55,7 @@ func (e *Rss) fetch(f *pb.Feed) error {
 		}
 		// save the feed
 		rssSync.Lock()
-		rssRss[f.Name] = fd
+		rssFeeds[f.Url] = fd
 		rssSync.Unlock()
 	} else {
 		// otherwise update the existing feed
