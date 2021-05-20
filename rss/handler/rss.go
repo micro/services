@@ -151,7 +151,7 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 
 	// if the need is not nil, then use one url
 	if feed != nil {
-		q = e.entriesURLIndex.ToQuery(feed.Url)
+		q = e.entriesURLIndex.ToQuery(feed.Feed)
 	}
 
 	q.Limit = req.Limit
