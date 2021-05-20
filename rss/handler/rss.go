@@ -142,7 +142,7 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 	}
 
 	// get the entries for each
-	return e.entries.Read(e.entriesURLIndex.ToQuery(feed.Url), &rsp.Entries)
+	return e.entries.Read(q, &rsp.Entries)
 }
 
 func (e *Rss) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
