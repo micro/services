@@ -43,7 +43,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	}
 	base := base64.RawStdEncoding.EncodeToString(file)
 	resp, err := e.imageService.Upload(ctx, &iproto.UploadRequest{
-		Base64:  base,
+		Base64:  "data:image/png;base64, " + base,
 		ImageID: imageName,
 	}, client.WithRequestTimeout(20*time.Second))
 	if err != nil {
