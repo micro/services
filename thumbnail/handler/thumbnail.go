@@ -6,8 +6,10 @@ import (
 	"io/ioutil"
 	"os/exec"
 	"path/filepath"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/logger"
 	iproto "github.com/micro/services/image/proto"
 	thumbnail "github.com/micro/services/thumbnail/proto"
@@ -43,7 +45,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	resp, err := e.imageService.Upload(ctx, &iproto.UploadRequest{
 		Base64:  base,
 		ImageID: imageName,
-	})
+	}, client.WithRequestTimeout(20*time.Second))
 	if err != nil {
 		return err
 	}
