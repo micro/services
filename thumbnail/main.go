@@ -1,6 +1,7 @@
 package main
 
 import (
+	iproto "github.com/micro/services/image/proto"
 	"github.com/micro/services/thumbnail/handler"
 	pb "github.com/micro/services/thumbnail/proto"
 
@@ -16,7 +17,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterThumbnailHandler(srv.Server(), handler.NewThumbnail())
+	pb.RegisterThumbnailHandler(srv.Server(), handler.NewThumbnail(iproto.NewImageService("image", srv.Client())))
 
 	// Run service
 	if err := srv.Run(); err != nil {

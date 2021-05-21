@@ -14,5 +14,5 @@ message ScreenshotRequest {
 }
 
 message ScreenshotResponse {
-	string name = 1;
+	string url = 1;
 }
