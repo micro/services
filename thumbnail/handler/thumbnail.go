@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"path/filepath"
@@ -30,8 +31,16 @@ func NewThumbnail(imageService iproto.ImageService) *Thumbnail {
 func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotRequest, rsp *thumbnail.ScreenshotResponse) error {
 	imageName := uuid.New().String() + ".png"
 	imagePath := filepath.Join(screenshotPath, imageName)
+	width := "800"
+	height := "600"
+	if req.Width != 0 {
+		width = fmt.Sprintf("%v", req.Width)
+	}
+	if req.Height != 0 {
+		height = fmt.Sprintf("%v", req.Height)
+	}
 
-	outp, err := exec.Command("/usr/bin/chromium-browser", "--headless", "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", req.Url).CombinedOutput()
+	outp, err := exec.Command("/usr/bin/chromium-browser", "--headless", "--window-size="+width+","+height, "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", req.Url).CombinedOutput()
 	logger.Info(string(outp))
 	if err != nil {
 		logger.Error(string(outp) + err.Error())

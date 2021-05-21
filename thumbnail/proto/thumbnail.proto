@@ -11,6 +11,10 @@ service Thumbnail {
 
 message ScreenshotRequest {
 	string url = 1;
+	// width of the browser window. optional
+	int32 width = 2;
+	// height of the browser window, optional
+	int32 height = 3;
 }
 
 message ScreenshotResponse {
