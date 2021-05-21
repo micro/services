@@ -26,22 +26,23 @@ func NewThumbnail(imageService iproto.ImageService) *Thumbnail {
 }
 
 func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotRequest, rsp *thumbnail.ScreenshotResponse) error {
-	id := uuid.New().String() + ".png"
-	id = filepath.Join(screenshotPath, id)
-	outp, err := exec.Command("/usr/bin/chromium-browser", "--headless", "--no-sandbox", "--screenshot="+id, "--hide-scrollbars", "https://www.chromestatus.com/").CombinedOutput()
+	imageName := uuid.New().String() + ".png"
+	imagePath := filepath.Join(screenshotPath, imageName)
+
+	outp, err := exec.Command("/usr/bin/chromium-browser", "--headless", "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", "https://www.chromestatus.com/").CombinedOutput()
 	logger.Info(string(outp))
 	if err != nil {
 		logger.Error(string(outp) + err.Error())
 		return err
 	}
-	file, err := ioutil.ReadFile(id)
+	file, err := ioutil.ReadFile(imagePath)
 	if err != nil {
 		return err
 	}
 	base := base64.RawStdEncoding.EncodeToString(file)
 	resp, err := e.imageService.Upload(ctx, &iproto.UploadRequest{
 		Base64:  base,
-		ImageID: id,
+		ImageID: imageName,
 	})
 	if err != nil {
 		return err
