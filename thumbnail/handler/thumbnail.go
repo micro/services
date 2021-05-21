@@ -20,7 +20,9 @@ type Thumbnail struct {
 }
 
 func NewThumbnail(imageService iproto.ImageService) *Thumbnail {
-	return &Thumbnail{}
+	return &Thumbnail{
+		imageService: imageService,
+	}
 }
 
 func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotRequest, rsp *thumbnail.ScreenshotResponse) error {
