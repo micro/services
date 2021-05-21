@@ -25,13 +25,14 @@ func NewThumbnail(imageService iproto.ImageService) *Thumbnail {
 
 func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotRequest, rsp *thumbnail.ScreenshotResponse) error {
 	id := uuid.New().String() + ".png"
+	id = filepath.Join(screenshotPath, id)
 	outp, err := exec.Command("/usr/bin/chromium-browser", "--headless", "--no-sandbox", "--screenshot="+id, "--hide-scrollbars", "https://www.chromestatus.com/").CombinedOutput()
 	logger.Info(string(outp))
 	if err != nil {
 		logger.Error(string(outp) + err.Error())
 		return err
 	}
-	file, err := ioutil.ReadFile(filepath.Join(screenshotPath, id))
+	file, err := ioutil.ReadFile(id)
 	if err != nil {
 		return err
 	}
