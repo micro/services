@@ -47,8 +47,9 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	}
 	var srcImage image.Image
 	var err error
+	var ext string
 	if len(req.Base64) > 0 {
-		srcImage, _, err = base64ToImage(req.Base64)
+		srcImage, ext, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
@@ -68,16 +69,22 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 		}
 		defer response.Body.Close()
 	}
+
 	buf := new(bytes.Buffer)
-	err = jpeg.Encode(buf, srcImage, nil)
+
+	switch {
+	case strings.HasSuffix(req.ImageID, ".png") || ext == "png":
+		err = png.Encode(buf, srcImage)
+	case strings.HasSuffix(req.ImageID, ".jpg") || strings.HasSuffix(req.Url, ".jpeg") || ext == "jpg":
+		err = jpeg.Encode(buf, srcImage, nil)
+	default:
+		return errors.New("could not determine extension")
+	}
+
 	if err != nil {
 		return err
 	}
 
-	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
-	if err != nil {
-		return err
-	}
 	rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.ImageID)
 	return nil
 }

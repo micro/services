@@ -31,7 +31,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	imageName := uuid.New().String() + ".png"
 	imagePath := filepath.Join(screenshotPath, imageName)
 
-	outp, err := exec.Command("/usr/bin/chromium-browser", "--headless", "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", "https://www.chromestatus.com/").CombinedOutput()
+	outp, err := exec.Command("/usr/bin/chromium-browser", "--headless", "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", req.Url).CombinedOutput()
 	logger.Info(string(outp))
 	if err != nil {
 		logger.Error(string(outp) + err.Error())
@@ -49,6 +49,6 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	if err != nil {
 		return err
 	}
-	rsp.Url = resp.Url
+	rsp.ImageURL = resp.Url
 	return nil
 }

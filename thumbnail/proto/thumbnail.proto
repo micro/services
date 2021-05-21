@@ -10,9 +10,9 @@ service Thumbnail {
 }
 
 message ScreenshotRequest {
-	string say = 1;
+	string url = 1;
 }
 
 message ScreenshotResponse {
-	string url = 1;
+	string imageURL = 1;
 }
