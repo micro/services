@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package thumbnail;
+
+option go_package = "github.com/micro/services/url/proto;thumbnail";
+
+service Thumbnail {
+	rpc Screenshot(ScreenshotRequest) returns (ScreenshotResponse) {}
+
+}
+
+message ScreenshotRequest {
+	string url = 1;
+	// width of the browser window. optional
+	int32 width = 2;
+	// height of the browser window, optional
+	int32 height = 3;
+}
+
+message ScreenshotResponse {
+	string imageURL = 1;
+}
