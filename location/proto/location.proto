@@ -27,7 +27,9 @@ message Entity {
         Point location = 3;
 }
 
+// Read an entity by its ID
 message ReadRequest {
+	// the entity id
 	string id = 1;
 }
 
@@ -35,6 +37,7 @@ message ReadResponse {
 	Entity entity = 1;
 }
 
+// Save an entity's current position
 message SaveRequest {
 	Entity entity = 1;
 }
@@ -42,11 +45,15 @@ message SaveRequest {
 message SaveResponse {
 }
 
+// Search for entities in a given radius
 message SearchRequest {
+	// Central position to search from
 	Point center = 1;
-	// in meters
+	// radius in meters
 	double radius = 2;
+	// type of entities to filter
 	string type = 3;
+	// number of entities to return
 	int64 numEntities = 4;
 }
 
