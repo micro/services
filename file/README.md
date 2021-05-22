@@ -1,5 +1,5 @@
-Store, list and retrieve text file
+Store, list and retrieve text files
 
 # File Service
 
-Save, list and retrieve text file by project and path.
+Save, list and retrieve text files by project and path.
