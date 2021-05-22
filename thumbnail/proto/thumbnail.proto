@@ -9,6 +9,7 @@ service Thumbnail {
 
 }
 
+// Create a thumbnail screenshot by passing in a url, height and width
 message ScreenshotRequest {
 	string url = 1;
 	// width of the browser window. optional

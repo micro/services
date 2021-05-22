@@ -1,23 +1,5 @@
+Create website thumbnails
+
 # Thumbnail Service
 
-This is the Thumbnail service
-
-Generated with
-
-```
-micro new thumbnail
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+A quick and easy way to create a thumbnail screenshot for any website.
