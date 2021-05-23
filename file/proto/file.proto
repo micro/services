@@ -30,6 +30,8 @@ message Record {
 	int64 updated = 8;
 	// owner of the file e.g alice
 	string owner = 9;
+	// any other associated metadata
+	map<string,string> metadata = 10;
 }
 
 // Read a file by path
