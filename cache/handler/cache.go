@@ -31,7 +31,12 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 
 func (c *Cache) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse) error {
 	if len(req.Key) == 0 {
-		return errors.BadRequest("cache.get", "missing key")
+		return errors.BadRequest("cache.set", "missing key")
+	}
+
+	// max size 1mb e.g byte * 1024 * 1024
+	if len(req.Value) > 1e6 {
+		return errors.BadRequest("cache.set", "value is too big")
 	}
 
 	ttl := time.Time{}
@@ -51,7 +56,7 @@ func (c *Cache) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse
 
 func (c *Cache) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	if len(req.Key) == 0 {
-		return errors.BadRequest("cache.get", "missing key")
+		return errors.BadRequest("cache.delete", "missing key")
 	}
 	if err := cache.Context(ctx).Delete(req.Key); err != nil {
 		return errors.InternalServerError("cache.delete", err.Error())
@@ -64,7 +69,7 @@ func (c *Cache) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delet
 
 func (c *Cache) Increment(ctx context.Context, req *pb.IncrementRequest, rsp *pb.IncrementResponse) error {
 	if len(req.Key) == 0 {
-		return errors.BadRequest("cache.get", "missing key")
+		return errors.BadRequest("cache.increment", "missing key")
 	}
 
 	// increment the value
@@ -82,7 +87,7 @@ func (c *Cache) Increment(ctx context.Context, req *pb.IncrementRequest, rsp *pb
 
 func (c *Cache) Decrement(ctx context.Context, req *pb.DecrementRequest, rsp *pb.DecrementResponse) error {
 	if len(req.Key) == 0 {
-		return errors.BadRequest("cache.get", "missing key")
+		return errors.BadRequest("cache.decrement", "missing key")
 	}
 
 	v, err := cache.Context(ctx).Decrement(req.Key, req.Value)
