@@ -2,13 +2,13 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"strings"
 
-	"github.com/micro/micro/v3/service/auth"
+	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/model"
 	file "github.com/micro/services/file/proto"
+	"github.com/micro/services/pkg/tenant"
 )
 
 type File struct {
@@ -32,50 +32,95 @@ func NewFile() *File {
 	}
 }
 
-func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveResponse) error {
-	// @todo return proper micro errors
-	acc, ok := auth.AccountFromContext(ctx)
+func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadResponse) error {
+	log.Info("Received File.Read request")
+
+	if len(req.Path) == 0 {
+		return errors.BadRequest("file.read", "missing file path")
+	}
+
+	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
-		return errors.New("File.Save requires authentication")
+		tenantId = "micro"
+	}
+
+	var files []*file.Record
+
+	project := tenantId + "/" + req.Project
+
+	// read all the files for the project
+	err := e.db.Read(model.QueryEquals("project", project), &files)
+	if err != nil {
+		return err
+	}
+
+	// filter the file
+	for _, file := range files {
+		if file.Path == req.Path {
+			// strip the tenant id
+			file.Id = strings.TrimPrefix(file.Id, tenantId+"/")
+			file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+			rsp.File = file
+		}
+	}
+
+	return nil
+}
+
+func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
 	}
 
 	log.Info("Received File.Save request")
+
 	for _, reqFile := range req.Files {
-		f := file.Record{}
-		err := e.db.Read(model.QueryEquals("Id", reqFile.Id), &f)
-		if err != nil && err != model.ErrorNotFound {
-			return err
-		}
-		// if file exists check ownership
-		if f.Id != "" && f.Owner != acc.ID {
-			return errors.New("Not authorized")
-		}
-		err = e.db.Create(reqFile)
+		// prefix the tenant
+		reqFile.Id = tenantId + "/" + reqFile.Id
+		reqFile.Project = tenantId + "/" + reqFile.Project
+
+		// create the file
+		err := e.db.Create(reqFile)
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListResponse) error {
 	log.Info("Received File.List request")
-	rsp.Files = []*file.Record{}
-	err := e.db.Read(model.QueryEquals("project", req.GetProject()), &rsp.Files)
-	if err != nil {
+
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+
+	// prefix tenant id
+	project := tenantId + "/" + req.Project
+
+	var files []*file.Record
+
+	// read all the files for the project
+	if err := e.db.Read(model.QueryEquals("project", project), &files); err != nil {
 		return err
 	}
+
 	// @todo funnily while this is the archetypical
 	// query for the KV store interface, it's not supported by the model
 	// so we do client side filtering here
-	if req.Path != "" {
-		filtered := []*file.Record{}
-		for _, file := range rsp.Files {
-			if strings.HasPrefix(file.Path, req.Path) {
-				filtered = append(filtered, file)
-			}
+	for _, file := range rsp.Files {
+		// strip the prefixes
+		file.Id = strings.TrimPrefix(file.Id, tenantId+"/")
+		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+
+		// if requesting all files or path matches
+		if req.Path == "" || strings.HasPrefix(file.Path, req.Path) {
+			rsp.Files = append(rsp.Files, file)
 		}
-		rsp.Files = filtered
 	}
+
 	return nil
 }

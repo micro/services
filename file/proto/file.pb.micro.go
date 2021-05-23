@@ -42,6 +42,7 @@ func NewFileEndpoints() []*api.Endpoint {
 // Client API for File service
 
 type FileService interface {
+	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 	Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 }
@@ -56,6 +57,16 @@ func NewFileService(name string, c client.Client) FileService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *fileService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
+	req := c.c.NewRequest(c.name, "File.Read", in)
+	out := new(ReadResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *fileService) Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error) {
@@ -81,12 +92,14 @@ func (c *fileService) List(ctx context.Context, in *ListRequest, opts ...client.
 // Server API for File service
 
 type FileHandler interface {
+	Read(context.Context, *ReadRequest, *ReadResponse) error
 	Save(context.Context, *SaveRequest, *SaveResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
 }
 
 func RegisterFileHandler(s server.Server, hdlr FileHandler, opts ...server.HandlerOption) error {
 	type file interface {
+		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
 		Save(ctx context.Context, in *SaveRequest, out *SaveResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 	}
@@ -99,6 +112,10 @@ func RegisterFileHandler(s server.Server, hdlr FileHandler, opts ...server.Handl
 
 type fileHandler struct {
 	FileHandler
+}
+
+func (h *fileHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
+	return h.FileHandler.Read(ctx, in, out)
 }
 
 func (h *fileHandler) Save(ctx context.Context, in *SaveRequest, out *SaveResponse) error {
