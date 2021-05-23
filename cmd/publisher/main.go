@@ -112,7 +112,7 @@ func main() {
 			}
 
 			// define the default public api values
-			publicApi := new(*PublicAPI)
+			publicApi := new(PublicAPI)
 
 			// if we find a public api definition we load it
 			if b, err := ioutil.ReadFile(filepath.Join(serviceDir, "publicapi.json")); err == nil {
