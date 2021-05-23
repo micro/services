@@ -11,20 +11,24 @@ service File {
 }
 
 message Record {
+	// id of the record
 	string id = 1;
-	// A custom string for namespacing purposes
+	// A custom project to group files
 	// eg. file-of-mywebsite.com
 	string project = 2;
 	// Name of folder or file.
 	string name = 3;
 	// Path. Default is '/', ie. top level
 	string path = 4;
+	// whether its a directory
 	bool is_directory = 5;
 	// File contents. Empty for directories.
-	string file_contents = 6;
+	string data = 6;
+	// time the file was created
 	int64 created = 7;
+	// time the file was updated
 	int64 updated = 8;
-	// owner
+	// owner of the file e.g alice
 	string owner = 9;
 }
 
