@@ -49,6 +49,8 @@ message ReadRequest {
 	string project = 1;
 	// path to the file
 	string path = 2;
+	// file name
+	string name = 3;
 }
 
 message ReadResponse {
