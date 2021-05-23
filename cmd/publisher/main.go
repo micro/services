@@ -114,7 +114,7 @@ func main() {
 			// define the default public api values
 			var publicApi *PublicAPI
 
-			// if we find a public api definition we override
+			// if we find a public api definition we load it
 			if b, err := ioutil.ReadFile(filepath.Join(serviceDir, "publicapi.json")); err == nil {
 				// unpack the info if we read the file
 				json.Unmarshal(b, &publicApi)
