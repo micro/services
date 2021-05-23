@@ -75,6 +75,27 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 
 	log.Info("Received File.Save request")
 
+	// prefix the tenant
+	req.File.Id = tenantId + "/" + req.File.Id
+	req.File.Project = tenantId + "/" + req.File.Project
+
+	// create the file
+	err := e.db.Create(req.File)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (e *File) BatchSave(ctx context.Context, req *file.BatchSaveRequest, rsp *file.BatchSaveResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+
+	log.Info("Received File.BatchSave request")
+
 	for _, reqFile := range req.Files {
 		// prefix the tenant
 		reqFile.Id = tenantId + "/" + reqFile.Id
@@ -89,6 +110,7 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 
 	return nil
 }
+
 
 func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListResponse) error {
 	log.Info("Received File.List request")
@@ -115,6 +137,10 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 		// strip the prefixes
 		file.Id = strings.TrimPrefix(file.Id, tenantId+"/")
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+
+		// strip the file contents
+		// no file listing ever contains it
+		file.Data = ""
 
 		// if requesting all files or path matches
 		if req.Path == "" || strings.HasPrefix(file.Path, req.Path) {

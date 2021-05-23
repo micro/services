@@ -43,8 +43,9 @@ func NewFileEndpoints() []*api.Endpoint {
 
 type FileService interface {
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
-	Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
+	Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error)
+	BatchSave(ctx context.Context, in *BatchSaveRequest, opts ...client.CallOption) (*BatchSaveResponse, error)
 }
 
 type fileService struct {
@@ -69,6 +70,16 @@ func (c *fileService) Read(ctx context.Context, in *ReadRequest, opts ...client.
 	return out, nil
 }
 
+func (c *fileService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "File.List", in)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *fileService) Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error) {
 	req := c.c.NewRequest(c.name, "File.Save", in)
 	out := new(SaveResponse)
@@ -79,9 +90,9 @@ func (c *fileService) Save(ctx context.Context, in *SaveRequest, opts ...client.
 	return out, nil
 }
 
-func (c *fileService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
-	req := c.c.NewRequest(c.name, "File.List", in)
-	out := new(ListResponse)
+func (c *fileService) BatchSave(ctx context.Context, in *BatchSaveRequest, opts ...client.CallOption) (*BatchSaveResponse, error) {
+	req := c.c.NewRequest(c.name, "File.BatchSave", in)
+	out := new(BatchSaveResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -93,15 +104,17 @@ func (c *fileService) List(ctx context.Context, in *ListRequest, opts ...client.
 
 type FileHandler interface {
 	Read(context.Context, *ReadRequest, *ReadResponse) error
-	Save(context.Context, *SaveRequest, *SaveResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
+	Save(context.Context, *SaveRequest, *SaveResponse) error
+	BatchSave(context.Context, *BatchSaveRequest, *BatchSaveResponse) error
 }
 
 func RegisterFileHandler(s server.Server, hdlr FileHandler, opts ...server.HandlerOption) error {
 	type file interface {
 		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
-		Save(ctx context.Context, in *SaveRequest, out *SaveResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
+		Save(ctx context.Context, in *SaveRequest, out *SaveResponse) error
+		BatchSave(ctx context.Context, in *BatchSaveRequest, out *BatchSaveResponse) error
 	}
 	type File struct {
 		file
@@ -118,10 +131,14 @@ func (h *fileHandler) Read(ctx context.Context, in *ReadRequest, out *ReadRespon
 	return h.FileHandler.Read(ctx, in, out)
 }
 
+func (h *fileHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
+	return h.FileHandler.List(ctx, in, out)
+}
+
 func (h *fileHandler) Save(ctx context.Context, in *SaveRequest, out *SaveResponse) error {
 	return h.FileHandler.Save(ctx, in, out)
 }
 
-func (h *fileHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
-	return h.FileHandler.List(ctx, in, out)
+func (h *fileHandler) BatchSave(ctx context.Context, in *BatchSaveRequest, out *BatchSaveResponse) error {
+	return h.FileHandler.BatchSave(ctx, in, out)
 }

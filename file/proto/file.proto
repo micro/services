@@ -6,8 +6,9 @@ option go_package = "./proto;file";
 
 service File {
 	rpc Read(ReadRequest) returns (ReadResponse) {}
-	rpc Save(SaveRequest) returns (SaveResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Save(SaveRequest) returns (SaveResponse) {}
+	rpc BatchSave(BatchSaveRequest) returns (BatchSaveResponse) {}
 }
 
 message Record {
@@ -34,6 +35,14 @@ message Record {
 	map<string,string> metadata = 10;
 }
 
+// Batch save multiple files in one call
+message BatchSaveRequest {
+	repeated Record files = 1;
+}
+
+message BatchSaveResponse {
+}
+
 // Read a file by path
 message ReadRequest {
 	// project name
@@ -47,9 +56,9 @@ message ReadResponse {
 	Record file = 1;
 }
 
-// The save endpoint lets you batch save text file.
+// Save a file
 message SaveRequest {
-	repeated Record files = 1;
+	Record file = 1;
 }
 
 message SaveResponse {
