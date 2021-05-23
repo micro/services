@@ -16,16 +16,18 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-func publishAPI(service, readme, openapiJSON, examplesJSON string, pricing map[string]int64) error {
-	client := &http.Client{}
+type PublicAPI struct {
+	Name         string           `json:"name"`
+	Category     string           `json:"category,omitempty"`
+	Description  string           `json:"description"`
+	Icon         string           `json:"icon,omitempty"`
+	OpenAPIJson  string           `json:"open_api_json"`
+	Pricing      map[string]int64 `json:"pricing,omitempty"`
+	ExamplesJson string           `json:"examples_json,omitempty"`
+}
 
-	apiSpec := map[string]interface{}{
-		"name":          service,
-		"description":   readme,
-		"open_api_json": openapiJSON,
-		"pricing":       pricing,
-		"examples_json": examplesJSON,
-	}
+func publishAPI(apiSpec *PublicAPI) error {
+	client := &http.Client{}
 
 	//Encode the data
 	postBody, _ := json.Marshal(map[string]interface{}{
@@ -100,24 +102,45 @@ func main() {
 					os.Exit(1)
 				}
 			}
+
 			spec := &openapi3.Swagger{}
-			err = json.Unmarshal(js, &spec)
-			if err != nil {
+
+			// we have to read an openapi spec otherwise we can't publish
+			if err := json.Unmarshal(js, &spec); err != nil {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
 
-			// not every service has examples
-			examples, _ := ioutil.ReadFile(filepath.Join(serviceDir, "examples.json"))
-
-			pricingRaw, _ := ioutil.ReadFile(filepath.Join(serviceDir, "pricing.json"))
-			pricing := map[string]int64{}
-			if len(pricingRaw) > 0 {
-				json.Unmarshal(pricingRaw, &pricing)
+			// define the default public api values
+			publicApi := &PublicAPI{
+				Name:        serviceName,
+				Description: string(dat),
+				OpenAPIJson: string(js),
 			}
 
-			err = publishAPI(serviceName, string(dat), string(js), string(examples), pricing)
-			if err != nil {
+			// if we find a public api definition we override
+			if b, err := ioutil.ReadFile(filepath.Join(serviceDir, "publicapi.json")); err == nil {
+				// unpack the info if we read the file
+				json.Unmarshal(b, &publicApi)
+			}
+
+			// load the examples if they exist
+			if examples, err := ioutil.ReadFile(filepath.Join(serviceDir, "examples.json")); err == nil {
+				publicApi.ExamplesJson = string(examples)
+			}
+
+			// load the separate pricing if it exists
+			if pricingRaw, err := ioutil.ReadFile(filepath.Join(serviceDir, "pricing.json")); err == nil {
+				pricing := map[string]int64{}
+				// unmarshal the pricing info
+				if len(pricingRaw) > 0 {
+					json.Unmarshal(pricingRaw, &pricing)
+					publicApi.Pricing = pricing
+				}
+			}
+
+			// publish the api
+			if err := publishAPI(publicApi); err != nil {
 				fmt.Println("Failed to save data to publicapi service", err)
 				os.Exit(1)
 			}
