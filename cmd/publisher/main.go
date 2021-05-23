@@ -112,11 +112,7 @@ func main() {
 			}
 
 			// define the default public api values
-			publicApi := &PublicAPI{
-				Name:        serviceName,
-				Description: string(dat),
-				OpenAPIJson: string(js),
-			}
+			var publicApi *PublicAPI
 
 			// if we find a public api definition we override
 			if b, err := ioutil.ReadFile(filepath.Join(serviceDir, "publicapi.json")); err == nil {
@@ -124,9 +120,22 @@ func main() {
 				json.Unmarshal(b, &publicApi)
 			}
 
+			// If we didn't get the default info from a file, populate it
+			if publicApi.Name == "" {
+				publicApi.Name = serviceName
+			}
+			if publicApi.Description == "" {
+				publicApi.Description = string(dat)
+			}
+			if publicApi.OpenAPIJson == "" {
+				publicApi.OpenAPIJson = string(js)
+			}
+
 			// load the examples if they exist
 			if examples, err := ioutil.ReadFile(filepath.Join(serviceDir, "examples.json")); err == nil {
-				publicApi.ExamplesJson = string(examples)
+				if len(examples) > 0 {
+					publicApi.ExamplesJson = string(examples)
+				}
 			}
 
 			// load the separate pricing if it exists
