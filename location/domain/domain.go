@@ -1,16 +1,21 @@
 package domain
 
 import (
+	"context"
 	"sync"
 
 	geo "github.com/hailocab/go-geoindex"
 	"github.com/micro/micro/v3/service/errors"
 	common "github.com/micro/services/location/proto"
+	"github.com/micro/services/pkg/tenant"
 )
 
 var (
 	mtx          sync.RWMutex
-	defaultIndex = geo.NewPointsIndex(geo.Km(0.5))
+	defaultIndex = geo.NewPointsIndex(geo.Km(100))
+
+	// index per tenant
+	indexes = map[string]*geo.PointsIndex{}
 )
 
 type Entity struct {
@@ -45,6 +50,23 @@ func (e *Entity) ToProto() *common.Entity {
 	}
 }
 
+func getIndex(ctx context.Context) *geo.PointsIndex {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		//return default index
+		return defaultIndex
+	}
+
+	// get the index
+	index, ok := indexes[tenantId]
+	if !ok {
+		index = geo.NewPointsIndex(geo.Meters(100))
+		indexes[tenantId] = index
+	}
+
+	return index
+}
+
 func ProtoToEntity(e *common.Entity) *Entity {
 	return &Entity{
 		ID:        e.Id,
@@ -55,11 +77,14 @@ func ProtoToEntity(e *common.Entity) *Entity {
 	}
 }
 
-func Read(id string) (*Entity, error) {
+func Read(ctx context.Context, id string) (*Entity, error) {
 	mtx.RLock()
 	defer mtx.RUnlock()
 
-	p := defaultIndex.Get(id)
+	// get the index
+	index := getIndex(ctx)
+
+	p := index.Get(id)
 	if p == nil {
 		return nil, errors.NotFound("location.read", "Not found")
 	}
@@ -72,17 +97,22 @@ func Read(id string) (*Entity, error) {
 	return entity, nil
 }
 
-func Save(e *Entity) {
+func Save(ctx context.Context, e *Entity) {
 	mtx.Lock()
-	defaultIndex.Add(e)
+	// get the index
+	index := getIndex(ctx)
+	index.Add(e)
 	mtx.Unlock()
 }
 
-func Search(typ string, entity *Entity, radius float64, numEntities int) []*Entity {
+func Search(ctx context.Context, typ string, entity *Entity, radius float64, numEntities int) []*Entity {
 	mtx.RLock()
 	defer mtx.RUnlock()
 
-	points := defaultIndex.KNearest(entity, numEntities, geo.Meters(radius), func(p geo.Point) bool {
+	// get the index
+	index := getIndex(ctx)
+
+	points := index.KNearest(entity, numEntities, geo.Meters(radius), func(p geo.Point) bool {
 		e, ok := p.(*Entity)
 		if !ok || e.Type != typ {
 			return false
