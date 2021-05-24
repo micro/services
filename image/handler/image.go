@@ -149,6 +149,27 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 	}
 
 	resultImage := imaging.Resize(srcImage, int(req.Width), int(req.Height), imaging.Lanczos)
+	if req.CropOptions != nil {
+		anchor := imaging.Center
+		switch req.CropOptions.Anchor {
+		case "top left":
+			anchor = imaging.TopLeft
+		case "top":
+			anchor = imaging.Top
+		case "top right":
+			anchor = imaging.TopRight
+		case "left":
+			anchor = imaging.Left
+		case "bottom left":
+			anchor = imaging.BottomLeft
+		case "bottom":
+			anchor = imaging.Bottom
+		case "bottom right":
+			anchor = imaging.BottomRight
+		}
+		resultImage = imaging.CropAnchor(resultImage, int(req.Width), int(req.Height),
+			anchor)
+	}
 	buf := new(bytes.Buffer)
 
 	switch {

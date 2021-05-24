@@ -26,8 +26,31 @@ message UploadResponse {
 	string url = 1;
 }
 
+message Point {
+	int32 x = 1;
+	int32 y = 2;
+}
+
+message Rectangle {
+	Point min = 1;
+	Point max = 2;
+}
+
+message CropOptions {
+	// width to crop to
+	int32 width = 1;
+	// height to crop to
+	int32 height = 2;
+	// Crop anchor point: "top", "top left", "top right",
+	// "left", "center", "right"
+	// "bottom left", "bottom", "bottom right".
+	// Optional. Defaults to center.
+	string anchor = 3;
+}
 
 // Resize an image on the fly without storing it (by sending and receiving a base64 encoded image), or resize and upload depending on parameters.
+// If one of width or height is 0, the image aspect ratio is preserved.
+// Optional cropping.
 message ResizeRequest {
 	// base64 encoded image to resize,
 	// ie. "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
@@ -40,6 +63,10 @@ message ResizeRequest {
 	bool outputURL = 4;
 	int64 width = 5;
 	int64 height = 6;
+	// optional crop options
+	// if provided, after resize, the image
+	// will be cropped
+	CropOptions cropOptions = 7;
 }
 
 message ResizeResponse {
