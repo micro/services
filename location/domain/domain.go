@@ -12,7 +12,7 @@ import (
 
 var (
 	mtx          sync.RWMutex
-	defaultIndex = geo.NewPointsIndex(geo.Km(100))
+	defaultIndex = geo.NewPointsIndex(geo.Meters(100))
 
 	// index per tenant
 	indexes = map[string]*geo.PointsIndex{}
