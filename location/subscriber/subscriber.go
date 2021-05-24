@@ -16,6 +16,6 @@ type Location struct{}
 
 func (g *Location) Handle(ctx context.Context, e *proto.Entity) error {
 	log.Printf("Saving entity ID %s", e.Id)
-	domain.Save(domain.ProtoToEntity(e))
+	domain.Save(ctx, domain.ProtoToEntity(e))
 	return nil
 }

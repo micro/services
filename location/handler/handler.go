@@ -22,7 +22,7 @@ func (l *Location) Read(ctx context.Context, req *loc.ReadRequest, rsp *loc.Read
 		return errors.BadRequest("location.read", "Require Id")
 	}
 
-	entity, err := domain.Read(id)
+	entity, err := domain.Read(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,12 @@ func (l *Location) Save(ctx context.Context, req *loc.SaveRequest, rsp *loc.Save
 		return errors.BadRequest("location.save", "Require location")
 	}
 
+	// immediate save
+	domain.Save(ctx, domain.ProtoToEntity(entity))
+
+	// publish the event so other copies of location service can save it
 	p := service.NewEvent(subscriber.Topic)
+
 	if err := p.Publish(ctx, entity); err != nil {
 		return errors.InternalServerError("location.save", err.Error())
 	}
@@ -57,7 +62,7 @@ func (l *Location) Search(ctx context.Context, req *loc.SearchRequest, rsp *loc.
 		Longitude: req.Center.Longitude,
 	}
 
-	entities := domain.Search(req.Type, entity, req.Radius, int(req.NumEntities))
+	entities := domain.Search(ctx, req.Type, entity, req.Radius, int(req.NumEntities))
 
 	for _, e := range entities {
 		rsp.Entities = append(rsp.Entities, e.ToProto())
