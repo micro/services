@@ -25,7 +25,7 @@ func NewFile() *File {
 	i.Order.Type = model.OrderTypeUnordered
 
 	db := model.New(
-		Record{},
+		Record{Id: "", Record: &file.Record{}},
 		&model.Options{
 			Key:     "Id",
 			Indexes: []model.Index{i},
