@@ -27,7 +27,7 @@ func NewFile() *File {
 	db := model.New(
 		file.Record{},
 		&model.Options{
-			Key:     "Path",
+			Key:     "Id",
 			Indexes: []model.Index{i},
 		},
 	)
@@ -88,7 +88,7 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 	// eg. byProject/myproject/myproject-myid
 	id := req.File.Project + "/" + req.File.Path
 	// create the file
-	err := e.db.Create(Record{Id: id, Record: req.File})
+	err := e.db.Create(&Record{Id: id, Record: req.File})
 	if err != nil {
 		return err
 	}
