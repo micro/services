@@ -12,26 +12,24 @@ service File {
 }
 
 message Record {
-	// id of the record
-	string id = 1;
 	// A custom project to group files
 	// eg. file-of-mywebsite.com
 	string project = 2;
 	// Name of folder or file.
 	string name = 3;
-	// Path. Default is '/', ie. top level
+	// Path eg. '/documents/text-files'. Default is '/', ie. top level
 	string path = 4;
-	// whether its a directory
+	// Is it a directory (true) or a file (false)
 	bool is_directory = 5;
 	// File contents. Empty for directories.
 	string data = 6;
-	// time the file was created
+	// Time the file was created, number of seconds since Unix epoch
 	int64 created = 7;
-	// time the file was updated
+	// Time the file was updated, number of seconds since Unix epoch
 	int64 updated = 8;
-	// owner of the file e.g alice
+	// Owner of the file e.g alice
 	string owner = 9;
-	// any other associated metadata
+	// Any other associated metadata
 	map<string,string> metadata = 10;
 }
 
@@ -45,11 +43,11 @@ message BatchSaveResponse {
 
 // Read a file by path
 message ReadRequest {
-	// project name
+	// Project name
 	string project = 1;
-	// path to the file
+	// Path to the file
 	string path = 2;
-	// file name
+	// File name
 	string name = 3;
 }
 
