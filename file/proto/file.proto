@@ -14,23 +14,21 @@ service File {
 message Record {
 	// A custom project to group files
 	// eg. file-of-mywebsite.com
-	string project = 2;
-	// Name of folder or file.
-	string name = 3;
-	// Path eg. '/documents/text-files'. Default is '/', ie. top level
-	string path = 4;
+	string project = 1;
+	// Path to file or folder eg. '/documents/text-files/file.txt'.
+	string path = 2;
 	// Is it a directory (true) or a file (false)
-	bool is_directory = 5;
+	bool is_directory = 3;
 	// File contents. Empty for directories.
-	string data = 6;
+	string data = 4;
 	// Time the file was created, number of seconds since Unix epoch
-	int64 created = 7;
+	int64 created = 5;
 	// Time the file was updated, number of seconds since Unix epoch
-	int64 updated = 8;
+	int64 updated = 6;
 	// Owner of the file e.g alice
-	string owner = 9;
+	string owner = 7;
 	// Any other associated metadata
-	map<string,string> metadata = 10;
+	map<string,string> metadata = 8;
 }
 
 // Batch save multiple files in one call
@@ -47,8 +45,6 @@ message ReadRequest {
 	string project = 1;
 	// Path to the file
 	string path = 2;
-	// File name
-	string name = 3;
 }
 
 message ReadResponse {

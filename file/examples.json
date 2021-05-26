@@ -4,8 +4,7 @@
         "request": {
             "file": {
                 "data": "file content example",
-                "name": "file.txt",
-                "path": "/document/text-files",
+                "path": "/document/text-files/file.txt",
                 "project": "myproject"
             }
         },
@@ -22,7 +21,22 @@
               {
                 "project": "myproject",
                 "name": "file.txt",
-                "path": "/document/text-files"
+                "path": "/document/text-files/file.txt"
+              }
+            ]
+          }
+    }],
+    "read": [{
+        "title": "Read file",
+        "request": {
+            "project": "myproject"
+        },
+        "response": {
+            "files": [
+              {
+                "project": "myproject",
+                "data": "file content example",
+                "path": "/document/text-files/file.txt"
               }
             ]
           }

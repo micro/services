@@ -56,10 +56,11 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 
 	// filter the file
 	for _, file := range files {
-		if file.Path == req.Path && file.Name == req.Name {
-			// strip the tenant id
-			file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-			file.Path = strings.TrimPrefix(file.Path, req.Project+"/")
+		// strip the tenant id
+		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+		file.Path = strings.TrimPrefix(file.Path, tenantId+"/"+req.Project+"/")
+
+		if req.Path != "" && strings.HasPrefix(file.Path, req.Path) {
 			rsp.File = file
 		}
 	}
@@ -97,11 +98,9 @@ func (e *File) BatchSave(ctx context.Context, req *file.BatchSaveRequest, rsp *f
 	log.Info("Received File.BatchSave request")
 
 	for _, reqFile := range req.Files {
-		reqFile.Project = tenantId + "/" + reqFile.Project
-
 		// prefix the tenant
 		reqFile.Project = tenantId + "/" + reqFile.Project
-		reqFile.Path = reqFile.Project + "/"
+		reqFile.Path = reqFile.Project + "/" + reqFile.Path
 
 		// create the file
 		err := e.db.Create(reqFile)
@@ -137,14 +136,18 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 	for _, file := range files {
 		// strip the prefixes
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-		file.Path = strings.TrimPrefix(file.Path, req.Project+"/")
+		file.Path = strings.TrimPrefix(file.Path, tenantId+"/"+req.Project+"/")
 
 		// strip the file contents
 		// no file listing ever contains it
 		file.Data = ""
 
 		// if requesting all files or path matches
-		if req.Path == "" || strings.HasPrefix(file.Path, req.Path) {
+		if req.Path != "" {
+			if strings.HasPrefix(file.Path, req.Path) {
+				rsp.Files = append(rsp.Files, file)
+			}
+		} else {
 			rsp.Files = append(rsp.Files, file)
 		}
 	}
