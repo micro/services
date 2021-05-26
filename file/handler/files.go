@@ -15,19 +15,14 @@ type File struct {
 	db model.Model
 }
 
-type Record struct {
-	Id string
-	*file.Record
-}
-
 func NewFile() *File {
 	i := model.ByEquality("project")
 	i.Order.Type = model.OrderTypeUnordered
 
 	db := model.New(
-		Record{Id: "", Record: &file.Record{}},
+		file.Record{},
 		&model.Options{
-			Key:     "Id",
+			Key:     "Path",
 			Indexes: []model.Index{i},
 		},
 	)
@@ -49,7 +44,7 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 		tenantId = "micro"
 	}
 
-	var files []*Record
+	var files []*file.Record
 
 	project := tenantId + "/" + req.Project
 
@@ -64,7 +59,8 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 		if file.Path == req.Path && file.Name == req.Name {
 			// strip the tenant id
 			file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-			rsp.File = file.Record
+			file.Path = strings.TrimPrefix(file.Path, req.Project)
+			rsp.File = file
 		}
 	}
 
@@ -81,14 +77,10 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 
 	// prefix the tenant
 	req.File.Project = tenantId + "/" + req.File.Project
+	req.File.Path = req.File.Project + "/"
 
-	// @todo there is one big problem with this
-	// the project will be duplicated in index keys
-	// where project will appear both in project prefix and unique ID
-	// eg. byProject/myproject/myproject-myid
-	id := req.File.Project + "/" + req.File.Path
 	// create the file
-	err := e.db.Create(&Record{Id: id, Record: req.File})
+	err := e.db.Create(req.File)
 	if err != nil {
 		return err
 	}
@@ -107,9 +99,12 @@ func (e *File) BatchSave(ctx context.Context, req *file.BatchSaveRequest, rsp *f
 	for _, reqFile := range req.Files {
 		reqFile.Project = tenantId + "/" + reqFile.Project
 
-		id := reqFile.Project + "/" + reqFile.Path
+		// prefix the tenant
+		reqFile.Project = tenantId + "/" + reqFile.Project
+		reqFile.Path = reqFile.Project + "/"
+
 		// create the file
-		err := e.db.Create(Record{Id: id, Record: reqFile})
+		err := e.db.Create(reqFile)
 		if err != nil {
 			return err
 		}
@@ -129,7 +124,7 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 	// prefix tenant id
 	project := tenantId + "/" + req.Project
 
-	var files []*Record
+	var files []*file.Record
 
 	// read all the files for the project
 	if err := e.db.Read(model.QueryEquals("project", project), &files); err != nil {
@@ -142,6 +137,7 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 	for _, file := range files {
 		// strip the prefixes
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+		file.Path = strings.TrimPrefix(file.Path, req.Project)
 
 		// strip the file contents
 		// no file listing ever contains it
@@ -149,7 +145,7 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 
 		// if requesting all files or path matches
 		if req.Path == "" || strings.HasPrefix(file.Path, req.Path) {
-			rsp.Files = append(rsp.Files, file.Record)
+			rsp.Files = append(rsp.Files, file)
 		}
 	}
 
