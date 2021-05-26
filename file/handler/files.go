@@ -22,7 +22,7 @@ func NewFile() *File {
 	db := model.New(
 		file.Record{},
 		&model.Options{
-			Key:     "Id",
+			Key:     "Path",
 			Indexes: []model.Index{i},
 		},
 	)
@@ -56,10 +56,10 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 
 	// filter the file
 	for _, file := range files {
-		if file.Path == req.Path  && file.Name == req.Name {
+		if file.Path == req.Path && file.Name == req.Name {
 			// strip the tenant id
-			file.Id = strings.TrimPrefix(file.Id, tenantId+"/")
 			file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+			file.Path = strings.TrimPrefix(file.Path, req.Project)
 			rsp.File = file
 		}
 	}
@@ -76,8 +76,8 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 	log.Info("Received File.Save request")
 
 	// prefix the tenant
-	req.File.Id = tenantId + "/" + req.File.Id
 	req.File.Project = tenantId + "/" + req.File.Project
+	req.File.Path = req.File.Project + "/"
 
 	// create the file
 	err := e.db.Create(req.File)
@@ -97,9 +97,11 @@ func (e *File) BatchSave(ctx context.Context, req *file.BatchSaveRequest, rsp *f
 	log.Info("Received File.BatchSave request")
 
 	for _, reqFile := range req.Files {
-		// prefix the tenant
-		reqFile.Id = tenantId + "/" + reqFile.Id
 		reqFile.Project = tenantId + "/" + reqFile.Project
+
+		// prefix the tenant
+		reqFile.Project = tenantId + "/" + reqFile.Project
+		reqFile.Path = reqFile.Project + "/"
 
 		// create the file
 		err := e.db.Create(reqFile)
@@ -110,7 +112,6 @@ func (e *File) BatchSave(ctx context.Context, req *file.BatchSaveRequest, rsp *f
 
 	return nil
 }
-
 
 func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListResponse) error {
 	log.Info("Received File.List request")
@@ -133,10 +134,10 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 	// @todo funnily while this is the archetypical
 	// query for the KV store interface, it's not supported by the model
 	// so we do client side filtering here
-	for _, file := range rsp.Files {
+	for _, file := range files {
 		// strip the prefixes
-		file.Id = strings.TrimPrefix(file.Id, tenantId+"/")
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+		file.Path = strings.TrimPrefix(file.Path, req.Project)
 
 		// strip the file contents
 		// no file listing ever contains it
