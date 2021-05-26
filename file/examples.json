@@ -1,0 +1,29 @@
+{
+    "save": [{
+        "title": "Save file",
+        "request": {
+            "file": {
+                "data": "file content example",
+                "name": "file.txt",
+                "path": "/document/text-files",
+                "project": "myproject"
+            }
+        },
+        "response": {
+        }
+    }, {
+        "title": "List files",
+        "request": {
+            "project": "myproject"
+        },
+        "response": {
+            "files": [
+              {
+                "project": "myproject",
+                "name": "file.txt",
+                "path": "/document/text-files"
+              }
+            ]
+          }
+    }]
+}
