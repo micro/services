@@ -11,7 +11,8 @@
         },
         "response": {
         }
-    }, {
+    }],
+    "list": [{
         "title": "List files",
         "request": {
             "project": "myproject"
