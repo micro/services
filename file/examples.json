@@ -25,5 +25,20 @@
               }
             ]
           }
+    }],
+    "read": [{
+        "title": "Read file",
+        "request": {
+            "project": "myproject"
+        },
+        "response": {
+            "files": [
+              {
+                "project": "myproject",
+                "data": "file content example",
+                "path": "/document/text-files/file.txt"
+              }
+            ]
+          }
     }]
 }

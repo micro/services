@@ -56,10 +56,11 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 
 	// filter the file
 	for _, file := range files {
+		// strip the tenant id
+		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+		file.Path = strings.TrimPrefix(file.Path, tenantId+"/"+req.Project+"/")
+
 		if req.Path != "" && strings.HasPrefix(file.Path, req.Path) {
-			// strip the tenant id
-			file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-			file.Path = strings.TrimPrefix(file.Path, tenantId+"/"+req.Project+"/")
 			rsp.File = file
 		}
 	}
