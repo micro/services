@@ -4,8 +4,7 @@
         "request": {
             "file": {
                 "data": "file content example",
-                "name": "file.txt",
-                "path": "/document/text-files",
+                "path": "/document/text-files/file.txt",
                 "project": "myproject"
             }
         },
@@ -22,7 +21,7 @@
               {
                 "project": "myproject",
                 "name": "file.txt",
-                "path": "/document/text-files"
+                "path": "/document/text-files/file.txt"
               }
             ]
           }
