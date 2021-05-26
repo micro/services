@@ -142,7 +142,11 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 		file.Data = ""
 
 		// if requesting all files or path matches
-		if req.Path == "" || strings.HasPrefix(file.Path, req.Path) {
+		if req.Path != "" {
+			if strings.HasPrefix(file.Path, req.Path) {
+				rsp.Files = append(rsp.Files, file)
+			}
+		} else {
 			rsp.Files = append(rsp.Files, file)
 		}
 	}
