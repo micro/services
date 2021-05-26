@@ -59,7 +59,7 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 		if file.Path == req.Path && file.Name == req.Name {
 			// strip the tenant id
 			file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-			file.Path = strings.TrimPrefix(file.Path, req.Project)
+			file.Path = strings.TrimPrefix(file.Path, req.Project+"/")
 			rsp.File = file
 		}
 	}
@@ -77,7 +77,7 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 
 	// prefix the tenant
 	req.File.Project = tenantId + "/" + req.File.Project
-	req.File.Path = req.File.Project + "/"
+	req.File.Path = req.File.Project + "/" + req.File.Path
 
 	// create the file
 	err := e.db.Create(req.File)
@@ -137,7 +137,7 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 	for _, file := range files {
 		// strip the prefixes
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-		file.Path = strings.TrimPrefix(file.Path, req.Project)
+		file.Path = strings.TrimPrefix(file.Path, req.Project+"/")
 
 		// strip the file contents
 		// no file listing ever contains it
