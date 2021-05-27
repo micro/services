@@ -1,5 +1,9 @@
 {
   "name": "geocoding",
   "icon": "🏠",
-  "category": "logistics"
+  "category": "logistics",
+  "pricing": {
+    "lookup": 100,
+    "reverse": 100
+  }
 }
