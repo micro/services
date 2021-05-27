@@ -140,7 +140,7 @@ func main() {
 
 			// load the separate pricing if it exists
 			if pricingRaw, err := ioutil.ReadFile(filepath.Join(serviceDir, "pricing.json")); err == nil {
-				pricing := map[string]int64{}
+				pricing := map[string]string{}
 				// unmarshal the pricing info
 				if len(pricingRaw) > 0 {
 					json.Unmarshal(pricingRaw, &pricing)
