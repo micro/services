@@ -1,5 +1,12 @@
 {
   "name": "datastore",
   "icon": "📦",
-  "category": "storage"
+  "category": "storage",
+  "pricing": {
+    "Datastore.Create": 100,
+    "Datastore.Read": 100,
+    "Datastore.Update": 100,
+    "Datastore.Delete": 100,
+    "Datastore.CreateIndex": 100
+  }
 }

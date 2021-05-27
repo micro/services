@@ -1,5 +1,9 @@
 {
   "name": "otp",
   "icon": "🔑",
-  "category": "user"
+  "category": "user",
+  "pricing": {
+    "Otp.Generate": 100,
+    "Otp.Validate": 100
+  }
 }
