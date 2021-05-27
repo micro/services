@@ -3,7 +3,7 @@
   "icon": "🏠",
   "category": "logistics",
   "pricing": {
-    "lookup": 100,
-    "reverse": 100
+    "lookup": "100",
+    "reverse": "100"
   }
 }
