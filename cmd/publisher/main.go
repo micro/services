@@ -22,7 +22,7 @@ type PublicAPI struct {
 	Description  string           `json:"description"`
 	Icon         string           `json:"icon,omitempty"`
 	OpenAPIJson  string           `json:"open_api_json"`
-	Pricing      map[string]string `json:"pricing,omitempty"`
+	Pricing      map[string]int64 `json:"pricing,omitempty"`
 	ExamplesJson string           `json:"examples_json,omitempty"`
 }
 
@@ -140,7 +140,7 @@ func main() {
 
 			// load the separate pricing if it exists
 			if pricingRaw, err := ioutil.ReadFile(filepath.Join(serviceDir, "pricing.json")); err == nil {
-				pricing := map[string]string{}
+				pricing := map[string]int64{}
 				// unmarshal the pricing info
 				if len(pricingRaw) > 0 {
 					json.Unmarshal(pricingRaw, &pricing)
