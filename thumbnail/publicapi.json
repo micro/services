@@ -1,5 +1,8 @@
 {
   "name": "thumbnail",
   "icon": "📸",
-  "category": "web"
+  "category": "web",
+  "pricing": {
+    "Thumbnail.Screenshot": 100
+  }
 }
