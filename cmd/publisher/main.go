@@ -22,7 +22,7 @@ type PublicAPI struct {
 	Description  string           `json:"description"`
 	Icon         string           `json:"icon,omitempty"`
 	OpenAPIJson  string           `json:"open_api_json"`
-	Pricing      map[string]int64 `json:"pricing,omitempty"`
+	Pricing      map[string]string `json:"pricing,omitempty"`
 	ExamplesJson string           `json:"examples_json,omitempty"`
 }
 
