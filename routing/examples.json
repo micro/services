@@ -7,7 +7,7 @@
              "latitude": 52.517037,
              "longitude": 13.388860
            },
-           "origin": {
+           "destination": {
              "latitude": 52.529407,
              "longitude": 13.397634
            }
@@ -24,7 +24,7 @@
              "latitude": 52.517037,
              "longitude": 13.388860
            },
-           "origin": {
+           "destination": {
              "latitude": 52.529407,
              "longitude": 13.397634
            }
@@ -513,7 +513,7 @@
              "latitude": 52.517037,
              "longitude": 13.388860
            },
-           "origin": {
+           "destination": {
              "latitude": 52.529407,
              "longitude": 13.397634
            }
@@ -682,7 +682,7 @@
 		"latitude": 52.517036,
 		"longitude": 13.388798
 	      }
-	    }
+	    }]
         }
     }]
 }
