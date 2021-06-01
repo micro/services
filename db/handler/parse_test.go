@@ -33,8 +33,9 @@ func TestLexing(t *testing.T) {
 }
 
 type tCase struct {
-	Q string
-	E []Query
+	Q   string
+	E   []Query
+	Err error
 }
 
 func TestParsing(t *testing.T) {
@@ -67,6 +68,62 @@ func TestParsing(t *testing.T) {
 					Field: "name",
 					Value: `He said "yes"!`,
 					Op:    itemNotEquals,
+				},
+			},
+		},
+		tCase{
+			Q: `a == false and b == true`,
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: false,
+					Op:    itemEquals,
+				},
+				Query{
+					Field: "b",
+					Value: true,
+					Op:    itemEquals,
+				},
+			},
+		},
+		// a < 20
+		tCase{
+			Q: `a < 20`,
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: int64(20),
+					Op:    itemLessThan,
+				},
+			},
+		},
+		tCase{
+			Q: `a <= 20`,
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: int64(20),
+					Op:    itemLessThanEquals,
+				},
+			},
+		},
+		tCase{
+			Q: `a > 20`,
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: int64(20),
+					Op:    itemGreaterThan,
+				},
+			},
+		},
+		tCase{
+			Q: `a >= 20`,
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: int64(20),
+					Op:    itemGreaterThanEquals,
 				},
 			},
 		},

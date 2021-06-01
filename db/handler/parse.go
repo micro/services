@@ -9,6 +9,8 @@ import (
 	"github.com/crufter/lexer"
 )
 
+var quoteEscape = fmt.Sprint(0x10FFFF)
+
 const (
 	itemIgnore = iota
 
@@ -29,6 +31,15 @@ const (
 	itemGreaterThanEquals
 )
 
+var opToString = map[int]string{
+	itemEquals:            "==",
+	itemNotEquals:         "!=",
+	itemLessThan:          "<",
+	itemGreaterThan:       ">",
+	itemLessThanEquals:    "<=",
+	itemGreaterThanEquals: ">=",
+}
+
 var expressions = []lexer.TokenExpr{
 	{`[ ]+`, itemIgnore}, // Whitespace
 	{`==`, itemEquals},
@@ -36,10 +47,10 @@ var expressions = []lexer.TokenExpr{
 	{`false`, itemBoolFalse},
 	{`true`, itemBoolTrue},
 	{`and`, itemAnd},
-	{`<`, itemLessThan},
-	{`>`, itemGreaterThan},
 	{`<=`, itemLessThanEquals},
 	{`>=`, itemGreaterThanEquals},
+	{`<`, itemLessThan},
+	{`>`, itemGreaterThan},
 	{`[0-9]+`, itemInt},
 	{`"(?:[^"\\]|\\.)*"`, itemString},
 	{`[\<\>\!\=\+\-\|\&\*\/A-Za-z][A-Za-z0-9_]*`, itemFieldName},
@@ -52,10 +63,10 @@ type Query struct {
 }
 
 func Parse(q string) ([]Query, error) {
-	if strings.Contains(q, fmt.Sprint(0x10FFFF)) {
+	if strings.Contains(q, quoteEscape) {
 		return nil, errors.New("query contains illegal max rune")
 	}
-	q = strings.Replace(q, `""`, fmt.Sprint(0x10FFFF), -1)
+	q = strings.Replace(q, `""`, quoteEscape, -1)
 	tokens, err := lexer.Lex(q, expressions)
 	if err != nil {
 		return nil, err
@@ -82,13 +93,29 @@ func Parse(q string) ([]Query, error) {
 		case itemFieldName:
 			current.Field = token.Text
 		case itemString:
+			switch current.Op {
+			case itemEquals, itemNotEquals:
+			default:
+				return nil, fmt.Errorf("operator '%v' can't be used with strings", opToString[token.Typ])
+			}
+
 			if len(token.Text) < 2 {
 				return nil, fmt.Errorf("string literal too short: '%v'", token.Text)
 			}
-			current.Value = strings.Replace(token.Text[1:len(token.Text)-1], fmt.Sprint(0x10FFFF), `"`, -1)
+			current.Value = strings.Replace(token.Text[1:len(token.Text)-1], quoteEscape, `"`, -1)
 		case itemBoolTrue:
+			switch current.Op {
+			case itemEquals, itemNotEquals:
+			default:
+				return nil, fmt.Errorf("operator '%v' can't be used with bools", opToString[token.Typ])
+			}
 			current.Value = true
 		case itemBoolFalse:
+			switch current.Op {
+			case itemEquals, itemNotEquals:
+			default:
+				return nil, fmt.Errorf("operator '%v' can't be used with bools", opToString[token.Typ])
+			}
 			current.Value = false
 		case itemInt:
 			num, err := strconv.ParseInt(token.Text, 10, 64)

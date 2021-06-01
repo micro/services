@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "db/proto"
+	pb "github.com/micro/services/db/proto"
 
 	"github.com/micro/services/db/handler"
 
@@ -25,7 +25,7 @@ func main() {
 	)
 
 	// Connect to the database
-	cfg, err := config.Get("invites.database")
+	cfg, err := config.Get("db.database")
 	if err != nil {
 		logger.Fatalf("Error loading config: %v", err)
 	}
@@ -38,7 +38,7 @@ func main() {
 	h.DBConn(sqlDB).Migrations(&handler.Db{})
 
 	// Register handler
-	pb.RegisterInvitesHandler(srv.Server(), h)
+	pb.RegisterDbHandler(srv.Server(), h)
 
 	// Register handler
 	pb.RegisterDbHandler(srv.Server(), new(handler.Db))
