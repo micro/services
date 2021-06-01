@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -46,6 +47,12 @@ func publishAPI(apiSpec *PublicAPI) error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		b, _ := ioutil.ReadAll(resp.Body)
+		return errors.New(string(b))
+	}
+
 	io.Copy(ioutil.Discard, resp.Body)
 
 	return nil
