@@ -96,7 +96,7 @@ func Parse(q string) ([]Query, error) {
 			switch current.Op {
 			case itemEquals, itemNotEquals:
 			default:
-				return nil, fmt.Errorf("operator '%v' can't be used with strings", opToString[token.Typ])
+				return nil, fmt.Errorf("operator '%v' can't be used with strings", opToString[current.Op])
 			}
 
 			if len(token.Text) < 2 {
@@ -107,14 +107,14 @@ func Parse(q string) ([]Query, error) {
 			switch current.Op {
 			case itemEquals, itemNotEquals:
 			default:
-				return nil, fmt.Errorf("operator '%v' can't be used with bools", opToString[token.Typ])
+				return nil, fmt.Errorf("operator '%v' can't be used with bools", opToString[current.Op])
 			}
 			current.Value = true
 		case itemBoolFalse:
 			switch current.Op {
 			case itemEquals, itemNotEquals:
 			default:
-				return nil, fmt.Errorf("operator '%v' can't be used with bools", opToString[token.Typ])
+				return nil, fmt.Errorf("operator '%v' can't be used with bools", opToString[current.Op])
 			}
 			current.Value = false
 		case itemInt:
