@@ -56,8 +56,29 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 }
 
 func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateResponse) error {
+	if len(req.Record) == 0 {
+		return errors.BadRequest("db.update", "missing record")
+	}
 
-	return nil
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+
+	m := map[string]interface{}{}
+	err = json.Unmarshal([]byte(req.Record), &m)
+	if err != nil {
+		return err
+	}
+
+	// where ID is specified do a single update record update
+	if id, ok := m["ID"].(string); ok {
+		// apply the update to a single record
+		return db.Table(req.Table).First(Record{ID: id}).Updates(m).Error
+	}
+
+	// apply all the updates
+	return db.Table(req.Table).Updates(m).Error
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
