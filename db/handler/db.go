@@ -71,14 +71,17 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		return err
 	}
 
+	// do we really need to remarshal this?
+	data, _ := json.Marshal(m)
+
 	// where ID is specified do a single update record update
 	if id, ok := m["ID"].(string); ok {
 		// apply the update to a single record
-		return db.Table(req.Table).First(&Record{ID: id}).Updates(m).Error
+		return db.Table(req.Table).First(&Record{ID: id}).Updates(Record{Data: data}).Error
 	}
 
 	// apply all the updates
-	return db.Table(req.Table).Updates(m).Error
+	return db.Table(req.Table).Updates(Record{Data: data}).Error
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
