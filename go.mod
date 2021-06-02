@@ -27,8 +27,8 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	go.opencensus.io v0.22.4 // indirect
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
-	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
 	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
 	google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 // indirect
@@ -36,8 +36,9 @@ require (
 	google.golang.org/protobuf v1.26.0
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
-	gorm.io/driver/postgres v1.0.6
-	gorm.io/gorm v1.20.9
+	gorm.io/datatypes v1.0.1
+	gorm.io/driver/postgres v1.0.8
+	gorm.io/gorm v1.21.6
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0

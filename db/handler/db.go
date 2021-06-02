@@ -7,6 +7,7 @@ import (
 
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -54,7 +55,28 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
-
+	recs := []Record{}
+	queries, err := Parse(req.Query)
+	if err != nil {
+		return err
+	}
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+	gq := datatypes.JSONQuery("data")
+	for _, query := range queries {
+		switch query.Op {
+		case itemEquals:
+			gq = gq.Equals(query.Value, query.Field)
+		}
+	}
+	err = db.Table(req.Table).Where(gq).Find(recs).Error
+	if err != nil {
+		return err
+	}
+	bts, _ := json.Marshal(recs)
+	rsp.Records = string(bts)
 	return nil
 }
 
