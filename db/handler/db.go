@@ -71,7 +71,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 			gq = gq.Equals(query.Value, query.Field)
 		}
 	}
-	err = db.Table(req.Table).Where(gq).Find(recs).Error
+	err = db.Table(req.Table).Where(gq).Find(&recs).Error
 	if err != nil {
 		return err
 	}
