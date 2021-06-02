@@ -17,7 +17,7 @@ message Request {
 }
 
 message Response {
-	// The score of the text
+	// The score of the text {positive is 1, negative is 0}
 	double score = 1;
 }
 
