@@ -1,23 +1,5 @@
-# Ip Service
+IP to geolocation lookup
 
-This is the Ip service
+# IP Service
 
-Generated with
-
-```
-micro new ip
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+The IP service provides IP to geolocation lookup including asn, city, country, timezone and lat/long.
