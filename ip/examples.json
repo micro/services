@@ -1,0 +1,18 @@
+{
+    "lookup": [{
+        "title": "Lookup IP info",
+        "description": "Lookup the location info for an IP address",
+        "request": {
+          "ip", "93.148.214.31"
+        },
+        "response": {
+          "ip": "93.148.214.31",
+          "asn": "30722",
+          "city": "Reggiolo",
+          "country": "Italy",
+          "latitude": 44.9201,
+          "longitude": 10.8075,
+          "timezone": "Europe/Rome"
+        }
+    }]
+}

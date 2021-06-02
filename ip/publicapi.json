@@ -1,0 +1,8 @@
+{
+  "name": "ip",
+  "icon": "🗺️",
+  "category": "location",
+  "pricing": {
+    "Ip.Location": 100
+  }
+}
