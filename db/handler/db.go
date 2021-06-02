@@ -9,9 +9,7 @@ import (
 
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type JSONB map[string]interface{}
@@ -71,27 +69,24 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if err != nil {
 		return err
 	}
-	gq := datatypes.JSONQuery("data")
 	db = db.Table(req.Table)
-	exp := []clause.Expression{}
 	for _, query := range queries {
 		switch query.Op {
 		case itemEquals:
-			db = db.Where("data ->> '" + query.Field + "' = ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' = ?", query.Value)
 		case itemGreaterThan:
-			db = db.Where("data ->> '" + query.Field + "' > ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' > ?", query.Value)
 		case itemGreaterThanEquals:
-			db = db.Where("data ->> '" + query.Field + "' >= ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' >= ?", query.Value)
 		case itemLessThan:
-			db = db.Where("data ->> '" + query.Field + "' < ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' < ?", query.Value)
 		case itemLessThanEquals:
-			db = db.Where("data ->> '" + query.Field + "' <= ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' <= ?", query.Value)
 		case itemNotEquals:
-			db = db.Where("data ->> '" + query.Field + "' != ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' != ?", query.Value)
 		}
 	}
-	gq.Build()
-	err = .Where(gq).Find(&recs).Error
+	err = db.Where.Find(&recs).Error
 	if err != nil {
 		return err
 	}
