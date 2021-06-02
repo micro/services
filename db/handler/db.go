@@ -40,7 +40,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 		return err
 	}
 	rec := &Record{}
-	err = json.Unmarshal([]byte(req.Record), rec.Data)
+	err = json.Unmarshal([]byte(req.Record), &rec.Data)
 	if err != nil {
 		return err
 	}
