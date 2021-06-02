@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/errors"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"gorm.io/datatypes"
@@ -22,6 +23,10 @@ type Db struct {
 
 // Call is a single request handler called via client.Call or the generated client code
 func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateResponse) error {
+	if len(req.Record) == 0 {
+		return errors.BadRequest("db.create", "missing record")
+	}
+
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
@@ -112,6 +117,16 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 }
 
 func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteResponse) error {
+	if len(req.Id) == 0 {
+		return errors.BadRequest("db.delete", "missing id")
+	}
 
-	return nil
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+
+	return db.Table(req.Table).Delete(Record{
+		ID: req.Id,
+	}).Error
 }
