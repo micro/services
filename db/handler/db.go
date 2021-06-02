@@ -73,17 +73,17 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	for _, query := range queries {
 		switch query.Op {
 		case itemEquals:
-			db = db.Where("data -> '"+query.Field+"' = ?", query.Value)
+			db = db.Where("(data ->> '"+query.Field+")::int' = ?", query.Value)
 		case itemGreaterThan:
-			db = db.Where("data -> '"+query.Field+"' > ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' > ?", query.Value)
 		case itemGreaterThanEquals:
-			db = db.Where("data -> '"+query.Field+"' >= ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' >= ?", query.Value)
 		case itemLessThan:
-			db = db.Where("data -> '"+query.Field+"' < ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' < ?", query.Value)
 		case itemLessThanEquals:
-			db = db.Where("data -> '"+query.Field+"' <= ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' <= ?", query.Value)
 		case itemNotEquals:
-			db = db.Where("data -> '"+query.Field+"' != ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' != ?", query.Value)
 		}
 	}
 	err = db.Find(&recs).Error
