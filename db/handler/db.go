@@ -10,6 +10,7 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -33,7 +34,7 @@ func (j *JSONB) Scan(value interface{}) error {
 
 type Record struct {
 	gorm.Model
-	Data *JSONB `sql:"type:jsonb"`
+	Data datatypes.JSON `json:"data"`
 }
 
 type Db struct {

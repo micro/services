@@ -9,6 +9,7 @@ require (
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/disintegration/imaging v1.6.2
 	github.com/getkin/kin-openapi v0.26.0
+	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.1
@@ -39,6 +40,7 @@ require (
 	gorm.io/datatypes v1.0.1
 	gorm.io/driver/postgres v1.0.8
 	gorm.io/gorm v1.21.6
+	mellium.im/sasl v0.2.1 // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
