@@ -45,7 +45,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 		return err
 	}
 
-	return db.Table(req.Table).Create(rec).Commit().Error
+	return db.Table(req.Table).Create(rec).Error
 }
 
 func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateResponse) error {
