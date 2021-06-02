@@ -1,23 +1,5 @@
-# Db Service
+Simple DB service
 
-This is the Db service
+# DB Service
 
-Generated with
-
-```
-micro new db
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+The DB service is a simple database which provides CRUD and fast querying.
