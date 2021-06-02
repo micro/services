@@ -2,10 +2,9 @@ package handler
 
 import (
 	"context"
-	"database/sql/driver"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
@@ -13,24 +12,6 @@ import (
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
-
-type JSONB map[string]interface{}
-
-func (j JSONB) Value() (driver.Value, error) {
-	valueString, err := json.Marshal(j)
-	return string(valueString), err
-}
-
-func (j *JSONB) Scan(value interface{}) error {
-	bytes, ok := value.(string)
-	if !ok {
-		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))
-	}
-	if err := json.Unmarshal([]byte(bytes), &j); err != nil {
-		return err
-	}
-	return nil
-}
 
 type Record struct {
 	gorm.Model
@@ -101,8 +82,15 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if err != nil {
 		return err
 	}
-	bts, _ := json.Marshal(recs)
-	rsp.Records = string(bts)
+	ret := []string{}
+	for _, rec := range recs {
+		m, err := rec.Data.MarshalJSON()
+		if err != nil {
+			return err
+		}
+		ret = append(ret, string(m))
+	}
+	rsp.Records = "[" + strings.Join(ret, ",") + "]"
 	return nil
 }
 
