@@ -1,4 +1,4 @@
-Simple DB service
+Simple database service
 
 # DB Service
 
