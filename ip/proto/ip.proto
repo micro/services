@@ -10,16 +10,24 @@ service Ip {
 
 // Lookup the geolocation information for an IP address
 message LookupRequest {
+	// IP to lookup. If not specified we assume the caller.
 	string ip = 1;
 }
 
 message LookupResponse {
+	// IP of the query
 	string ip = 1;
+	// Autonomous system number
 	int64 asn = 2;
+	// Name of the city
 	string city = 3;
+	// Name of the country
 	string country = 4;
+	// Latitude e.g 52.523219
 	double latitude = 5;
+	// Longitude e.g 13.428555
 	double longitude = 6;
+	// Timezone e.g Europe/Rome
 	string timezone = 7;
 }
 
