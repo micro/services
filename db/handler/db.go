@@ -80,8 +80,50 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		return db.Table(req.Table).First(&Record{ID: id}).Updates(Record{Data: data}).Error
 	}
 
-	// apply all the updates
-	return db.Table(req.Table).Updates(Record{Data: data}).Error
+	// define the db
+	db = db.Table(req.Table)
+
+	// no ID param so we're expecting a query
+	if len(req.Query) == 0 {
+		// apply the updates to all records
+		return db.Find(&Record{}).Updates(Record{Data: data}).Error
+	}
+
+	// parse the query
+	queries, err := Parse(req.Query)
+	if err != nil {
+		return err
+	}
+
+	// get the filters
+	for _, query := range queries {
+		typ := "text"
+		switch query.Value.(type) {
+		case int64:
+			typ = "int"
+		case bool:
+			typ = "boolean"
+		}
+		op := ""
+		switch query.Op {
+		case itemEquals:
+			op = "="
+		case itemGreaterThan:
+			op = ">"
+		case itemGreaterThanEquals:
+			op = ">="
+		case itemLessThan:
+			op = "<"
+		case itemLessThanEquals:
+			op = "<="
+		case itemNotEquals:
+			op = "!="
+		}
+		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value)
+	}
+
+	// apply updates to the filtered records
+	return db.Updates(Record{Data: data}).Error
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
