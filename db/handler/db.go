@@ -74,7 +74,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	// where ID is specified do a single update record update
 	if id, ok := m["ID"].(string); ok {
 		// apply the update to a single record
-		return db.Table(req.Table).First(Record{ID: id}).Updates(m).Error
+		return db.Table(req.Table).First(&Record{ID: id}).Updates(m).Error
 	}
 
 	// apply all the updates
