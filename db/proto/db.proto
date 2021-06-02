@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package db;
 
-option go_package = "github.com/micro/services/proto;db";
+option go_package = "./proto;db";
 
 service Db {
 	rpc Create(CreateRequest) returns (CreateResponse) {}
@@ -38,7 +38,8 @@ message CreateRequest {
 }
 
 message CreateResponse {
-
+	// The id of the record
+	string id = 1;
 }
 
 message UpdateRequest {

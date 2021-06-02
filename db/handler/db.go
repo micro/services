@@ -35,10 +35,19 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 		m["ID"] = uuid.New().String()
 	}
 	bs, _ := json.Marshal(m)
-	return db.Table(req.Table).Create(Record{
+
+	err = db.Table(req.Table).Create(Record{
 		ID:   m["ID"].(string),
 		Data: bs,
 	}).Error
+	if err != nil {
+		return err
+	}
+
+	// set the response id
+	rsp.Id = m["ID"].(string)
+
+	return nil
 }
 
 func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateResponse) error {
