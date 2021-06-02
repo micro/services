@@ -6,9 +6,9 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
-	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
+	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/disintegration/imaging v1.6.2
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/go-pg/pg v8.0.7+incompatible
@@ -23,6 +23,7 @@ require (
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
 	github.com/micro/micro/v3 v3.2.2-0.20210521145845-34133d0728d2
 	github.com/miekg/dns v1.1.31 // indirect
+	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
 	github.com/pquerna/otp v1.3.0
