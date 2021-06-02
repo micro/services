@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package db;
+
+option go_package = "github.com/micro/services/proto;db";
+
+service Db {
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+}
+
+
+message ReadRequest {
+	string table = 1;
+	// eg. 'age >= 18', 'age >= 18 and verified == true'
+	// comparison operators: '==', '!=', '<', '>', '<=', '>='
+	// logical operator: 'and'
+	string query = 2;
+	int32 offset = 3;
+	int32 limit = 4;
+	// field name to order by
+	string orderBy = 5;
+	// 'asc' (default), 'desc'
+	string order = 6;
+}
+
+message ReadResponse {
+	// JSON encoded records
+	string records = 1;
+}
+
+message CreateRequest {
+	string table = 1;
+	// JSON encoded record or records (can be array or object)
+	string record = 2;
+}
+
+message CreateResponse {
+
+}
+
+message UpdateRequest {
+	string table = 1;
+	// JSON encoded record or records (can be array or object)
+	string record = 2;
+}
+
+message UpdateResponse {
+	
+}
+
+message DeleteRequest {
+	string table = 1;
+	// id or ids, eg. 'user-1', or comma separated ids 'user-1,user-2'
+	string id = 2;
+}
+
+message DeleteResponse {
+
+}
