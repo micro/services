@@ -1,0 +1,12 @@
+{
+    "analyze": [{
+        "title": "Analyze a piece of text",
+        "description": "Analyze and score a piece of text",
+        "request": {
+          "text": "this is amazing"
+        },
+        "response": {
+          "score": 1
+        }
+    }]
+}

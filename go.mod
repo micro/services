@@ -7,6 +7,8 @@ require (
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
+	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
+	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/disintegration/imaging v1.6.2
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/go-pg/pg v8.0.7+incompatible
