@@ -73,20 +73,27 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	}
 	db = db.Table(req.Table)
 	for _, query := range queries {
+		typ := "text"
+		switch query.Value.(type) {
+		case int64:
+			typ = "int"
+		}
+		op := ""
 		switch query.Op {
 		case itemEquals:
-			db = db.Where("(data ->> '"+query.Field+"')::int = ?", query.Value)
+			op = "="
 		case itemGreaterThan:
-			db = db.Where("data ->> '"+query.Field+"' > ?", query.Value)
+			op = ">"
 		case itemGreaterThanEquals:
-			db = db.Where("data ->> '"+query.Field+"' >= ?", query.Value)
+			op = ">="
 		case itemLessThan:
-			db = db.Where("data ->> '"+query.Field+"' < ?", query.Value)
+			op = "<"
 		case itemLessThanEquals:
-			db = db.Where("data ->> '"+query.Field+"' <= ?", query.Value)
+			op = "<="
 		case itemNotEquals:
-			db = db.Where("data ->> '"+query.Field+"' != ?", query.Value)
+			op = "!="
 		}
+		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value)
 	}
 	err = db.Find(&recs).Error
 	if err != nil {
