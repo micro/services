@@ -21,11 +21,11 @@ func (j JSONB) Value() (driver.Value, error) {
 }
 
 func (j *JSONB) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
+	bytes, ok := value.(string)
 	if !ok {
 		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))
 	}
-	if err := json.Unmarshal(bytes, &j); err != nil {
+	if err := json.Unmarshal([]byte(bytes), &j); err != nil {
 		return err
 	}
 	return nil
