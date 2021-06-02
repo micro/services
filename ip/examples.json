@@ -3,7 +3,7 @@
         "title": "Lookup IP info",
         "description": "Lookup the location info for an IP address",
         "request": {
-          "ip", "93.148.214.31"
+          "ip": "93.148.214.31"
         },
         "response": {
           "ip": "93.148.214.31",
