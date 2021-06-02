@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"gorm.io/gorm"
@@ -50,7 +51,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if err != nil {
 		return err
 	}
-
+	logger.Info(rec.Data)
 	return db.Table(req.Table).Create(rec).Error
 }
 
@@ -73,7 +74,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	for _, query := range queries {
 		switch query.Op {
 		case itemEquals:
-			db = db.Where("(data ->> '"+query.Field+"')::int = ?", query.Value)
+			db = db.Where("data ->> '"+query.Field+"' = ?", query.Value)
 		case itemGreaterThan:
 			db = db.Where("data ->> '"+query.Field+"' > ?", query.Value)
 		case itemGreaterThanEquals:
