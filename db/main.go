@@ -25,7 +25,7 @@ func main() {
 	)
 
 	// Connect to the database
-	cfg, err := config.Get("db.database")
+	cfg, err := config.Get("micro.db.database")
 	if err != nil {
 		logger.Fatalf("Error loading config: %v", err)
 	}
