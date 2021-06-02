@@ -4,17 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
-	"github.com/micro/micro/v3/service/logger"
+	"github.com/google/uuid"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
 )
 
 type Record struct {
-	gorm.Model
+	ID   string
 	Data datatypes.JSON `json:"data"`
 }
 
@@ -28,13 +26,19 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if err != nil {
 		return err
 	}
-	rec := &Record{}
-	err = json.Unmarshal([]byte(req.Record), &rec.Data)
+	m := map[string]interface{}{}
+	err = json.Unmarshal([]byte(req.Record), &m)
 	if err != nil {
 		return err
 	}
-	logger.Info(rec.Data)
-	return db.Table(req.Table).Create(rec).Error
+	if _, ok := m["ID"].(string); !ok {
+		m["ID"] = uuid.New().String()
+	}
+	bs, _ := json.Marshal(m)
+	return db.Table(req.Table).Create(Record{
+		ID:   m["ID"].(string),
+		Data: bs,
+	}).Error
 }
 
 func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateResponse) error {
@@ -82,15 +86,19 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if err != nil {
 		return err
 	}
-	ret := []string{}
+	ret := []map[string]interface{}{}
 	for _, rec := range recs {
 		m, err := rec.Data.MarshalJSON()
 		if err != nil {
 			return err
 		}
-		ret = append(ret, string(m))
+		ma := map[string]interface{}{}
+		json.Unmarshal(m, &ma)
+		ma["ID"] = rec.ID
+		ret = append(ret, ma)
 	}
-	rsp.Records = "[" + strings.Join(ret, ",") + "]"
+	bs, _ := json.Marshal(ret)
+	rsp.Records = string(bs)
 	return nil
 }
 
