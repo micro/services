@@ -1,4 +1,4 @@
-Simple key-value storage
+Ephemeral key-value storage
 
 # Cache Service
 
