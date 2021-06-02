@@ -77,6 +77,8 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		switch query.Value.(type) {
 		case int64:
 			typ = "int"
+		case bool:
+			typ = "boolean"
 		}
 		op := ""
 		switch query.Op {
