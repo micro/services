@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql/driver"
 	"encoding/json"
+	"errors"
+	"fmt"
 
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
@@ -19,7 +21,11 @@ func (j JSONB) Value() (driver.Value, error) {
 }
 
 func (j *JSONB) Scan(value interface{}) error {
-	if err := json.Unmarshal(value.([]byte), &j); err != nil {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))
+	}
+	if err := json.Unmarshal(bytes, &j); err != nil {
 		return err
 	}
 	return nil
@@ -27,7 +33,7 @@ func (j *JSONB) Scan(value interface{}) error {
 
 type Record struct {
 	gorm.Model
-	Data JSONB `sql:"type:jsonb"`
+	Data *JSONB `sql:"type:jsonb"`
 }
 
 type Db struct {
