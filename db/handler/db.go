@@ -11,6 +11,7 @@ import (
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type JSONB map[string]interface{}
@@ -71,13 +72,26 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		return err
 	}
 	gq := datatypes.JSONQuery("data")
+	db = db.Table(req.Table)
+	exp := []clause.Expression{}
 	for _, query := range queries {
 		switch query.Op {
 		case itemEquals:
-			gq = gq.Equals(query.Value, query.Field)
+			db = db.Where("data ->> '" + query.Field + "' = ?", query.Value)
+		case itemGreaterThan:
+			db = db.Where("data ->> '" + query.Field + "' > ?", query.Value)
+		case itemGreaterThanEquals:
+			db = db.Where("data ->> '" + query.Field + "' >= ?", query.Value)
+		case itemLessThan:
+			db = db.Where("data ->> '" + query.Field + "' < ?", query.Value)
+		case itemLessThanEquals:
+			db = db.Where("data ->> '" + query.Field + "' <= ?", query.Value)
+		case itemNotEquals:
+			db = db.Where("data ->> '" + query.Field + "' != ?", query.Value)
 		}
 	}
-	err = db.Table(req.Table).Where(gq).Find(&recs).Error
+	gq.Build()
+	err = .Where(gq).Find(&recs).Error
 	if err != nil {
 		return err
 	}
