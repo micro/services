@@ -86,7 +86,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 			db = db.Where("data ->> '"+query.Field+"' != ?", query.Value)
 		}
 	}
-	err = db.Where.Find(&recs).Error
+	err = db.Find(&recs).Error
 	if err != nil {
 		return err
 	}
