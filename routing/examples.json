@@ -1,0 +1,682 @@
+{
+	"eta": [{
+		"title": "ETA from point A to point B",
+		"description": "Get an estimated time of arrival for two points",
+		"request": {
+			"origin": {
+				"latitude": 52.517037,
+				"longitude": 13.388860
+			},
+			"destination": {
+				"latitude": 52.529407,
+				"longitude": 13.397634
+			}
+		},
+		"response": {
+			"duration": 258.20001220703125
+		}
+	}],
+	"directions": [{
+		"title": "Turn by turn directions",
+		"description": "Get a set of turn by turn directions and manuevers",
+		"request": {
+			"origin": {
+				"latitude": 52.517037,
+				"longitude": 13.388860
+			},
+			"destination": {
+				"latitude": 52.529407,
+				"longitude": 13.397634
+			}
+		},
+		"response": {
+			"directions": [{
+					"name": "Torstraße",
+					"instruction": "depart ",
+					"distance": 748.7000122070312,
+					"duration": 122.4000015258789,
+					"maneuver": {
+						"bearing_after": 265,
+						"location": {
+							"latitude": 52.529432,
+							"longitude": 13.397627
+						},
+						"action": "depart"
+					},
+					"intersections": [{
+							"location": {
+								"latitude": 52.529432,
+								"longitude": 13.397627
+							},
+							"bearings": [
+								265
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.529429,
+								"longitude": 13.397565
+							},
+							"bearings": [
+								90,
+								180,
+								255,
+								345
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.528996,
+								"longitude": 13.395724
+							},
+							"bearings": [
+								75,
+								255,
+								345
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.528526,
+								"longitude": 13.393814
+							},
+							"bearings": [
+								75,
+								135,
+								255,
+								315
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.528233,
+								"longitude": 13.392425
+							},
+							"bearings": [
+								75,
+								165,
+								255
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.528032,
+								"longitude": 13.391396
+							},
+							"bearings": [
+								75,
+								255,
+								330
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.527549,
+								"longitude": 13.389147
+							},
+							"bearings": [
+								75,
+								255,
+								345
+							]
+						}
+					]
+				},
+				{
+					"name": "Friedrichstraße",
+					"instruction": "turn left",
+					"distance": 1151,
+					"duration": 135.8000030517578,
+					"maneuver": {
+						"bearing_before": 251,
+						"bearing_after": 257,
+						"location": {
+							"latitude": 52.527166,
+							"longitude": 13.387215
+						},
+						"action": "turn",
+						"direction": "left"
+					},
+					"intersections": [{
+							"location": {
+								"latitude": 52.527166,
+								"longitude": 13.387215
+							},
+							"bearings": [
+								75,
+								180,
+								255,
+								330
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.527137,
+								"longitude": 13.386982
+							},
+							"bearings": [
+								75,
+								165,
+								255,
+								330
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.526374,
+								"longitude": 13.387144
+							},
+							"bearings": [
+								0,
+								75,
+								180
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.526292,
+								"longitude": 13.387156
+							},
+							"bearings": [
+								0,
+								120,
+								180
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.525018,
+								"longitude": 13.387368
+							},
+							"bearings": [
+								0,
+								180,
+								255
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.523863,
+								"longitude": 13.387568
+							},
+							"bearings": [
+								0,
+								90,
+								180,
+								255
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.522524,
+								"longitude": 13.387885
+							},
+							"bearings": [
+								0,
+								180,
+								225
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.52175,
+								"longitude": 13.388024
+							},
+							"bearings": [
+								0,
+								60,
+								180,
+								225
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.520332,
+								"longitude": 13.388224
+							},
+							"bearings": [
+								0,
+								90,
+								180,
+								285
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.520298,
+								"longitude": 13.388228
+							},
+							"bearings": [
+								0,
+								180
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.519905,
+								"longitude": 13.388272
+							},
+							"bearings": [
+								0,
+								180
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.519822,
+								"longitude": 13.38828
+							},
+							"bearings": [
+								0,
+								195,
+								270
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.518716,
+								"longitude": 13.388544
+							},
+							"bearings": [
+								30,
+								90,
+								180,
+								270,
+								315
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.518027,
+								"longitude": 13.388643
+							},
+							"bearings": [
+								0,
+								90,
+								180,
+								270
+							]
+						},
+						{
+							"location": {
+								"latitude": 52.517155,
+								"longitude": 13.388779
+							},
+							"bearings": [
+								0,
+								90,
+								180,
+								270
+							]
+						}
+					]
+				},
+				{
+					"name": "Friedrichstraße",
+					"instruction": "arrive ",
+					"maneuver": {
+						"bearing_before": 174,
+						"location": {
+							"latitude": 52.517036,
+							"longitude": 13.388798
+						},
+						"action": "arrive"
+					},
+					"intersections": [{
+						"location": {
+							"latitude": 52.517036,
+							"longitude": 13.388798
+						},
+						"bearings": [
+							354
+						]
+					}]
+				}
+			],
+			"waypoints": [{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.529432,
+						"longitude": 13.397627
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.529429,
+						"longitude": 13.397565
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.528996,
+						"longitude": 13.395724
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.528526,
+						"longitude": 13.393814
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.528233,
+						"longitude": 13.392425
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.528032,
+						"longitude": 13.391396
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.527549,
+						"longitude": 13.389147
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.527166,
+						"longitude": 13.387215
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.527137,
+						"longitude": 13.386982
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.526374,
+						"longitude": 13.387144
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.526292,
+						"longitude": 13.387156
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.525018,
+						"longitude": 13.387368
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.523863,
+						"longitude": 13.387568
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.522524,
+						"longitude": 13.387885
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.52175,
+						"longitude": 13.388024
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.520332,
+						"longitude": 13.388224
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.520298,
+						"longitude": 13.388228
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.519905,
+						"longitude": 13.388272
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.519822,
+						"longitude": 13.38828
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.518716,
+						"longitude": 13.388544
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.518027,
+						"longitude": 13.388643
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.517155,
+						"longitude": 13.388779
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.517036,
+						"longitude": 13.388798
+					}
+				}
+			],
+			"distance": 1899.800048828125,
+			"duration": 258.20001220703125
+		}
+	}],
+	"route": [{
+		"title": "GPS points for a route",
+		"description": "Get the GPS points for a route",
+		"request": {
+			"origin": {
+				"latitude": 52.517037,
+				"longitude": 13.388860
+			},
+			"destination": {
+				"latitude": 52.529407,
+				"longitude": 13.397634
+			}
+		},
+		"response": {
+			"distance": 1899.800048828125,
+			"duration": 258.20001220703125,
+			"waypoints": [{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.529432,
+						"longitude": 13.397627
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.529429,
+						"longitude": 13.397565
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.528996,
+						"longitude": 13.395724
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.528526,
+						"longitude": 13.393814
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.528233,
+						"longitude": 13.392425
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.528032,
+						"longitude": 13.391396
+					}
+				},
+				{
+					"name": "Torstraße",
+					"location": {
+						"latitude": 52.527549,
+						"longitude": 13.389147
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.527166,
+						"longitude": 13.387215
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.527137,
+						"longitude": 13.386982
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.526374,
+						"longitude": 13.387144
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.526292,
+						"longitude": 13.387156
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.525018,
+						"longitude": 13.387368
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.523863,
+						"longitude": 13.387568
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.522524,
+						"longitude": 13.387885
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.52175,
+						"longitude": 13.388024
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.520332,
+						"longitude": 13.388224
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.520298,
+						"longitude": 13.388228
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.519905,
+						"longitude": 13.388272
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.519822,
+						"longitude": 13.38828
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.518716,
+						"longitude": 13.388544
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.518027,
+						"longitude": 13.388643
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.517155,
+						"longitude": 13.388779
+					}
+				},
+				{
+					"name": "Friedrichstraße",
+					"location": {
+						"latitude": 52.517036,
+						"longitude": 13.388798
+					}
+				}
+			]
+		}
+	}]
+}
