@@ -10,7 +10,10 @@ import (
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 )
+
+const idKey = "id"
 
 type Record struct {
 	ID   string
@@ -36,13 +39,13 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if err != nil {
 		return err
 	}
-	if _, ok := m["ID"].(string); !ok {
-		m["ID"] = uuid.New().String()
+	if _, ok := m[idKey].(string); !ok {
+		m[idKey] = uuid.New().String()
 	}
 	bs, _ := json.Marshal(m)
 
 	err = db.Table(req.Table).Create(Record{
-		ID:   m["ID"].(string),
+		ID:   m[idKey].(string),
 		Data: bs,
 	}).Error
 	if err != nil {
@@ -71,59 +74,37 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		return err
 	}
 
-	// do we really need to remarshal this?
-	data, _ := json.Marshal(m)
-
 	// where ID is specified do a single update record update
-	if id, ok := m["ID"].(string); ok {
-		// apply the update to a single record
-		return db.Table(req.Table).First(&Record{ID: id}).Updates(Record{Data: data}).Error
+	id, ok := m[idKey].(string)
+	if !ok {
+		return fmt.Errorf("update failed: missing id")
 	}
 
-	// define the db
-	db = db.Table(req.Table)
-
-	// no ID param so we're expecting a query
-	if len(req.Query) == 0 {
-		// apply the updates to all records
-		return db.Find(&Record{}).Updates(Record{Data: data}).Error
-	}
-
-	// parse the query
-	queries, err := Parse(req.Query)
-	if err != nil {
-		return err
-	}
-
-	// get the filters
-	for _, query := range queries {
-		typ := "text"
-		switch query.Value.(type) {
-		case int64:
-			typ = "int"
-		case bool:
-			typ = "boolean"
+	db.Transaction(func(tx *gorm.DB) error {
+		rec := []Record{}
+		err = tx.Table(req.Table).Where("ID = ?", id).Find(&rec).Error
+		if err != nil {
+			return err
 		}
-		op := ""
-		switch query.Op {
-		case itemEquals:
-			op = "="
-		case itemGreaterThan:
-			op = ">"
-		case itemGreaterThanEquals:
-			op = ">="
-		case itemLessThan:
-			op = "<"
-		case itemLessThanEquals:
-			op = "<="
-		case itemNotEquals:
-			op = "!="
+		if len(rec) == 0 {
+			return fmt.Errorf("update failed: not found")
 		}
-		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value)
-	}
+		old := map[string]interface{}{}
+		err = json.Unmarshal(rec[0].Data, &old)
+		if err != nil {
+			return err
+		}
+		for k, v := range old {
+			m[k] = v
+		}
+		bs, _ := json.Marshal(m)
 
-	// apply updates to the filtered records
-	return db.Updates(Record{Data: data}).Error
+		return tx.Table(req.Table).Save(Record{
+			ID:   m[idKey].(string),
+			Data: bs,
+		}).Error
+	})
+	return nil
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
