@@ -4,24 +4,38 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
+	"database/sql"
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
+	"github.com/patrickmn/go-cache"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
 const idKey = "id"
 
+var c = cache.New(5*time.Minute, 10*time.Minute)
+
 type Record struct {
 	ID   string
 	Data datatypes.JSON `json:"data"`
+	// private field, ignored from gorm
+	table string `gorm:"-"`
+}
+
+// https://stackoverflow.com/questions/58947804/how-to-pass-dynamic-table-name-in-gorm-model
+func (p Record) TableName() string {
+	return p.table
 }
 
 type Db struct {
 	gorm2.Helper
+	Sql *sql.DB
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -29,11 +43,19 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if len(req.Record) == 0 {
 		return errors.BadRequest("db.create", "missing record")
 	}
+	_, ok := c.Get(req.Table)
+	if !ok {
+		e.DBConn(e.Sql).Migrations(&Record{
+			table: req.Table,
+		})
+		c.Set(req.Table, true, 0)
+	}
 
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
 	}
+
 	m := map[string]interface{}{}
 	err = json.Unmarshal([]byte(req.Record), &m)
 	if err != nil {
