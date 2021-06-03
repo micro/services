@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package image;
 
-option go_package = "github.com/micro/services/images/proto;image";
+option go_package = "./proto;image";
 
 service Image {
 	rpc Upload(UploadRequest) returns (UploadResponse) {}
@@ -19,7 +19,7 @@ message UploadRequest {
 	// URL of the image to upload
 	string url = 2;
 	// Output name of the image including extension, ie. "cat.png"
-	string imageID = 3;
+	string name = 3;
 }
 
 message UploadResponse {
@@ -58,7 +58,7 @@ message ResizeRequest {
 	// url of the image to resize
 	string url = 2;
 	// output name of the image including extension, ie. "cat.png"
-	string imageID = 3;
+	string name = 3;
 	// make output a URL and not a base64 response
 	bool outputURL = 4;
 	int64 width = 5;
@@ -83,7 +83,7 @@ message ConvertRequest {
 	// url of the image to resize
 	string url = 2;
 	// output name of the image including extension, ie. "cat.png"
-	string imageID = 3;
+	string name = 3;
 	// make output a URL and not a base64 response
 	bool outputURL = 4;
 }

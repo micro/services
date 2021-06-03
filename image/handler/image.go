@@ -73,9 +73,9 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	buf := new(bytes.Buffer)
 
 	switch {
-	case strings.HasSuffix(req.ImageID, ".png") || ext == "png":
+	case strings.HasSuffix(req.Name, ".png") || ext == "png":
 		err = png.Encode(buf, srcImage)
-	case strings.HasSuffix(req.ImageID, ".jpg") || strings.HasSuffix(req.Url, ".jpeg") || ext == "jpg":
+	case strings.HasSuffix(req.Name, ".jpg") || strings.HasSuffix(req.Url, ".jpeg") || ext == "jpg":
 		err = jpeg.Encode(buf, srcImage, nil)
 	default:
 		return errors.New("could not determine extension")
@@ -85,11 +85,11 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 		return err
 	}
 
-	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
+	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.Name), buf, store.BlobPublic(true))
 	if err != nil {
 		return err
 	}
-	rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.ImageID)
+	rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.Name)
 	return nil
 }
 
@@ -173,9 +173,9 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 	buf := new(bytes.Buffer)
 
 	switch {
-	case strings.HasSuffix(req.ImageID, ".png") || ext == "png":
+	case strings.HasSuffix(req.Name, ".png") || ext == "png":
 		err = png.Encode(buf, resultImage)
-	case strings.HasSuffix(req.ImageID, ".jpg") || strings.HasSuffix(req.Url, ".jpeg") || ext == "jpg":
+	case strings.HasSuffix(req.Name, ".jpg") || strings.HasSuffix(req.Url, ".jpeg") || ext == "jpg":
 		err = jpeg.Encode(buf, resultImage, nil)
 	default:
 		return errors.New("could not determine extension")
@@ -185,11 +185,11 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		return err
 	}
 	if req.OutputURL {
-		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
+		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.Name), buf, store.BlobPublic(true))
 		if err != nil {
 			return err
 		}
-		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.ImageID)
+		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.Name)
 	} else {
 		prefix := "data:image/png;base64, "
 		if ext == "jpg" {
@@ -232,9 +232,9 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 
 	buf := new(bytes.Buffer)
 	switch {
-	case strings.HasSuffix(req.ImageID, ".png"):
+	case strings.HasSuffix(req.Name, ".png"):
 		err = png.Encode(buf, srcImage)
-	case strings.HasSuffix(req.ImageID, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
+	case strings.HasSuffix(req.Name, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
 		err = jpeg.Encode(buf, srcImage, nil)
 	}
 
@@ -242,11 +242,11 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		return err
 	}
 	if req.OutputURL {
-		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.ImageID), buf, store.BlobPublic(true))
+		err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.Name), buf, store.BlobPublic(true))
 		if err != nil {
 			return err
 		}
-		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.ImageID)
+		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.Name)
 	} else {
 		dst := []byte{}
 		base64.StdEncoding.Encode(dst, buf.Bytes())
