@@ -7,9 +7,10 @@
         },
         "response": {
           "ip": "93.148.214.31",
-          "asn": "30722",
+          "asn": 30722,
           "city": "Reggiolo",
           "country": "Italy",
+          "continent": "Europe",
           "latitude": 44.9201,
           "longitude": 10.8075,
           "timezone": "Europe/Rome"

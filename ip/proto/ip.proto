@@ -18,16 +18,18 @@ message LookupResponse {
 	// IP of the query
 	string ip = 1;
 	// Autonomous system number
-	int64 asn = 2;
+	int32 asn = 2;
 	// Name of the city
 	string city = 3;
 	// Name of the country
 	string country = 4;
+	// Name of the continent
+	string continent = 5;
 	// Latitude e.g 52.523219
-	double latitude = 5;
+	double latitude = 6;
 	// Longitude e.g 13.428555
-	double longitude = 6;
+	double longitude = 7;
 	// Timezone e.g Europe/Rome
-	string timezone = 7;
+	string timezone = 8;
 }
 

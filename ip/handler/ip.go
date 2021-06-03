@@ -31,7 +31,7 @@ func (i *Ip) Lookup(ctx context.Context, req *pb.LookupRequest, rsp *pb.LookupRe
 			return errors.InternalServerError("ip.lookup", "failed to lookup ip")
 		}
 		// set asp
-		rsp.Asn = int64(asn.AutonomousSystemNumber)
+		rsp.Asn = int32(asn.AutonomousSystemNumber)
 	}
 
 	info, err := i.CityReader.City(ip)
@@ -46,6 +46,8 @@ func (i *Ip) Lookup(ctx context.Context, req *pb.LookupRequest, rsp *pb.LookupRe
 	rsp.City = info.City.Names["en"]
 	// set countr
 	rsp.Country = info.Country.Names["en"]
+	// set continent
+	rsp.Continent = info.Continent.Names["en"]
 	// latitude/longitude
 	rsp.Latitude = info.Location.Latitude
 	rsp.Longitude = info.Location.Longitude
