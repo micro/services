@@ -54,9 +54,12 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	_, ok = c.Get(req.Table)
 	if !ok {
-		db.AutoMigrate(Record{
+		err = db.AutoMigrate(Record{
 			table: tenantId + "_" + req.Table,
 		})
+		if err != nil {
+			return err
+		}
 		c.Set(req.Table, true, 0)
 	}
 
