@@ -5,7 +5,7 @@
         "description": "Add a new rss feed to the crawler",
         "request": {
             "name": "bbc",
-            "feed": "http://feeds.bbci.co.uk/news/rss.xml",
+            "url": "http://feeds.bbci.co.uk/news/rss.xml",
             "category": "news"
         },
         "response": {}
