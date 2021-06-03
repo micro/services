@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"github.com/micro/services/pkg/tenant"
@@ -56,9 +57,11 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	_, ok = c.Get(req.Table)
 	if !ok {
+
 		err = db.AutoMigrate(&Record{
 			table: tenantId + "_" + req.Table,
 		})
+		logger.Info(tenantId + "_" + req.Table)
 		if err != nil {
 			return err
 		}
