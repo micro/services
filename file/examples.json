@@ -26,6 +26,14 @@
             ]
           }
     }],
+    "delete": [{
+        "title": "Delete file",
+        "request": {
+            "project": "examples",
+            "path": "/document/text-files/file.txt"
+        },
+        "response": {}
+    }],
     "read": [{
         "title": "Read file",
         "request": {
