@@ -8,6 +8,7 @@ service File {
 	rpc Read(ReadRequest) returns (ReadResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Save(SaveRequest) returns (SaveResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc BatchSave(BatchSaveRequest) returns (BatchSaveResponse) {}
 }
 
@@ -74,3 +75,14 @@ message ListRequest {
 message ListResponse {
 	repeated Record files = 1;
 }
+
+// Delete a file by project name/path
+message DeleteRequest {
+	// The project name
+	string project = 1;
+	// Path to the file
+	string path = 2;
+}
+
+message DeleteResponse {}
+

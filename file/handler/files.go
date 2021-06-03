@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"path/filepath"
 	"strings"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -30,6 +31,47 @@ func NewFile() *File {
 	return &File{
 		db: db,
 	}
+}
+
+func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.DeleteResponse) error {
+	if len(req.Path) == 0 {
+		return errors.BadRequest("file.read", "missing file path")
+	}
+
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+
+	path := filepath.Join(tenantId, req.Project, req.Path)
+	project := tenantId + "/" + req.Project
+
+	// delete one file
+	if !strings.HasSuffix(req.Path, "/") {
+		return e.db.Delete(model.QueryEquals("Path", path))
+	}
+
+	var files []*file.Record
+
+	// read all the files for the project
+	err := e.db.Read(model.QueryEquals("project", project), &files)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		// delete a list of files
+		if file.Project != project {
+			continue
+		}
+		if !strings.HasPrefix(file.Path, path) {
+			continue
+		}
+		// delete the file
+		e.db.Delete(model.QueryEquals("Path", file.Path))
+	}
+
+	return nil
 }
 
 func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadResponse) error {
@@ -63,7 +105,7 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 
 		// strip the tenant id
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-		file.Path = strings.TrimPrefix(file.Path, req.Project+"/")
+		file.Path = strings.TrimPrefix(file.Path, filepath.Join(tenantId, req.Project))
 
 		// check the path matches the request
 		if req.Path == file.Path {
@@ -146,7 +188,7 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 
 		// strip the prefixes
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-		file.Path = strings.TrimPrefix(file.Path, req.Project+"/")
+		file.Path = strings.TrimPrefix(file.Path, filepath.Join(tenantId, req.Project))
 
 		// strip the file contents
 		// no file listing ever contains it
