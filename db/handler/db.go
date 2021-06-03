@@ -10,6 +10,7 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
+	"github.com/micro/services/pkg/tenant"
 	"github.com/patrickmn/go-cache"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -43,17 +44,20 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if len(req.Record) == 0 {
 		return errors.BadRequest("db.create", "missing record")
 	}
-	_, ok := c.Get(req.Table)
+	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
-		e.Migrations(&Record{
-			table: req.Table,
-		})
-		c.Set(req.Table, true, 0)
+		tenantId = "micro"
 	}
-
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
+	}
+	_, ok = c.Get(req.Table)
+	if !ok {
+		db.AutoMigrate(Record{
+			table: tenantId + "_" + req.Table,
+		})
+		c.Set(req.Table, true, 0)
 	}
 
 	m := map[string]interface{}{}
