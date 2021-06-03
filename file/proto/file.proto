@@ -18,18 +18,14 @@ message Record {
 	string project = 1;
 	// Path to file or folder eg. '/documents/text-files/file.txt'.
 	string path = 2;
-	// Is it a directory (true) or a file (false)
-	bool is_directory = 3;
 	// File contents. Empty for directories.
-	string data = 4;
+	string content = 3;
 	// Time the file was created, number of seconds since Unix epoch
-	int64 created = 5;
+	int64 created = 4;
 	// Time the file was updated, number of seconds since Unix epoch
-	int64 updated = 6;
-	// Owner of the file e.g alice
-	string owner = 7;
+	int64 updated = 5;
 	// Any other associated metadata
-	map<string,string> metadata = 8;
+	map<string,string> metadata = 6;
 }
 
 // Batch save multiple files in one call

@@ -192,7 +192,7 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 
 		// strip the file contents
 		// no file listing ever contains it
-		file.Data = ""
+		file.Content = ""
 
 		// if requesting all files or path matches
 		if req.Path != "" {
