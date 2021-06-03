@@ -10,7 +10,7 @@ service Ip {
 
 // Lookup the geolocation information for an IP address
 message LookupRequest {
-	// IP to lookup. If not specified we assume the caller.
+	// IP to lookup
 	string ip = 1;
 }
 
