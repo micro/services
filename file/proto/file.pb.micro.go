@@ -46,7 +46,6 @@ type FileService interface {
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Save(ctx context.Context, in *SaveRequest, opts ...client.CallOption) (*SaveResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
-	BatchSave(ctx context.Context, in *BatchSaveRequest, opts ...client.CallOption) (*BatchSaveResponse, error)
 }
 
 type fileService struct {
@@ -101,16 +100,6 @@ func (c *fileService) Delete(ctx context.Context, in *DeleteRequest, opts ...cli
 	return out, nil
 }
 
-func (c *fileService) BatchSave(ctx context.Context, in *BatchSaveRequest, opts ...client.CallOption) (*BatchSaveResponse, error) {
-	req := c.c.NewRequest(c.name, "File.BatchSave", in)
-	out := new(BatchSaveResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // Server API for File service
 
 type FileHandler interface {
@@ -118,7 +107,6 @@ type FileHandler interface {
 	List(context.Context, *ListRequest, *ListResponse) error
 	Save(context.Context, *SaveRequest, *SaveResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
-	BatchSave(context.Context, *BatchSaveRequest, *BatchSaveResponse) error
 }
 
 func RegisterFileHandler(s server.Server, hdlr FileHandler, opts ...server.HandlerOption) error {
@@ -127,7 +115,6 @@ func RegisterFileHandler(s server.Server, hdlr FileHandler, opts ...server.Handl
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Save(ctx context.Context, in *SaveRequest, out *SaveResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
-		BatchSave(ctx context.Context, in *BatchSaveRequest, out *BatchSaveResponse) error
 	}
 	type File struct {
 		file
@@ -154,8 +141,4 @@ func (h *fileHandler) Save(ctx context.Context, in *SaveRequest, out *SaveRespon
 
 func (h *fileHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
 	return h.FileHandler.Delete(ctx, in, out)
-}
-
-func (h *fileHandler) BatchSave(ctx context.Context, in *BatchSaveRequest, out *BatchSaveResponse) error {
-	return h.FileHandler.BatchSave(ctx, in, out)
 }

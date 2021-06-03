@@ -9,7 +9,6 @@ service File {
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Save(SaveRequest) returns (SaveResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
-	rpc BatchSave(BatchSaveRequest) returns (BatchSaveResponse) {}
 }
 
 message Record {
