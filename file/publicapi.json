@@ -6,6 +6,7 @@
     "File.BatchSave": 100,
     "File.List": 100,
     "File.Read": 100,
-    "File.Save": 100
+    "File.Save": 100,
+    "File.Delete": 100
   }
 }
