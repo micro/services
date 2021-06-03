@@ -121,7 +121,7 @@ func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyRe
 		e.cache.Set(id, int64(1), cache.NoExpiration)
 	} else {
 		// we null out the counter
-		e.cache.Set(id, 0, cache.NoExpiration)
+		e.cache.Set(id, int64(0), cache.NoExpiration)
 		if v.(int64)%10 == 0 {
 			go func() {
 				// We add instead of set in case the service runs in multiple
