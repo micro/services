@@ -73,7 +73,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	bs, _ := json.Marshal(m)
 
-	err = db.Table(req.Table).Create(Record{
+	err = db.Table(tenantId + "_" + req.Table).Create(Record{
 		ID:   m[idKey].(string),
 		Data: bs,
 	}).Error
@@ -91,7 +91,10 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	if len(req.Record) == 0 {
 		return errors.BadRequest("db.update", "missing record")
 	}
-
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
@@ -111,7 +114,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 
 	db.Transaction(func(tx *gorm.DB) error {
 		rec := []Record{}
-		err = tx.Table(req.Table).Where("ID = ?", id).Find(&rec).Error
+		err = tx.Table(tenantId+"_"+req.Table).Where("ID = ?", id).Find(&rec).Error
 		if err != nil {
 			return err
 		}
@@ -128,7 +131,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		}
 		bs, _ := json.Marshal(m)
 
-		return tx.Table(req.Table).Save(Record{
+		return tx.Table(tenantId + "_" + req.Table).Save(Record{
 			ID:   m[idKey].(string),
 			Data: bs,
 		}).Error
