@@ -4,6 +4,7 @@ import (
 	"context"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
@@ -127,6 +128,13 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 	// prefix the tenant
 	req.File.Project = filepath.Join(tenantId, req.File.Project)
 	req.File.Path = filepath.Join(req.File.Project, req.File.Path)
+
+	if len(req.File.Created) == 0 {
+		req.File.Created = time.Now().Format(time.RFC3339Nano)
+	}
+
+	// set updated time
+	req.File.Updated = time.Now().Format(time.RFC3339Nano)
 
 	// create the file
 	err := e.db.Create(req.File)

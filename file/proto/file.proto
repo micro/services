@@ -17,12 +17,12 @@ message Record {
 	string project = 1;
 	// Path to file or folder eg. '/documents/text-files/file.txt'.
 	string path = 2;
-	// File contents. Empty for directories.
+	// File contents
 	string content = 3;
-	// Time the file was created, number of seconds since Unix epoch
-	int64 created = 4;
-	// Time the file was updated, number of seconds since Unix epoch
-	int64 updated = 5;
+	// Time the file was created e.g 2021-05-20T13:37:21Z
+	string created = 4;
+	// Time the file was updated e.g 2021-05-20T13:37:21Z
+	string updated = 5;
 	// Any other associated metadata
 	map<string,string> metadata = 6;
 }
