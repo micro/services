@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -48,6 +49,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if !ok {
 		tenantId = "micro"
 	}
+	tenantId = strings.Replace(tenantId, "/", "_", -1)
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
@@ -95,6 +97,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	if !ok {
 		tenantId = "micro"
 	}
+	tenantId = strings.Replace(tenantId, "/", "_", -1)
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
