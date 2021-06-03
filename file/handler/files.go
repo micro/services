@@ -125,8 +125,8 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 	log.Info("Received File.Save request")
 
 	// prefix the tenant
-	req.File.Project = tenantId + "/" + req.File.Project
-	req.File.Path = req.File.Project + "/" + req.File.Path
+	req.File.Project = filepath.Join(tenantId, req.File.Project)
+	req.File.Path = filepath.Join(req.File.Project, req.File.Path)
 
 	// create the file
 	err := e.db.Create(req.File)
@@ -147,8 +147,8 @@ func (e *File) BatchSave(ctx context.Context, req *file.BatchSaveRequest, rsp *f
 
 	for _, reqFile := range req.Files {
 		// prefix the tenant
-		reqFile.Project = tenantId + "/" + reqFile.Project
-		reqFile.Path = reqFile.Project + "/" + reqFile.Path
+		reqFile.Project = filepath.Join(tenantId, reqFile.Project)
+		reqFile.Path = filepath.Join(reqFile.Project, reqFile.Project)
 
 		// create the file
 		err := e.db.Create(reqFile)
