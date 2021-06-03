@@ -60,14 +60,10 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 		if file.Project != project {
 			continue
 		}
-		// check file path matches tenants
-		if !strings.HasPrefix(file.Path, tenantId+"/"+req.Project) {
-			continue
-		}
 
 		// strip the tenant id
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-		file.Path = strings.TrimPrefix(file.Path, tenantId+"/"+req.Project+"/")
+		file.Path = strings.TrimPrefix(file.Path, req.Project+"/")
 
 		// check the path matches the request
 		if req.Path == file.Path {
@@ -144,9 +140,13 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 	// query for the KV store interface, it's not supported by the model
 	// so we do client side filtering here
 	for _, file := range files {
+		if file.Project != project {
+			continue
+		}
+
 		// strip the prefixes
 		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-		file.Path = strings.TrimPrefix(file.Path, tenantId+"/"+req.Project+"/")
+		file.Path = strings.TrimPrefix(file.Path, req.Project+"/")
 
 		// strip the file contents
 		// no file listing ever contains it
