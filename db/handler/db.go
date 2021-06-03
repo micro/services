@@ -53,7 +53,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 
 	// set the response id
-	rsp.Id = m["ID"].(string)
+	rsp.Id = m[idKey].(string)
 
 	return nil
 }
