@@ -41,9 +41,7 @@ func main() {
 	pb.RegisterDbHandler(srv.Server(), h)
 
 	// Register handler
-	pb.RegisterDbHandler(srv.Server(), &handler.Db{
-		Sql: sqlDB,
-	})
+	pb.RegisterDbHandler(srv.Server(), &handler.Db{})
 
 	// Run service
 	if err := srv.Run(); err != nil {

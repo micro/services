@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"database/sql"
-
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
 	db "github.com/micro/services/db/proto"
@@ -35,7 +33,6 @@ func (p Record) TableName() string {
 
 type Db struct {
 	gorm2.Helper
-	Sql *sql.DB
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -45,7 +42,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	_, ok := c.Get(req.Table)
 	if !ok {
-		e.DBConn(e.Sql).Migrations(&Record{
+		e.Migrations(&Record{
 			table: req.Table,
 		})
 		c.Set(req.Table, true, 0)
