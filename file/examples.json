@@ -5,7 +5,7 @@
             "file": {
                 "data": "file content example",
                 "path": "/document/text-files/file.txt",
-                "project": "myproject"
+                "project": "examples"
             }
         },
         "response": {
@@ -14,12 +14,12 @@
     "list": [{
         "title": "List files",
         "request": {
-            "project": "myproject"
+            "project": "examples"
         },
         "response": {
             "files": [
               {
-                "project": "myproject",
+                "project": "examples",
                 "name": "file.txt",
                 "path": "/document/text-files/file.txt"
               }
@@ -29,12 +29,13 @@
     "read": [{
         "title": "Read file",
         "request": {
-            "project": "myproject"
+            "project": "examples",
+            "path": "/document/text-files/file.txt"
         },
         "response": {
             "files": [
               {
-                "project": "myproject",
+                "project": "examples",
                 "data": "file content example",
                 "path": "/document/text-files/file.txt"
               }
