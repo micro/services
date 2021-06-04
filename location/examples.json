@@ -1,0 +1,61 @@
+{
+    "read": [{
+        "title": "Get location by ID",
+        "description": "Lookup the location of an entity by ID",
+        "request": {
+          "id": "1"
+        },
+        "response": {
+          "entity": {
+            "id": "1",
+            "type": "bike",
+            "location": {
+              "latitude": 51.511061,
+              "longitude": -0.120022,
+              "timestamp": "1622802761"
+            }
+          }
+        }
+    }],
+    "save": [{
+        "title": "Save an entity",
+        "description": "Save the location of an entity",
+        "request": {
+          "entity": {
+            "id": "1",
+            "type": "bike",
+            "location": {
+              "latitude": 51.511061,
+              "longitude": -0.120022,
+              "timestamp": "1622802761"
+            }
+          }
+        },
+        "response": {}
+    }],
+    "search": [{
+        "title": "Search for locations",
+        "description": "Search a given radius for entities",
+        "request": {
+          "center": {
+            "latitude": 51.511061,
+            "longitude": -0.120022
+          },
+          "numEntities": 10,
+          "radius": 100,
+          "type": "bike"
+        },
+        "response": {
+          "entities": [{
+            "id": "1",
+            "type": "bike",
+            "location": {
+              "latitude": 51.511061,
+              "longitude": -0.120022,
+              "timestamp": "1622802761"
+            }
+          }]
+        },
+        "response": {}
+    }]
+}
