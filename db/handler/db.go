@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"github.com/micro/services/pkg/tenant"
@@ -21,6 +21,7 @@ import (
 const idKey = "id"
 const stmt = "create table %v(id text not null, data jsonb, primary key(id));"
 
+var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
 
 type Record struct {
@@ -44,14 +45,18 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 		tenantId = "micro"
 	}
 	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	tableName := tenantId + "_" + req.Table
+	if !re.Match([]byte(tableName)) {
+		return errors.BadRequest("db.create", "table name is invalid")
+	}
+
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
 	}
 	_, ok = c.Get(req.Table)
 	if !ok {
-		db.Exec(fmt.Sprintf(stmt, tenantId+"_"+req.Table))
-		logger.Info(tenantId + "_" + req.Table)
+		db.Exec(fmt.Sprintf(stmt, tableName))
 		c.Set(req.Table, true, 0)
 	}
 
@@ -65,7 +70,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	bs, _ := json.Marshal(m)
 
-	err = db.Table(tenantId + "_" + req.Table).Create(Record{
+	err = db.Table(tableName).Create(Record{
 		ID:   m[idKey].(string),
 		Data: bs,
 	}).Error
