@@ -29,16 +29,14 @@ type Record struct {
 	table string `gorm:"-"`
 }
 
-// https://stackoverflow.com/questions/58947804/how-to-pass-dynamic-table-name-in-gorm-model
-func (p Record) TableName() string {
-	if p.table == "" {
-		return "default"
-	}
-	return p.table
-}
-
 type Db struct {
 	gorm2.Helper
+}
+
+func Table(table string) func(tx *gorm.DB) *gorm.DB {
+	return func(tx *gorm.DB) *gorm.DB {
+		return tx.Table(table)
+	}
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -57,9 +55,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	_, ok = c.Get(req.Table)
 	if !ok {
-		err = db.Table(tenantId + "_" + req.Table).AutoMigrate(&Record{
-			table: tenantId + "_" + req.Table,
-		})
+		err = db.Scopes(Table(tenantId + "_" + req.Table)).AutoMigrate(&Record{})
 		logger.Info(tenantId + "_" + req.Table)
 		if err != nil {
 			return err
