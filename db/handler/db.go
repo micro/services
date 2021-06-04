@@ -30,7 +30,7 @@ type Record struct {
 }
 
 // https://stackoverflow.com/questions/58947804/how-to-pass-dynamic-table-name-in-gorm-model
-func (p Record) TableName() string {
+func (p *Record) TableName() string {
 	if p.table == "" {
 		return "default"
 	}
