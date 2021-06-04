@@ -185,7 +185,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		}
 		ma := map[string]interface{}{}
 		json.Unmarshal(m, &ma)
-		ma["ID"] = rec.ID
+		ma[idKey] = rec.ID
 		ret = append(ret, ma)
 	}
 	bs, _ := json.Marshal(ret)
