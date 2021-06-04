@@ -35,13 +35,13 @@ func main() {
 		logger.Fatalf("Failed to open connection to DB %s", err)
 	}
 	h := &handler.Db{}
-	h.DBConn(sqlDB).Migrations(&handler.Record{})
+	h.DBConn(sqlDB)
 
 	// Register handler
 	pb.RegisterDbHandler(srv.Server(), h)
 
 	// Register handler
-	pb.RegisterDbHandler(srv.Server(), new(handler.Db))
+	pb.RegisterDbHandler(srv.Server(), &handler.Db{})
 
 	// Run service
 	if err := srv.Run(); err != nil {
