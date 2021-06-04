@@ -138,11 +138,16 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if err != nil {
 		return err
 	}
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	tenantId = strings.Replace(tenantId, "/", "_", -1)
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
 	}
-	db = db.Table(req.Table)
+	db = db.Table(tenantId + "_" + req.Table)
 	for _, query := range queries {
 		typ := "text"
 		switch query.Value.(type) {
