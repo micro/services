@@ -1,0 +1,28 @@
+{
+    "create": [{
+        "title": "Create a record",
+        "request": {
+            "record": "{\"id\": \"1\", \"name\": \"Jane\", \"age\": 42, \"isActive\":true}"
+        },
+        "response": {
+            "id": "1"
+        }
+    }],
+    "update": [{
+        "title": "Update a record",
+        "request": {
+            "record": "{\"id\": \"1\", \"age\": 43}"
+        },
+        "response": {
+        }
+    }],
+    "read": [{
+        "title": "Read records",
+        "request": {
+            "query": "age == 43"
+        },
+        "response": {
+            "records": "[{\"id\": \"1\", \"name\": \"Jane\", \"age\": 43, \"isActive\":true}]"
+        }
+    }]
+}
