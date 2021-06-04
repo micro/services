@@ -8,6 +8,13 @@
             "id": "1"
         }
     }],
+    "delete": [{
+        "title": "Delete a record",
+        "request": {
+            "id": "1"
+        },
+        "response": {}
+    }],
     "update": [{
         "title": "Update a record",
         "request": {
