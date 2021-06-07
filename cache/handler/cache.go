@@ -16,7 +16,7 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 		return errors.BadRequest("cache.get", "missing key")
 	}
 
-	var value string
+	var value interface{}
 
 	if err := cache.Context(ctx).Get(req.Key, &value); err != nil {
 		return errors.InternalServerError("cache.get", err.Error())
@@ -24,7 +24,7 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 
 	rsp.Key = req.Key
 	// set the value
-	rsp.Value = value
+	rsp.Value = fmt.Sprintf("%v", value)
 
 	return nil
 }
