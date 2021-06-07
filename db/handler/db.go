@@ -203,12 +203,19 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 		return errors.BadRequest("db.delete", "missing id")
 	}
 
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+
+	tenantId = strings.Replace(tenantId, "/", "_", -1)
+
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
 	}
 
-	return db.Table(req.Table).Delete(Record{
+	return db.Table(tenantId + "_" + req.Table).Delete(Record{
 		ID: req.Id,
 	}).Error
 }
