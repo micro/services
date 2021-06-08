@@ -1,0 +1,43 @@
+
+{
+    "generate": [{
+        "title": "Generate a unique ID",
+        "request": {
+            "type": "uuid"
+        },
+        "response": {
+            "type": "uuid",
+            "id": "e9c427d8-cef1-48bd-ab89-59a6df29673b"
+        }
+    },
+    {
+        "title": "Generate a short ID",
+        "request": {
+            "type": "shortid"
+        },
+        "response": {
+            "type": "shortid",
+            "id": "Yivg2UeGg"
+        }
+    },
+    {
+        "title": "Generate a snowflake ID",
+        "request": {
+            "type": "snowflake"
+        },
+        "response": {
+            "type": "snowflake",
+            "id": "1248956308049350656"
+        }
+    },
+    {
+        "title": "Generate a bigflake ID",
+        "request": {
+            "type": "bigflake"
+        },
+        "response": {
+            "type": "bigflake",
+            "id": "29941839868462377496067580952577"
+        }
+    }]
+}
