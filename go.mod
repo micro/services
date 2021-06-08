@@ -20,8 +20,9 @@ require (
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
-	github.com/micro/micro/v3 v3.2.2-0.20210521145845-34133d0728d2
+	github.com/micro/micro/v3 v3.2.2-0.20210607154842-ec8964031a93
 	github.com/miekg/dns v1.1.31 // indirect
+	github.com/onsi/ginkgo v1.15.0 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
