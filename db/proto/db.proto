@@ -47,7 +47,8 @@ message UpdateRequest {
 	string table = 1;
 	// query filter if applying to multiple records
 	string query = 2;
-	repeated google.protobuf.Struct record = 3;
+	// record, JSON object
+	google.protobuf.Struct record = 3;
 }
 
 message UpdateResponse {

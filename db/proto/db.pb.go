@@ -273,7 +273,7 @@ type UpdateRequest struct {
 	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
 	// query filter if applying to multiple records
 	Query string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
-	// JSON encoded record or records (can be array or object)
+	// record, JSON object
 	Record *_struct.Struct `protobuf:"bytes,3,opt,name=record,proto3" json:"record,omitempty"`
 }
 
