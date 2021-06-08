@@ -103,6 +103,7 @@ func (c *cache) Get(key string, val interface{}) error {
 	if err != nil && err == store.ErrNotFound {
 		return ErrNotFound
 	} else if err != nil {
+		return err
 	}
 	if len(recs) == 0 {
 		return ErrNotFound
@@ -110,6 +111,7 @@ func (c *cache) Get(key string, val interface{}) error {
 	if err := json.Unmarshal(recs[0].Value, val); err != nil {
 		return err
 	}
+
 
 	// put it in the cache for future use
 	// set in the lru

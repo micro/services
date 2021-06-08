@@ -13,10 +13,14 @@ service Otp {
 message GenerateRequest {
 	// unique id, email or user to generate an OTP for
 	string id = 1;
+	// number of characters (default: 6)
+	int64 size = 2;
+	// expiration in seconds (default: 300)
+	int64 expiry = 3;
 }
 
 message GenerateResponse {
-	// 6 digit one time pass code
+	// one time pass code
 	string code = 1;
 }
 
@@ -24,7 +28,7 @@ message GenerateResponse {
 message ValidateRequest {
 	// unique id, email or user for which the code was generated
 	string id = 1;
-	// 6 digit one time pass code to validate
+	// one time pass code to validate
 	string code = 2;
 }
 
