@@ -14,6 +14,7 @@ import (
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/patrickmn/go-cache"
+	"google.golang.org/protobuf/types/known/structpb"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
@@ -81,7 +82,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 }
 
 func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateResponse) error {
-	if len(req.Record) == 0 {
+	if len(req.Record.AsMap()) == 0 {
 		return errors.BadRequest("db.update", "missing record")
 	}
 	tenantId, ok := tenant.FromContext(ctx)
@@ -94,11 +95,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		return err
 	}
 
-	m := map[string]interface{}{}
-	err = json.Unmarshal([]byte(req.Record), &m)
-	if err != nil {
-		return err
-	}
+	m := req.Record.AsMap()
 
 	// where ID is specified do a single update record update
 	id, ok := m[idKey].(string)
@@ -178,7 +175,8 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if err != nil {
 		return err
 	}
-	ret := []map[string]interface{}{}
+
+	rsp.Records = []*structpb.Struct{}
 	for _, rec := range recs {
 		m, err := rec.Data.MarshalJSON()
 		if err != nil {
@@ -187,10 +185,15 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		ma := map[string]interface{}{}
 		json.Unmarshal(m, &ma)
 		ma[idKey] = rec.ID
-		ret = append(ret, ma)
+		m, _ = json.Marshal(ma)
+		s := &structpb.Struct{}
+		err = s.UnmarshalJSON(m)
+		if err != nil {
+			return err
+		}
+		rsp.Records = append(rsp.Records, s)
 	}
-	bs, _ := json.Marshal(ret)
-	rsp.Records = string(bs)
+
 	return nil
 }
 

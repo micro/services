@@ -29,7 +29,7 @@ message ReadRequest {
 
 message ReadResponse {
 	// JSON encoded records
-	string records = 1;
+	repeated google.protobuf.Struct records = 1;
 }
 
 message CreateRequest {
@@ -48,7 +48,7 @@ message UpdateRequest {
 	// query filter if applying to multiple records
 	string query = 2;
 	// JSON encoded record or records (can be array or object)
-	string record = 3;
+	google.protobuf.Struct record = 3;
 }
 
 message UpdateResponse {
