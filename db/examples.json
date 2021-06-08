@@ -2,7 +2,12 @@
     "create": [{
         "title": "Create a record",
         "request": {
-            "record": "{\"id\": \"1\", \"name\": \"Jane\", \"age\": 42, \"isActive\":true}"
+            "record": {
+                "id": "1",
+                "name": "Jane",
+                "age": 42,
+                "isActive":true
+            }
         },
         "response": {
             "id": "1"
@@ -18,7 +23,10 @@
     "update": [{
         "title": "Update a record",
         "request": {
-            "record": "{\"id\": \"1\", \"age\": 43}"
+            "record": {
+                "id": "1",
+                "age": 43
+            }
         },
         "response": {
         }
@@ -29,7 +37,12 @@
             "query": "age == 43"
         },
         "response": {
-            "records": "[{\"id\": \"1\", \"name\": \"Jane\", \"age\": 43, \"isActive\":true}]"
+            "records": [{
+                "id": "1",
+                "name": "Jane",
+                "age": 42,
+                "isActive":true
+            }]
         }
     }]
 }
