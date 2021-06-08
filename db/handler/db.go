@@ -48,7 +48,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if req.Table == "" {
 		req.Table = "default"
 	}
-	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	tenantId = strings.Relace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
 		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", tableName))
@@ -95,7 +95,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	if req.Table == "" {
 		req.Table = "default"
 	}
-	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	tenantId = strings.Relace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
 		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", tableName))
@@ -153,7 +153,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if req.Table == "" {
 		req.Table = "default"
 	}
-	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	tenantId = strings.Relace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
 		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", tableName))
@@ -227,7 +227,7 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 	if req.Table == "" {
 		req.Table = "default"
 	}
-	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	tenantId = strings.Relace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
 		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", tableName))
