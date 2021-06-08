@@ -23,7 +23,7 @@ message Record {
 	string created = 4;
 	// Time the file was updated e.g 2021-05-20T13:37:21Z
 	string updated = 5;
-	// Any other associated metadata
+	// Any other associated metadata as a map of key-value pairs
 	map<string,string> metadata = 6;
 }
 
