@@ -37,7 +37,7 @@ type Db struct {
 
 // Call is a single request handler called via client.Call or the generated client code
 func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateResponse) error {
-	if len(req.Record) == 0 {
+	if len(req.Record.AsMap()) == 0 {
 		return errors.BadRequest("db.create", "missing record")
 	}
 	tenantId, ok := tenant.FromContext(ctx)
@@ -60,11 +60,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 		c.Set(req.Table, true, 0)
 	}
 
-	m := map[string]interface{}{}
-	err = json.Unmarshal([]byte(req.Record), &m)
-	if err != nil {
-		return err
-	}
+	m := req.Record.AsMap()
 	if _, ok := m[idKey].(string); !ok {
 		m[idKey] = uuid.New().String()
 	}

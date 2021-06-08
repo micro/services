@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/struct.proto";
 
 package db;
 
@@ -34,7 +35,7 @@ message ReadResponse {
 message CreateRequest {
 	string table = 1;
 	// JSON encoded record or records (can be array or object)
-	string record = 2;
+	google.protobuf.Struct record = 2;
 }
 
 message CreateResponse {
