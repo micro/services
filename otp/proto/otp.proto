@@ -15,7 +15,7 @@ message GenerateRequest {
 	string id = 1;
 	// number of characters (default: 6)
 	int64 size = 2;
-	// expiration in seconds (default: 300)
+	// expiration in seconds (default: 60)
 	int64 expiry = 3;
 }
 
