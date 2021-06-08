@@ -20,7 +20,7 @@ func TestLexing(t *testing.T) {
 		t.Fatal(tokens)
 	}
 
-	tokens, err = lexer.Lex(`a == 12 and name != "nandos"`, expressions)
+	tokens, err = lexer.Lex(`a == 12 and name != 'nandos'`, expressions)
 	if tokens[0].Typ != itemFieldName ||
 		tokens[1].Typ != itemEquals ||
 		tokens[2].Typ != itemInt ||
@@ -55,9 +55,54 @@ func TestParsing(t *testing.T) {
 				},
 			},
 		},
+		tCase{
+			Q: `a == 12 and name != "nan'dos"`,
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: int64(12),
+					Op:    itemEquals,
+				},
+				Query{
+					Field: "name",
+					Value: "nan'dos",
+					Op:    itemNotEquals,
+				},
+			},
+		},
+		tCase{
+			Q: `a == 12 and name != 'nandos'`,
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: int64(12),
+					Op:    itemEquals,
+				},
+				Query{
+					Field: "name",
+					Value: "nandos",
+					Op:    itemNotEquals,
+				},
+			},
+		},
+		tCase{
+			Q: "a == 12 and name != `nandos`",
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: int64(12),
+					Op:    itemEquals,
+				},
+				Query{
+					Field: "name",
+					Value: "nandos",
+					Op:    itemNotEquals,
+				},
+			},
+		},
 		// test escaping quotes
 		tCase{
-			Q: `a == 12 and name != "He said ""yes""!"`,
+			Q: `a == 12 and name != 'He said ""yes""!'`,
 			E: []Query{
 				Query{
 					Field: "a",

@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/struct.proto";
 
 package db;
 
@@ -28,13 +29,13 @@ message ReadRequest {
 
 message ReadResponse {
 	// JSON encoded records
-	string records = 1;
+	repeated google.protobuf.Struct records = 1;
 }
 
 message CreateRequest {
 	string table = 1;
 	// JSON encoded record or records (can be array or object)
-	string record = 2;
+	google.protobuf.Struct record = 2;
 }
 
 message CreateResponse {
@@ -46,8 +47,8 @@ message UpdateRequest {
 	string table = 1;
 	// query filter if applying to multiple records
 	string query = 2;
-	// JSON encoded record or records (can be array or object)
-	string record = 3;
+	// record, JSON object
+	google.protobuf.Struct record = 3;
 }
 
 message UpdateResponse {
