@@ -3,8 +3,8 @@
   "icon": "🔗",
   "category": "web",
   "pricing": {
-    "Url.List": 100,
-    "Url.Proxy": 100,
-    "Url.Shorten": 100
+    "Url.List": 1,
+    "Url.Proxy": 1,
+    "Url.Shorten": 1
   }
 }
