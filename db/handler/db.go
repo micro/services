@@ -51,7 +51,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	tenantId = strings.Replace(tenantId, "/", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", "table name is invalid")
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", tableName))
 	}
 
 	db, err := e.GetDBConn(ctx)
@@ -98,7 +98,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	tenantId = strings.Replace(tenantId, "/", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", "table name is invalid")
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", tableName))
 	}
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
@@ -156,7 +156,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	tenantId = strings.Replace(tenantId, "/", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", "table name is invalid")
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", tableName))
 	}
 
 	db, err := e.GetDBConn(ctx)
@@ -230,7 +230,7 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 	tenantId = strings.Replace(tenantId, "/", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", "table name is invalid")
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", tableName))
 	}
 
 	db, err := e.GetDBConn(ctx)
