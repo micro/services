@@ -10,6 +10,8 @@ import (
 )
 
 var quoteEscape = fmt.Sprint(0x10FFFF)
+var singleQuoteEscape = fmt.Sprint(0x10FFFE)
+var backtickEscape = fmt.Sprint(0x10FFFD)
 
 const (
 	itemIgnore = iota
@@ -53,6 +55,8 @@ var expressions = []lexer.TokenExpr{
 	{`>`, itemGreaterThan},
 	{`[0-9]+`, itemInt},
 	{`"(?:[^"\\]|\\.)*"`, itemString},
+	{"`" + `(?:[^"\\]|\\.)*` + "`", itemString},
+	{`'(?:[^"\\]|\\.)*'`, itemString},
 	{`[\<\>\!\=\+\-\|\&\*\/A-Za-z][A-Za-z0-9_]*`, itemFieldName},
 }
 
@@ -67,6 +71,9 @@ func Parse(q string) ([]Query, error) {
 		return nil, errors.New("query contains illegal max rune")
 	}
 	q = strings.Replace(q, `""`, quoteEscape, -1)
+	q = strings.Replace(q, "``", singleQuoteEscape, -1)
+	q = strings.Replace(q, "''", backtickEscape, -1)
+
 	tokens, err := lexer.Lex(q, expressions)
 	if err != nil {
 		return nil, err
@@ -102,7 +109,11 @@ func Parse(q string) ([]Query, error) {
 			if len(token.Text) < 2 {
 				return nil, fmt.Errorf("string literal too short: '%v'", token.Text)
 			}
-			current.Value = strings.Replace(token.Text[1:len(token.Text)-1], quoteEscape, `"`, -1)
+			to := token.Text[1 : len(token.Text)-1]
+			to = strings.Replace(to, quoteEscape, `"`, -1)
+			to = strings.Replace(to, singleQuoteEscape, `'`, -1)
+			to = strings.Replace(to, backtickEscape, "`", -1)
+			current.Value = to
 		case itemBoolTrue:
 			switch current.Op {
 			case itemEquals, itemNotEquals:
