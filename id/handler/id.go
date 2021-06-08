@@ -76,3 +76,13 @@ func (id *Id) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 
 	return nil
 }
+
+func (id *Id) Types(ctx context.Context, req *pb.TypesRequest, rsp *pb.TypesResponse) error {
+	rsp.Types = []string{
+		"uuid",
+		"shortid",
+		"snowflake",
+		"bigflake",
+	}
+	return nil
+}

@@ -6,6 +6,7 @@ option go_package = "./proto;id";
 
 service Id {
 	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
+	rpc Types(TypesRequest) returns (TypesResponse) {}
 }
 
 // Generate a unique ID. Defaults to uuid.
@@ -21,3 +22,9 @@ message GenerateResponse {
 	string type = 2;
 }
 
+// List the types of IDs available. No query params needed.
+message TypesRequest {}
+
+message TypesResponse {
+	repeated string types = 1;
+}

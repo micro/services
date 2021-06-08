@@ -43,6 +43,7 @@ func NewIdEndpoints() []*api.Endpoint {
 
 type IdService interface {
 	Generate(ctx context.Context, in *GenerateRequest, opts ...client.CallOption) (*GenerateResponse, error)
+	Types(ctx context.Context, in *TypesRequest, opts ...client.CallOption) (*TypesResponse, error)
 }
 
 type idService struct {
@@ -67,15 +68,27 @@ func (c *idService) Generate(ctx context.Context, in *GenerateRequest, opts ...c
 	return out, nil
 }
 
+func (c *idService) Types(ctx context.Context, in *TypesRequest, opts ...client.CallOption) (*TypesResponse, error) {
+	req := c.c.NewRequest(c.name, "Id.Types", in)
+	out := new(TypesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Id service
 
 type IdHandler interface {
 	Generate(context.Context, *GenerateRequest, *GenerateResponse) error
+	Types(context.Context, *TypesRequest, *TypesResponse) error
 }
 
 func RegisterIdHandler(s server.Server, hdlr IdHandler, opts ...server.HandlerOption) error {
 	type id interface {
 		Generate(ctx context.Context, in *GenerateRequest, out *GenerateResponse) error
+		Types(ctx context.Context, in *TypesRequest, out *TypesResponse) error
 	}
 	type Id struct {
 		id
@@ -90,4 +103,8 @@ type idHandler struct {
 
 func (h *idHandler) Generate(ctx context.Context, in *GenerateRequest, out *GenerateResponse) error {
 	return h.IdHandler.Generate(ctx, in, out)
+}
+
+func (h *idHandler) Types(ctx context.Context, in *TypesRequest, out *TypesResponse) error {
+	return h.IdHandler.Types(ctx, in, out)
 }
