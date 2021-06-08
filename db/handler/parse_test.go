@@ -56,6 +56,21 @@ func TestParsing(t *testing.T) {
 			},
 		},
 		tCase{
+			Q: `a == 12 and name != "nan'dos"`,
+			E: []Query{
+				Query{
+					Field: "a",
+					Value: int64(12),
+					Op:    itemEquals,
+				},
+				Query{
+					Field: "name",
+					Value: "nan'dos",
+					Op:    itemNotEquals,
+				},
+			},
+		},
+		tCase{
 			Q: `a == 12 and name != 'nandos'`,
 			E: []Query{
 				Query{
