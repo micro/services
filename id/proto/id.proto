@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package id;
+
+option go_package = "./proto;id";
+
+service Id {
+	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
+}
+
+// Generate a unique ID. Defaults to uuid.
+message GenerateRequest {
+	// type of id e.g uuid, shortid, snowflake (64 bit), bigflake (128 bit)
+	string type = 1;
+}
+
+message GenerateResponse {
+	// the unique id generated
+	string id = 1;
+	// the type of id generated
+	string type = 2;
+}
+

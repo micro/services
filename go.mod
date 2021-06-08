@@ -19,6 +19,8 @@ require (
 	github.com/hashicorp/golang-lru v0.5.3
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/lib/pq v1.9.0 // indirect
+	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
+	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
 	github.com/micro/micro/v3 v3.2.2-0.20210607154842-ec8964031a93
 	github.com/miekg/dns v1.1.31 // indirect
