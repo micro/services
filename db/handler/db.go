@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"github.com/micro/services/pkg/tenant"
@@ -53,6 +54,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if !re.Match([]byte(tableName)) {
 		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
+	logger.Infof("Inserting into table '%v'", tableName)
 
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
@@ -60,6 +62,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	_, ok = c.Get(tableName)
 	if !ok {
+		logger.Infof("Creating table '%v'", tableName)
 		db.Exec(fmt.Sprintf(stmt, tableName))
 		c.Set(tableName, true, 0)
 	}
@@ -100,6 +103,8 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	if !re.Match([]byte(tableName)) {
 		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
+	logger.Infof("Updating table '%v'", tableName)
+
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
@@ -155,6 +160,8 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	}
 	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
+	logger.Infof("Reading table '%v'", tableName)
+
 	if !re.Match([]byte(tableName)) {
 		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
@@ -232,6 +239,7 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 	if !re.Match([]byte(tableName)) {
 		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
+	logger.Infof("Deleting from table '%v'", tableName)
 
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
