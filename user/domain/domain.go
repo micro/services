@@ -158,9 +158,9 @@ func (domain *Domain) Read(ctx context.Context, id string) (*user.Account, error
 func (domain *Domain) Search(ctx context.Context, username, email string, limit, offset int64) ([]*user.Account, error) {
 	var query string
 	if len(username) > 0 {
-		query = fmt.Sprint("userName == '%v'")
+		query = fmt.Sprintf("username == '%v'", username)
 	} else if len(email) > 0 {
-		query = fmt.Sprintf("email == '%v'")
+		query = fmt.Sprintf("email == '%v'", email)
 	} else {
 		return nil, errors.New("username and email cannot be blank")
 	}
@@ -204,9 +204,9 @@ func (domain *Domain) UpdatePassword(ctx context.Context, id string, salt string
 func (domain *Domain) SaltAndPassword(ctx context.Context, username, email string) (string, string, error) {
 	var query string
 	if len(username) > 0 {
-		query = fmt.Sprint("userName == '%v'")
+		query = fmt.Sprintf("username == '%v'", username)
 	} else if len(email) > 0 {
-		query = fmt.Sprintf("email == '%v'")
+		query = fmt.Sprintf("email == '%v'", email)
 	} else {
 		return "", "", errors.New("username and email cannot be blank")
 	}
