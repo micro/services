@@ -1,5 +1,16 @@
 
 {
+    "set": [{
+        "title": "Set a value",
+        "description": "Set allows you to set a value",
+        "request": {
+            "key": "foo",
+            "value": "bar"
+        },
+        "response": {
+            "status": "ok"
+        }
+    }],
     "get": [{
         "title": "Get a value",
         "description": "Get returns a value from the cache",
@@ -10,17 +21,6 @@
             "key": "foo",
             "value": "bar",
             "ttl": 0
-        }
-    }],
-    "set": [{
-        "title": "Set a value",
-        "description": "Set allows you to set a value",
-        "request": {
-            "key": "foo",
-            "value": "bar"
-        },
-        "response": {
-            "status": "ok"
         }
     }],
     "delete": [{

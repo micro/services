@@ -10,29 +10,6 @@
         },
         "response": {}
     }],
-    "remove": [{
-        "title": "Remove a feed",
-        "description": "Remove an rss feed from the crawler",
-        "request": {
-            "name": "bbc"
-        },
-        "response": {}
-    }],
-    "list": [{
-        "title": "List rss feeds",
-        "description": "List the saved rss feeds",
-        "request": {},
-        "response": {
-	    "feeds": [
-		{
-		    "id": "micro/asim/18882020881032690",
-		    "name": "bbc",
-		    "url": "http://feeds.bbci.co.uk/news/rss.xml",
-		    "category": "news"
-		}
-	    ]
-        }
-    }],
     "feed": [{
         "title": "Read a feed",
         "description": "Read an rss feed by name",
@@ -59,5 +36,28 @@
                 }
             ]
         }
+    }],
+    "list": [{
+        "title": "List rss feeds",
+        "description": "List the saved rss feeds",
+        "request": {},
+        "response": {
+	    "feeds": [
+		{
+		    "id": "micro/asim/18882020881032690",
+		    "name": "bbc",
+		    "url": "http://feeds.bbci.co.uk/news/rss.xml",
+		    "category": "news"
+		}
+	    ]
+        }
+    }],
+    "remove": [{
+        "title": "Remove a feed",
+        "description": "Remove an rss feed from the crawler",
+        "request": {
+            "name": "bbc"
+        },
+        "response": {}
     }]
 }
