@@ -10,7 +10,7 @@ import (
 
 func main() {
 	service := service.New(
-		service.Name("user"),
+		service.Name("user1"),
 	)
 
 	service.Init()
