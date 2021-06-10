@@ -22,7 +22,7 @@ require (
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
-	github.com/micro/micro/v3 v3.2.2-0.20210607154842-ec8964031a93
+	github.com/micro/micro/v3 v3.3.1-0.20210610124047-81b204838fbf
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/onsi/ginkgo v1.15.0 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
