@@ -75,7 +75,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	bs, _ := json.Marshal(m)
 
-	err = db.Table(tableName).Create(Record{
+	err = db.Table(tableName).Create(&Record{
 		ID:   m[idKey].(string),
 		Data: bs,
 	}).Error
@@ -139,7 +139,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		}
 		bs, _ := json.Marshal(old)
 
-		return tx.Table(tableName).Save(Record{
+		return tx.Table(tableName).Save(&Record{
 			ID:   m[idKey].(string),
 			Data: bs,
 		}).Error
