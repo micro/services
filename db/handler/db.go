@@ -118,9 +118,9 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		return fmt.Errorf("update failed: missing id")
 	}
 
-	db.Transaction(func(tx *gorm.DB) error {
+	return db.Transaction(func(tx *gorm.DB) error {
 		rec := []Record{}
-		err = tx.Table(tableName).Where("ID = ?", id).Find(&rec).Error
+		err = tx.Table(tableName).Where("id = ?", id).Find(&rec).Error
 		if err != nil {
 			return err
 		}
@@ -142,7 +142,6 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 			Data: bs,
 		}).Error
 	})
-	return nil
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
