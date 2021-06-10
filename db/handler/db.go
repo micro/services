@@ -21,7 +21,7 @@ import (
 )
 
 const idKey = "id"
-const stmt = "create table %v(id text not null, data jsonb, primary key(id));"
+const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
@@ -30,7 +30,9 @@ type Record struct {
 	ID   string
 	Data datatypes.JSON `json:"data"`
 	// private field, ignored from gorm
-	table string `gorm:"-"`
+	table     string `gorm:"-"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Db struct {
@@ -63,7 +65,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	_, ok = c.Get(tableName)
 	if !ok {
 		logger.Infof("Creating table '%v'", tableName)
-		db.Exec(fmt.Sprintf(stmt, tableName))
+		db.Exec(fmt.Sprintf(stmt, tableName, tableName, tableName))
 		c.Set(tableName, true, 0)
 	}
 
@@ -169,6 +171,13 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if err != nil {
 		return err
 	}
+	_, ok = c.Get(tableName)
+	if !ok {
+		logger.Infof("Creating table '%v'", tableName)
+		db.Exec(fmt.Sprintf(stmt, tableName, tableName, tableName))
+		c.Set(tableName, true, 0)
+	}
+
 	if req.Limit > 1000 {
 		return errors.BadRequest("db.read", fmt.Sprintf("limit over 1000 is invalid, you specified %v", req.Limit))
 	}
@@ -199,8 +208,13 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		case itemNotEquals:
 			op = "!="
 		}
-		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value).Offset(int(req.Offset)).Limit(int(req.Limit))
+		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value)
 	}
+	orderField := "created_at DESC"
+	if req.OrderBy != "" {
+		orderField = req.OrderBy + " " + req.Order
+	}
+	db = db.Order(orderField).Offset(int(req.Offset)).Limit(int(req.Limit))
 	err = db.Find(&recs).Error
 	if err != nil {
 		return err
