@@ -45,10 +45,8 @@ message CreateResponse {
 
 message UpdateRequest {
 	string table = 1;
-	// query filter if applying to multiple records
-	string query = 2;
 	// record, JSON object
-	google.protobuf.Struct record = 3;
+	google.protobuf.Struct record = 2;
 }
 
 message UpdateResponse {
