@@ -132,10 +132,10 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		if err != nil {
 			return err
 		}
-		for k, v := range old {
-			m[k] = v
+		for k, v := range m {
+			old[k] = v
 		}
-		bs, _ := json.Marshal(m)
+		bs, _ := json.Marshal(old)
 
 		return tx.Table(tableName).Save(Record{
 			ID:   m[idKey].(string),
