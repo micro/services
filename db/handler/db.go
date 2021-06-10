@@ -162,12 +162,18 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	logger.Infof("Reading table '%v'", tableName)
 
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+		return errors.BadRequest("db.read", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
 
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
+	}
+	if req.Limit > 1000 {
+		return errors.BadRequest("db.read", fmt.Sprintf("limit over 1000 is invalid, you specified %v", req.Limit))
+	}
+	if req.Limit == 0 {
+		req.Limit = 25
 	}
 	db = db.Table(tableName)
 	for _, query := range queries {
@@ -193,7 +199,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		case itemNotEquals:
 			op = "!="
 		}
-		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value)
+		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value).Offset(int(req.Offset)).Limit(int(req.Limit))
 	}
 	err = db.Find(&recs).Error
 	if err != nil {
