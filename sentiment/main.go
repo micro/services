@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/sentiment/handler"
 	pb "github.com/micro/services/sentiment/proto"
 
@@ -16,6 +17,8 @@ func main() {
 
 	// Register handler
 	pb.RegisterSentimentHandler(srv.Server(), new(handler.Sentiment))
+	traceCloser := tracing.SetupOpentracing("sentiment")
+	defer traceCloser.Close()
 
 	// Run service
 	if err := srv.Run(); err != nil {

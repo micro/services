@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/micro/services/geocoding/handler"
 	pb "github.com/micro/services/geocoding/proto"
+	"github.com/micro/services/pkg/tracing"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
@@ -33,6 +34,8 @@ func main() {
 
 	// Register handler
 	pb.RegisterGeocodingHandler(srv.Server(), &handler.Geocoding{Maps: m})
+	traceCloser := tracing.SetupOpentracing("geocoding")
+	defer traceCloser.Close()
 
 	// Run service
 	if err := srv.Run(); err != nil {
