@@ -2,6 +2,7 @@ package main
 
 import (
 	pb "github.com/micro/services/db/proto"
+	"github.com/micro/services/pkg/tracing"
 
 	"github.com/micro/services/db/handler"
 
@@ -43,6 +44,8 @@ func main() {
 	// Register handler
 	pb.RegisterDbHandler(srv.Server(), &handler.Db{})
 
+	traceCloser := tracing.SetupOpentracing("db")
+	defer traceCloser.Close()
 	// Run service
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)
