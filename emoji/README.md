@@ -1,23 +1,5 @@
+Emojis all day 🎉
+
 # Emoji Service
 
-This is the Emoji service
-
-Generated with
-
-```
-micro new emoji
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+Get your emoji fix. Find by alias, print text and fly high with your country's flag.
