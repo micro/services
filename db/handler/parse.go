@@ -57,7 +57,7 @@ var expressions = []lexer.TokenExpr{
 	{`"(?:[^"\\]|\\.)*"`, itemString},
 	{"`" + `(?:[^"\\]|\\.)*` + "`", itemString},
 	{`'(?:[^"\\]|\\.)*'`, itemString},
-	{`[\<\>\!\=\+\-\|\&\*\/A-Za-z][A-Za-z0-9_]*`, itemFieldName},
+	{`[\<\>\!\=\+\-\|\&\*\/A-Za-z][A-Za-z0-9_\.]*`, itemFieldName},
 }
 
 type Query struct {

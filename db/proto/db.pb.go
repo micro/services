@@ -27,9 +27,11 @@ type ReadRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
-	// eg. 'age >= 18', 'age >= 18 and verified == true'
-	// comparison operators: '==', '!=', '<', '>', '<=', '>='
-	// logical operator: 'and'
+	// Examples: 'age >= 18', 'age >= 18 and verified == true'
+	// Comparison operators: '==', '!=', '<', '>', '<=', '>='
+	// Logical operator: 'and'
+	// Dot access is supported, eg: 'user.age == 11'
+	// Accessing list elements is not supported yet.
 	Query  string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	Offset int32  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
 	Limit  int32  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`

@@ -146,13 +146,21 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	})
 }
 
-func correctFieldLevel(s string) string {
+func correctFieldName(s string) string {
 	switch s {
 	// top level fields can stay top level
 	case "created_at", "updated_at", "id":
 		return s
 	}
-	return fmt.Sprintf("data ->> '%v'", s)
+	if !strings.Contains(s, ".") {
+		return fmt.Sprintf("data ->> '%v'", s)
+	}
+	paths := strings.Split(s, ".")
+	ret := "data"
+	for _, path := range paths {
+		ret += fmt.Sprintf(" ->> '%v'", path)
+	}
+	return ret
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
@@ -217,14 +225,14 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		case itemNotEquals:
 			op = "!="
 		}
-		queryField := correctFieldLevel(query.Field)
+		queryField := correctFieldName(query.Field)
 		db = db.Where(fmt.Sprintf("(%v)::%v %v ?", queryField, typ, op), query.Value)
 	}
 	orderField := "created_at"
 	if req.OrderBy != "" {
 		orderField = req.OrderBy
 	}
-	orderField = correctFieldLevel(orderField)
+	orderField = correctFieldName(orderField)
 
 	ordering := "asc"
 	if req.Order != "" {

@@ -8,6 +8,13 @@ import (
 	"github.com/crufter/lexer"
 )
 
+func TestCorrectFieldName(t *testing.T) {
+	f := correctFieldName("a.b.c")
+	if f != "data ->> 'a' ->> 'b' ->> 'c'" {
+		t.Fatal(f)
+	}
+}
+
 func TestLexing(t *testing.T) {
 	tokens, err := lexer.Lex("a == 12", expressions)
 	if err != nil {
@@ -45,6 +52,21 @@ func TestParsing(t *testing.T) {
 			E: []Query{
 				Query{
 					Field: "a",
+					Value: int64(12),
+					Op:    itemEquals,
+				},
+				Query{
+					Field: "name",
+					Value: "nandos",
+					Op:    itemNotEquals,
+				},
+			},
+		},
+		tCase{
+			Q: `a.b.c == 12 and name != "nandos"`,
+			E: []Query{
+				Query{
+					Field: "a.b.c",
 					Value: int64(12),
 					Op:    itemEquals,
 				},

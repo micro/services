@@ -15,9 +15,11 @@ service Db {
 
 message ReadRequest {
 	string table = 1;
-	// eg. 'age >= 18', 'age >= 18 and verified == true'
-	// comparison operators: '==', '!=', '<', '>', '<=', '>='
-	// logical operator: 'and'
+	// Examples: 'age >= 18', 'age >= 18 and verified == true'
+	// Comparison operators: '==', '!=', '<', '>', '<=', '>='
+	// Logical operator: 'and'
+	// Dot access is supported, eg: 'user.age == 11'
+	// Accessing list elements is not supported yet.
 	string query = 2;
 	int32 offset = 3;
 	int32 limit = 4;
