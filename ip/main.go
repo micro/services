@@ -8,6 +8,7 @@ import (
 
 	"github.com/micro/services/ip/handler"
 	pb "github.com/micro/services/ip/proto"
+	"github.com/micro/services/pkg/tracing"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
@@ -89,6 +90,9 @@ func main() {
 
 	// Register handler
 	pb.RegisterIpHandler(srv.Server(), &handler.Ip{CityReader: cr, ASNReader: ar})
+
+	traceCloser := tracing.SetupOpentracing("ip")
+	defer traceCloser.Close()
 
 	// Run service
 	if err := srv.Run(); err != nil {

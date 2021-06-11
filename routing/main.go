@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/routing/handler"
 	pb "github.com/micro/services/routing/proto"
 
@@ -60,6 +61,8 @@ func main() {
 		logger.Fatalf("%s is an unsupported mode", mode)
 	}
 
+	traceCloser := tracing.SetupOpentracing("routing")
+	defer traceCloser.Close()
 	// Run service
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)
