@@ -146,6 +146,15 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	})
 }
 
+func correctFieldLevel(s string) string {
+	switch s {
+	// top level fields can stay top level
+	case "created_at", "updated_at", "id":
+		return s
+	}
+	return fmt.Sprintf("data ->> '%v'", s)
+}
+
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
 	recs := []Record{}
 	queries, err := Parse(req.Query)
@@ -208,13 +217,28 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		case itemNotEquals:
 			op = "!="
 		}
-		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value)
+		queryField := correctFieldLevel(query.Field)
+		db = db.Where(fmt.Sprintf("(%v)::%v %v ?", queryField, typ, op), query.Value)
 	}
-	orderField := "created_at DESC"
+	orderField := "created_at"
 	if req.OrderBy != "" {
-		orderField = req.OrderBy + " " + req.Order
+		orderField = req.OrderBy
 	}
-	db = db.Order(orderField).Offset(int(req.Offset)).Limit(int(req.Limit))
+	orderField = correctFieldLevel(orderField)
+
+	ordering := "asc"
+	if req.Order != "" {
+		switch strings.ToLower(req.Order) {
+		case "asc":
+			ordering = "asc"
+		case "", "desc":
+			ordering = "desc"
+		default:
+			return errors.BadRequest("db.read", "invalid ordering: "+req.Order)
+		}
+	}
+
+	db = db.Order(orderField + " " + ordering).Offset(int(req.Offset)).Limit(int(req.Limit))
 	err = db.Find(&recs).Error
 	if err != nil {
 		return err
