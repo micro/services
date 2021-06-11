@@ -10,21 +10,25 @@ service Emoji {
 	rpc Print(PrintRequest) returns (PrintResponse) {}
 }
 
-// Find an alias and return the emoji
+// Find an emoji by its alias e.g :beer:
 message FindRequest {
+	// the alias code e.g :beer:
 	string alias = 1;
 }
 
 message FindResponse {
+	// the unicode emoji 🍺
 	string emoji = 2;
 }
 
 // Get the flag for a country. Requires country code e.g GB for great britain
 message FlagRequest {
+	// country code e.g GB
 	string code = 1;
 }
 
 message FlagResponse {
+	// the emoji flag
 	string flag = 2;
 }
 
