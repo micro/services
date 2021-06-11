@@ -1,4 +1,4 @@
-Emojis all day 🎉
+All the emojis you need 🎉
 
 # Emoji Service
 
