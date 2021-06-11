@@ -5,7 +5,7 @@ package helloworld;
 option go_package = "./proto;helloworld";
 
 service Helloworld {
-	rpc Call(Request) returns (Response) {}
+	rpc Call(Request) returns (Response) {};
 	rpc Stream(StreamRequest) returns (stream StreamResponse) {};
 }
 
