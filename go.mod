@@ -11,6 +11,7 @@ require (
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/disintegration/imaging v1.6.2
+	github.com/enescakir/emoji v1.0.0
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect

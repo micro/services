@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package emoji;
+
+option go_package = "./proto;emoji";
+
+service Emoji {
+	rpc Find(FindRequest) returns (FindResponse) {}
+	rpc Flag(FlagRequest) returns (FlagResponse) {}
+	rpc Print(PrintRequest) returns (PrintResponse) {}
+}
+
+// Find an alias and return the emoji
+message FindRequest {
+	string alias = 1;
+}
+
+message FindResponse {
+	string emoji = 2;
+}
+
+// Get the flag for a country. Requires country code e.g GB for great britain
+message FlagRequest {
+	string code = 1;
+}
+
+message FlagResponse {
+	string flag = 2;
+}
+
+// Print text and renders the emojis with aliases e.g 
+// let's grab a :beer: becomes let's grab a 🍺
+message PrintRequest {
+	// text including any alias e.g let's grab a :beer:
+	string text = 1;
+}
+
+message PrintResponse {
+	// text with rendered emojis
+	string text = 1;
+}
