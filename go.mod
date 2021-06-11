@@ -23,7 +23,7 @@ require (
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa
-	github.com/micro/micro/v3 v3.3.1-0.20210611123551-3ed56b20d64f
+	github.com/micro/micro/v3 v3.3.1-0.20210611161948-fd9821dd4f52
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/onsi/ginkgo v1.15.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
