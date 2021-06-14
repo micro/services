@@ -61,10 +61,15 @@ func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 
 func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session, error) {
 	sess := &user.Session{}
+	if len(id) == 0 {
+		return nil, fmt.Errorf("no id provided")
+	}
+	q := fmt.Sprintf("id == '%v'", id)
+	logger.Infof("Running query: %v", q)
 
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
 		Table: "sessions",
-		Query: fmt.Sprintf("id == '%v'", id),
+		Query: q,
 	})
 	if err != nil {
 		return nil, err
@@ -140,7 +145,9 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 
 func (domain *Domain) Read(ctx context.Context, id string) (*user.Account, error) {
 	user := &user.Account{}
-
+	if len(id) == 0 {
+		return nil, fmt.Errorf("no id provided")
+	}
 	q := fmt.Sprintf("id == '%v'", id)
 	logger.Infof("Running query: %v", q)
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
@@ -158,7 +165,7 @@ func (domain *Domain) Read(ctx context.Context, id string) (*user.Account, error
 	return user, nil
 }
 
-func (domain *Domain) Search(ctx context.Context, username, email string, limit, offset int64) ([]*user.Account, error) {
+func (domain *Domain) Search(ctx context.Context, username, email string) ([]*user.Account, error) {
 	var query string
 	if len(username) > 0 {
 		query = fmt.Sprintf("username == '%v'", username)

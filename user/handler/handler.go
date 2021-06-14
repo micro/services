@@ -63,11 +63,22 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 }
 
 func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
-	account, err := s.domain.Read(ctx, req.Id)
-	if err != nil {
-		return err
+	switch {
+	case req.Id != "":
+		account, err := s.domain.Read(ctx, req.Id)
+		if err != nil {
+			return err
+		}
+		rsp.Account = account
+		return nil
+	case req.Username != "" || req.Email != "":
+		accounts, err := s.domain.Search(ctx, req.Username, req.Email)
+		if err != nil {
+			return err
+		}
+		rsp.Account = accounts[0]
+		return nil
 	}
-	rsp.Account = account
 	return nil
 }
 
@@ -81,15 +92,6 @@ func (s *User) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Update
 
 func (s *User) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	return s.domain.Delete(ctx, req.Id)
-}
-
-func (s *User) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.SearchResponse) error {
-	accounts, err := s.domain.Search(ctx, req.Username, req.Email, req.Limit, req.Offset)
-	if err != nil {
-		return err
-	}
-	rsp.Accounts = accounts
-	return nil
 }
 
 func (s *User) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest, rsp *pb.UpdatePasswordResponse) error {
