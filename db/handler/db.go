@@ -304,10 +304,6 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 }
 
 func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.TruncateResponse) error {
-	if len(req.Table) == 0 {
-		return errors.BadRequest("db.truncate", "missing table name")
-	}
-
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
 		tenantId = "micro"
