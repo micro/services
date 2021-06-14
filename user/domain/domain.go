@@ -8,6 +8,7 @@ import (
 	"time"
 
 	_struct "github.com/golang/protobuf/ptypes/struct"
+	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	user "github.com/micro/services/user/proto"
 )
@@ -140,9 +141,11 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 func (domain *Domain) Read(ctx context.Context, id string) (*user.Account, error) {
 	user := &user.Account{}
 
+	q := fmt.Sprintf("id == '%v'", id)
+	logger.Infof("Running query: %v", q)
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
 		Table: "users",
-		Query: fmt.Sprintf("id == '%v'", id),
+		Query: q,
 	})
 	if err != nil {
 		return nil, err
