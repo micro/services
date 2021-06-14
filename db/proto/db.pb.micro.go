@@ -47,6 +47,7 @@ type DbService interface {
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
+	Truncate(ctx context.Context, in *TruncateRequest, opts ...client.CallOption) (*TruncateResponse, error)
 }
 
 type dbService struct {
@@ -101,6 +102,16 @@ func (c *dbService) Delete(ctx context.Context, in *DeleteRequest, opts ...clien
 	return out, nil
 }
 
+func (c *dbService) Truncate(ctx context.Context, in *TruncateRequest, opts ...client.CallOption) (*TruncateResponse, error) {
+	req := c.c.NewRequest(c.name, "Db.Truncate", in)
+	out := new(TruncateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Db service
 
 type DbHandler interface {
@@ -108,6 +119,7 @@ type DbHandler interface {
 	Read(context.Context, *ReadRequest, *ReadResponse) error
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
+	Truncate(context.Context, *TruncateRequest, *TruncateResponse) error
 }
 
 func RegisterDbHandler(s server.Server, hdlr DbHandler, opts ...server.HandlerOption) error {
@@ -116,6 +128,7 @@ func RegisterDbHandler(s server.Server, hdlr DbHandler, opts ...server.HandlerOp
 		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
+		Truncate(ctx context.Context, in *TruncateRequest, out *TruncateResponse) error
 	}
 	type Db struct {
 		db
@@ -142,4 +155,8 @@ func (h *dbHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateRe
 
 func (h *dbHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
 	return h.DbHandler.Delete(ctx, in, out)
+}
+
+func (h *dbHandler) Truncate(ctx context.Context, in *TruncateRequest, out *TruncateResponse) error {
+	return h.DbHandler.Truncate(ctx, in, out)
 }

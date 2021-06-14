@@ -22,6 +22,7 @@ import (
 
 const idKey = "id"
 const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
+const truncateStmt = `truncate table "%v"`
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
@@ -37,6 +38,23 @@ type Record struct {
 
 type Db struct {
 	gorm2.Helper
+}
+
+func correctFieldName(s string) string {
+	switch s {
+	// top level fields can stay top level
+	case "id": // "created_at", "updated_at",  <-- these are not special fields for now
+		return s
+	}
+	if !strings.Contains(s, ".") {
+		return fmt.Sprintf("data ->> '%v'", s)
+	}
+	paths := strings.Split(s, ".")
+	ret := "data"
+	for _, path := range paths {
+		ret += fmt.Sprintf(" ->> '%v'", path)
+	}
+	return ret
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -144,23 +162,6 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 			Data: bs,
 		}).Error
 	})
-}
-
-func correctFieldName(s string) string {
-	switch s {
-	// top level fields can stay top level
-	case "created_at", "updated_at", "id":
-		return s
-	}
-	if !strings.Contains(s, ".") {
-		return fmt.Sprintf("data ->> '%v'", s)
-	}
-	paths := strings.Split(s, ".")
-	ret := "data"
-	for _, path := range paths {
-		ret += fmt.Sprintf(" ->> '%v'", path)
-	}
-	return ret
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
@@ -300,4 +301,30 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 	return db.Table(tableName).Delete(Record{
 		ID: req.Id,
 	}).Error
+}
+
+func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.TruncateResponse) error {
+	if len(req.Table) == 0 {
+		return errors.BadRequest("db.truncate", "missing table name")
+	}
+
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	if req.Table == "" {
+		req.Table = "default"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+	tableName := tenantId + "_" + req.Table
+	if !re.Match([]byte(tableName)) {
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+	}
+	logger.Infof("Truncating table '%v'", tableName)
+
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+	return db.Exec(fmt.Sprintf(truncateStmt, tableName)).Error
 }
