@@ -93,6 +93,16 @@ func TestParsing(t *testing.T) {
 			},
 		},
 		tCase{
+			Q: `id == '795c1e56-d1f3-495d-b9cb-d84a56ffb39c'`,
+			E: []Query{
+				Query{
+					Field: "id",
+					Value: "795c1e56-d1f3-495d-b9cb-d84a56ffb39c",
+					Op:    itemEquals,
+				},
+			},
+		},
+		tCase{
 			Q: `a == 12 and name != 'nandos'`,
 			E: []Query{
 				Query{

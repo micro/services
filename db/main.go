@@ -21,7 +21,7 @@ var dbAddress = "postgresql://postgres:postgres@localhost:5432/db?sslmode=disabl
 func main() {
 	// Create service
 	srv := service.New(
-		service.Name("db"),
+		service.Name("db1"),
 		service.Version("latest"),
 	)
 

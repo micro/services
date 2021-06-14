@@ -204,6 +204,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	}
 	db = db.Table(tableName)
 	for _, query := range queries {
+		logger.Infof("Query field: %v, op: %v, type: %v", query.Field, query.Op, query.Value)
 		typ := "text"
 		switch query.Value.(type) {
 		case int64:

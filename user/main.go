@@ -16,7 +16,7 @@ func main() {
 
 	service.Init()
 
-	proto.RegisterUserHandler(service.Server(), handler.NewUser(db.NewDbService("db", service.Client())))
+	proto.RegisterUserHandler(service.Server(), handler.NewUser(db.NewDbService("db1", service.Client())))
 	traceCloser := tracing.SetupOpentracing("user")
 	defer traceCloser.Close()
 
