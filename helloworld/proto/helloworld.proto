@@ -5,7 +5,8 @@ package helloworld;
 option go_package = "./proto;helloworld";
 
 service Helloworld {
-	rpc Call(Request) returns (Response) {}
+	rpc Call(Request) returns (Response) {};
+	rpc Stream(StreamRequest) returns (stream StreamResponse) {};
 }
 
 // Call returns a personalised "Hello $name" response
@@ -14,5 +15,15 @@ message Request {
 }
 
 message Response {
+	string message = 1;
+}
+
+// Stream returns a streaming helloworld response
+message StreamRequest {
+	string name = 1;
+        int64 messages = 2;
+}
+
+message StreamResponse {
 	string message = 1;
 }

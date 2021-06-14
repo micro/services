@@ -15,3 +15,18 @@ func (e *Helloworld) Call(ctx context.Context, req *helloworld.Request, rsp *hel
 	rsp.Message = "Hello " + req.Name
 	return nil
 }
+
+func (e *Helloworld) Stream(ctx context.Context, req *helloworld.StreamRequest, rsp helloworld.Helloworld_StreamStream) error {
+	// send one if none
+	if req.Messages == 0 {
+		req.Messages = 1
+	}
+
+	for i := 0; i < int(req.Messages); i++ {
+		rsp.Send(&helloworld.StreamResponse{
+			Message: "Hello " + req.Name,
+		})
+	}
+
+	return nil
+}

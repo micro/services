@@ -10,21 +10,28 @@ service Db {
 	rpc Read(ReadRequest) returns (ReadResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Truncate(TruncateRequest) returns (TruncateResponse) {}
 }
 
 
 message ReadRequest {
 	string table = 1;
-	// eg. 'age >= 18', 'age >= 18 and verified == true'
-	// comparison operators: '==', '!=', '<', '>', '<=', '>='
-	// logical operator: 'and'
-	string query = 2;
-	int32 offset = 3;
-	int32 limit = 4;
+	// Read by id. Equivalent to 'id == "your-id"'
+	string id = 2;
+	// Examples: 'age >= 18', 'age >= 18 and verified == true'
+	// Comparison operators: '==', '!=', '<', '>', '<=', '>='
+	// Logical operator: 'and'
+	// Dot access is supported, eg: 'user.age == 11'
+	// Accessing list elements is not supported yet.
+	string query = 3;
+	int32 offset = 4;
+	// Default limit is 25.
+	// Maximum limit is 1000. Anything higher will return an error.
+	int32 limit = 5;
 	// field name to order by
-	string orderBy = 5;
+	string orderBy = 6;
 	// 'asc' (default), 'desc'
-	string order = 6;
+	string order = 7;
 }
 
 message ReadResponse {
@@ -45,10 +52,8 @@ message CreateResponse {
 
 message UpdateRequest {
 	string table = 1;
-	// query filter if applying to multiple records
-	string query = 2;
 	// record, JSON object
-	google.protobuf.Struct record = 3;
+	google.protobuf.Struct record = 2;
 }
 
 message UpdateResponse {
@@ -63,4 +68,12 @@ message DeleteRequest {
 
 message DeleteResponse {
 
+}
+
+message TruncateRequest {
+	string table = 1;
+}
+
+message TruncateResponse {
+	string table = 1;
 }

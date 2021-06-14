@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	gorm2 "github.com/micro/services/pkg/gorm"
 	"github.com/micro/services/pkg/tenant"
@@ -20,7 +21,8 @@ import (
 )
 
 const idKey = "id"
-const stmt = "create table %v(id text not null, data jsonb, primary key(id));"
+const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
+const truncateStmt = `truncate table "%v"`
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
@@ -29,11 +31,30 @@ type Record struct {
 	ID   string
 	Data datatypes.JSON `json:"data"`
 	// private field, ignored from gorm
-	table string `gorm:"-"`
+	table     string `gorm:"-"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Db struct {
 	gorm2.Helper
+}
+
+func correctFieldName(s string) string {
+	switch s {
+	// top level fields can stay top level
+	case "id": // "created_at", "updated_at",  <-- these are not special fields for now
+		return s
+	}
+	if !strings.Contains(s, ".") {
+		return fmt.Sprintf("data ->> '%v'", s)
+	}
+	paths := strings.Split(s, ".")
+	ret := "data"
+	for _, path := range paths {
+		ret += fmt.Sprintf(" ->> '%v'", path)
+	}
+	return ret
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -45,20 +66,25 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	if !ok {
 		tenantId = "micro"
 	}
-	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	if req.Table == "" {
+		req.Table = "default"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", "table name is invalid")
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
+	logger.Infof("Inserting into table '%v'", tableName)
 
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
 	}
-	_, ok = c.Get(req.Table)
+	_, ok = c.Get(tableName)
 	if !ok {
-		db.Exec(fmt.Sprintf(stmt, tableName))
-		c.Set(req.Table, true, 0)
+		logger.Infof("Creating table '%v'", tableName)
+		db.Exec(fmt.Sprintf(stmt, tableName, tableName, tableName))
+		c.Set(tableName, true, 0)
 	}
 
 	m := req.Record.AsMap()
@@ -67,7 +93,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 	bs, _ := json.Marshal(m)
 
-	err = db.Table(tableName).Create(Record{
+	err = db.Table(tableName).Create(&Record{
 		ID:   m[idKey].(string),
 		Data: bs,
 	}).Error
@@ -89,7 +115,16 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	if !ok {
 		tenantId = "micro"
 	}
-	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	if req.Table == "" {
+		req.Table = "default"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+	tableName := tenantId + "_" + req.Table
+	if !re.Match([]byte(tableName)) {
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+	}
+	logger.Infof("Updating table '%v'", tableName)
+
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
@@ -103,9 +138,9 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		return fmt.Errorf("update failed: missing id")
 	}
 
-	db.Transaction(func(tx *gorm.DB) error {
+	return db.Transaction(func(tx *gorm.DB) error {
 		rec := []Record{}
-		err = tx.Table(tenantId+"_"+req.Table).Where("ID = ?", id).Find(&rec).Error
+		err = tx.Table(tableName).Where("id = ?", id).Find(&rec).Error
 		if err != nil {
 			return err
 		}
@@ -117,17 +152,16 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		if err != nil {
 			return err
 		}
-		for k, v := range old {
-			m[k] = v
+		for k, v := range m {
+			old[k] = v
 		}
-		bs, _ := json.Marshal(m)
+		bs, _ := json.Marshal(old)
 
-		return tx.Table(tenantId + "_" + req.Table).Save(Record{
+		return tx.Table(tableName).Save(&Record{
 			ID:   m[idKey].(string),
 			Data: bs,
 		}).Error
 	})
-	return nil
 }
 
 func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse) error {
@@ -140,12 +174,35 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if !ok {
 		tenantId = "micro"
 	}
-	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	if req.Table == "" {
+		req.Table = "default"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+	tableName := tenantId + "_" + req.Table
+	logger.Infof("Reading table '%v'", tableName)
+
+	if !re.Match([]byte(tableName)) {
+		return errors.BadRequest("db.read", fmt.Sprintf("table name %v is invalid", req.Table))
+	}
+
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
 	}
-	db = db.Table(tenantId + "_" + req.Table)
+	_, ok = c.Get(tableName)
+	if !ok {
+		logger.Infof("Creating table '%v'", tableName)
+		db.Exec(fmt.Sprintf(stmt, tableName, tableName, tableName))
+		c.Set(tableName, true, 0)
+	}
+
+	if req.Limit > 1000 {
+		return errors.BadRequest("db.read", fmt.Sprintf("limit over 1000 is invalid, you specified %v", req.Limit))
+	}
+	if req.Limit == 0 {
+		req.Limit = 25
+	}
+	db = db.Table(tableName)
 	for _, query := range queries {
 		typ := "text"
 		switch query.Value.(type) {
@@ -169,8 +226,28 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		case itemNotEquals:
 			op = "!="
 		}
-		db = db.Where(fmt.Sprintf("(data ->> '%v')::%v %v ?", query.Field, typ, op), query.Value)
+		queryField := correctFieldName(query.Field)
+		db = db.Where(fmt.Sprintf("(%v)::%v %v ?", queryField, typ, op), query.Value)
 	}
+	orderField := "created_at"
+	if req.OrderBy != "" {
+		orderField = req.OrderBy
+	}
+	orderField = correctFieldName(orderField)
+
+	ordering := "asc"
+	if req.Order != "" {
+		switch strings.ToLower(req.Order) {
+		case "asc":
+			ordering = "asc"
+		case "", "desc":
+			ordering = "desc"
+		default:
+			return errors.BadRequest("db.read", "invalid ordering: "+req.Order)
+		}
+	}
+
+	db = db.Order(orderField + " " + ordering).Offset(int(req.Offset)).Limit(int(req.Limit))
 	err = db.Find(&recs).Error
 	if err != nil {
 		return err
@@ -206,15 +283,44 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 	if !ok {
 		tenantId = "micro"
 	}
-
-	tenantId = strings.Replace(tenantId, "/", "_", -1)
+	if req.Table == "" {
+		req.Table = "default"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+	tableName := tenantId + "_" + req.Table
+	if !re.Match([]byte(tableName)) {
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+	}
+	logger.Infof("Deleting from table '%v'", tableName)
 
 	db, err := e.GetDBConn(ctx)
 	if err != nil {
 		return err
 	}
 
-	return db.Table(tenantId + "_" + req.Table).Delete(Record{
+	return db.Table(tableName).Delete(Record{
 		ID: req.Id,
 	}).Error
+}
+
+func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.TruncateResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	if req.Table == "" {
+		req.Table = "default"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+	tableName := tenantId + "_" + req.Table
+	if !re.Match([]byte(tableName)) {
+		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+	}
+	logger.Infof("Truncating table '%v'", tableName)
+
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+	return db.Exec(fmt.Sprintf(truncateStmt, tableName)).Error
 }
