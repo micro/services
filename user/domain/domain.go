@@ -1,10 +1,15 @@
 package domain
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
-	"github.com/micro/micro/v3/service/model"
+	_struct "github.com/golang/protobuf/ptypes/struct"
+	"github.com/micro/micro/v3/service/logger"
+	db "github.com/micro/services/db/proto"
 	user "github.com/micro/services/user/proto"
 )
 
@@ -15,42 +20,16 @@ type pw struct {
 }
 
 type Domain struct {
-	user      model.Model
-	sessions  model.Model
-	passwords model.Model
-
-	nameIndex  model.Index
-	emailIndex model.Index
-	idIndex    model.Index
+	db db.DbService
 }
 
-func New() *Domain {
-	nameIndex := model.ByEquality("username")
-	nameIndex.Unique = true
-	nameIndex.Order.Type = model.OrderTypeUnordered
-
-	emailIndex := model.ByEquality("email")
-	emailIndex.Unique = true
-	emailIndex.Order.Type = model.OrderTypeUnordered
-
-	// @todo there should be a better way to get the default index from model
-	// than recreating the options here
-	idIndex := model.ByEquality("id")
-	idIndex.Order.Type = model.OrderTypeUnordered
-
+func New(db db.DbService) *Domain {
 	return &Domain{
-		user: model.New(user.Account{}, &model.Options{
-			Indexes: []model.Index{nameIndex, emailIndex},
-		}),
-		sessions:   model.New(user.Session{}, nil),
-		passwords:  model.New(pw{}, nil),
-		nameIndex:  nameIndex,
-		emailIndex: emailIndex,
-		idIndex:    idIndex,
+		db: db,
 	}
 }
 
-func (domain *Domain) CreateSession(sess *user.Session) error {
+func (domain *Domain) CreateSession(ctx context.Context, sess *user.Session) error {
 	if sess.Created == 0 {
 		sess.Created = time.Now().Unix()
 	}
@@ -59,92 +38,202 @@ func (domain *Domain) CreateSession(sess *user.Session) error {
 		sess.Expires = time.Now().Add(time.Hour * 24 * 7).Unix()
 	}
 
-	return domain.sessions.Create(sess)
-}
-
-func (domain *Domain) DeleteSession(id string) error {
-	return domain.sessions.Delete(domain.idIndex.ToQuery(id))
-}
-
-func (domain *Domain) ReadSession(id string) (*user.Session, error) {
-	sess := &user.Session{}
-	// @todo there should be a Read in the model to get rid of this pattern
-	return sess, domain.sessions.Read(domain.idIndex.ToQuery(id), &sess)
-}
-
-func (domain *Domain) Create(user *user.Account, salt string, password string) error {
-	user.Created = time.Now().Unix()
-	user.Updated = time.Now().Unix()
-	err := domain.user.Create(user)
+	s := &_struct.Struct{}
+	jso, _ := json.Marshal(sess)
+	err := s.UnmarshalJSON(jso)
 	if err != nil {
 		return err
 	}
-	return domain.passwords.Create(pw{
+	_, err = domain.db.Create(ctx, &db.CreateRequest{
+		Table:  "sessions",
+		Record: s,
+	})
+	return err
+}
+
+func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
+	_, err := domain.db.Delete(ctx, &db.DeleteRequest{
+		Table: "sessions",
+		Id:    id,
+	})
+	return err
+}
+
+func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session, error) {
+	sess := &user.Session{}
+	if len(id) == 0 {
+		return nil, fmt.Errorf("no id provided")
+	}
+	q := fmt.Sprintf("id == '%v'", id)
+	logger.Infof("Running query: %v", q)
+
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table: "sessions",
+		Query: q,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(rsp.Records) == 0 {
+		return nil, errors.New("not found")
+	}
+	m, _ := rsp.Records[0].MarshalJSON()
+	json.Unmarshal(m, sess)
+	return sess, nil
+}
+
+func (domain *Domain) Create(ctx context.Context, user *user.Account, salt string, password string) error {
+	user.Created = time.Now().Unix()
+	user.Updated = time.Now().Unix()
+
+	s := &_struct.Struct{}
+	jso, _ := json.Marshal(user)
+	err := s.UnmarshalJSON(jso)
+	if err != nil {
+		return err
+	}
+	_, err = domain.db.Create(ctx, &db.CreateRequest{
+		Table:  "users",
+		Record: s,
+	})
+	if err != nil {
+		return err
+	}
+
+	pass := pw{
 		ID:       user.Id,
 		Password: password,
 		Salt:     salt,
+	}
+	s = &_struct.Struct{}
+	jso, _ = json.Marshal(pass)
+	err = s.UnmarshalJSON(jso)
+	if err != nil {
+		return err
+	}
+	_, err = domain.db.Create(ctx, &db.CreateRequest{
+		Table:  "passwords",
+		Record: s,
 	})
+
+	return err
 }
 
-func (domain *Domain) Delete(id string) error {
-	return domain.user.Delete(domain.idIndex.ToQuery(id))
+func (domain *Domain) Delete(ctx context.Context, id string) error {
+	_, err := domain.db.Delete(ctx, &db.DeleteRequest{
+		Table: "users",
+		Id:    id,
+	})
+	return err
 }
 
-func (domain *Domain) Update(user *user.Account) error {
+func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 	user.Updated = time.Now().Unix()
-	return domain.user.Create(user)
+
+	s := &_struct.Struct{}
+	jso, _ := json.Marshal(user)
+	err := s.UnmarshalJSON(jso)
+	if err != nil {
+		return err
+	}
+	_, err = domain.db.Update(ctx, &db.UpdateRequest{
+		Table:  "users",
+		Record: s,
+	})
+	return err
 }
 
-func (domain *Domain) Read(id string) (*user.Account, error) {
+func (domain *Domain) Read(ctx context.Context, id string) (*user.Account, error) {
 	user := &user.Account{}
-	return user, domain.user.Read(domain.idIndex.ToQuery(id), user)
+	if len(id) == 0 {
+		return nil, fmt.Errorf("no id provided")
+	}
+	q := fmt.Sprintf("id == '%v'", id)
+	logger.Infof("Running query: %v", q)
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table: "users",
+		Query: q,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(rsp.Records) == 0 {
+		return nil, errors.New("not found")
+	}
+	m, _ := rsp.Records[0].MarshalJSON()
+	json.Unmarshal(m, user)
+	return user, nil
 }
 
-func (domain *Domain) Search(username, email string, limit, offset int64) ([]*user.Account, error) {
-	var query model.Query
+func (domain *Domain) Search(ctx context.Context, username, email string) ([]*user.Account, error) {
+	var query string
 	if len(username) > 0 {
-		query = domain.nameIndex.ToQuery(username)
+		query = fmt.Sprintf("username == '%v'", username)
 	} else if len(email) > 0 {
-		query = domain.emailIndex.ToQuery(email)
+		query = fmt.Sprintf("email == '%v'", email)
 	} else {
 		return nil, errors.New("username and email cannot be blank")
 	}
 
-	user := []*user.Account{}
-	return user, domain.user.Read(query, &user)
+	usr := &user.Account{}
+
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table: "users",
+		Query: query,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(rsp.Records) == 0 {
+		return nil, errors.New("not found")
+	}
+	m, _ := rsp.Records[0].MarshalJSON()
+	json.Unmarshal(m, usr)
+	return []*user.Account{usr}, nil
 }
 
-func (domain *Domain) UpdatePassword(id string, salt string, password string) error {
-	return domain.passwords.Create(pw{
+func (domain *Domain) UpdatePassword(ctx context.Context, id string, salt string, password string) error {
+	pass := pw{
 		ID:       id,
 		Password: password,
 		Salt:     salt,
+	}
+	s := &_struct.Struct{}
+	jso, _ := json.Marshal(pass)
+	err := s.UnmarshalJSON(jso)
+	if err != nil {
+		return err
+	}
+	_, err = domain.db.Update(ctx, &db.UpdateRequest{
+		Table:  "passwords",
+		Record: s,
 	})
+	return err
 }
 
-func (domain *Domain) SaltAndPassword(username, email string) (string, string, error) {
-	var query model.Query
+func (domain *Domain) SaltAndPassword(ctx context.Context, username, email string) (string, string, error) {
+	var query string
 	if len(username) > 0 {
-		query = domain.nameIndex.ToQuery(username)
+		query = fmt.Sprintf("username == '%v'", username)
 	} else if len(email) > 0 {
-		query = domain.emailIndex.ToQuery(email)
+		query = fmt.Sprintf("email == '%v'", email)
 	} else {
 		return "", "", errors.New("username and email cannot be blank")
 	}
 
-	user := &user.Account{}
-	err := domain.user.Read(query, &user)
-	if err != nil {
-		return "", "", err
-	}
-
-	query = model.QueryEquals("id", user.Id)
-	query.Order.Type = model.OrderTypeUnordered
-
 	password := &pw{}
-	err = domain.passwords.Read(query, password)
+
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table: "passwords",
+		Query: query,
+	})
 	if err != nil {
 		return "", "", err
 	}
+	if len(rsp.Records) == 0 {
+		return "", "", errors.New("not found")
+	}
+	m, _ := rsp.Records[0].MarshalJSON()
+	json.Unmarshal(m, password)
 	return password.Salt, password.Password, nil
 }

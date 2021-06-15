@@ -1,0 +1,66 @@
+{
+    "create": [{
+        "title": "Create an account",
+        "request": {
+            "id": "usrid-1",
+            "username": "usrname-1",
+            "email": "joe@example.com",
+            "password": "mySecretPass123"
+        },
+        "response": {
+            "id": "1"
+        }
+    }],
+    "read": [{
+        "title": "Read an account by id",
+        "request": {
+            "id": "usrid-1"
+        },
+        "response": {
+            "accounts": [
+                {
+                    "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+                    "username": "usrname-1",
+                    "email": "joe@example.com",
+                    "created": "1623677579",
+                    "updated": "1623677579"
+                }
+            ]
+        
+        }
+    },{
+        "title": "Read account by username or email",
+        "request": {
+            "username": "usrname-1"
+        },
+        "response": {
+            "accounts": [
+                {
+                    "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+                    "username": "usrname-1",
+                    "email": "joe@example.com",
+                    "created": "1623677579",
+                    "updated": "1623677579"
+                }
+            ]
+        
+        }
+    },{
+        "title": "Read account by email",
+        "request": {
+            "email": "joe@example.com"
+        },
+        "response": {
+            "accounts": [
+                {
+                    "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+                    "username": "usrname-1",
+                    "email": "joe@example.com",
+                    "created": "1623677579",
+                    "updated": "1623677579"
+                }
+            ]
+        
+        }
+    }]
+}

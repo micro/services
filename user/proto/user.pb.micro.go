@@ -46,7 +46,6 @@ type UserService interface {
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
-	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...client.CallOption) (*UpdatePasswordResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...client.CallOption) (*LogoutResponse, error)
@@ -105,16 +104,6 @@ func (c *userService) Delete(ctx context.Context, in *DeleteRequest, opts ...cli
 	return out, nil
 }
 
-func (c *userService) Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error) {
-	req := c.c.NewRequest(c.name, "User.Search", in)
-	out := new(SearchResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userService) UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...client.CallOption) (*UpdatePasswordResponse, error) {
 	req := c.c.NewRequest(c.name, "User.UpdatePassword", in)
 	out := new(UpdatePasswordResponse)
@@ -162,7 +151,6 @@ type UserHandler interface {
 	Read(context.Context, *ReadRequest, *ReadResponse) error
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
-	Search(context.Context, *SearchRequest, *SearchResponse) error
 	UpdatePassword(context.Context, *UpdatePasswordRequest, *UpdatePasswordResponse) error
 	Login(context.Context, *LoginRequest, *LoginResponse) error
 	Logout(context.Context, *LogoutRequest, *LogoutResponse) error
@@ -175,7 +163,6 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
-		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
 		UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, out *UpdatePasswordResponse) error
 		Login(ctx context.Context, in *LoginRequest, out *LoginResponse) error
 		Logout(ctx context.Context, in *LogoutRequest, out *LogoutResponse) error
@@ -206,10 +193,6 @@ func (h *userHandler) Update(ctx context.Context, in *UpdateRequest, out *Update
 
 func (h *userHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
 	return h.UserHandler.Delete(ctx, in, out)
-}
-
-func (h *userHandler) Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error {
-	return h.UserHandler.Search(ctx, in, out)
 }
 
 func (h *userHandler) UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, out *UpdatePasswordResponse) error {
