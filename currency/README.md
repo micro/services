@@ -1,4 +1,4 @@
-Currency conversion powered by ExchangeRate-API
+Currency rates and conversion
 
 # Currency Service
 
