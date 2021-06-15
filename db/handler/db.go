@@ -59,7 +59,7 @@ func correctFieldName(s string) string {
 
 // Call is a single request handler called via client.Call or the generated client code
 func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateResponse) error {
-	if len(req.Record.AsMap()) == 0 {
+	if len(req.Data.AsMap()) == 0 {
 		return errors.BadRequest("db.create", "missing record")
 	}
 	tenantId, ok := tenant.FromContext(ctx)
@@ -87,14 +87,23 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 		c.Set(tableName, true, 0)
 	}
 
-	m := req.Record.AsMap()
-	if _, ok := m[idKey].(string); !ok {
-		m[idKey] = uuid.New().String()
+	m := req.Data.AsMap()
+
+	id := req.Id
+
+	if len(req.Id) == 0 {
+		// try get the id from the data
+		if v, ok := m[idKey].(string); ok {
+			id = v
+		} else {
+			id = uuid.New().String()
+		}
 	}
+
 	bs, _ := json.Marshal(m)
 
 	err = db.Table(tableName).Create(&Record{
-		ID:   m[idKey].(string),
+		ID:   id,
 		Data: bs,
 	}).Error
 	if err != nil {
@@ -102,13 +111,13 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 
 	// set the response id
-	rsp.Id = m[idKey].(string)
+	rsp.Id = id
 
 	return nil
 }
 
 func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateResponse) error {
-	if len(req.Record.AsMap()) == 0 {
+	if len(req.Data.AsMap()) == 0 {
 		return errors.BadRequest("db.update", "missing record")
 	}
 	tenantId, ok := tenant.FromContext(ctx)
@@ -130,7 +139,8 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		return err
 	}
 
-	m := req.Record.AsMap()
+	// get the data as a map
+	m := req.Data.AsMap()
 
 	// where ID is specified do a single update record update
 	id := req.Id

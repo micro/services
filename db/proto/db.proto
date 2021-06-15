@@ -45,8 +45,10 @@ message ReadResponse {
 message CreateRequest {
 	// Table name is optional
 	string table = 1;
-	// JSON encoded record or records (can be array or object)
-	google.protobuf.Struct record = 2;
+	// Id for the record
+	string id = 2;
+	// JSON encoded data
+	google.protobuf.Struct data = 3;
 }
 
 message CreateResponse {
@@ -60,8 +62,8 @@ message UpdateRequest {
 	string table = 1;
 	// The id of the record
 	string id = 2;
-	// record, JSON object
-	google.protobuf.Struct record = 3;
+	// The data to update
+	google.protobuf.Struct data = 3;
 }
 
 message UpdateResponse {}

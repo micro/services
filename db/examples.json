@@ -2,8 +2,8 @@
     "create": [{
         "title": "Create a record",
         "request": {
-            "record": {
-                "id": "1",
+            "id": "1",
+            "data": {
                 "name": "Jane",
                 "age": 42,
                 "isActive":true
@@ -16,8 +16,8 @@
     "update": [{
         "title": "Update a record",
         "request": {
-            "record": {
-                "id": "1",
+            "id": "1",
+            "data": {
                 "age": 43
             }
         },
