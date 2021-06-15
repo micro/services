@@ -1,0 +1,9 @@
+{
+  "name": "currency",
+  "icon": "💱",
+  "category": "money",
+  "pricing": {
+    "Currency.Rates", 100,
+    "Currency.Convert", 100
+  }
+}

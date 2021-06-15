@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package currency;
+
+option go_package = "./proto;currency";
+
+service Currency {
+	rpc Rates(RatesRequest) returns (RatesResponse) {}
+	rpc Convert(ConvertRequest) returns (ConvertResponse) {}
+}
+
+// Rates returns the currency rates for a given code e.g USD
+message RatesRequest {
+	// The currency code to get rates for
+	string code = 1;
+}
+
+message RatesResponse {
+	string code = 1;
+	// The rates for the given code
+	map<string, double> rates = 2;
+}
+
+
+// Convert returns the currency conversion rate between two pairs e.g USD/GBP
+message ConvertRequest {
+	// base code to convert from
+	string from = 1;
+	// target code to convert to
+	string to = 2;
+	// optional amoun to convert
+	double amount = 3;
+}
+
+message ConvertResponse {
+	// the base code
+	string from = 1;
+	// the target code
+	string to = 2;
+	// conversion rate
+	double rate = 3;
+	// converted amount if specified
+	double amount = 4;
+}
