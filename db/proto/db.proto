@@ -70,7 +70,7 @@ message UpdateResponse {}
 message DeleteRequest {
 	// Optional table name
 	string table = 1;
-	// id or ids, eg. 'user-1', or comma separated ids 'user-1,user-2'
+	// id of the record
 	string id = 2;
 }
 
