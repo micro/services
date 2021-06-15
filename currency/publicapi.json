@@ -3,7 +3,7 @@
   "icon": "💱",
   "category": "money",
   "pricing": {
-    "Currency.Rates", 100,
-    "Currency.Convert", 100
+    "Currency.Rates": 100,
+    "Currency.Convert": 100
   }
 }
