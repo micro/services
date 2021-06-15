@@ -2,6 +2,7 @@
     "create": [{
         "title": "Create a record",
         "request": {
+            "table": "users",
             "record": {
                 "id": "1",
                 "name": "Jane",
@@ -16,6 +17,7 @@
     "update": [{
         "title": "Update a record",
         "request": {
+            "table": "users",
             "record": {
                 "id": "1",
                 "age": 43
@@ -27,6 +29,7 @@
     "read": [{
         "title": "Read records",
         "request": {
+            "table": "users",
             "query": "age == 43"
         },
         "response": {
@@ -41,6 +44,7 @@
     "delete": [{
         "title": "Delete a record",
         "request": {
+            "table": "users",
             "id": "1"
         },
         "response": {}
