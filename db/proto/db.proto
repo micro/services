@@ -14,7 +14,9 @@ service Db {
 }
 
 
+// Read data from a table. Lookup can be by ID or via querying any field in the record.
 message ReadRequest {
+	// Table name is optional
 	string table = 1;
 	// Read by id. Equivalent to 'id == "your-id"'
 	string id = 2;
@@ -39,28 +41,34 @@ message ReadResponse {
 	repeated google.protobuf.Struct records = 1;
 }
 
+// Create a record in the database. Optionally include an "id" field otherwise its set automatically.
 message CreateRequest {
+	// Table name is optional
 	string table = 1;
 	// JSON encoded record or records (can be array or object)
 	google.protobuf.Struct record = 2;
 }
 
 message CreateResponse {
-	// The id of the record
+	// The id of the record (either specified or automatically created)
 	string id = 1;
 }
 
+// Update a record in the database. Include an "id" in the record to update.
 message UpdateRequest {
+	// Table name is optional
 	string table = 1;
+	// The id of the record
+	string id = 2;
 	// record, JSON object
-	google.protobuf.Struct record = 2;
+	google.protobuf.Struct record = 3;
 }
 
-message UpdateResponse {
-	
-}
+message UpdateResponse {}
 
+// Delete a record in the database by id.
 message DeleteRequest {
+	// Table name is optional
 	string table = 1;
 	// id or ids, eg. 'user-1', or comma separated ids 'user-1,user-2'
 	string id = 2;
@@ -70,10 +78,13 @@ message DeleteResponse {
 
 }
 
+// Truncate the records in a table
 message TruncateRequest {
+	// Table name is optional
 	string table = 1;
 }
 
 message TruncateResponse {
+	// The table truncated
 	string table = 1;
 }

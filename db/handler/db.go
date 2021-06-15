@@ -133,9 +133,15 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	m := req.Record.AsMap()
 
 	// where ID is specified do a single update record update
-	id, ok := m[idKey].(string)
-	if !ok {
-		return fmt.Errorf("update failed: missing id")
+	id := req.Id
+
+	// if the id is blank then check the data
+	if len(req.Id) == 0 {
+		var ok bool
+		id, ok = m[idKey].(string)
+		if !ok {
+			return fmt.Errorf("update failed: missing id")
+		}
 	}
 
 	return db.Transaction(func(tx *gorm.DB) error {
