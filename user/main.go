@@ -11,7 +11,7 @@ import (
 
 func main() {
 	service := service.New(
-		service.Name("user1"),
+		service.Name("user"),
 	)
 
 	service.Init()

@@ -4,7 +4,8 @@
         "request": {
             "id": "usrid-1",
             "username": "usrname-1",
-            "email": "joe@example.com"
+            "email": "joe@example.com",
+            "password": "mySecretPass123"
         },
         "response": {
             "id": "1"
