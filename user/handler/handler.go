@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
 	db "github.com/micro/services/db/proto"
 	"github.com/micro/services/user/domain"
@@ -54,7 +55,9 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 		return errors.InternalServerError("user.Create", err.Error())
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
-
+	if req.Id == "" {
+		req.Id = uuid.New().String()
+	}
 	return s.domain.Create(ctx, &pb.Account{
 		Id:       req.Id,
 		Username: strings.ToLower(req.Username),
