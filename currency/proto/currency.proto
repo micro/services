@@ -11,34 +11,35 @@ service Currency {
 
 // Rates returns the currency rates for a given code e.g USD
 message RatesRequest {
-	// The currency code to get rates for
+	// The currency code to get rates for e.g USD
 	string code = 1;
 }
 
 message RatesResponse {
+	// The code requested e.g USD
 	string code = 1;
-	// The rates for the given code
+	// The rates for the given code as key-value pairs code:rate
 	map<string, double> rates = 2;
 }
 
 
 // Convert returns the currency conversion rate between two pairs e.g USD/GBP
 message ConvertRequest {
-	// base code to convert from
+	// base code to convert from e.g USD
 	string from = 1;
-	// target code to convert to
+	// target code to convert to e.g GBP
 	string to = 2;
-	// optional amoun to convert
+	// optional amount to convert e.g 10.0
 	double amount = 3;
 }
 
 message ConvertResponse {
-	// the base code
+	// the base code e.g USD
 	string from = 1;
-	// the target code
+	// the target code e.g GBP
 	string to = 2;
-	// conversion rate
+	// conversion rate e.g 0.71
 	double rate = 3;
-	// converted amount if specified
+	// converted amount e.g 7.10
 	double amount = 4;
 }
