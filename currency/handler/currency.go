@@ -10,10 +10,12 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/currency/proto"
+	"github.com/patrickmn/go-cache"
 )
 
 type Currency struct {
-	Api string
+	Api   string
+	Cache *cache.Cache
 }
 
 func (c *Currency) Rates(ctx context.Context, req *pb.RatesRequest, rsp *pb.RatesResponse) error {
@@ -22,6 +24,13 @@ func (c *Currency) Rates(ctx context.Context, req *pb.RatesRequest, rsp *pb.Rate
 	}
 	if len(req.Code) != 3 {
 		return errors.BadRequest("currency.rates", "code is invalid")
+	}
+
+	// try the cache
+	if rates, ok := c.Cache.Get("rates:" + req.Code); ok {
+		rsp.Code = req.Code
+		rsp.Rates = rates.(map[string]float64)
+		return nil
 	}
 
 	resp, err := http.Get(c.Api + "/latest/" + req.Code)
@@ -58,6 +67,9 @@ func (c *Currency) Rates(ctx context.Context, req *pb.RatesRequest, rsp *pb.Rate
 		rsp.Rates[code], _ = rate.(float64)
 	}
 
+	// set for a period of time
+	c.Cache.Set("rates:"+req.Code, rsp.Rates, cache.DefaultExpiration)
+
 	return nil
 }
 
@@ -70,6 +82,17 @@ func (c *Currency) Convert(ctx context.Context, req *pb.ConvertRequest, rsp *pb.
 	}
 
 	uri := fmt.Sprintf("%s/pair/%s/%s", c.Api, req.From, req.To)
+
+	// try the cache
+	if req.Amount == 0 {
+		rate, ok := c.Cache.Get("pair:" + req.From + req.To)
+		if ok {
+			rsp.From = req.From
+			rsp.To = req.To
+			rsp.Rate = rate.(float64)
+			return nil
+		}
+	}
 
 	if req.Amount > 0.0 {
 		uri = fmt.Sprintf("%s/%v", uri, req.Amount)
@@ -100,6 +123,9 @@ func (c *Currency) Convert(ctx context.Context, req *pb.ConvertRequest, rsp *pb.
 	rsp.To = req.To
 	rsp.Rate, _ = respBody["conversion_rate"].(float64)
 	rsp.Amount, _ = respBody["conversion_result"].(float64)
+
+	// save for a period of time
+	c.Cache.Set("pair:"+req.From+req.To, rsp.Rate, cache.DefaultExpiration)
 
 	return nil
 }

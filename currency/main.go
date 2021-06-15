@@ -1,12 +1,14 @@
 package main
 
 import (
-	"github.com/micro/services/currency/handler"
-	pb "github.com/micro/services/currency/proto"
+	"time"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/currency/handler"
+	pb "github.com/micro/services/currency/proto"
+	"github.com/patrickmn/go-cache"
 )
 
 func main() {
@@ -35,7 +37,8 @@ func main() {
 
 	// Register handler
 	pb.RegisterCurrencyHandler(srv.Server(), &handler.Currency{
-		Api: api + key,
+		Api:   api + key,
+		Cache: cache.New(5*time.Minute, 10*time.Minute),
 	})
 
 	// Run service
