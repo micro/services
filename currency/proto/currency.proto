@@ -5,8 +5,23 @@ package currency;
 option go_package = "./proto;currency";
 
 service Currency {
+	rpc Codes(CodesRequest) returns (CodesResponse) {}
 	rpc Rates(RatesRequest) returns (RatesResponse) {}
 	rpc Convert(ConvertRequest) returns (ConvertResponse) {}
+}
+
+message Code {
+	// e.g USD
+	string symbol = 1;
+	// e.g United States Dollar
+	string name = 2;
+}
+
+// Codes returns the supported currency codes for the API
+message CodesRequest {}
+
+message CodesResponse {
+	repeated Code codes = 1;
 }
 
 // Rates returns the currency rates for a given code e.g USD
@@ -21,7 +36,6 @@ message RatesResponse {
 	// The rates for the given code as key-value pairs code:rate
 	map<string, double> rates = 2;
 }
-
 
 // Convert returns the currency conversion rate between two pairs e.g USD/GBP
 message ConvertRequest {

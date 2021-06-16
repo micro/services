@@ -42,6 +42,7 @@ func NewCurrencyEndpoints() []*api.Endpoint {
 // Client API for Currency service
 
 type CurrencyService interface {
+	Codes(ctx context.Context, in *CodesRequest, opts ...client.CallOption) (*CodesResponse, error)
 	Rates(ctx context.Context, in *RatesRequest, opts ...client.CallOption) (*RatesResponse, error)
 	Convert(ctx context.Context, in *ConvertRequest, opts ...client.CallOption) (*ConvertResponse, error)
 }
@@ -56,6 +57,16 @@ func NewCurrencyService(name string, c client.Client) CurrencyService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *currencyService) Codes(ctx context.Context, in *CodesRequest, opts ...client.CallOption) (*CodesResponse, error) {
+	req := c.c.NewRequest(c.name, "Currency.Codes", in)
+	out := new(CodesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *currencyService) Rates(ctx context.Context, in *RatesRequest, opts ...client.CallOption) (*RatesResponse, error) {
@@ -81,12 +92,14 @@ func (c *currencyService) Convert(ctx context.Context, in *ConvertRequest, opts 
 // Server API for Currency service
 
 type CurrencyHandler interface {
+	Codes(context.Context, *CodesRequest, *CodesResponse) error
 	Rates(context.Context, *RatesRequest, *RatesResponse) error
 	Convert(context.Context, *ConvertRequest, *ConvertResponse) error
 }
 
 func RegisterCurrencyHandler(s server.Server, hdlr CurrencyHandler, opts ...server.HandlerOption) error {
 	type currency interface {
+		Codes(ctx context.Context, in *CodesRequest, out *CodesResponse) error
 		Rates(ctx context.Context, in *RatesRequest, out *RatesResponse) error
 		Convert(ctx context.Context, in *ConvertRequest, out *ConvertResponse) error
 	}
@@ -99,6 +112,10 @@ func RegisterCurrencyHandler(s server.Server, hdlr CurrencyHandler, opts ...serv
 
 type currencyHandler struct {
 	CurrencyHandler
+}
+
+func (h *currencyHandler) Codes(ctx context.Context, in *CodesRequest, out *CodesResponse) error {
+	return h.CurrencyHandler.Codes(ctx, in, out)
 }
 
 func (h *currencyHandler) Rates(ctx context.Context, in *RatesRequest, out *RatesResponse) error {

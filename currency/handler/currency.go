@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
@@ -16,6 +17,54 @@ import (
 type Currency struct {
 	Api   string
 	Cache *cache.Cache
+}
+
+func (c *Currency) Codes(ctx context.Context, req *pb.CodesRequest, rsp *pb.CodesResponse) error {
+	// try the cache
+	if codes, ok := c.Cache.Get("codes"); ok {
+		rsp.Codes = codes.([]*pb.Code)
+		return nil
+	}
+
+	resp, err := http.Get(c.Api + "/codes")
+	if err != nil {
+		logger.Errorf("Failed to get codes: %v\n", err)
+		return errors.InternalServerError("currency.codes", "failed to get codes")
+	}
+	defer resp.Body.Close()
+
+	b, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get codes (non 200): %d %v\n", resp.StatusCode, string(b))
+		return errors.InternalServerError("currency.codes", "failed to get codes")
+	}
+
+	var respBody map[string]interface{}
+
+	if err := json.Unmarshal(b, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal codes: %v\n", err)
+		return errors.InternalServerError("currency.codes", "failed to get codes")
+	}
+
+	codes, ok := respBody["supported_codes"].([]interface{})
+	if !ok {
+		logger.Errorf("Failed to convert rates to map[string]interface{}: %v\n", ok)
+		return errors.InternalServerError("currency.rates", "failed to get rates")
+	}
+
+	for _, code := range codes {
+		c := code.([]interface{})
+		rsp.Codes = append(rsp.Codes, &pb.Code{
+			Symbol: c[0].(string),
+			Name: c[1].(string),
+		})
+	}
+
+	// set for a period of time
+	c.Cache.Set("codes", rsp.Codes, time.Hour)
+
+	return nil
 }
 
 func (c *Currency) Rates(ctx context.Context, req *pb.RatesRequest, rsp *pb.RatesResponse) error {
