@@ -16,16 +16,13 @@
             "id": "usrid-1"
         },
         "response": {
-            "accounts": [
-                {
-                    "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-                    "username": "usrname-1",
-                    "email": "joe@example.com",
-                    "created": "1623677579",
-                    "updated": "1623677579"
-                }
-            ]
-        
+            "account": {
+                "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+                "username": "usrname-1",
+                "email": "joe@example.com",
+                "created": "1623677579",
+                "updated": "1623677579"
+            }
         }
     },{
         "title": "Read account by username or email",
@@ -33,16 +30,13 @@
             "username": "usrname-1"
         },
         "response": {
-            "accounts": [
-                {
-                    "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-                    "username": "usrname-1",
-                    "email": "joe@example.com",
-                    "created": "1623677579",
-                    "updated": "1623677579"
-                }
-            ]
-        
+            "account": {
+                "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+                "username": "usrname-1",
+                "email": "joe@example.com",
+                "created": "1623677579",
+                "updated": "1623677579"
+            }
         }
     },{
         "title": "Read account by email",
@@ -50,16 +44,13 @@
             "email": "joe@example.com"
         },
         "response": {
-            "accounts": [
-                {
-                    "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-                    "username": "usrname-1",
-                    "email": "joe@example.com",
-                    "created": "1623677579",
-                    "updated": "1623677579"
-                }
-            ]
-        
+            "account": {
+                "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+                "username": "usrname-1",
+                "email": "joe@example.com",
+                "created": "1623677579",
+                "updated": "1623677579"
+            }
         }
     }]
 }

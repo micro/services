@@ -143,12 +143,12 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 	return err
 }
 
-func (domain *Domain) Read(ctx context.Context, id string) (*user.Account, error) {
+func (domain *Domain) Read(ctx context.Context, userId string) (*user.Account, error) {
 	user := &user.Account{}
-	if len(id) == 0 {
+	if len(userId) == 0 {
 		return nil, fmt.Errorf("no id provided")
 	}
-	q := fmt.Sprintf("id == '%v'", id)
+	q := fmt.Sprintf("id == '%v'", userId)
 	logger.Infof("Running query: %v", q)
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
 		Table: "users",
@@ -211,21 +211,12 @@ func (domain *Domain) UpdatePassword(ctx context.Context, id string, salt string
 	return err
 }
 
-func (domain *Domain) SaltAndPassword(ctx context.Context, username, email string) (string, string, error) {
-	var query string
-	if len(username) > 0 {
-		query = fmt.Sprintf("username == '%v'", username)
-	} else if len(email) > 0 {
-		query = fmt.Sprintf("email == '%v'", email)
-	} else {
-		return "", "", errors.New("username and email cannot be blank")
-	}
-
+func (domain *Domain) SaltAndPassword(ctx context.Context, userId string) (string, string, error) {
 	password := &pw{}
 
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
 		Table: "passwords",
-		Query: query,
+		Query: fmt.Sprintf("id == '%v'", userId),
 	})
 	if err != nil {
 		return "", "", err
