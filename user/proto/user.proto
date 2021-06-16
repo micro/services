@@ -26,6 +26,10 @@ message Account {
 	int64 created = 4;
 	// unix timestamp
 	int64 updated = 5;
+	bool verified = 6;
+	int64 verificationDate = 7;
+	// Store any custom data you want about your users in this fields.
+	map<string,string> profile = 8;
 }
 
 message Session {
@@ -35,6 +39,15 @@ message Session {
 	int64 created = 4;
 	// unix timestamp
 	int64 expires = 5;
+}
+
+message Email {
+	string subject = 1;
+	// Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
+	// The variable will be replaced with an actual url that will look similar to this:
+	// 'api.m3o.com/user/verify?token=a-verification-token&redirectUrl=yoursite.com/mypage'
+	// HTML emails are not available currently.
+	string textContent = 2;
 }
 
 // Create a new user account
@@ -47,6 +60,12 @@ message CreateRequest {
 	string email = 3;
 	// the user password
 	string password = 4;
+	// If provided, we will send a verification email
+	// to the user being signed up. Email from will be 'welcome@m3o.com',
+	// but you can provide the title and contents.
+	// Use $micro_verification_link template variable in the content.
+	Email verificationEmail = 5;
+	string redirectUrl = 6;
 }
 
 message CreateResponse {
@@ -130,4 +149,3 @@ message LogoutRequest {
 
 message LogoutResponse {
 }
-

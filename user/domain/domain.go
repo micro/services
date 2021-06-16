@@ -5,12 +5,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
+	"os"
+	"strings"
 	"time"
 
 	_struct "github.com/golang/protobuf/ptypes/struct"
+	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	user "github.com/micro/services/user/proto"
+
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 type pw struct {
@@ -19,14 +27,39 @@ type pw struct {
 	Salt     string `json:"salt"`
 }
 
+type verificationToken struct {
+	ID     string `json:"id"`
+	UserID string `json:"userId"`
+}
+
 type Domain struct {
-	db db.DbService
+	db         db.DbService
+	sengridKey string
 }
 
 func New(db db.DbService) *Domain {
-	return &Domain{
-		db: db,
+	var key string
+	cfg, err := config.Get("micro.user.sendgrid.api_key")
+	if err != nil {
+		key = cfg.String("")
 	}
+	return &Domain{
+		sengridKey: key,
+		db:         db,
+	}
+}
+
+func (domain *Domain) SendEmail(toAddress, toUsername, subject, textContent, token, redirectUrl string) error {
+	from := mail.NewEmail("Micro Verification", "noreply@m3o.com")
+	to := mail.NewEmail(toUsername, toAddress)
+	textContent = strings.Replace(textContent, "$micro_verification_link", "https://api.m3o.com/user/verify?token="+token+"&redirectUrl="+url.QueryEscape(redirectUrl), -1)
+	message := mail.NewSingleEmail(from, subject, to, textContent, "")
+	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
+	response, err := client.Send(message)
+	if err != nil {
+		logger.Error(response)
+	}
+	return err
 }
 
 func (domain *Domain) CreateSession(ctx context.Context, sess *user.Session) error {
@@ -57,6 +90,44 @@ func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 		Id:    id,
 	})
 	return err
+}
+
+// ReadToken returns the user id
+func (domain *Domain) ReadToken(ctx context.Context, tokenId string) (string, error) {
+	token := &verificationToken{}
+
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table: "tokens",
+		Query: fmt.Sprintf("id == '%v'", tokenId),
+	})
+	if err != nil {
+		return "", err
+	}
+	if len(rsp.Records) == 0 {
+		return "", errors.New("not found")
+	}
+	m, _ := rsp.Records[0].MarshalJSON()
+	json.Unmarshal(m, token)
+	return token.UserID, nil
+}
+
+// CreateToken returns the created and saved token
+func (domain *Domain) CreateToken(ctx context.Context, userId string) (string, error) {
+	s := &_struct.Struct{}
+	tokenId := uuid.New().String()
+	jso, _ := json.Marshal(verificationToken{
+		ID:     tokenId,
+		UserID: userId,
+	})
+	err := s.UnmarshalJSON(jso)
+	if err != nil {
+		return "", err
+	}
+	_, err = domain.db.Update(ctx, &db.UpdateRequest{
+		Table:  "tokens",
+		Record: s,
+	})
+	return tokenId, err
 }
 
 func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session, error) {

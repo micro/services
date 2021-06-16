@@ -32,6 +32,8 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
 	github.com/pquerna/otp v1.3.0
+	github.com/sendgrid/rest v2.6.4+incompatible // indirect
+	github.com/sendgrid/sendgrid-go v3.10.0+incompatible
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.7.0
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
