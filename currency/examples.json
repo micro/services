@@ -1,0 +1,53 @@
+
+{
+    "rates": [{
+        "title": "Get rates for USD",
+        "description": "Returns the rates for USD (sample response)",
+        "request": {
+            "code": "USD"
+        },
+        "response": {
+            "code": "usd",
+            "rates": {
+                "AED": 3.6725,
+                "AFN": 79.0514,
+                "ALL": 101.6054,
+                "AMD": 515.68,
+                "ANG": 1.79,
+                "AOA": 646.8737,
+                "ARS": 95.3433,
+                "AUD": 1.2998,
+                "AWG": 1.79,
+                "AZN": 1.7013
+            }
+        }
+    }],
+    "convert": [{
+        "title": "Convert USD to GBP",
+        "description": "Convert from USD to GBP",
+        "request": {
+            "from": "USD",
+            "to": "GBP"
+        },
+        "response": {
+            "from": "USD",
+            "to": "GBP",
+            "rate": 0.7104
+        }
+     },
+     {
+        "title": "Convert $10 USD to GBP",
+        "description": "Convert $10 from USD to GBP",
+        "request": {
+            "from": "USD",
+            "to": "GBP",
+            "amount": 10.0
+        },
+        "response": {
+            "from": "USD",
+            "to": "GBP",
+            "rate": 0.7104,
+            "amount": 7.104
+        }
+    }]
+}
