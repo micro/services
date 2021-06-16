@@ -24,10 +24,9 @@ func main() {
 			api.WithEndpoint(
 				&api.Endpoint{
 					Name:    "Verify",
-					Handler: "rpc",
+					Handler: "api",
 					Method:  []string{"GET", "POST", "OPTIONS", "PUT", "HEAD", "DELETE"},
 					Path:    []string{"/v1/user/verify"},
-					Stream:  true,
 				}),
 		))
 
