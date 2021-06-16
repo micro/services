@@ -1,6 +1,6 @@
-Currency rates and conversion
+Exchange rates and currency conversion
 
 # Currency Service
 
-Fast currency rates and conversion powered by [ExchangeRate-API](https://www.exchangerate-api.com/)
+Real time currency conversion and exchange rates powered by [ExchangeRate-API](https://www.exchangerate-api.com/). Rate updates occur every 5 minutes. 
 
