@@ -26,7 +26,7 @@ func main() {
 					Name:    "Verify",
 					Handler: "rpc",
 					Method:  []string{"GET", "POST", "OPTIONS", "PUT", "HEAD", "DELETE"},
-					Path:    []string{"^/v1/.*$"},
+					Path:    []string{"/v1/user/verify"},
 					Stream:  true,
 				}),
 		))
