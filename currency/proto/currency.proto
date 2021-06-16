@@ -12,9 +12,9 @@ service Currency {
 
 message Code {
 	// e.g USD
-	string symbol = 1;
+	string name = 1;
 	// e.g United States Dollar
-	string name = 2;
+	string currency = 2;
 }
 
 // Codes returns the supported currency codes for the API

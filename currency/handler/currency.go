@@ -56,8 +56,8 @@ func (c *Currency) Codes(ctx context.Context, req *pb.CodesRequest, rsp *pb.Code
 	for _, code := range codes {
 		c := code.([]interface{})
 		rsp.Codes = append(rsp.Codes, &pb.Code{
-			Symbol: c[0].(string),
-			Name: c[1].(string),
+			Name: c[0].(string),
+			Currency: c[1].(string),
 		})
 	}
 

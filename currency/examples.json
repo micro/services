@@ -1,5 +1,34 @@
 
 {
+    "codes": [{
+        "title": "Get supported codes",
+        "description": "Returns the supported currency codes (example response)",
+        "request": {},
+        "response": {
+            "codes": [
+                {
+                        "name": "AED",
+                        "currency": "UAE Dirham"
+                },
+                {
+                        "name": "AFN",
+                        "currency": "Afghan Afghani"
+                },
+                {
+                        "name": "ALL",
+                        "currency": "Albanian Lek"
+                },
+                {
+                        "name": "AMD",
+                        "currency": "Armenian Dram"
+                },
+                {
+                        "name": "ANG",
+                        "currency": "Netherlands Antillian Guilder"
+                }
+            ]
+        }
+    }],
     "rates": [{
         "title": "Get rates for USD",
         "description": "Returns the rates for USD (sample response)",
