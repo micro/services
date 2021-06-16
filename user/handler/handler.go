@@ -3,6 +3,7 @@ package handler
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"strings"
 	"time"
 
@@ -106,7 +107,7 @@ func (s *User) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest
 		return errors.InternalServerError("user.updatepassword", "Passwords don't math")
 	}
 
-	salt, hashed, err := s.domain.SaltAndPassword(ctx, usr.Username, usr.Email)
+	salt, hashed, err := s.domain.SaltAndPassword(ctx, usr.Id)
 	if err != nil {
 		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
@@ -137,7 +138,14 @@ func (s *User) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRes
 	username := strings.ToLower(req.Username)
 	email := strings.ToLower(req.Email)
 
-	salt, hashed, err := s.domain.SaltAndPassword(ctx, username, email)
+	accounts, err := s.domain.Search(ctx, username, email)
+	if err != nil {
+		return err
+	}
+	if len(accounts) == 0 {
+		return fmt.Errorf("account not found")
+	}
+	salt, hashed, err := s.domain.SaltAndPassword(ctx, accounts[0].Id)
 	if err != nil {
 		return err
 	}
@@ -152,11 +160,9 @@ func (s *User) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRes
 	}
 	// save session
 	sess := &pb.Session{
-		Id:       random(128),
-		Username: username,
-		Email:    email,
-		Created:  time.Now().Unix(),
-		Expires:  time.Now().Add(time.Hour * 24 * 7).Unix(),
+		Id:      random(128),
+		Created: time.Now().Unix(),
+		Expires: time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 
 	if err := s.domain.CreateSession(ctx, sess); err != nil {

@@ -31,10 +31,6 @@ message Account {
 message Session {
 	// the session id
 	string id = 1;
-	// account username
-	string username = 2;
-	// account email
-	string email = 3;
 	// unix timestamp
 	int64 created = 4;
 	// unix timestamp
@@ -54,6 +50,7 @@ message CreateRequest {
 }
 
 message CreateResponse {
+	Account account = 1;
 }
 
 // Delete an account by id
