@@ -50,6 +50,9 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	if len(req.Password) < 8 {
 		return errors.InternalServerError("user.Create.Check", "Password is less than 8 characters")
 	}
+	req.Username = strings.ToLower(req.Username)
+	req.Email = strings.ToLower(req.Email)
+
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.Password), 10)
 	if err != nil {
@@ -59,11 +62,26 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	if req.Id == "" {
 		req.Id = uuid.New().String()
 	}
-	return s.domain.Create(ctx, &pb.Account{
+	err = s.domain.Create(ctx, &pb.Account{
 		Id:       req.Id,
-		Username: strings.ToLower(req.Username),
-		Email:    strings.ToLower(req.Email),
+		Username: req.Username,
+		Email:    req.Email,
 	}, salt, pp)
+	if err != nil {
+		return err
+	}
+	if req.VerificationEmail != nil {
+		if req.RedirectUrl == "" {
+			return fmt.Errorf("redirect url is mandatory when sending verification emails")
+		}
+		token, err := s.domain.CreateToken(ctx, req.Id)
+		if err != nil {
+			return err
+		}
+		e := req.VerificationEmail
+		return s.domain.SendEmail(req.Email, req.Username, e.Subject, e.TextContent, token, req.RedirectUrl)
+	}
+	return nil
 }
 
 func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
