@@ -13,6 +13,8 @@ service User {
 	rpc Login(LoginRequest) returns (LoginResponse) {}
 	rpc Logout(LogoutRequest) returns (LogoutResponse) {}
 	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
+	rpc VerifyEmail(VerifyEmailRequest) returns(VerifyEmailResponse) {}
+	rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse) {}
 }
 
 message Account {
@@ -41,15 +43,6 @@ message Session {
 	int64 expires = 5;
 }
 
-message Email {
-	string subject = 1;
-	// Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
-	// The variable will be replaced with an actual url that will look similar to this:
-	// 'api.m3o.com/user/verify?token=a-verification-token&redirectUrl=yoursite.com/mypage'
-	// HTML emails are not available currently.
-	string textContent = 2;
-}
-
 // Create a new user account
 message CreateRequest {
 	// the acccount id
@@ -60,12 +53,6 @@ message CreateRequest {
 	string email = 3;
 	// the user password
 	string password = 4;
-	// If provided, we will send a verification email
-	// to the user being signed up. Email from will be 'welcome@m3o.com',
-	// but you can provide the title and contents.
-	// Use $micro_verification_link template variable in the content.
-	Email verificationEmail = 5;
-	string redirectUrl = 6;
 }
 
 message CreateResponse {
@@ -149,3 +136,27 @@ message LogoutRequest {
 
 message LogoutResponse {
 }
+
+message VerifyEmailRequest{
+	string token = 1;
+}
+
+message VerifyEmailResponse{
+
+}
+
+// Send a verification email
+// to the user being signed up. Email from will be 'welcome@m3o.com',
+// but you can provide the title and contents.
+// Use $micro_verification_link template variable in the content.
+message SendVerificationEmailRequest{
+	string email = 1;
+	string subject = 2;
+	// Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
+	// The variable will be replaced with an actual url that will look similar to this:
+	// 'https://user.m3o.com/user/verify?token=a-verification-token'
+	// HTML emails are not available currently.
+	string textContent = 3;
+}
+
+message SendVerificationEmailResponse{}
