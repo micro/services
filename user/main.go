@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/api"
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	"github.com/micro/services/pkg/tracing"
@@ -18,17 +17,6 @@ func main() {
 	service.Init()
 
 	handl := handler.NewUser(db.NewDbService("db", service.Client()))
-	service.Server().Handle(
-		service.Server().NewHandler(
-			handl,
-			api.WithEndpoint(
-				&api.Endpoint{
-					Name:    "Verify",
-					Handler: "api",
-					Method:  []string{"GET", "POST", "OPTIONS", "PUT", "HEAD", "DELETE"},
-					Path:    []string{"/v1/user/verify"},
-				}),
-		))
 
 	proto.RegisterUserHandler(service.Server(), handl)
 	traceCloser := tracing.SetupOpentracing("user")
