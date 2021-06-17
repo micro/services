@@ -4,6 +4,7 @@
   "category": "money",
   "pricing": {
     "Currency.Rates": 100,
-    "Currency.Convert": 100
+    "Currency.Convert": 100,
+    "Currency.History": 150
   }
 }
