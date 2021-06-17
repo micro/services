@@ -40,6 +40,12 @@ type User struct {
 	domain *domain.Domain
 }
 
+type ApiHandler struct{}
+
+func NewApiHandler() *ApiHandler {
+
+}
+
 func NewUser(db db.DbService) *User {
 	return &User{
 		domain: domain.New(db),
