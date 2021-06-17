@@ -40,12 +40,6 @@ type User struct {
 	domain *domain.Domain
 }
 
-type ApiHandler struct{}
-
-func NewApiHandler() *ApiHandler {
-
-}
-
 func NewUser(db db.DbService) *User {
 	return &User{
 		domain: domain.New(db),
@@ -75,17 +69,6 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	}, salt, pp)
 	if err != nil {
 		return err
-	}
-	if req.VerificationEmail != nil {
-		if req.RedirectUrl == "" {
-			return fmt.Errorf("redirect url is mandatory when sending verification emails")
-		}
-		token, err := s.domain.CreateToken(ctx, req.Id)
-		if err != nil {
-			return err
-		}
-		e := req.VerificationEmail
-		return s.domain.SendEmail(req.Email, req.Username, e.Subject, e.TextContent, token, req.RedirectUrl)
 	}
 	return nil
 }
@@ -207,4 +190,26 @@ func (s *User) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp 
 	}
 	rsp.Session = sess
 	return nil
+}
+
+func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp *pb.VerifyEmailResponse) error {
+	userId, err := s.domain.ReadToken(ctx, req.Token)
+	if err != nil {
+		return err
+	}
+	user, err := s.domain.Read(ctx, userId)
+	user.Verified = true
+	return s.domain.Update(ctx, user)
+}
+
+func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificationEmailRequest, rsp *pb.SendVerificationEmailResponse) error {
+	users, err := s.domain.Search(ctx, "", req.Email)
+	if err != nil {
+		return err
+	}
+	token, err := s.domain.CreateToken(ctx, users[0].Id)
+	if err != nil {
+		return err
+	}
+	return s.domain.SendEmail(req.Email, users[0].Username, req.Subject, req.TextContent, token)
 }
