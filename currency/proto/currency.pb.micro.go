@@ -45,6 +45,7 @@ type CurrencyService interface {
 	Codes(ctx context.Context, in *CodesRequest, opts ...client.CallOption) (*CodesResponse, error)
 	Rates(ctx context.Context, in *RatesRequest, opts ...client.CallOption) (*RatesResponse, error)
 	Convert(ctx context.Context, in *ConvertRequest, opts ...client.CallOption) (*ConvertResponse, error)
+	History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error)
 }
 
 type currencyService struct {
@@ -89,12 +90,23 @@ func (c *currencyService) Convert(ctx context.Context, in *ConvertRequest, opts 
 	return out, nil
 }
 
+func (c *currencyService) History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error) {
+	req := c.c.NewRequest(c.name, "Currency.History", in)
+	out := new(HistoryResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Currency service
 
 type CurrencyHandler interface {
 	Codes(context.Context, *CodesRequest, *CodesResponse) error
 	Rates(context.Context, *RatesRequest, *RatesResponse) error
 	Convert(context.Context, *ConvertRequest, *ConvertResponse) error
+	History(context.Context, *HistoryRequest, *HistoryResponse) error
 }
 
 func RegisterCurrencyHandler(s server.Server, hdlr CurrencyHandler, opts ...server.HandlerOption) error {
@@ -102,6 +114,7 @@ func RegisterCurrencyHandler(s server.Server, hdlr CurrencyHandler, opts ...serv
 		Codes(ctx context.Context, in *CodesRequest, out *CodesResponse) error
 		Rates(ctx context.Context, in *RatesRequest, out *RatesResponse) error
 		Convert(ctx context.Context, in *ConvertRequest, out *ConvertResponse) error
+		History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error
 	}
 	type Currency struct {
 		currency
@@ -124,4 +137,8 @@ func (h *currencyHandler) Rates(ctx context.Context, in *RatesRequest, out *Rate
 
 func (h *currencyHandler) Convert(ctx context.Context, in *ConvertRequest, out *ConvertResponse) error {
 	return h.CurrencyHandler.Convert(ctx, in, out)
+}
+
+func (h *currencyHandler) History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error {
+	return h.CurrencyHandler.History(ctx, in, out)
 }

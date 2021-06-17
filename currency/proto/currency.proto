@@ -8,6 +8,7 @@ service Currency {
 	rpc Codes(CodesRequest) returns (CodesResponse) {}
 	rpc Rates(RatesRequest) returns (RatesResponse) {}
 	rpc Convert(ConvertRequest) returns (ConvertResponse) {}
+	rpc History(HistoryRequest) returns (HistoryResponse) {}
 }
 
 message Code {
@@ -22,6 +23,23 @@ message CodesRequest {}
 
 message CodesResponse {
 	repeated Code codes = 1;
+}
+
+// Returns the historic rates for a currency on a given date
+message HistoryRequest {
+	// currency code e.g USD
+	string code = 1;
+	// date formatted as YYYY-MM-DD
+	string date = 2;
+}
+
+message HistoryResponse {
+	// The code of the request
+	string code = 1;
+	// The date requested
+	string date = 2;
+	// The rate for the day as code:rate
+	map<string, double> rates = 3;
 }
 
 // Rates returns the currency rates for a given code e.g USD

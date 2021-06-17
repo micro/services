@@ -7,11 +7,17 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"regexp"
+	"strings"
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/currency/proto"
 	"github.com/patrickmn/go-cache"
+)
+
+var (
+	re = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 )
 
 type Currency struct {
@@ -66,6 +72,74 @@ func (c *Currency) Codes(ctx context.Context, req *pb.CodesRequest, rsp *pb.Code
 
 	return nil
 }
+
+func (c *Currency) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
+	if len(req.Code) == 0 {
+		return errors.BadRequest("currency.rates", "missing code")
+	}
+	if len(req.Code) != 3 {
+		return errors.BadRequest("currency.rates", "code is invalid")
+	}
+
+	if len(req.Date) == 0 {
+		return errors.BadRequest("currency.history", "missing date")
+	}
+
+	if !re.MatchString(req.Date) {
+		return errors.BadRequest("currency.history", "invalid date")
+	}
+
+	// try the cache
+	if rates, ok := c.Cache.Get("history:" + req.Code+req.Date); ok {
+		rsp.Code = req.Code
+		rsp.Date = req.Date
+		rsp.Rates = rates.(map[string]float64)
+		return nil
+	}
+
+	parts := strings.Split(req.Date, "-")
+
+	resp, err := http.Get(fmt.Sprintf("%s/history/%s/%s/%s/%s", c.Api, req.Code, parts[0], parts[1], parts[2]))
+	if err != nil {
+		logger.Errorf("Failed to get historic rates: %v\n", err)
+		return errors.InternalServerError("currency.history", "failed to get history")
+	}
+	defer resp.Body.Close()
+
+	b, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get historic rates (non 200): %d %v\n", resp.StatusCode, string(b))
+		return errors.InternalServerError("currency.history", "failed to get history")
+	}
+
+	var respBody map[string]interface{}
+
+	if err := json.Unmarshal(b, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal historic rates: %v\n", err)
+		return errors.InternalServerError("currency.history", "failed to get history")
+	}
+
+	rates, ok := respBody["conversion_rates"].(map[string]interface{})
+	if !ok {
+		logger.Errorf("Failed to convert historic rates to map[string]interface{}: %v\n", ok)
+		return errors.InternalServerError("currency.history", "failed to get history")
+	}
+
+	rsp.Code = req.Code
+	rsp.Date = req.Date
+	rsp.Rates = make(map[string]float64)
+
+	for code, rate := range rates {
+		rsp.Rates[code], _ = rate.(float64)
+	}
+
+	// set for a period of time
+	c.Cache.Set("history:"+req.Code+req.Date, rsp.Rates, time.Hour * 24)
+
+	return nil
+}
+
 
 func (c *Currency) Rates(ctx context.Context, req *pb.RatesRequest, rsp *pb.RatesResponse) error {
 	if len(req.Code) == 0 {
