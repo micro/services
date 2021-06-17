@@ -1,0 +1,15 @@
+{
+  "name": "netlify-functions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "verify.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@m3o/m3o-node": "^0.0.7",
+    "@netlify/zip-it-and-ship-it": "^4.4.1"
+  }
+}
