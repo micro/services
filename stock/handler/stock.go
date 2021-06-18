@@ -58,8 +58,8 @@ func (s *Stock) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteRe
         }
 
 	rsp.Symbol = respBody.Symbol
-	rsp.Ask = respBody.Ask
-	rsp.Bid = respBody.Bid
+	rsp.AskPrice = respBody.Ask
+	rsp.BidPrice = respBody.Bid
 	rsp.AskSize = respBody.Asize
 	rsp.BidSize = respBody.Bsize
 	rsp.Timestamp = time.Unix(0, respBody.Timestamp * int64(time.Millisecond)).UTC().Format(time.RFC3339Nano)

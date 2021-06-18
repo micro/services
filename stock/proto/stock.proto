@@ -32,9 +32,9 @@ message QuoteResponse {
 	// the stock symbol
 	string symbol = 1;
 	// the asking price
-	double ask = 2;
+	double ask_price = 2;
 	// the bidding price
-	double bid = 3;
+	double bid_price = 3;
 	// the ask size
 	int32 ask_size = 4;
 	// the bid size
