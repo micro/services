@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package stock;
+
+option go_package = "./proto;stock";
+
+service Stock {
+	rpc Quote(QuoteRequest) returns (QuoteResponse) {}
+	rpc Price(PriceRequest) returns (PriceResponse) {}
+}
+
+// Get the last price for a given stock ticker
+message PriceRequest {
+	// stock symbol e.g AAPL
+	string symbol = 1;
+}
+
+message PriceResponse {
+	// the stock symbol e.g AAPL
+	string symbol = 1;
+	// the last price
+	double price = 2;
+}
+
+// Get the last quote for the stock
+message QuoteRequest {
+	// the stock symbol e.g AAPL
+	string symbol = 1;
+}
+
+message QuoteResponse {
+	// the stock symbol
+	string symbol = 1;
+	// the asking price
+	double ask = 2;
+	// the bidding price
+	double bid = 3;
+	// the ask size
+	int32 ask_size = 4;
+	// the bid size
+	int32 bid_size = 5;
+	// the UTC timestamp of the quote
+	string timestamp = 6;
+}
+

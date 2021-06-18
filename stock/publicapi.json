@@ -1,0 +1,9 @@
+{
+  "name": "stock",
+  "icon": "📈",
+  "category": "money",
+  "pricing": {
+    "Stock.Price": 20,
+    "Stock.Quote": 20
+  }
+}
