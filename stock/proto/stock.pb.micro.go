@@ -44,6 +44,7 @@ func NewStockEndpoints() []*api.Endpoint {
 type StockService interface {
 	Quote(ctx context.Context, in *QuoteRequest, opts ...client.CallOption) (*QuoteResponse, error)
 	Price(ctx context.Context, in *PriceRequest, opts ...client.CallOption) (*PriceResponse, error)
+	History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error)
 }
 
 type stockService struct {
@@ -78,17 +79,29 @@ func (c *stockService) Price(ctx context.Context, in *PriceRequest, opts ...clie
 	return out, nil
 }
 
+func (c *stockService) History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error) {
+	req := c.c.NewRequest(c.name, "Stock.History", in)
+	out := new(HistoryResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Stock service
 
 type StockHandler interface {
 	Quote(context.Context, *QuoteRequest, *QuoteResponse) error
 	Price(context.Context, *PriceRequest, *PriceResponse) error
+	History(context.Context, *HistoryRequest, *HistoryResponse) error
 }
 
 func RegisterStockHandler(s server.Server, hdlr StockHandler, opts ...server.HandlerOption) error {
 	type stock interface {
 		Quote(ctx context.Context, in *QuoteRequest, out *QuoteResponse) error
 		Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error
+		History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error
 	}
 	type Stock struct {
 		stock
@@ -107,4 +120,8 @@ func (h *stockHandler) Quote(ctx context.Context, in *QuoteRequest, out *QuoteRe
 
 func (h *stockHandler) Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error {
 	return h.StockHandler.Price(ctx, in, out)
+}
+
+func (h *stockHandler) History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error {
+	return h.StockHandler.History(ctx, in, out)
 }

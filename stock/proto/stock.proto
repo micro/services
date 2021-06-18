@@ -7,6 +7,7 @@ option go_package = "./proto;stock";
 service Stock {
 	rpc Quote(QuoteRequest) returns (QuoteResponse) {}
 	rpc Price(PriceRequest) returns (PriceResponse) {}
+	rpc History(HistoryRequest) returns (HistoryResponse) {}
 }
 
 // Get the last price for a given stock ticker
@@ -43,3 +44,28 @@ message QuoteResponse {
 	string timestamp = 6;
 }
 
+
+// Get the historic open-close for a given day
+message HistoryRequest {
+	// the stock symbol e.g AAPL
+	string stock = 1;
+	// date to retrieve as YYYY-MM-DD
+	string date = 2;
+}
+
+message HistoryResponse {
+	// the stock symbol
+	string symbol = 1;
+	// the open price
+	double open = 2;
+	// the close price
+	double close = 3;
+	// the peak price
+	double high = 4;
+	// the low price
+	double low = 5;
+	// the volume
+	int32 volume = 6;
+	// the date
+	string date = 7;
+}

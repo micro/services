@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/patrickmn/go-cache"
@@ -13,6 +14,11 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/stock/proto"
 )
+
+var (
+        re = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
+)
+
 
 type Stock struct{
 	Api string
@@ -29,6 +35,57 @@ type Quote struct {
 	Timestamp int64
 }
 
+type History struct {
+	Symbol string
+	Open float64
+	High float64
+	Low float64
+	Close float64
+	Volume int32
+	From string
+}
+
+func (s *Stock) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
+	if len(req.Stock) < 0 || len(req.Stock) > 5 {
+		return errors.BadRequest("stock.history", "invalid symbol")
+	}
+
+	if !re.MatchString(req.Date) {
+		return errors.BadRequest("stock.history", "invalid date")
+	}
+
+	uri := fmt.Sprintf("%shistory/stock/open-close?stock=%s&date=%s&apikey=%s", s.Api, req.Stock, req.Date, s.Key)
+
+        resp, err := http.Get(uri)
+        if err != nil {
+                logger.Errorf("Failed to get history: %v\n", err)
+                return errors.InternalServerError("stock.history", "failed to get history")
+        }
+        defer resp.Body.Close()
+
+        b, _ := ioutil.ReadAll(resp.Body)
+
+        if resp.StatusCode != 200 {
+                logger.Errorf("Failed to get history (non 200): %d %v\n", resp.StatusCode, string(b))
+                return errors.InternalServerError("stock.history", "failed to get history")
+        }
+
+        var respBody History
+
+        if err := json.Unmarshal(b, &respBody); err != nil {
+                logger.Errorf("Failed to unmarshal history: %v\n", err)
+                return errors.InternalServerError("stock.history", "failed to get history")
+        }
+
+	rsp.Symbol = respBody.Symbol
+	rsp.Open = respBody.Open
+	rsp.Close = respBody.Close
+	rsp.High = respBody.High
+	rsp.Low = respBody.Low
+	rsp.Date = respBody.From
+
+	return nil
+}
 func (s *Stock) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteResponse) error {
 	if len(req.Symbol) < 0 || len(req.Symbol) > 5 {
 		return errors.BadRequest("stock.quote", "invalid symbol")

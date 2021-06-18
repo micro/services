@@ -25,5 +25,21 @@
             "bid_size": 4,
             "timestamp": "2021-06-18T13:49:23.678Z"
         }
+    }],
+    "history": [{
+        "title": "Get historic data",
+        "description": "Returns historic stock data for a given date",
+        "request": {
+            "symbol": "AAPL",
+            "date": "2020-10-01"
+        },
+        "response": {
+            "symbol": "AAPL",
+            "open": 117.64,
+            "close": 116.79,
+            "high": 117.72,
+            "low": 115.83,
+            "date": "2020-10-01"
+        }
     }]
 }
