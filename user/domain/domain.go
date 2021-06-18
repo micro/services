@@ -123,7 +123,7 @@ func (domain *Domain) CreateToken(ctx context.Context, userId string) (string, e
 	if err != nil {
 		return "", err
 	}
-	_, err = domain.db.Update(ctx, &db.UpdateRequest{
+	_, err = domain.db.Create(ctx, &db.CreateRequest{
 		Table:  "tokens",
 		Record: s,
 	})
