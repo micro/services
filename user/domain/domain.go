@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -48,10 +49,10 @@ func New(db db.DbService) *Domain {
 	}
 }
 
-func (domain *Domain) SendEmail(toAddress, toUsername, subject, textContent, token string) error {
+func (domain *Domain) SendEmail(toAddress, toUsername, subject, textContent, token, redirctUrl string) error {
 	from := mail.NewEmail("Micro Verification", "noreply@m3o.com")
 	to := mail.NewEmail(toUsername, toAddress)
-	textContent = strings.Replace(textContent, "$micro_verification_link", "https://api.m3o.com/user/verify?token="+token, -1)
+	textContent = strings.Replace(textContent, "$micro_verification_link", "https://api.m3o.com/user/verify?token="+token+"&redirectUrl"+url.QueryEscape(redirctUrl), -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
 	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
 	response, err := client.Send(message)
