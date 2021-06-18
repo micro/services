@@ -1114,7 +1114,7 @@ func (*VerifyEmailResponse) Descriptor() ([]byte, []int) {
 }
 
 // Send a verification email
-// to the user being signed up. Email from will be 'welcome@m3o.com',
+// to the user being signed up. Email from will be 'support@m3o.com',
 // but you can provide the title and contents.
 // Use $micro_verification_link template variable in the content.
 type SendVerificationEmailRequest struct {
