@@ -4,6 +4,7 @@
   "category": "money",
   "pricing": {
     "Stock.Price": 20,
-    "Stock.Quote": 20
+    "Stock.Quote": 20,
+    "Stock.History": 35
   }
 }
