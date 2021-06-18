@@ -30,7 +30,7 @@
         "title": "Get historic data",
         "description": "Returns historic stock data for a given date",
         "request": {
-            "symbol": "AAPL",
+            "stock": "AAPL",
             "date": "2020-10-01"
         },
         "response": {
