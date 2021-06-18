@@ -59,7 +59,7 @@ func (domain *Domain) SendEmail(toAddress, toUsername, subject, textContent, tok
 	}
 	from := mail.NewEmail(subject, "support@m3o.com")
 	to := mail.NewEmail(toUsername, toAddress)
-	textContent = strings.Replace(textContent, "$micro_verification_link", "https://angry-cori-854281.netlify.app?token="+token+"&redirectUrl"+url.QueryEscape(redirctUrl), -1)
+	textContent = strings.Replace(textContent, "$micro_verification_link", "https://angry-cori-854281.netlify.app?token="+token+"&redirectUrl="+url.QueryEscape(redirctUrl), -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
 	client := sendgrid.NewSendClient(domain.sengridKey)
 	response, err := client.Send(message)
