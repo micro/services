@@ -55,9 +55,8 @@ func (domain *Domain) SendEmail(toAddress, toUsername, subject, textContent, tok
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
 	client := sendgrid.NewSendClient(domain.sengridKey)
 	response, err := client.Send(message)
-	if err != nil {
-		logger.Error(response)
-	}
+	logger.Info(response)
+
 	return err
 }
 
