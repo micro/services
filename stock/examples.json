@@ -1,0 +1,29 @@
+
+{
+    "price": [{
+        "title": "Get a stock price",
+        "description": "Returns the last traded price of a stock",
+        "request": {
+            "symbol": "AAPL"
+        },
+        "response": {
+            "symbol": "AAPL",
+            "price": 131.265
+        }
+    }],
+    "quote": [{
+        "title": "Get a stock quote",
+        "description": "Returns the last quote for a stock including bid and ask prices",
+        "request": {
+            "symbol": "AAPL"
+        },
+        "response": {
+            "symbol": "AAPL",
+            "ask": 131.12,
+            "bid": 131.11,
+            "ask_size": 7,
+            "bid_size": 4,
+            "timestamp": "2021-06-18T13:49:23.678Z"
+        }
+    }]
+}
