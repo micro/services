@@ -39,8 +39,13 @@ type Domain struct {
 func New(db db.DbService) *Domain {
 	var key string
 	cfg, err := config.Get("micro.user.sendgrid.api_key")
-	if err != nil {
+	if err == nil {
 		key = cfg.String("")
+	}
+	if len(key) == 0 {
+		logger.Info("No email key found")
+	} else {
+		logger.Info("Email key found")
 	}
 	return &Domain{
 		sengridKey: key,
