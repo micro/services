@@ -49,6 +49,9 @@ func New(db db.DbService) *Domain {
 }
 
 func (domain *Domain) SendEmail(toAddress, toUsername, subject, textContent, token, redirctUrl string) error {
+	if domain.sengridKey == "" {
+		return fmt.Errorf("empty email api key")
+	}
 	from := mail.NewEmail("Micro Verification", "support@m3o.com")
 	to := mail.NewEmail(toUsername, toAddress)
 	textContent = strings.Replace(textContent, "$micro_verification_link", "https://angry-cori-854281.netlify.app?token="+token+"&redirectUrl"+url.QueryEscape(redirctUrl), -1)
