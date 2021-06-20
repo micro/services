@@ -9,40 +9,39 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/patrickmn/go-cache"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/stock/proto"
+	"github.com/patrickmn/go-cache"
 )
 
 var (
-        re = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
+	re = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 )
 
-
-type Stock struct{
-	Api string
-	Key string
+type Stock struct {
+	Api   string
+	Key   string
 	Cache *cache.Cache
 }
 
 type Quote struct {
-	Symbol string
-	Ask float64
-	Bid float64
-	Asize int32
-	Bsize int32
+	Symbol    string
+	Ask       float64
+	Bid       float64
+	Asize     int32
+	Bsize     int32
 	Timestamp int64
 }
 
 type History struct {
 	Symbol string
-	Open float64
-	High float64
-	Low float64
-	Close float64
+	Open   float64
+	High   float64
+	Low    float64
+	Close  float64
 	Volume int32
-	From string
+	From   string
 }
 
 func (s *Stock) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
@@ -56,26 +55,26 @@ func (s *Stock) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.His
 
 	uri := fmt.Sprintf("%shistory/stock/open-close?stock=%s&date=%s&apikey=%s", s.Api, req.Stock, req.Date, s.Key)
 
-        resp, err := http.Get(uri)
-        if err != nil {
-                logger.Errorf("Failed to get history: %v\n", err)
-                return errors.InternalServerError("stock.history", "failed to get history")
-        }
-        defer resp.Body.Close()
+	resp, err := http.Get(uri)
+	if err != nil {
+		logger.Errorf("Failed to get history: %v\n", err)
+		return errors.InternalServerError("stock.history", "failed to get history")
+	}
+	defer resp.Body.Close()
 
-        b, _ := ioutil.ReadAll(resp.Body)
+	b, _ := ioutil.ReadAll(resp.Body)
 
-        if resp.StatusCode != 200 {
-                logger.Errorf("Failed to get history (non 200): %d %v\n", resp.StatusCode, string(b))
-                return errors.InternalServerError("stock.history", "failed to get history")
-        }
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get history (non 200): %d %v\n", resp.StatusCode, string(b))
+		return errors.InternalServerError("stock.history", "failed to get history")
+	}
 
-        var respBody History
+	var respBody History
 
-        if err := json.Unmarshal(b, &respBody); err != nil {
-                logger.Errorf("Failed to unmarshal history: %v\n", err)
-                return errors.InternalServerError("stock.history", "failed to get history")
-        }
+	if err := json.Unmarshal(b, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal history: %v\n", err)
+		return errors.InternalServerError("stock.history", "failed to get history")
+	}
 
 	rsp.Symbol = respBody.Symbol
 	rsp.Open = respBody.Open
@@ -83,7 +82,7 @@ func (s *Stock) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.His
 	rsp.High = respBody.High
 	rsp.Low = respBody.Low
 	rsp.Date = respBody.From
-
+	rsp.Volume = respBody.Volume
 	return nil
 }
 func (s *Stock) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteResponse) error {
@@ -93,33 +92,33 @@ func (s *Stock) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteRe
 
 	uri := fmt.Sprintf("%slast/stock/%s?apikey=%s", s.Api, req.Symbol, s.Key)
 
-        resp, err := http.Get(uri)
-        if err != nil {
-                logger.Errorf("Failed to get quote: %v\n", err)
-                return errors.InternalServerError("stock.quote", "failed to get quote")
-        }
-        defer resp.Body.Close()
+	resp, err := http.Get(uri)
+	if err != nil {
+		logger.Errorf("Failed to get quote: %v\n", err)
+		return errors.InternalServerError("stock.quote", "failed to get quote")
+	}
+	defer resp.Body.Close()
 
-        b, _ := ioutil.ReadAll(resp.Body)
+	b, _ := ioutil.ReadAll(resp.Body)
 
-        if resp.StatusCode != 200 {
-                logger.Errorf("Failed to get quote (non 200): %d %v\n", resp.StatusCode, string(b))
-                return errors.InternalServerError("stock.quote", "failed to get quote")
-        }
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get quote (non 200): %d %v\n", resp.StatusCode, string(b))
+		return errors.InternalServerError("stock.quote", "failed to get quote")
+	}
 
-        var respBody Quote
+	var respBody Quote
 
-        if err := json.Unmarshal(b, &respBody); err != nil {
-                logger.Errorf("Failed to unmarshal quote: %v\n", err)
-                return errors.InternalServerError("stock.quote", "failed to get quote")
-        }
+	if err := json.Unmarshal(b, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal quote: %v\n", err)
+		return errors.InternalServerError("stock.quote", "failed to get quote")
+	}
 
 	rsp.Symbol = respBody.Symbol
 	rsp.AskPrice = respBody.Ask
 	rsp.BidPrice = respBody.Bid
 	rsp.AskSize = respBody.Asize
 	rsp.BidSize = respBody.Bsize
-	rsp.Timestamp = time.Unix(0, respBody.Timestamp * int64(time.Millisecond)).UTC().Format(time.RFC3339Nano)
+	rsp.Timestamp = time.Unix(0, respBody.Timestamp*int64(time.Millisecond)).UTC().Format(time.RFC3339Nano)
 
 	return nil
 }
@@ -131,26 +130,26 @@ func (s *Stock) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceRe
 
 	uri := fmt.Sprintf("%slast/trade/stock/%s?apikey=%s", s.Api, req.Symbol, s.Key)
 
-        resp, err := http.Get(uri)
-        if err != nil {
-                logger.Errorf("Failed to get price: %v\n", err)
-                return errors.InternalServerError("stock.trade", "failed to get price")
-        }
-        defer resp.Body.Close()
+	resp, err := http.Get(uri)
+	if err != nil {
+		logger.Errorf("Failed to get price: %v\n", err)
+		return errors.InternalServerError("stock.trade", "failed to get price")
+	}
+	defer resp.Body.Close()
 
-        b, _ := ioutil.ReadAll(resp.Body)
+	b, _ := ioutil.ReadAll(resp.Body)
 
-        if resp.StatusCode != 200 {
-                logger.Errorf("Failed to get price (non 200): %d %v\n", resp.StatusCode, string(b))
-                return errors.InternalServerError("stock.quote", "failed to get price")
-        }
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get price (non 200): %d %v\n", resp.StatusCode, string(b))
+		return errors.InternalServerError("stock.quote", "failed to get price")
+	}
 
-        var respBody map[string]interface{}
+	var respBody map[string]interface{}
 
-        if err := json.Unmarshal(b, &respBody); err != nil {
-                logger.Errorf("Failed to unmarshal price: %v\n", err)
-                return errors.InternalServerError("stock.price", "failed to get price")
-        }
+	if err := json.Unmarshal(b, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal price: %v\n", err)
+		return errors.InternalServerError("stock.price", "failed to get price")
+	}
 
 	rsp.Symbol = req.Symbol
 	rsp.Price = respBody["price"].(float64)
