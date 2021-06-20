@@ -8,7 +8,7 @@
         },
         "response": {
             "symbol": "BTCUSD",
-            "price": 131.265
+            "price": 34682.74
         }
     }],
     "quote": [{
@@ -19,27 +19,27 @@
         },
         "response": {
             "symbol": "BTCUSD",
-            "ask": 131.12,
-            "bid": 131.11,
-            "ask_size": 7,
-            "bid_size": 4,
-            "timestamp": "2021-06-18T13:49:23.678Z"
+            "ask_price": 34679.87,
+            "bid_price": 34679.86,
+            "ask_size": 0.595412,
+            "bid_size": 0.122235,
+            "timestamp": "2021-06-20T17:25:50.772Z"
         }
     }],
     "history": [{
-        "title": "Get historic data",
-        "description": "Returns historic cryptocurrency data for a given date",
+        "title": "Get previous close",
+        "description": "Returns the history for the previous close",
         "request": {
-            "coin": "BTCUSD",
-            "date": "2020-10-01"
+            "symbol": "BTCUSD"
         },
         "response": {
-            "symbol": "BTCUSD",
-            "open": 117.64,
-            "close": 116.79,
-            "high": 117.72,
-            "low": 115.83,
-            "date": "2020-10-01"
+            "symbol": "btcusd",
+            "open": 35483.72,
+            "close": 34470.8,
+            "high": 35922,
+            "low": 33336,
+            "volume": 66202.264956,
+            "date": "2021-06-20"
         }
     }]
 }
