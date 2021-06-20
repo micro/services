@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package crypto;
+
+option go_package = "./proto;crypto";
+
+service Crypto {
+	rpc Quote(QuoteRequest) returns (QuoteResponse) {}
+	rpc Price(PriceRequest) returns (PriceResponse) {}
+	rpc History(HistoryRequest) returns (HistoryResponse) {}
+}
+
+// Get the last price for a given crypto ticker
+message PriceRequest {
+	// crypto symbol e.g BTCUSD
+	string symbol = 1;
+}
+
+message PriceResponse {
+	// the crypto symbol e.g BTCUSD
+	string symbol = 1;
+	// the last price
+	double price = 2;
+}
+
+// Get the last quote for the crypto
+message QuoteRequest {
+	// the crypto symbol e.g BTCUSD
+	string symbol = 1;
+}
+
+message QuoteResponse {
+	// the crypto symbol
+	string symbol = 1;
+	// the asking price
+	double ask_price = 2;
+	// the bidding price
+	double bid_price = 3;
+	// the ask size
+	double ask_size = 4;
+	// the bid size
+	double bid_size = 5;
+	// the UTC timestamp of the quote
+	string timestamp = 6;
+}
+
+
+// Returns the history for the previous close
+message HistoryRequest {
+	// the crypto symbol e.g BTCUSD
+	string symbol = 1;
+}
+
+message HistoryResponse {
+	// the crypto symbol
+	string symbol = 1;
+	// the open price
+	double open = 2;
+	// the close price
+	double close = 3;
+	// the peak price
+	double high = 4;
+	// the low price
+	double low = 5;
+	// the volume
+	double volume = 6;
+	// the date
+	string date = 7;
+}

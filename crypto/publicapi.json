@@ -1,0 +1,10 @@
+{
+  "name": "crypto",
+  "icon": "₿",
+  "category": "money",
+  "pricing": {
+    "Crypto.Price": 20,
+    "Crypto.Quote": 20,
+    "Crypto.History": 35
+  }
+}

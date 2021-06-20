@@ -1,0 +1,45 @@
+
+{
+    "price": [{
+        "title": "Get cryptocurrency price",
+        "description": "Returns the last traded price of a currency",
+        "request": {
+            "symbol": "BTCUSD"
+        },
+        "response": {
+            "symbol": "BTCUSD",
+            "price": 131.265
+        }
+    }],
+    "quote": [{
+        "title": "Get a cryptocurrency quote",
+        "description": "Returns the last quote for a currency including bid and ask prices",
+        "request": {
+            "symbol": "BTCUSD"
+        },
+        "response": {
+            "symbol": "BTCUSD",
+            "ask": 131.12,
+            "bid": 131.11,
+            "ask_size": 7,
+            "bid_size": 4,
+            "timestamp": "2021-06-18T13:49:23.678Z"
+        }
+    }],
+    "history": [{
+        "title": "Get historic data",
+        "description": "Returns historic cryptocurrency data for a given date",
+        "request": {
+            "coin": "BTCUSD",
+            "date": "2020-10-01"
+        },
+        "response": {
+            "symbol": "BTCUSD",
+            "open": 117.64,
+            "close": 116.79,
+            "high": 117.72,
+            "low": 115.83,
+            "date": "2020-10-01"
+        }
+    }]
+}
