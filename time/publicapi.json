@@ -1,0 +1,8 @@
+{
+  "name": "time",
+  "icon": "🌐",
+  "category": "timezone",
+  "pricing": {
+    "Time.Zone": 5
+  }
+}

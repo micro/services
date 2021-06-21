@@ -9,15 +9,15 @@ init:
 
 .PHONY: api
 api:
-	protoc --openapi_out=. --proto_path=. proto/timezone.proto
+	protoc --openapi_out=. --proto_path=. proto/time.proto
 
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/timezone.proto
+	protoc --proto_path=. --micro_out=. --go_out=:. proto/time.proto
 	
 .PHONY: build
 build:
-	go build -o timezone *.go
+	go build -o time *.go
 
 .PHONY: test
 test:
@@ -25,4 +25,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t timezone:latest
+	docker build . -t time:latest
