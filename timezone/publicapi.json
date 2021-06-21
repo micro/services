@@ -1,0 +1,8 @@
+{
+  "name": "timezone",
+  "icon": "🌐",
+  "category": "time",
+  "pricing": {
+    "Timezone.Info": 5
+  }
+}
