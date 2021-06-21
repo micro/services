@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/config"
@@ -48,9 +48,12 @@ func (w *Weather) Now(ctx context.Context, req *pb.NowRequest, rsp *pb.NowRespon
                 return errors.BadRequest("weather.current", "invalid location")
         }
 
-        uri := fmt.Sprintf("%scurrent.json?aqi=no&key=%s&q=%s", w.Api, w.Key, req.Location)
+	vals := url.Values{}
+	vals.Set("key", w.Key)
+	vals.Set("aqi", "no")
+	vals.Set("q", req.Location)
 
-        resp, err := http.Get(uri)
+        resp, err := http.Get(w.Api + "current.json?" + vals.Encode())
         if err != nil {
                 logger.Errorf("Failed to get current weather: %v\n", err)
                 return errors.InternalServerError("weather.current", "failed to get current weather")
