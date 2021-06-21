@@ -1,4 +1,3 @@
-
 Foreign Exchange (FX) rates
 
 # Forex Service
