@@ -158,6 +158,9 @@ message SendVerificationEmailRequest{
 	// HTML emails are not available currently.
 	string textContent = 3;
 	string redirectUrl = 4;
+	// While the from email address can't be changed,
+	// the from name (ie. sender name) can.
+	string fromName = 5;
 }
 
 message SendVerificationEmailResponse{}
