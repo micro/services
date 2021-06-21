@@ -100,6 +100,9 @@ func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 
 // ReadToken returns the user id
 func (domain *Domain) ReadToken(ctx context.Context, tokenId string) (string, error) {
+	if tokenId == "" {
+		return "", errors.New("token id empty")
+	}
 	token := &verificationToken{}
 
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
@@ -110,7 +113,7 @@ func (domain *Domain) ReadToken(ctx context.Context, tokenId string) (string, er
 		return "", err
 	}
 	if len(rsp.Records) == 0 {
-		return "", errors.New("not found")
+		return "", errors.New("token not found")
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, token)
