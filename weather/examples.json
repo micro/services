@@ -1,6 +1,6 @@
 
 {
-    "price": [{
+    "now": [{
         "title": "Get the current weather",
         "description": "Returns the current weather for a location",
         "request": {
