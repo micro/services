@@ -50,6 +50,8 @@ type UserService interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...client.CallOption) (*LogoutResponse, error)
 	ReadSession(ctx context.Context, in *ReadSessionRequest, opts ...client.CallOption) (*ReadSessionResponse, error)
+	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...client.CallOption) (*VerifyEmailResponse, error)
+	SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, opts ...client.CallOption) (*SendVerificationEmailResponse, error)
 }
 
 type userService struct {
@@ -144,6 +146,26 @@ func (c *userService) ReadSession(ctx context.Context, in *ReadSessionRequest, o
 	return out, nil
 }
 
+func (c *userService) VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...client.CallOption) (*VerifyEmailResponse, error) {
+	req := c.c.NewRequest(c.name, "User.VerifyEmail", in)
+	out := new(VerifyEmailResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, opts ...client.CallOption) (*SendVerificationEmailResponse, error) {
+	req := c.c.NewRequest(c.name, "User.SendVerificationEmail", in)
+	out := new(SendVerificationEmailResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for User service
 
 type UserHandler interface {
@@ -155,6 +177,8 @@ type UserHandler interface {
 	Login(context.Context, *LoginRequest, *LoginResponse) error
 	Logout(context.Context, *LogoutRequest, *LogoutResponse) error
 	ReadSession(context.Context, *ReadSessionRequest, *ReadSessionResponse) error
+	VerifyEmail(context.Context, *VerifyEmailRequest, *VerifyEmailResponse) error
+	SendVerificationEmail(context.Context, *SendVerificationEmailRequest, *SendVerificationEmailResponse) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
@@ -167,6 +191,8 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		Login(ctx context.Context, in *LoginRequest, out *LoginResponse) error
 		Logout(ctx context.Context, in *LogoutRequest, out *LogoutResponse) error
 		ReadSession(ctx context.Context, in *ReadSessionRequest, out *ReadSessionResponse) error
+		VerifyEmail(ctx context.Context, in *VerifyEmailRequest, out *VerifyEmailResponse) error
+		SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, out *SendVerificationEmailResponse) error
 	}
 	type User struct {
 		user
@@ -209,4 +235,12 @@ func (h *userHandler) Logout(ctx context.Context, in *LogoutRequest, out *Logout
 
 func (h *userHandler) ReadSession(ctx context.Context, in *ReadSessionRequest, out *ReadSessionResponse) error {
 	return h.UserHandler.ReadSession(ctx, in, out)
+}
+
+func (h *userHandler) VerifyEmail(ctx context.Context, in *VerifyEmailRequest, out *VerifyEmailResponse) error {
+	return h.UserHandler.VerifyEmail(ctx, in, out)
+}
+
+func (h *userHandler) SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, out *SendVerificationEmailResponse) error {
+	return h.UserHandler.SendVerificationEmail(ctx, in, out)
 }

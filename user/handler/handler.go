@@ -3,6 +3,7 @@ package handler
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"strings"
 	"time"
 
@@ -49,6 +50,9 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	if len(req.Password) < 8 {
 		return errors.InternalServerError("user.Create.Check", "Password is less than 8 characters")
 	}
+	req.Username = strings.ToLower(req.Username)
+	req.Email = strings.ToLower(req.Email)
+
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.Password), 10)
 	if err != nil {
@@ -58,11 +62,15 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	if req.Id == "" {
 		req.Id = uuid.New().String()
 	}
-	return s.domain.Create(ctx, &pb.Account{
+	err = s.domain.Create(ctx, &pb.Account{
 		Id:       req.Id,
-		Username: strings.ToLower(req.Username),
-		Email:    strings.ToLower(req.Email),
+		Username: req.Username,
+		Email:    req.Email,
 	}, salt, pp)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
@@ -106,7 +114,7 @@ func (s *User) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest
 		return errors.InternalServerError("user.updatepassword", "Passwords don't math")
 	}
 
-	salt, hashed, err := s.domain.SaltAndPassword(ctx, usr.Username, usr.Email)
+	salt, hashed, err := s.domain.SaltAndPassword(ctx, usr.Id)
 	if err != nil {
 		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
@@ -137,7 +145,14 @@ func (s *User) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRes
 	username := strings.ToLower(req.Username)
 	email := strings.ToLower(req.Email)
 
-	salt, hashed, err := s.domain.SaltAndPassword(ctx, username, email)
+	accounts, err := s.domain.Search(ctx, username, email)
+	if err != nil {
+		return err
+	}
+	if len(accounts) == 0 {
+		return fmt.Errorf("account not found")
+	}
+	salt, hashed, err := s.domain.SaltAndPassword(ctx, accounts[0].Id)
 	if err != nil {
 		return err
 	}
@@ -152,11 +167,9 @@ func (s *User) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRes
 	}
 	// save session
 	sess := &pb.Session{
-		Id:       random(128),
-		Username: username,
-		Email:    email,
-		Created:  time.Now().Unix(),
-		Expires:  time.Now().Add(time.Hour * 24 * 7).Unix(),
+		Id:      random(128),
+		Created: time.Now().Unix(),
+		Expires: time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 
 	if err := s.domain.CreateSession(ctx, sess); err != nil {
@@ -177,4 +190,27 @@ func (s *User) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp 
 	}
 	rsp.Session = sess
 	return nil
+}
+
+func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp *pb.VerifyEmailResponse) error {
+	userId, err := s.domain.ReadToken(ctx, req.Token)
+	if err != nil {
+		return err
+	}
+	user, err := s.domain.Read(ctx, userId)
+	user.Verified = true
+	return s.domain.Update(ctx, user)
+}
+
+func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificationEmailRequest, rsp *pb.SendVerificationEmailResponse) error {
+	users, err := s.domain.Search(ctx, "", req.Email)
+	if err != nil {
+		return err
+	}
+	token, err := s.domain.CreateToken(ctx, users[0].Id)
+	if err != nil {
+		return err
+	}
+
+	return s.domain.SendEmail(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.RedirectUrl)
 }

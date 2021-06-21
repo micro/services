@@ -13,6 +13,8 @@ service User {
 	rpc Login(LoginRequest) returns (LoginResponse) {}
 	rpc Logout(LogoutRequest) returns (LogoutResponse) {}
 	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
+	rpc VerifyEmail(VerifyEmailRequest) returns(VerifyEmailResponse) {}
+	rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse) {}
 }
 
 message Account {
@@ -26,15 +28,15 @@ message Account {
 	int64 created = 4;
 	// unix timestamp
 	int64 updated = 5;
+	bool verified = 6;
+	int64 verificationDate = 7;
+	// Store any custom data you want about your users in this fields.
+	map<string,string> profile = 8;
 }
 
 message Session {
 	// the session id
 	string id = 1;
-	// account username
-	string username = 2;
-	// account email
-	string email = 3;
 	// unix timestamp
 	int64 created = 4;
 	// unix timestamp
@@ -54,6 +56,7 @@ message CreateRequest {
 }
 
 message CreateResponse {
+	Account account = 1;
 }
 
 // Delete an account by id
@@ -134,3 +137,30 @@ message LogoutRequest {
 message LogoutResponse {
 }
 
+message VerifyEmailRequest{
+	string token = 1;
+}
+
+message VerifyEmailResponse{
+
+}
+
+// Send a verification email
+// to the user being signed up. Email from will be 'support@m3o.com',
+// but you can provide the title and contents.
+// Use $micro_verification_link template variable in the content.
+message SendVerificationEmailRequest{
+	string email = 1;
+	string subject = 2;
+	// Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
+	// The variable will be replaced with an actual url that will look similar to this:
+	// 'https://user.m3o.com/user/verify?token=a-verification-token&rediretUrl=your-redir-url'
+	// HTML emails are not available currently.
+	string textContent = 3;
+	string redirectUrl = 4;
+	// While the from email address can't be changed,
+	// the from name (ie. sender name) can.
+	string fromName = 5;
+}
+
+message SendVerificationEmailResponse{}
