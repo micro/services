@@ -1,0 +1,29 @@
+
+{
+    "price": [{
+        "title": "Get the current weather",
+        "description": "Returns the current weather for a location",
+        "request": {
+            "location": "los angeles"
+        },
+        "response": {
+            "location": "Los Angeles",
+            "region": "California",
+            "country": "California",
+            "latitude": 34.05,
+            "longitude": -118.24,
+            "timezone": "America/Los_Angeles",
+            "local_time": "2021-06-21 6:44",
+            "temp_c": 18.3,
+            "temp_f": 64.9,
+            "feels_like_c": 18.3,
+            "feels_like_f": 64.9,
+            "humidity": 81,
+            "cloud": 100,
+            "daytime": true,
+            "condition": "Overcast",
+            "icon_url": "//cdn.weatherapi.com/weather/64x64/day/122.png",
+            "wind_direction": "N"
+        }
+    }]
+}
