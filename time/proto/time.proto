@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package time;
+
+option go_package = "./proto;time";
+
+service Time {
+	rpc Now(NowRequest) returns (NowResponse) {}
+	rpc Zone(ZoneRequest) returns (ZoneResponse) {}
+}
+
+// Get the current time
+message NowRequest {
+	// optional location, otherwise returns UTC
+	string location = 1;
+}
+
+message NowResponse {
+	// the current time as HH:MM:SS
+	string localtime = 1;
+	// timestamp as 2006-01-02T15:04:05.999999999Z07:00
+	string timestamp = 2;
+	// the location as Europe/London
+	string location = 3;
+	// the timezone as BST
+	string timezone = 4;
+	// the unix timestamp	
+	int64 unix = 5;
+
+}
+
+// Get the timezone info for a specific location
+message ZoneRequest {
+	// location to lookup e.g postcode, city, ip address
+	string location = 1;
+}
+
+message ZoneResponse {
+	// location requested
+	string location = 1;
+	// region of timezone
+	string region = 2;
+	// country of the timezone
+	string country = 3;
+	// e.g 51.42
+	double latitude = 4;
+	// e.g -0.37
+	double longitude = 5;
+	// the timezone e.g Europe/London
+	string timezone = 6;
+	// the abbreviated code e.g BST
+	string abbreviation = 7;
+	// the local time
+	string localtime = 8;
+	// is daylight savings
+	bool dst = 9;
+}
+

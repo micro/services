@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package weather;
+
+option go_package = "./proto;weather";
+
+service Weather {
+	rpc Now(NowRequest) returns (NowResponse) {}
+}
+
+// Get the current weather report for a location by postcode, city, zip code, ip address
+message NowRequest {
+	// location to get weather e.g postcode, city
+	string location = 1;
+}
+
+message NowResponse {
+	// location of the request
+	string location = 1;
+	// region related to the location
+	string region = 2;
+	// country of the request
+	string country = 3;
+	// e.g 37.55
+	double latitude = 4;
+	// e.g -77.46
+	double longitude = 5;
+	// timezone of the location
+	string timezone = 6;
+	// the local time
+	string local_time = 7;
+	// temperature in celsius
+	double temp_c = 8;
+	// temperature in fahrenheit
+	double temp_f = 9;
+	// feels like in celsius
+	double feels_like_c = 10;
+	// feels like in fahrenheit
+	double feels_like_f = 11;
+	// the humidity percentage
+	int32 humidity = 12;
+	// cloud cover percentage
+	int32 cloud = 13;
+	// whether its daytime
+	bool daytime = 14;
+	// the weather condition
+	string condition = 15;
+	// the related icon
+	string icon_url = 16;
+	// wind in mph
+	double wind_mph = 17;
+	// wind in kph
+	double wind_kph = 18;
+	// wind direction
+	string wind_direction = 19;
+	// wind degree
+	int32 wind_degree = 20;
+}
+

@@ -1,0 +1,8 @@
+{
+  "name": "weather",
+  "icon": "☀️",
+  "category": "climate",
+  "pricing": {
+    "Weather.Now": 1
+  }
+}

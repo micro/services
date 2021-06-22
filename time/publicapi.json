@@ -1,0 +1,9 @@
+{
+  "name": "time",
+  "icon": "🌐",
+  "category": "timezone",
+  "pricing": {
+    "Time.Now": 1,
+    "Time.Zone": 5
+  }
+}

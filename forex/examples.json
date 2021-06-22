@@ -1,0 +1,43 @@
+
+{
+    "price": [{
+        "title": "Get an FX price",
+        "description": "Returns the last traded price of a currency pair",
+        "request": {
+            "symbol": "GBPUSD"
+        },
+        "response": {
+            "symbol": "GBPUSD",
+            "price": 1.38
+        }
+    }],
+    "quote": [{
+        "title": "Get a FX quote",
+        "description": "Returns the last quote for a currency pair as bid and ask prices",
+        "request": {
+            "symbol": "GBPUSD"
+        },
+        "response": {
+            "symbol": "GBPUSD",
+            "ask_price": 1.38422,
+            "bid_price": 1.38416,
+            "timestamp": "2021-06-21T08:58:31Z"
+        }
+    }],
+    "history": [{
+        "title": "Get previous close",
+        "description": "Returns the data for the previous close",
+        "request": {
+            "symbol": "GBPUSD"
+        },
+        "response": {
+            "symbol": "GBPUSD",
+            "open": 1.37902,
+            "close": 1.3814,
+            "high": 1.3824,
+            "low": 1.37902,
+            "volume": 3930,
+            "date": "2021-06-20"
+        }
+    }]
+}

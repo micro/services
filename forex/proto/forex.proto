@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package forex;
+
+option go_package = "./proto;forex";
+
+service Forex {
+	rpc Quote(QuoteRequest) returns (QuoteResponse) {}
+	rpc Price(PriceRequest) returns (PriceResponse) {}
+	rpc History(HistoryRequest) returns (HistoryResponse) {}
+}
+
+// Get the last price for a given forex ticker
+message PriceRequest {
+	// forex symbol e.g GBPUSD
+	string symbol = 1;
+}
+
+message PriceResponse {
+	// the forex symbol e.g GBPUSD
+	string symbol = 1;
+	// the last price
+	double price = 2;
+}
+
+// Get the last quote for the forex
+message QuoteRequest {
+	// the forex symbol e.g GBPUSD
+	string symbol = 1;
+}
+
+message QuoteResponse {
+	// the forex symbol
+	string symbol = 1;
+	// the asking price
+	double ask_price = 2;
+	// the bidding price
+	double bid_price = 3;
+	// the UTC timestamp of the quote
+	string timestamp = 4;
+}
+
+
+// Returns the data for the previous close
+message HistoryRequest {
+	// the forex symbol e.g GBPUSD
+	string symbol = 1;
+}
+
+message HistoryResponse {
+	// the forex symbol
+	string symbol = 1;
+	// the open price
+	double open = 2;
+	// the close price
+	double close = 3;
+	// the peak price
+	double high = 4;
+	// the low price
+	double low = 5;
+	// the volume
+	double volume = 6;
+	// the date
+	string date = 7;
+}
