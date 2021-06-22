@@ -212,5 +212,5 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 		return err
 	}
 
-	return s.domain.SendEmail(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.RedirectUrl)
+	return s.domain.SendEmail(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.RedirectUrl, req.FailureRedirectUrl)
 }
