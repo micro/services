@@ -39,6 +39,7 @@
             }
         }
     },{
+        
         "title": "Read account by email",
         "request": {
             "email": "joe@example.com"
@@ -51,6 +52,19 @@
                 "created": "1623677579",
                 "updated": "1623677579"
             }
+        }
+    }],
+    "sendVerificationEmail": [{
+        "title": "Send verification email",
+        "request":     {
+            "email": "joe@example.com",
+            "subject": "Email verification",
+            "redirectUrl": "https://m3o.com",
+            "failureRedirectUrl": "https://m3o.com/verification-failed",
+            "textContent": "Hi there,\n\nPlease verify your email by clicking this link: $micro_verification_link",
+            "fromName": "Awesome Dot Com"
+        },
+        "response": {
         }
     }]
 }
