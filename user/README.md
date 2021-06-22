@@ -1,6 +1,6 @@
 User management and authentication
 
-# Users Service
+# User Service
 
-The users service provides user account management and authentication
+The user service provides user account management and authentication
 
