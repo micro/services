@@ -53,13 +53,13 @@ func New(db db.DbService) *Domain {
 	}
 }
 
-func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textContent, token, redirctUrl string) error {
+func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textContent, token, redirctUrl, failureRedirectUrl string) error {
 	if domain.sengridKey == "" {
 		return fmt.Errorf("empty email api key")
 	}
 	from := mail.NewEmail(fromName, "support@m3o.com")
 	to := mail.NewEmail(toUsername, toAddress)
-	textContent = strings.Replace(textContent, "$micro_verification_link", "https://angry-cori-854281.netlify.app?token="+token+"&redirectUrl="+url.QueryEscape(redirctUrl), -1)
+	textContent = strings.Replace(textContent, "$micro_verification_link", "https://angry-cori-854281.netlify.app?token="+token+"&redirectUrl="+url.QueryEscape(redirctUrl)+"&failureRedirectUrl="+url.QueryEscape(failureRedirectUrl), -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
 	client := sendgrid.NewSendClient(domain.sengridKey)
 	response, err := client.Send(message)
@@ -100,6 +100,9 @@ func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 
 // ReadToken returns the user id
 func (domain *Domain) ReadToken(ctx context.Context, tokenId string) (string, error) {
+	if tokenId == "" {
+		return "", errors.New("token id empty")
+	}
 	token := &verificationToken{}
 
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
@@ -110,7 +113,7 @@ func (domain *Domain) ReadToken(ctx context.Context, tokenId string) (string, er
 		return "", err
 	}
 	if len(rsp.Records) == 0 {
-		return "", errors.New("not found")
+		return "", errors.New("token not found")
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, token)
