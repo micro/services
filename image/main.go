@@ -12,7 +12,7 @@ import (
 func main() {
 	// Create service
 	srv := service.New(
-		service.Name("image1"),
+		service.Name("image"),
 		service.Version("latest"),
 	)
 
