@@ -1,4 +1,4 @@
-Real time weather API
+Real time weather forecast
 
 # Weather Service
 

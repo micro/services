@@ -1,29 +1,31 @@
-
 {
     "now": [{
-        "title": "Get the current weather",
-        "description": "Returns the current weather for a location",
+        "title": "Get current weather",
+        "description": "Get the weather forecast right at this moment",
         "request": {
-            "location": "los angeles"
+          "location": "london"
         },
         "response": {
-            "location": "Los Angeles",
-            "region": "California",
-            "country": "California",
-            "latitude": 34.05,
-            "longitude": -118.24,
-            "timezone": "America/Los_Angeles",
-            "local_time": "2021-06-21 6:44",
-            "temp_c": 18.3,
-            "temp_f": 64.9,
-            "feels_like_c": 18.3,
-            "feels_like_f": 64.9,
-            "humidity": 81,
-            "cloud": 100,
+            "location": "London",
+            "region": "City of London, Greater London",
+            "country": "City of London, Greater London",
+            "latitude": 51.52,
+            "longitude": -0.11,
+            "timezone": "Europe/London",
+            "local_time": "2021-06-23 11:18",
+            "temp_c": 16,
+            "temp_f": 60.8,
+            "feels_like_c": 16,
+            "feels_like_f": 60.8,
+            "humidity": 48,
+            "cloud": 75,
             "daytime": true,
-            "condition": "Overcast",
-            "icon_url": "//cdn.weatherapi.com/weather/64x64/day/122.png",
-            "wind_direction": "N"
+            "condition": "Partly cloudy",
+            "icon_url": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+            "wind_mph": 4.3,
+            "wind_kph": 6.8,
+            "wind_direction": "NE",
+            "wind_degree": 40
         }
     }]
 }
