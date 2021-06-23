@@ -1,7 +1,7 @@
-Today's cryptocurrency prices and quotes
+Cryptocurrency prices, quotes and news
 
 # Crypto Service
 
-Get up to the second accurate cryptocurrency prices, quotes and previous close information. 
+Get up to the second cryptocurrency prices, quotes, previous close information and news.
 
 Powered by [Finage](https://finage.co.uk)
