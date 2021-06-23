@@ -134,6 +134,9 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 
 	// where ID is specified do a single update record update
 	id := req.Id
+	if v, ok := m[idKey].(string); ok && id == "" {
+		id = v
+	}
 
 	// if the id is blank then check the data
 	if len(req.Id) == 0 {
@@ -164,7 +167,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 		bs, _ := json.Marshal(old)
 
 		return tx.Table(tableName).Save(&Record{
-			ID:   m[idKey].(string),
+			ID:   id,
 			Data: bs,
 		}).Error
 	})
