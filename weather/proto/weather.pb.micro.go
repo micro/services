@@ -43,6 +43,7 @@ func NewWeatherEndpoints() []*api.Endpoint {
 
 type WeatherService interface {
 	Now(ctx context.Context, in *NowRequest, opts ...client.CallOption) (*NowResponse, error)
+	Forecast(ctx context.Context, in *ForecastRequest, opts ...client.CallOption) (*ForecastResponse, error)
 }
 
 type weatherService struct {
@@ -67,15 +68,27 @@ func (c *weatherService) Now(ctx context.Context, in *NowRequest, opts ...client
 	return out, nil
 }
 
+func (c *weatherService) Forecast(ctx context.Context, in *ForecastRequest, opts ...client.CallOption) (*ForecastResponse, error) {
+	req := c.c.NewRequest(c.name, "Weather.Forecast", in)
+	out := new(ForecastResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Weather service
 
 type WeatherHandler interface {
 	Now(context.Context, *NowRequest, *NowResponse) error
+	Forecast(context.Context, *ForecastRequest, *ForecastResponse) error
 }
 
 func RegisterWeatherHandler(s server.Server, hdlr WeatherHandler, opts ...server.HandlerOption) error {
 	type weather interface {
 		Now(ctx context.Context, in *NowRequest, out *NowResponse) error
+		Forecast(ctx context.Context, in *ForecastRequest, out *ForecastResponse) error
 	}
 	type Weather struct {
 		weather
@@ -90,4 +103,8 @@ type weatherHandler struct {
 
 func (h *weatherHandler) Now(ctx context.Context, in *NowRequest, out *NowResponse) error {
 	return h.WeatherHandler.Now(ctx, in, out)
+}
+
+func (h *weatherHandler) Forecast(ctx context.Context, in *ForecastRequest, out *ForecastResponse) error {
+	return h.WeatherHandler.Forecast(ctx, in, out)
 }

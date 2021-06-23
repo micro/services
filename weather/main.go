@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/micro/services/weather/handler"
-	pb "github.com/micro/services/weather/proto"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/weather/handler"
+	pb "github.com/micro/services/weather/proto"
 )
 
 func main() {

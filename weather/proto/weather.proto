@@ -6,6 +6,63 @@ option go_package = "./proto;weather";
 
 service Weather {
 	rpc Now(NowRequest) returns (NowResponse) {}
+	rpc Forecast(ForecastRequest) returns (ForecastResponse) {}
+}
+
+message Forecast {
+	// date of the forecast
+	string date = 1;
+	// max temp in celsius
+	double max_temp_c = 2;
+	// max temp in fahrenheit
+	double max_temp_f = 3;
+	// minimum temp in celsius
+	double min_temp_c = 4;
+	// minimum temp in fahrenheit
+	double min_temp_f = 5;
+	// the average temp in celsius
+	double avg_temp_c = 6;
+	// the average temp in fahrenheit
+	double avg_temp_f = 7;
+	// will it rain
+	bool will_it_rain = 8;
+	// chance of rain (percentage)
+	int32 chance_of_rain = 9;
+	// forecast condition
+	string condition = 10;
+	// forecast condition icon
+	string icon_url = 11;
+	// time of sunrise
+	string sunrise = 12;
+	// time of sunset
+	string sunset = 13;
+}
+
+// Get the weather forecast for the next 1-10 days
+message ForecastRequest {
+	// location of the forecase
+	string location = 1;
+	// number of days. default 1, max 10
+	int32 days = 2;
+}
+
+message ForecastResponse {
+	// location of the request
+	string location = 1;
+	// region related to the location
+	string region = 2;
+	// country of the request
+	string country = 3;
+	// e.g 37.55
+	double latitude = 4;
+	// e.g -77.46
+	double longitude = 5;
+	// timezone of the location
+	string timezone = 6;
+	// the local time
+	string local_time = 7;
+	// forecase for the next number of days
+	repeated Forecast forecast = 8;
 }
 
 // Get the current weather report for a location by postcode, city, zip code, ip address
