@@ -20,6 +20,20 @@ var (
 	re = regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 )
 
+type Article struct {
+	Title string
+	Description string
+	Url string
+	Source string
+	Date string
+}
+
+type News struct {
+	Ticker string
+	Limit int32
+	News []*Article
+}
+
 type Crypto struct {
 	Api   string
 	Key   string
@@ -74,6 +88,47 @@ func New() *Crypto {
 		Key:   key,
 		Cache: cache.New(5*time.Minute, 10*time.Minute),
 	}
+}
+
+func (c *Crypto) News(ctx context.Context, req *pb.NewsRequest, rsp *pb.NewsResponse) error {
+	if len(req.Symbol) <= 0 {
+		return errors.BadRequest("crypto.news", "invalid symbol")
+	}
+
+	uri := fmt.Sprintf("%snews/cryptocurrency/%s?apikey=%s", c.Api, req.Symbol, c.Key)
+
+	resp, err := http.Get(uri)
+	if err != nil {
+		logger.Errorf("Failed to get news: %v\n", err)
+		return errors.InternalServerError("crypto.news", "failed to get news")
+	}
+	defer resp.Body.Close()
+
+	b, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get news (non 200): %d %v\n", resp.StatusCode, string(b))
+		return errors.InternalServerError("crypto.news", "failed to get news")
+	}
+
+	var respBody News
+
+	if err := json.Unmarshal(b, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal news: %v\n", err)
+		return errors.InternalServerError("crypto.news", "failed to get news")
+	}
+
+	for _, article := range respBody.News {
+		rsp.Articles = append(rsp.Articles, &pb.Article{
+			Title: article.Title,
+			Description: article.Description,
+			Url: article.Url,
+			Source: article.Source,
+			Date: article.Date,
+		})
+	}
+
+	return nil
 }
 
 func (s *Crypto) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {

@@ -42,6 +42,7 @@ func NewCryptoEndpoints() []*api.Endpoint {
 // Client API for Crypto service
 
 type CryptoService interface {
+	News(ctx context.Context, in *NewsRequest, opts ...client.CallOption) (*NewsResponse, error)
 	Quote(ctx context.Context, in *QuoteRequest, opts ...client.CallOption) (*QuoteResponse, error)
 	Price(ctx context.Context, in *PriceRequest, opts ...client.CallOption) (*PriceResponse, error)
 	History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error)
@@ -57,6 +58,16 @@ func NewCryptoService(name string, c client.Client) CryptoService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *cryptoService) News(ctx context.Context, in *NewsRequest, opts ...client.CallOption) (*NewsResponse, error) {
+	req := c.c.NewRequest(c.name, "Crypto.News", in)
+	out := new(NewsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *cryptoService) Quote(ctx context.Context, in *QuoteRequest, opts ...client.CallOption) (*QuoteResponse, error) {
@@ -92,6 +103,7 @@ func (c *cryptoService) History(ctx context.Context, in *HistoryRequest, opts ..
 // Server API for Crypto service
 
 type CryptoHandler interface {
+	News(context.Context, *NewsRequest, *NewsResponse) error
 	Quote(context.Context, *QuoteRequest, *QuoteResponse) error
 	Price(context.Context, *PriceRequest, *PriceResponse) error
 	History(context.Context, *HistoryRequest, *HistoryResponse) error
@@ -99,6 +111,7 @@ type CryptoHandler interface {
 
 func RegisterCryptoHandler(s server.Server, hdlr CryptoHandler, opts ...server.HandlerOption) error {
 	type crypto interface {
+		News(ctx context.Context, in *NewsRequest, out *NewsResponse) error
 		Quote(ctx context.Context, in *QuoteRequest, out *QuoteResponse) error
 		Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error
 		History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error
@@ -112,6 +125,10 @@ func RegisterCryptoHandler(s server.Server, hdlr CryptoHandler, opts ...server.H
 
 type cryptoHandler struct {
 	CryptoHandler
+}
+
+func (h *cryptoHandler) News(ctx context.Context, in *NewsRequest, out *NewsResponse) error {
+	return h.CryptoHandler.News(ctx, in, out)
 }
 
 func (h *cryptoHandler) Quote(ctx context.Context, in *QuoteRequest, out *QuoteResponse) error {

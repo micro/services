@@ -5,9 +5,36 @@ package crypto;
 option go_package = "./proto;crypto";
 
 service Crypto {
+	rpc News(NewsRequest) returns (NewsResponse) {}
 	rpc Quote(QuoteRequest) returns (QuoteResponse) {}
 	rpc Price(PriceRequest) returns (PriceResponse) {}
 	rpc History(HistoryRequest) returns (HistoryResponse) {}
+}
+
+message Article {
+	// title of the article
+	string title = 1;
+	// its description	
+	string description = 2;
+	// the source url
+	string url = 3;
+	// the date published
+	string date = 4;
+	// the source
+	string source = 5;
+}
+
+// Get news related to a currency
+message NewsRequest {
+	// cryptocurrency ticker to request news for e.g BTC
+	string symbol = 1;
+}
+
+message NewsResponse {
+	// symbol requested for
+	string symbol = 1;
+	// list of articles
+	repeated Article articles = 2;
 }
 
 // Get the last price for a given crypto ticker
