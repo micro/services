@@ -167,7 +167,7 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		case "bottom right":
 			anchor = imaging.BottomRight
 		}
-		resultImage = imaging.CropAnchor(resultImage, int(req.Width), int(req.Height),
+		resultImage = imaging.CropAnchor(resultImage, int(req.CropOptions.Width), int(req.CropOptions.Height),
 			anchor)
 	}
 	buf := new(bytes.Buffer)
