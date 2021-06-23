@@ -52,6 +52,21 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	}
 	req.Username = strings.ToLower(req.Username)
 	req.Email = strings.ToLower(req.Email)
+	usernames, err := s.domain.Search(ctx, req.Username, "")
+	if err != nil {
+		return err
+	}
+	if len(usernames) > 0 {
+		return errors.BadRequest("create.username-check", "username already exists")
+	}
+
+	emails, err := s.domain.Search(ctx, "", req.Email)
+	if err != nil {
+		return err
+	}
+	if len(emails) > 0 {
+		return errors.BadRequest("create.email-check", "email already exists")
+	}
 
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.Password), 10)
