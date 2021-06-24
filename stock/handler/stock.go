@@ -45,7 +45,7 @@ type History struct {
 }
 
 func (s *Stock) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
-	if len(req.Stock) < 0 || len(req.Stock) > 5 {
+	if len(req.Stock) <= 0 || len(req.Stock) > 5 {
 		return errors.BadRequest("stock.history", "invalid symbol")
 	}
 
@@ -86,7 +86,7 @@ func (s *Stock) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.His
 	return nil
 }
 func (s *Stock) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteResponse) error {
-	if len(req.Symbol) < 0 || len(req.Symbol) > 5 {
+	if len(req.Symbol) <= 0 || len(req.Symbol) > 5 {
 		return errors.BadRequest("stock.quote", "invalid symbol")
 	}
 
@@ -124,7 +124,7 @@ func (s *Stock) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteRe
 }
 
 func (s *Stock) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceResponse) error {
-	if len(req.Symbol) < 0 || len(req.Symbol) > 5 {
+	if len(req.Symbol) <= 0 || len(req.Symbol) > 5 {
 		return errors.BadRequest("stock.price", "invalid symbol")
 	}
 
@@ -141,7 +141,7 @@ func (s *Stock) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceRe
 
 	if resp.StatusCode != 200 {
 		logger.Errorf("Failed to get price (non 200): %d %v\n", resp.StatusCode, string(b))
-		return errors.InternalServerError("stock.quote", "failed to get price")
+		return errors.InternalServerError("stock.price", "failed to get price")
 	}
 
 	var respBody map[string]interface{}
