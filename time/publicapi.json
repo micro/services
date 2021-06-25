@@ -3,7 +3,7 @@
   "icon": "🌐",
   "category": "timezone",
   "pricing": {
-    "Time.Now": 1,
-    "Time.Zone": 5
+    "Time.Now": 100,
+    "Time.Zone": 500
   }
 }

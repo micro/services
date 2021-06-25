@@ -3,7 +3,7 @@
   "icon": "🏠",
   "category": "logistics",
   "pricing": {
-    "Geocoding.Lookup": 100,
-    "Geocoding.Reverse": 100
+    "Geocoding.Lookup": 10000,
+    "Geocoding.Reverse": 10000
   }
 }

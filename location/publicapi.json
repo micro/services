@@ -3,8 +3,8 @@
   "icon": "🛰️",
   "category": "logistics",
   "pricing": {
-    "Location.Read": 1,
-    "Location.Save": 1,
-    "Location.Search": 1
+    "Location.Read": 100,
+    "Location.Save": 100,
+    "Location.Search": 100
   }
 }
