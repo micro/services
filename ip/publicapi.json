@@ -3,6 +3,6 @@
   "icon": "🗺️",
   "category": "location",
   "pricing": {
-    "Ip.Lookup": 1
+    "Ip.Lookup": 100
   }
 }

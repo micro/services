@@ -3,7 +3,7 @@
   "icon": "☀️",
   "category": "climate",
   "pricing": {
-    "Weather.Now": 1,
-    "Weather.Forecast": 2
+    "Weather.Now": 100,
+    "Weather.Forecast": 200
   }
 }

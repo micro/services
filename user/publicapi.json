@@ -3,13 +3,13 @@
   "icon": "👤",
   "category": "user",
   "pricing": {
-    "User.Create": 1,
-    "User.Read": 1,
-    "User.Update": 1,
-    "User.Delete": 1,
-    "User.UpdatePassword": 1,
-    "User.Login": 1,
-    "User.Logout": 1,
-    "User.ReadSession": 1
+    "User.Create": 100,
+    "User.Read": 100,
+    "User.Update": 100,
+    "User.Delete": 100,
+    "User.UpdatePassword": 100,
+    "User.Login": 100,
+    "User.Logout": 100,
+    "User.ReadSession": 100
   }
 }

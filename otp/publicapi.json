@@ -3,7 +3,7 @@
   "icon": "🔑",
   "category": "user",
   "pricing": {
-    "Otp.Generate": 1,
-    "Otp.Validate": 1
+    "Otp.Generate": 100,
+    "Otp.Validate": 100
   }
 }

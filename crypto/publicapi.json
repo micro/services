@@ -3,9 +3,9 @@
   "icon": "₿",
   "category": "money",
   "pricing": {
-    "Crypto.News": 10,
-    "Crypto.Price": 20,
-    "Crypto.Quote": 20,
-    "Crypto.History": 35
+    "Crypto.News": 1000,
+    "Crypto.Price": 2000,
+    "Crypto.Quote": 2000,
+    "Crypto.History": 3500
   }
 }

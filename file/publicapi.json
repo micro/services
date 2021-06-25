@@ -3,9 +3,9 @@
   "icon": "📁",
   "category": "storage",
   "pricing": {
-    "File.List": 1,
-    "File.Read": 1,
-    "File.Save": 1,
-    "File.Delete": 1
+    "File.List": 100,
+    "File.Read": 100,
+    "File.Save": 100,
+    "File.Delete": 100
   }
 }

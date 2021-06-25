@@ -3,8 +3,8 @@
   "icon": "💲",
   "category": "money",
   "pricing": {
-    "Forex.Price": 20,
-    "Forex.Quote": 20,
-    "Forex.History": 35
+    "Forex.Price": 2000,
+    "Forex.Quote": 2000,
+    "Forex.History": 3500
   }
 }
