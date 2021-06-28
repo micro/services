@@ -1,14 +1,16 @@
 # Micro Services
 
-The canonical source for Micro services.
+Programmable real world Micro services
 
 ## Overview
 
-Services provides a home for real world reusable Micro services.
+Micro services provide the fundamental building blocks for any products, apps or services. They can be used in isolation 
+or combined to create a powerful distributed system. The services are intended to be consumed by each other using RPC 
+and from the external world through an API.
 
-- [routing](routing) - etas, routes and turn by turn directions
-- [geocoding](geocoding) - address to gps location and reverse
-- [location](location) - gps point location tracking
+## Cloud
+
+Find cloud hosted versions on [m3o.com](https://m3o.com)
 
 ## Usage
 
@@ -17,10 +19,6 @@ Run a service from source
 ```
 micro run github.com/micro/services/helloworld
 ```
-
-## Cloud
-
-Find cloud hosted versions on [m3o.com](https://m3o.com)
 
 ## License
 
