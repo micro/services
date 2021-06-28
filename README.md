@@ -22,4 +22,4 @@ micro run github.com/micro/services/helloworld
 
 ## License
 
-[Polyform Strict](https://polyformproject.org/licenses/strict/1.0.0/)
+[Polyform Shield](https://polyformproject.org/licenses/shield/1.0.0/)
