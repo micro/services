@@ -51,7 +51,7 @@ jobs:
       - name: install postman converter
         working-directory: services
         run: |
-          npm install openapi-to-postmanv2
+          npm install -g openapi-to-postmanv2
 
       - name: Generate openapi spec and publish the api
         working-directory: services
