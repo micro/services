@@ -18,6 +18,10 @@ Run a service from source
 micro run github.com/micro/services/helloworld
 ```
 
+## Cloud
+
+Find cloud hosted versions on [m3o.com](https://m3o.com)
+
 ## License
 
 [Polyform Strict](https://polyformproject.org/licenses/strict/1.0.0/)
