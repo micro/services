@@ -51,7 +51,7 @@ jobs:
       - name: install postman converter
         working-directory: services
         run: |
-          npm install openapi-to-postmanv2
+          sudo npm install -g openapi-to-postmanv2
           ./openapi2postmanv2 -h
           ls
           echo $PATH
