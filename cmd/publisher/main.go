@@ -25,6 +25,7 @@ type PublicAPI struct {
 	OpenAPIJson  string           `json:"open_api_json"`
 	Pricing      map[string]int64 `json:"pricing,omitempty"`
 	ExamplesJson string           `json:"examples_json,omitempty"`
+	PostmanJson  string           `json:"postman_json,omitempty"`
 }
 
 func publishAPI(apiSpec *PublicAPI) error {
@@ -92,7 +93,18 @@ func main() {
 				fmt.Println("Failed to make api", string(outp))
 				os.Exit(1)
 			}
+
 			serviceName := f.Name()
+
+			// generate the Postman collection
+			postman := exec.Command("openapi2postmanv2", "-s", fmt.Sprintf("api-%s.json", serviceName), "-o", "postman.json")
+			postman.Dir = serviceDir
+			outp, err = postman.CombinedOutput()
+			if err != nil {
+				fmt.Println("Failed to generate postman collection", string(outp))
+				os.Exit(1)
+			}
+
 			dat, err := ioutil.ReadFile(filepath.Join(serviceDir, "README.md"))
 			if err != nil {
 				fmt.Println("Failed to read readme", string(outp))

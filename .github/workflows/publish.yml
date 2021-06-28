@@ -1,7 +1,7 @@
 name: Publish APIs & Clients
 on:
   push:
-    branches: [master]
+    branches: [master,m3oopenapi]
 
 jobs:
   docs:
@@ -27,7 +27,7 @@ jobs:
         with:
           repository: 'micro/micro'
           path: 'micro'
-          ref: 'master'
+          ref: 'm3oopenapi'
 
       - name: Enable caching
         uses: actions/cache@v2
@@ -47,6 +47,11 @@ jobs:
         working-directory: micro/cmd/protoc-gen-openapi
         run: |
           go install
+
+      - name: install postman converter
+        working-directory: services
+        run: |
+          npm install openapi-to-postmanv2
 
       - name: Generate openapi spec and publish the api
         working-directory: services

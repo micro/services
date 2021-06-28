@@ -9,6 +9,7 @@ require (
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
+	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/disintegration/imaging v1.6.2
 	github.com/enescakir/emoji v1.0.0
@@ -27,7 +28,6 @@ require (
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/dev v0.0.0-20201117163752-d3cfc9788dfa // indirect
 	github.com/micro/micro/v3 v3.3.1-0.20210611161948-fd9821dd4f52
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/onsi/ginkgo v1.15.0 // indirect
