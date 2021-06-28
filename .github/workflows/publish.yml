@@ -52,7 +52,8 @@ jobs:
         working-directory: services
         run: |
           npm install openapi-to-postmanv2
-          which openapi2postmanv2
+          openapi2postmanv2 -h
+          echo $PATH
 
       - name: Generate openapi spec and publish the api
         working-directory: services
