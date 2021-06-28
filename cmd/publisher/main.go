@@ -101,7 +101,7 @@ func main() {
 			postman.Dir = serviceDir
 			outp, err = postman.CombinedOutput()
 			if err != nil {
-				fmt.Println("Failed to generate postman collection", string(outp))
+				fmt.Printf("Failed to generate postman collection %s %s\n", string(outp), err)
 				os.Exit(1)
 			}
 
@@ -164,6 +164,13 @@ func main() {
 				if len(pricingRaw) > 0 {
 					json.Unmarshal(pricingRaw, &pricing)
 					publicApi.Pricing = pricing
+				}
+			}
+
+			// load the postman json
+			if postman, err := ioutil.ReadFile(filepath.Join(serviceDir, "postman.json")); err == nil {
+				if len(postman) > 0 {
+					publicApi.PostmanJson = string(postman)
 				}
 			}
 
