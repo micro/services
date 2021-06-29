@@ -47,11 +47,11 @@ var cases = []tspec{
   }`,
 		key: "QueryRequest",
 		tsresult: `export interface QueryRequest {
+  id?: number;
   limit?: number;
   offset?: number;
   slug?: number;
   tag?: number;
-  id?: number;
 }`,
 	},
 	{
