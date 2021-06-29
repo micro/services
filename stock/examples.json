@@ -42,7 +42,7 @@
             "date": "2020-10-01"
         }
     }],
-    "orderbook": [{
+    "orderBook": [{
         "title": "Order book history",
         "description": "Returns historic order book for a given date",
         "request": {
