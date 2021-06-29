@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -25,34 +29,33 @@ type PublicAPI struct {
 }
 
 func publishAPI(apiSpec *PublicAPI) error {
-	//client := &http.Client{}
+	client := &http.Client{}
 
 	//Encode the data
 	postBody, _ := json.Marshal(map[string]interface{}{
 		"api": apiSpec,
 	})
 
-	fmt.Printf("\n%s\n", string(postBody))
-	//rbody := bytes.NewBuffer(postBody)
-	//
-	////Leverage Go's HTTP Post function to make request
-	//req, err := http.NewRequest("POST", "https://api.m3o.com/publicapi/Publish", rbody)
-	//
-	//// Add auth headers here if needed
-	//req.Header.Add("Authorization", `Bearer `+os.Getenv("MICRO_ADMIN_TOKEN"))
-	//resp, err := client.Do(req)
-	//
-	//if err != nil {
-	//	return err
-	//}
-	//defer resp.Body.Close()
-	//
-	//if resp.StatusCode != 200 {
-	//	b, _ := ioutil.ReadAll(resp.Body)
-	//	return errors.New(string(b))
-	//}
-	//
-	//io.Copy(ioutil.Discard, resp.Body)
+	rbody := bytes.NewBuffer(postBody)
+
+	//Leverage Go's HTTP Post function to make request
+	req, err := http.NewRequest("POST", "https://api.m3o.com/publicapi/Publish", rbody)
+
+	// Add auth headers here if needed
+	req.Header.Add("Authorization", `Bearer `+os.Getenv("MICRO_ADMIN_TOKEN"))
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		b, _ := ioutil.ReadAll(resp.Body)
+		return errors.New(string(b))
+	}
+
+	io.Copy(ioutil.Discard, resp.Body)
 
 	return nil
 }
