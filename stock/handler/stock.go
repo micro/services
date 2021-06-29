@@ -25,6 +25,20 @@ type Stock struct {
 	Cache *cache.Cache
 }
 
+type OrderBook struct {
+	Symbol  string
+	Results []*Order
+}
+
+type Order struct {
+	Symbol string
+	Ask    float64
+	Bid    float64
+	Asize  int32
+	Bsize  int32
+	T      int64
+}
+
 type Quote struct {
 	Symbol    string
 	Ask       float64
@@ -42,6 +56,63 @@ type History struct {
 	Close  float64
 	Volume int32
 	From   string
+}
+
+func (s *Stock) OrderBook(ctx context.Context, req *pb.OrderBookRequest, rsp *pb.OrderBookResponse) error {
+	if len(req.Stock) <= 0 || len(req.Stock) > 5 {
+		return errors.BadRequest("stock.orderbook", "invalid symbol")
+	}
+	if len(req.Date) == 0 {
+		return errors.BadRequest("stock.orderbook", "missing date")
+	}
+	if req.Limit <= 0 {
+		req.Limit = 25
+	}
+
+	uri := fmt.Sprintf("%shistory/stock/all?apikey=%s&stock=%s&date=%s&limit=%d", s.Api, s.Key, req.Stock, req.Date, req.Limit)
+
+	if req.Start > 0 {
+		uri = fmt.Sprintf("%s&ts=%d", uri, req.Start)
+	}
+	if req.End > 0 {
+		uri = fmt.Sprintf("%s&te=%d", uri, req.End)
+	}
+
+	resp, err := http.Get(uri)
+	if err != nil {
+		logger.Errorf("Failed to get orderbook: %v\n", err)
+		return errors.InternalServerError("stock.orderbook", "failed to get orderbook")
+	}
+	defer resp.Body.Close()
+
+	b, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get orderbook (non 200): %d %v\n", resp.StatusCode, string(b))
+		return errors.InternalServerError("stock.orderbook", "failed to get orderbook")
+	}
+
+	var respBody OrderBook
+
+	if err := json.Unmarshal(b, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal orderbook: %v\n", err)
+		return errors.InternalServerError("stock.orderbook", "failed to get orderbook")
+	}
+
+	rsp.Symbol = respBody.Symbol
+	rsp.Date = req.Date
+
+	for _, result := range respBody.Results {
+		rsp.Orders = append(rsp.Orders, &pb.Order{
+			AskPrice:  result.Ask,
+			BidPrice:  result.Bid,
+			AskSize:   result.Asize,
+			BidSize:   result.Bsize,
+			Timestamp: time.Unix(0, result.T).UTC().Format(time.RFC3339Nano),
+		})
+	}
+
+	return nil
 }
 
 func (s *Stock) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
@@ -85,6 +156,7 @@ func (s *Stock) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.His
 	rsp.Volume = respBody.Volume
 	return nil
 }
+
 func (s *Stock) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteResponse) error {
 	if len(req.Symbol) <= 0 || len(req.Symbol) > 5 {
 		return errors.BadRequest("stock.quote", "invalid symbol")

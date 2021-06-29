@@ -45,6 +45,7 @@ type StockService interface {
 	Quote(ctx context.Context, in *QuoteRequest, opts ...client.CallOption) (*QuoteResponse, error)
 	Price(ctx context.Context, in *PriceRequest, opts ...client.CallOption) (*PriceResponse, error)
 	History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error)
+	OrderBook(ctx context.Context, in *OrderBookRequest, opts ...client.CallOption) (*OrderBookResponse, error)
 }
 
 type stockService struct {
@@ -89,12 +90,23 @@ func (c *stockService) History(ctx context.Context, in *HistoryRequest, opts ...
 	return out, nil
 }
 
+func (c *stockService) OrderBook(ctx context.Context, in *OrderBookRequest, opts ...client.CallOption) (*OrderBookResponse, error) {
+	req := c.c.NewRequest(c.name, "Stock.OrderBook", in)
+	out := new(OrderBookResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Stock service
 
 type StockHandler interface {
 	Quote(context.Context, *QuoteRequest, *QuoteResponse) error
 	Price(context.Context, *PriceRequest, *PriceResponse) error
 	History(context.Context, *HistoryRequest, *HistoryResponse) error
+	OrderBook(context.Context, *OrderBookRequest, *OrderBookResponse) error
 }
 
 func RegisterStockHandler(s server.Server, hdlr StockHandler, opts ...server.HandlerOption) error {
@@ -102,6 +114,7 @@ func RegisterStockHandler(s server.Server, hdlr StockHandler, opts ...server.Han
 		Quote(ctx context.Context, in *QuoteRequest, out *QuoteResponse) error
 		Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error
 		History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error
+		OrderBook(ctx context.Context, in *OrderBookRequest, out *OrderBookResponse) error
 	}
 	type Stock struct {
 		stock
@@ -124,4 +137,8 @@ func (h *stockHandler) Price(ctx context.Context, in *PriceRequest, out *PriceRe
 
 func (h *stockHandler) History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error {
 	return h.StockHandler.History(ctx, in, out)
+}
+
+func (h *stockHandler) OrderBook(ctx context.Context, in *OrderBookRequest, out *OrderBookResponse) error {
+	return h.StockHandler.OrderBook(ctx, in, out)
 }
