@@ -378,17 +378,7 @@ const Signup = `{
   },
   "openapi": "3.0.0",
   "paths": {
-    "/test/Signup/CompleteSignup": {
-      "parameters": [
-        {
-          "in": "header",
-          "name": "Micro-Namespace",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
+    "/v1/test/Signup/CompleteSignup": {
       "post": {
         "requestBody": {
           "$ref": "#/components/requestBodies/SignupCompleteSignupRequest"
@@ -409,17 +399,7 @@ const Signup = `{
         "summary": "Signup.CompleteSignup(CompleteSignupRequest)"
       }
     },
-    "/test/Signup/HasPaymentMethod": {
-      "parameters": [
-        {
-          "in": "header",
-          "name": "Micro-Namespace",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
+    "/v1/test/Signup/HasPaymentMethod": {
       "post": {
         "requestBody": {
           "$ref": "#/components/requestBodies/SignupHasPaymentMethodRequest"
@@ -440,17 +420,7 @@ const Signup = `{
         "summary": "Signup.HasPaymentMethod(HasPaymentMethodRequest)"
       }
     },
-    "/test/Signup/Recover": {
-      "parameters": [
-        {
-          "in": "header",
-          "name": "Micro-Namespace",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
+    "/v1/test/Signup/Recover": {
       "post": {
         "requestBody": {
           "$ref": "#/components/requestBodies/SignupRecoverRequest"
@@ -471,17 +441,7 @@ const Signup = `{
         "summary": "Signup.Recover(RecoverRequest)"
       }
     },
-    "/test/Signup/SendVerificationEmail": {
-      "parameters": [
-        {
-          "in": "header",
-          "name": "Micro-Namespace",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
+    "/v1/test/Signup/SendVerificationEmail": {
       "post": {
         "requestBody": {
           "$ref": "#/components/requestBodies/SignupSendVerificationEmailRequest"
@@ -502,17 +462,7 @@ const Signup = `{
         "summary": "Signup.SendVerificationEmail(SendVerificationEmailRequest)"
       }
     },
-    "/test/Signup/SetPaymentMethod": {
-      "parameters": [
-        {
-          "in": "header",
-          "name": "Micro-Namespace",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
+    "/v1/test/Signup/SetPaymentMethod": {
       "post": {
         "requestBody": {
           "$ref": "#/components/requestBodies/SignupSetPaymentMethodRequest"
@@ -533,17 +483,7 @@ const Signup = `{
         "summary": "Signup.SetPaymentMethod(SetPaymentMethodRequest)"
       }
     },
-    "/test/Signup/Verify": {
-      "parameters": [
-        {
-          "in": "header",
-          "name": "Micro-Namespace",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
+    "/v1/test/Signup/Verify": {
       "post": {
         "requestBody": {
           "$ref": "#/components/requestBodies/SignupVerifyRequest"
@@ -567,12 +507,8 @@ const Signup = `{
   },
   "servers": [
     {
-      "url": "https://api.m3o.dev",
-      "description": "Micro DEV environment"
-    },
-    {
       "url": "https://api.m3o.com",
-      "description": "Micro LIVE environment"
+      "description": "Micro M3O environment"
     }
   ]
 }`
