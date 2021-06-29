@@ -30,10 +30,10 @@ message OrderBookRequest {
 	string stock = 1;
 	// the date in format YYYY-MM-dd
 	string date = 2;
-	// optional nanosecond timestamp start
-	int64 start = 3;
-	// optional nanosecond timestamp end
-	int64 end = 4;
+	// optional RFC3339Nano start time e.g 2006-01-02T15:04:05.999999999Z07:00
+	string start = 3;
+	// optional RFC3339Nano end time e.g 2006-01-02T15:04:05.999999999Z07:00
+	string end = 4;
 	// limit number of prices
 	int32 limit = 5;
 }

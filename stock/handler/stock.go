@@ -71,13 +71,20 @@ func (s *Stock) OrderBook(ctx context.Context, req *pb.OrderBookRequest, rsp *pb
 
 	uri := fmt.Sprintf("%shistory/stock/all?apikey=%s&stock=%s&date=%s&limit=%d", s.Api, s.Key, req.Stock, req.Date, req.Limit)
 
-	if req.Start > 0 {
-		uri = fmt.Sprintf("%s&ts=%d", uri, req.Start)
+	if len(req.Start) > 0 {
+		t, err := time.Parse(time.RFC3339Nano, req.Start)
+		if err != nil {
+			return errors.BadRequest("stock.orderbook", "invalid start datetime")
+		}
+		uri = fmt.Sprintf("%s&ts=%d", uri, t.UTC().UnixNano())
 	}
-	if req.End > 0 {
-		uri = fmt.Sprintf("%s&te=%d", uri, req.End)
+	if len(req.End) > 0 {
+		t, err := time.Parse(time.RFC3339Nano, req.End)
+		if err != nil {
+			return errors.BadRequest("stock.orderbook", "invalid end datetime")
+		}
+		uri = fmt.Sprintf("%s&te=%d", uri, t.UTC().UnixNano())
 	}
-
 	resp, err := http.Get(uri)
 	if err != nil {
 		logger.Errorf("Failed to get orderbook: %v\n", err)
