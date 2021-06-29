@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -181,7 +182,13 @@ func schemaToTs(title string, spec *openapi3.SchemaRef) string {
 		ret := ""
 
 		i := 0
-		for k, v := range props {
+		var keys []string
+		for k := range props {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			v := props[k]
 			ret += strings.Repeat("  ", level)
 			k = strcase.SnakeCase(k)
 			//v.Value.

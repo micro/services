@@ -47,11 +47,11 @@ var cases = []tspec{
   }`,
 		key: "QueryRequest",
 		tsresult: `export interface QueryRequest {
+  id?: string;
   limit?: number;
   offset?: number;
-  slug?: number;
-  tag?: number;
-  id?: number;
+  slug?: string;
+  tag?: string;
 }`,
 	},
 	{
@@ -120,18 +120,18 @@ var cases = []tspec{
 		tsresult: `
 export interface QueryResponse {
 	posts?: {
-	  metadata?: {
-		value?: string;
-		key?: string;
-	  }[];
-	  slug?: string;
-	  title?: string;
+	  author?: string;
 	  content?: string;
 	  created?: number;
 	  id?: string;
 	  image?: string;
-	  author?: string;
+	  metadata?: {
+		key?: string;
+		value?: string;
+	  }[];
+	  slug?: string;
 	  tags?: string[];
+	  title?: string;
 	  updated?: number;
 	}[];
 }`,

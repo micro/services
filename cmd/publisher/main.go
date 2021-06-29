@@ -25,6 +25,7 @@ type PublicAPI struct {
 	OpenAPIJson  string           `json:"open_api_json"`
 	Pricing      map[string]int64 `json:"pricing,omitempty"`
 	ExamplesJson string           `json:"examples_json,omitempty"`
+	PostmanJson  string           `json:"postman_json,omitempty"`
 }
 
 func publishAPI(apiSpec *PublicAPI) error {
@@ -34,6 +35,7 @@ func publishAPI(apiSpec *PublicAPI) error {
 	postBody, _ := json.Marshal(map[string]interface{}{
 		"api": apiSpec,
 	})
+
 	rbody := bytes.NewBuffer(postBody)
 
 	//Leverage Go's HTTP Post function to make request
@@ -92,7 +94,18 @@ func main() {
 				fmt.Println("Failed to make api", string(outp))
 				os.Exit(1)
 			}
+
 			serviceName := f.Name()
+
+			// generate the Postman collection
+			postman := exec.Command("openapi2postmanv2", "-s", fmt.Sprintf("api-%s.json", serviceName), "-o", "postman.json")
+			postman.Dir = serviceDir
+			outp, err = postman.CombinedOutput()
+			if err != nil {
+				fmt.Printf("Failed to generate postman collection %s %s\n", string(outp), err)
+				os.Exit(1)
+			}
+
 			dat, err := ioutil.ReadFile(filepath.Join(serviceDir, "README.md"))
 			if err != nil {
 				fmt.Println("Failed to read readme", string(outp))
@@ -152,6 +165,13 @@ func main() {
 				if len(pricingRaw) > 0 {
 					json.Unmarshal(pricingRaw, &pricing)
 					publicApi.Pricing = pricing
+				}
+			}
+
+			// load the postman json
+			if postman, err := ioutil.ReadFile(filepath.Join(serviceDir, "postman.json")); err == nil {
+				if len(postman) > 0 {
+					publicApi.PostmanJson = string(postman)
 				}
 			}
 
