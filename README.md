@@ -10,7 +10,7 @@ and from the external world through a Micro API.
 
 ## Cloud
 
-Find cloud hosted versions on [m3o.com](https://m3o.com)
+Find cloud hosted versions on [m3o.com](https://m3o.com).
 
 ## Usage
 
