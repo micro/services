@@ -44,7 +44,7 @@ jobs:
           go install
 
       - name: Install openapi plugin
-        working-directory: micro/cmd/protoc-gen-openapi
+        working-directory: services/cmd/protoc-gen-openapi
         run: |
           go install
 
@@ -53,7 +53,7 @@ jobs:
         run: |
           sudo npm install -g openapi-to-postmanv2
           openapi2postmanv2 -h
-          
+
       - name: Generate openapi spec and publish the api
         working-directory: services
         run: |
