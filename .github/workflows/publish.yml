@@ -1,7 +1,7 @@
 name: Publish APIs & Clients
 on:
   push:
-    branches: [master,m3oopenapi]
+    branches: [master]
 
 jobs:
   docs:
