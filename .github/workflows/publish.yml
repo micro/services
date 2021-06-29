@@ -27,7 +27,7 @@ jobs:
         with:
           repository: 'micro/micro'
           path: 'micro'
-          ref: 'm3oopenapi'
+          ref: 'master'
 
       - name: Enable caching
         uses: actions/cache@v2
