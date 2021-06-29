@@ -26,8 +26,10 @@ jobs:
         with:
           go-version: 1.13
         id: go
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
 
-      - name: Check out code into the Go module directory
+        - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
       - name: Get dependencies
