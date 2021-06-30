@@ -1,0 +1,14 @@
+{
+    "question": [{
+        "title": "Ask a question",
+        "description": "Ask a question and get an instant answer",
+        "request": {
+          "query": "google"
+        },
+        "response": {
+          "answer": "Google An American multinational technology company that specializes in Internet-related services...",
+          "url": "https://en.wikipedia.org/wiki/Google_(disambiguation)",
+          "image": "https://duckduckgo.com/i/8f85c93f.png"
+        }
+    }]
+}
