@@ -1,23 +1,7 @@
-# Sms Service
+Send an SMS message
 
-This is the Sms service
+# SMS Service
 
-Generated with
+Send an SMS message in seconds. No fuss, no muss. 
 
-```
-micro new sms
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+Powered by [Twilio](https://twilio.com)
