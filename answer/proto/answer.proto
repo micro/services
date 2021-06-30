@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-package ask;
+package answer;
 
-option go_package = "./proto;ask";
+option go_package = "./proto;answer";
 
-service Ask {
+service Answer {
 	rpc Question(QuestionRequest) returns (QuestionResponse) {}
 }
 
-// Ask a question and receive an instant answer
+// Answer a question and receive an instant answer
 message QuestionRequest {
-	// the question to ask
+	// the question to answer
 	string query = 1;
 }
 

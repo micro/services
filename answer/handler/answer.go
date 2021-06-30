@@ -5,19 +5,19 @@ import (
 
 	"github.com/m3o/goduckgo/goduckgo"
 	"github.com/micro/micro/v3/service/errors"
-	pb "github.com/micro/services/ask/proto"
+	pb "github.com/micro/services/answer/proto"
 )
 
-type Ask struct{}
+type Answer struct{}
 
-func (a *Ask) Question(ctx context.Context, req *pb.QuestionRequest, rsp *pb.QuestionResponse) error {
+func (a *Answer) Question(ctx context.Context, req *pb.QuestionRequest, rsp *pb.QuestionResponse) error {
 	if len(req.Query) == 0 {
-		return errors.BadRequest("ask.question", "need a question")
+		return errors.BadRequest("answer.question", "need a question")
 	}
 
 	msg, err := goduckgo.Query(req.Query)
 	if err != nil {
-		return errors.InternalServerError("ask.question", err.Error())
+		return errors.InternalServerError("answer.question", err.Error())
 	}
 
 	if len(msg.Abstract) > 0 {
