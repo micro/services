@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package ask;
+
+option go_package = "./proto;ask";
+
+service Ask {
+	rpc Question(QuestionRequest) returns (QuestionResponse) {}
+}
+
+// Ask a question and receive an instant answer
+message QuestionRequest {
+	// the question to ask
+	string query = 1;
+}
+
+message QuestionResponse {
+	// the answer to your question
+	string answer = 1;
+	// a related url
+	string url = 2;
+	// any related image
+	string image = 3;
+}
