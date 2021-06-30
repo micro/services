@@ -19,7 +19,7 @@ message SendRequest {
 }
 
 message SendResponse {
-	// will return "ok" if sent and "failed" if there was a problem
+	// will return "ok" if sent
 	string status = 1;
 	// any additional info
 	string info = 2;
