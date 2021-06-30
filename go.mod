@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
-	github.com/ajanicij/goduckgo v0.0.0-20150205231829-61f9a275272f
+	github.com/ajanicij/goduckgo v0.0.0-20150205231829-61f9a275272f // indirect
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
@@ -27,6 +27,7 @@ require (
 	github.com/kevinburke/rest v0.0.0-20210506044642-5611499aa33c // indirect
 	github.com/kevinburke/twilio-go v0.0.0-20210327194925-1623146bcf73
 	github.com/lib/pq v1.9.0 // indirect
+	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/micro/v3 v3.3.1-0.20210611161948-fd9821dd4f52
