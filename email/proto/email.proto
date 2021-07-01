@@ -10,7 +10,7 @@ service Email {
 
 // Send an email by passing in from, to, subject and a text or html body
 message SendRequest {
-	// the name of the sender, can be email or name
+	// the name of the sender
 	string from = 1;
 	// the email address of the recipient
 	string to = 2;
