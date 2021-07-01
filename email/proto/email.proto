@@ -14,12 +14,14 @@ message SendRequest {
 	string from = 1;
 	// the email address of the recipient
 	string to = 2;
+	// an optional reply to email address
+	string reply_to = 3;
 	// the email subject
-	string subject = 3;
+	string subject = 4;
 	// the text body
-	string text_body = 4;
+	string text_body = 5;
 	// the html body
-	string html_body = 5;
+	string html_body = 6;
 }
 
 message SendResponse {

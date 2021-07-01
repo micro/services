@@ -67,6 +67,10 @@ func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.
 // pre-designed email template. Docs: https://bit.ly/2VYPQD1
 func (e *Email) sendEmail(req *pb.SendRequest) error {
 	content := []interface{}{}
+	replyTo := e.config.EmailFrom
+	if len(req.ReplyTo) > 0 {
+		replyTo = req.ReplyTo
+	}
 
 	if len(req.TextBody) > 0 {
 		content = append(content, map[string]string{
@@ -88,8 +92,7 @@ func (e *Email) sendEmail(req *pb.SendRequest) error {
 			"name":  req.From,
 		},
 		"reply_to": map[string]string{
-			"email": e.config.EmailFrom,
-			"name":  req.From,
+			"email": replyTo,
 		},
 		"subject": req.Subject,
 		"content": content,
