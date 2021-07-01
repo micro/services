@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -21,7 +22,8 @@ const (
 )
 
 var (
-	alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	alphanum    = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	emailFormat = regexp.MustCompile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
 )
 
 func random(i int) string {
@@ -47,6 +49,9 @@ func NewUser(db db.DbService) *User {
 }
 
 func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
+	if !emailFormat.MatchString(req.Email) {
+		return errors.BadRequest("create.email-format-check", "email has wrong format")
+	}
 	if len(req.Password) < 8 {
 		return errors.InternalServerError("user.Create.Check", "Password is less than 8 characters")
 	}
