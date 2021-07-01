@@ -53,6 +53,9 @@ message CreateRequest {
 	string email = 3;
 	// the user password
 	string password = 4;
+	// the user profile as map<string,string>
+	map<string,string> profile = 5;
+	
 }
 
 message CreateResponse {
@@ -88,6 +91,8 @@ message UpdateRequest {
 	string username = 2;
 	// the new email address
 	string email = 3;
+	// the user profile as map<string,string>
+	map<string,string> profile = 4;
 }
 
 message UpdateResponse {

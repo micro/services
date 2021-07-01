@@ -81,6 +81,7 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 		Id:       req.Id,
 		Username: req.Username,
 		Email:    req.Email,
+		Profile:  req.Profile,
 	}, salt, pp)
 	if err != nil {
 		return err
@@ -113,6 +114,7 @@ func (s *User) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Update
 		Id:       req.Id,
 		Username: strings.ToLower(req.Username),
 		Email:    strings.ToLower(req.Email),
+		Profile:  req.Profile,
 	})
 }
 
