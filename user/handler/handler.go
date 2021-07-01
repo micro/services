@@ -60,8 +60,9 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 		return errors.BadRequest("create.username-check", "username already exists")
 	}
 
+	// TODO: don't error out here
 	emails, err := s.domain.Search(ctx, "", req.Email)
-	if err != nil {
+	if err != nil && err.Error() != "not found" {
 		return err
 	}
 	if len(emails) > 0 {
