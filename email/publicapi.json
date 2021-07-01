@@ -1,0 +1,8 @@
+{
+  "name": "email",
+  "icon": "✉️",
+  "category": "communication",
+  "pricing": {
+    "Email.Send": 1000
+  }
+}
