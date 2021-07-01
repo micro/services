@@ -53,7 +53,7 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	req.Username = strings.ToLower(req.Username)
 	req.Email = strings.ToLower(req.Email)
 	usernames, err := s.domain.Search(ctx, req.Username, "")
-	if err != nil {
+	if err != nil && err.Error() != "not found" {
 		return err
 	}
 	if len(usernames) > 0 {
