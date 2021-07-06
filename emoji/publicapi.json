@@ -1,8 +1,5 @@
 {
   "name": "emoji",
   "icon": "😀",
-  "category": "web",
-  "pricing": {
-    "Emoji.Send": 10000
-  }
+  "category": "web"
 }
