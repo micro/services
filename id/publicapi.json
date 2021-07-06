@@ -1,8 +1,5 @@
 {
   "name": "id",
   "icon": "🆔",
-  "category": "util",
-  "pricing": {
-    "Id.Generate": 100
-  }
+  "category": "util"
 }
