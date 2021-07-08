@@ -27,7 +27,7 @@ message GetResponse {
 	int64 ttl = 3;
 }
 
-// Set an item in the cache
+// Set an item in the cache. Overwrites any existing value already set.
 message SetRequest {
 	// The key to update
 	string key = 1;
