@@ -123,14 +123,18 @@ message ReadSessionResponse {
 }
 
 
-// Login a user account
+// Login using username or email. The response will return a new session for successful login.
 message LoginRequest {
+    // The username of the user
     string username = 1;
+    // The email address of the user
     string email = 2;
+    // The password of the user
     string password = 3;
 }
 
 message LoginResponse {
+    // The session of the logged in  user
     Session session = 1;
 }
 
@@ -142,7 +146,9 @@ message LogoutRequest {
 message LogoutResponse {
 }
 
-message VerifyEmailRequest{
+// Verify the email address of an account from a token sent in an email to the user.
+message VerifyEmailRequest {
+        // The token from the verification email
 	string token = 1;
 }
 
