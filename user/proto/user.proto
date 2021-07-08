@@ -43,7 +43,7 @@ message Session {
 	int64 expires = 5;
 }
 
-// Create a new user account
+// Create a new user account. The email address and username for the account must be unique.
 message CreateRequest {
 	// the acccount id
 	string id = 1;
