@@ -71,11 +71,13 @@ message DeleteRequest {
 message DeleteResponse {
 }
 
-// Read an account by id
+// Read an account by id, username or email. Only one need to be specified.
 message ReadRequest {
 	// the account id
 	string id = 1;
+	// the account username
 	string username = 2;
+	// the account password
 	string email = 3;
 }
 
@@ -113,8 +115,9 @@ message UpdatePasswordRequest {
 message UpdatePasswordResponse {
 }
 
-// Read a session by id
+// Read a session by the session id. In the event it has expired or is not found and error is returned.
 message ReadSessionRequest {
+    // The unique session id
     string sessionId = 1;
 }
 
@@ -123,7 +126,8 @@ message ReadSessionResponse {
 }
 
 
-// Login using username or email. The response will return a new session for successful login.
+// Login using username or email. The response will return a new session for successful login, 
+// 401 in the case of login failure and 500 for any other error
 message LoginRequest {
     // The username of the user
     string username = 1;
