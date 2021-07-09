@@ -3,10 +3,10 @@
   "icon": "📦",
   "category": "storage",
   "pricing": {
-    "Db.Create": 100,
-    "Db.Read": 100,
-    "Db.Update": 100,
-    "Db.Delete": 100,
-    "Db.Truncate": 100
+    "Db.Create": 10,
+    "Db.Read": 10,
+    "Db.Update": 10,
+    "Db.Delete": 10,
+    "Db.Truncate": 10
   }
 }
