@@ -3,10 +3,10 @@
   "icon": "💭",
   "category": "storage",
   "pricing": {
-    "Cache.Get": 100,
-    "Cache.Set": 100,
-    "Cache.Delete": 100,
-    "Cache.Increment": 100,
-    "Cache.Decrement": 100
+    "Cache.Get": 1,
+    "Cache.Set": 1,
+    "Cache.Delete": 1,
+    "Cache.Increment": 1,
+    "Cache.Decrement": 1
   }
 }
