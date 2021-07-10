@@ -1,15 +1,5 @@
 {
   "name": "user",
   "icon": "👤",
-  "category": "user",
-  "pricing": {
-    "User.Create": 100,
-    "User.Read": 100,
-    "User.Update": 100,
-    "User.Delete": 100,
-    "User.UpdatePassword": 100,
-    "User.Login": 100,
-    "User.Logout": 100,
-    "User.ReadSession": 100
-  }
+  "category": "user"
 }
