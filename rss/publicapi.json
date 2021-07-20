@@ -1,11 +1,5 @@
 {
   "name": "rss",
   "icon": "📰",
-  "category": "web",
-  "pricing": {
-    "Rss.Add": 10000,
-    "Rss.Feed": 100,
-    "Rss.Delete": 100,
-    "Rss.List": 100
-  }
+  "category": "web"
 }

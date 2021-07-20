@@ -1,10 +1,5 @@
 {
   "name": "location",
   "icon": "🛰️",
-  "category": "logistics",
-  "pricing": {
-    "Location.Read": 100,
-    "Location.Save": 100,
-    "Location.Search": 100
-  }
+  "category": "logistics"
 }

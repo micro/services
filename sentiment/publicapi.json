@@ -1,8 +1,5 @@
 {
   "name": "sentiment",
   "icon": "🤔",
-  "category": "web",
-  "pricing": {
-    "Sentiment.Analyze": 100
-  }
+  "category": "web"
 }

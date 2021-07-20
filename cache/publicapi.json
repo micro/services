@@ -1,12 +1,5 @@
 {
   "name": "cache",
   "icon": "💭",
-  "category": "storage",
-  "pricing": {
-    "Cache.Get": 1,
-    "Cache.Set": 1,
-    "Cache.Delete": 1,
-    "Cache.Increment": 1,
-    "Cache.Decrement": 1
-  }
+  "category": "storage"
 }

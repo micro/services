@@ -1,10 +1,5 @@
 {
   "name": "url",
   "icon": "🔗",
-  "category": "web",
-  "pricing": {
-    "Url.List": 100,
-    "Url.Proxy": 100,
-    "Url.Shorten": 100
-  }
+  "category": "web"
 }

@@ -1,11 +1,5 @@
 {
   "name": "file",
   "icon": "📁",
-  "category": "storage",
-  "pricing": {
-    "File.List": 100,
-    "File.Read": 100,
-    "File.Save": 100,
-    "File.Delete": 100
-  }
+  "category": "storage"
 }

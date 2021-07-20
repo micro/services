@@ -1,8 +1,5 @@
 {
   "name": "ip",
   "icon": "🗺️",
-  "category": "location",
-  "pricing": {
-    "Ip.Lookup": 100
-  }
+  "category": "location"
 }
