@@ -10,6 +10,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/disintegration/imaging"
@@ -48,26 +49,33 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	var srcImage image.Image
 	var err error
 	var ext string
+
 	if len(req.Base64) > 0 {
 		srcImage, ext, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
-	} else {
+	} else if len(req.Url) > 0 {
+		ur, err := url.Parse(req.Url)
+		if err != nil {
+			return err
+		}
 		response, err := http.Get(req.Url)
 		if err != nil {
 			return err
 		}
 		switch {
-		case strings.HasSuffix(req.Url, ".png"):
+		case strings.HasSuffix(ur.Path, ".png"):
 			srcImage, err = png.Decode(response.Body)
-		case strings.HasSuffix(req.Url, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
+		case strings.HasSuffix(ur.Path, ".jpg") || strings.HasSuffix(ur.Path, ".jpeg"):
 			srcImage, err = jpeg.Decode(response.Body)
 		}
 		if err != nil {
 			return err
 		}
 		defer response.Body.Close()
+	} else {
+		return errors.New("base64 or url param is required")
 	}
 
 	buf := new(bytes.Buffer)
@@ -126,26 +134,33 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 	var srcImage image.Image
 	var err error
 	var ext string
+
 	if len(req.Base64) > 0 {
 		srcImage, ext, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
-	} else {
+	} else if len(req.Url) > 0 {
+		ur, err := url.Parse(req.Url)
+		if err != nil {
+			return err
+		}
 		response, err := http.Get(req.Url)
 		if err != nil {
 			return err
 		}
 		switch {
-		case strings.HasSuffix(req.Url, ".png"):
+		case strings.HasSuffix(ur.Path, ".png"):
 			srcImage, err = png.Decode(response.Body)
-		case strings.HasSuffix(req.Url, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
+		case strings.HasSuffix(ur.Path, ".jpg") || strings.HasSuffix(ur.Path, ".jpeg"):
 			srcImage, err = jpeg.Decode(response.Body)
 		}
 		if err != nil {
 			return err
 		}
 		defer response.Body.Close()
+	} else {
+		return errors.New("base64 or url param is required")
 	}
 
 	resultImage := imaging.Resize(srcImage, int(req.Width), int(req.Height), imaging.Lanczos)
