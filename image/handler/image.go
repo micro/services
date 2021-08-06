@@ -229,14 +229,19 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 			return err
 		}
 	} else {
+		ur, err := url.Parse(req.Url)
+		if err != nil {
+			return err
+		}
+
 		response, err := http.Get(req.Url)
 		if err != nil {
 			return err
 		}
 		switch {
-		case strings.HasSuffix(req.Url, ".png"):
+		case strings.HasSuffix(ur.Path, ".png"):
 			srcImage, err = png.Decode(response.Body)
-		case strings.HasSuffix(req.Url, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
+		case strings.HasSuffix(ur.Path, ".jpg") || strings.HasSuffix(ur.Path, ".jpeg"):
 			srcImage, err = jpeg.Decode(response.Body)
 		}
 		if err != nil {
