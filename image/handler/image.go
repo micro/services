@@ -268,8 +268,11 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		}
 		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.Name)
 	} else {
-		dst := []byte{}
-		base64.StdEncoding.Encode(dst, buf.Bytes())
+		src := buf.Bytes()
+		length := base64.StdEncoding.EncodedLen(len(src))
+		dst := make([]byte, length)
+		base64.StdEncoding.Encode(dst, src)
+
 		rsp.Base64 = string(dst)
 		return nil
 	}
