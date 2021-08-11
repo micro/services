@@ -3,11 +3,14 @@ package handler
 import (
 	"context"
 	"net/url"
+	"strings"
 
 	"github.com/kevinburke/twilio-go"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/sms/proto"
 )
 
@@ -22,6 +25,18 @@ func (e *Sms) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespons
 	}
 	if len(req.Message) == 0 {
 		return errors.BadRequest("sms.send", "message is blank")
+	}
+
+	// crudely ban any sender in the banned list aka no impersonating
+	frm := strings.ToLower(req.From)
+	for _, sender := range BanFrom {
+		if strings.Contains(frm, strings.ToLower(sender)) {
+			tnt, _ := tenant.FromContext(ctx)
+			acc, _ := auth.AccountFromContext(ctx)
+
+			logger.Error("Request to send from %v blocked by account: %v tenant: %v", req.From, acc, tnt)
+			return errors.BadRequest("sms.send", "sender blocked")
+		}
 	}
 
 	v, err := config.Get("twilio.sid")
@@ -46,6 +61,10 @@ func (e *Sms) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespons
 	number := v.String("")
 
 	message := req.Message + "  Sent from " + req.From
+
+	if len(message) > 160 {
+		return errors.BadRequest("sms.send", "message is too long")
+	}
 
 	vals := url.Values{}
 	vals.Set("Body", message)
