@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -36,6 +37,10 @@ func (e *Sms) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespons
 	}
 	if len(req.To) == 0 {
 		return errors.BadRequest("sms.send", "require to field")
+	}
+	reg, _ := regexp.Compile("^\\+[0-9]+$")
+	if !reg.MatchString(req.To) {
+		return errors.BadRequest("sms.send", "invalid to field format")
 	}
 	if len(req.Message) == 0 {
 		return errors.BadRequest("sms.send", "message is blank")
