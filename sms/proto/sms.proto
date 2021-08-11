@@ -8,18 +8,18 @@ service Sms {
 	rpc Send(SendRequest) returns (SendResponse) {}
 }
 
-// Send an SMS. Include international dialing code in the number
+// Send an SMS.
 message SendRequest {
-	// who is the message from?
+	// who is the message from? The message will be suffixed with "Sent from <from>"
 	string from = 1;
-	// number of the person it's to
+	// the destination phone number including the international dialling code (e.g. +44)
 	string to = 2;
-	// the message to send
+	// the main body of the message to send
 	string message = 3;
 }
 
 message SendResponse {
-	// will return "ok" if sent
+	// will return "ok" if successful
 	string status = 1;
 	// any additional info
 	string info = 2;
