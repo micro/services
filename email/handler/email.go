@@ -11,11 +11,23 @@ import (
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/email/proto"
+	"github.com/micro/services/pkg/tenant"
 )
 
+const (
+	prefixUserID     = "byUserID"
+	prefixSendgridID = "bySendgridID"
+)
+
+type Sent struct {
+	UserID        string
+	SendgridMsgID string
+}
+
 type sendgridConf struct {
-	Key  string `json:"key"`
+	Key       string `json:"key"`
 	EmailFrom string `json:"email_from"`
 }
 
@@ -55,7 +67,7 @@ func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.
 		return errors.BadRequest("email.send.validation", "Missing email body")
 	}
 
-	if err := e.sendEmail(request); err != nil {
+	if err := e.sendEmail(ctx, request); err != nil {
 		log.Errorf("Error sending email: %v\n", err)
 		return errors.InternalServerError("email.sendemail", "Error sending email")
 	}
@@ -65,7 +77,7 @@ func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.
 
 // sendEmail sends an email invite via the sendgrid API using the
 // pre-designed email template. Docs: https://bit.ly/2VYPQD1
-func (e *Email) sendEmail(req *pb.SendRequest) error {
+func (e *Email) sendEmail(ctx context.Context, req *pb.SendRequest) error {
 	content := []interface{}{}
 	replyTo := e.config.EmailFrom
 	if len(req.ReplyTo) > 0 {
@@ -120,6 +132,30 @@ func (e *Email) sendEmail(req *pb.SendRequest) error {
 		return fmt.Errorf("could not send email, error: %v", err)
 	}
 	defer rsp.Body.Close()
+
+	tnt, ok := tenant.FromContext(ctx)
+	if ok {
+		msgID := rsp.Header.Get("X-Message-ID")
+		if len(msgID) > 0 {
+			sent := Sent{
+				UserID:        tnt,
+				SendgridMsgID: msgID,
+			}
+			b, _ := json.Marshal(&sent)
+			if err := store.Write(&store.Record{
+				Key:   fmt.Sprintf("%s/%s/%s", prefixUserID, sent.UserID, sent.SendgridMsgID),
+				Value: b,
+			}); err != nil {
+				log.Errorf("Failed to persist mapping %+v %s", sent, err)
+			}
+			if err := store.Write(&store.Record{
+				Key:   fmt.Sprintf("%s/%s", prefixSendgridID, sent.SendgridMsgID),
+				Value: b,
+			}); err != nil {
+				log.Errorf("Failed to persist mapping %+v %s", sent, err)
+			}
+		}
+	}
 
 	if rsp.StatusCode < 200 || rsp.StatusCode > 299 {
 		bytes, err := ioutil.ReadAll(rsp.Body)
