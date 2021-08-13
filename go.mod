@@ -7,6 +7,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
+	github.com/asim/mq v0.1.0
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
@@ -53,7 +54,6 @@ require (
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
 	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
 	google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 // indirect
-	google.golang.org/grpc v1.32.0 // indirect
 	google.golang.org/protobuf v1.26.0
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
