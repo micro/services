@@ -1,0 +1,12 @@
+
+{
+    "publish": [{
+        "title": "Publish a message",
+        "description": "Publish a message to a topic on the stream",
+        "request": {
+            "topic": "events",
+            "message": {"id": "1", "type": "signup", "user": "john"}
+        },
+        "response": {}
+    }]
+}
