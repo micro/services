@@ -83,15 +83,22 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	if req.Id == "" {
 		req.Id = uuid.New().String()
 	}
-	err = s.domain.Create(ctx, &pb.Account{
+
+	acc := &pb.Account{
 		Id:       req.Id,
 		Username: req.Username,
 		Email:    req.Email,
 		Profile:  req.Profile,
-	}, salt, pp)
+	}
+
+	err = s.domain.Create(ctx, acc, salt, pp)
 	if err != nil {
 		return err
 	}
+
+	// return the account
+	rsp.Account = acc
+
 	return nil
 }
 
