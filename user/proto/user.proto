@@ -37,6 +37,8 @@ message Account {
 message Session {
 	// the session id
 	string id = 1;
+	// the associated user id
+	string userId = 2;
 	// unix timestamp
 	int64 created = 4;
 	// unix timestamp

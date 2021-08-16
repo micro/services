@@ -200,6 +200,7 @@ func (s *User) Login(ctx context.Context, req *pb.LoginRequest, rsp *pb.LoginRes
 		Id:      random(128),
 		Created: time.Now().Unix(),
 		Expires: time.Now().Add(time.Hour * 24 * 7).Unix(),
+		UserId:  accounts[0].Id,
 	}
 
 	if err := s.domain.CreateSession(ctx, sess); err != nil {
