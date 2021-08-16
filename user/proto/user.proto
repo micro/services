@@ -45,7 +45,7 @@ message Session {
 
 // Create a new user account. The email address and username for the account must be unique.
 message CreateRequest {
-	// the acccount id
+	// optional acccount id
 	string id = 1;
 	// the username
 	string username = 2;
@@ -53,7 +53,7 @@ message CreateRequest {
 	string email = 3;
 	// the user password
 	string password = 4;
-	// the user profile as map<string,string>
+	// optional user profile as map<string,string>
 	map<string,string> profile = 5;
 	
 }
