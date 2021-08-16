@@ -1,10 +1,5 @@
 {
   "name": "currency",
   "icon": "💱",
-  "category": "money",
-  "pricing": {
-    "Currency.Rates": 10000,
-    "Currency.Convert": 10000,
-    "Currency.History": 15000
-  }
+  "category": "money"
 }
