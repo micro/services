@@ -47,7 +47,7 @@ message Session {
 
 // Create a new user account. The email address and username for the account must be unique.
 message CreateRequest {
-	// optional acccount id
+	// optional account id
 	string id = 1;
 	// the username
 	string username = 2;
