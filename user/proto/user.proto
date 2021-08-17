@@ -79,7 +79,7 @@ message ReadRequest {
 	string id = 1;
 	// the account username
 	string username = 2;
-	// the account password
+	// the account email
 	string email = 3;
 }
 
