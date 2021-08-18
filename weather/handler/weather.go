@@ -92,8 +92,14 @@ func (w *Weather) Forecast(ctx context.Context, req *pb.ForecastRequest, rsp *pb
 		if v := day["daily_will_it_rain"].(float64); v == 1.0 {
 			willrain = true
 		}
-		if v, _ := strconv.Atoi(day["daily_chance_of_rain"].(string)); v > 0 {
-			chancerain = int32(v)
+
+		// is this a string or a float64? Try both
+		if dcr, ok := day["daily_chance_of_rain"].(string); ok {
+			if v, _ := strconv.Atoi(dcr); v > 0 {
+				chancerain = int32(v)
+			}
+		} else if dcr, ok := day["daily_chance_of_rain"].(float64); ok {
+			chancerain = int32(dcr)
 		}
 
 		// set the daily forecast
