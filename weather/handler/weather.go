@@ -93,7 +93,7 @@ func (w *Weather) Forecast(ctx context.Context, req *pb.ForecastRequest, rsp *pb
 			willrain = true
 		}
 
-		logger.Infof("chance of rain %v", day["daily_chance_of_rain"])
+		// is this a string or a float64? Try both
 		if dcr, ok := day["daily_chance_of_rain"].(string); ok {
 			if v, _ := strconv.Atoi(dcr); v > 0 {
 				chancerain = int32(v)
