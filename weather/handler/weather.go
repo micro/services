@@ -99,7 +99,7 @@ func (w *Weather) Forecast(ctx context.Context, req *pb.ForecastRequest, rsp *pb
 				chancerain = int32(v)
 			}
 		} else if dcr, ok := day["daily_chance_of_rain"].(float64); ok {
-			chancerain = int32(dcr * 100)
+			chancerain = int32(dcr)
 		}
 
 		// set the daily forecast
