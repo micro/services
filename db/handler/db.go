@@ -211,34 +211,41 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if req.Limit == 0 {
 		req.Limit = 25
 	}
+
 	db = db.Table(tableName)
-	for _, query := range queries {
-		logger.Infof("Query field: %v, op: %v, type: %v", query.Field, query.Op, query.Value)
-		typ := "text"
-		switch query.Value.(type) {
-		case int64:
-			typ = "int"
-		case bool:
-			typ = "boolean"
+	if req.Id != "" {
+		logger.Infof("Query by id: %v", req.Id)
+		db = db.Where("id == ?", req.Id)
+	} else {
+		for _, query := range queries {
+			logger.Infof("Query field: %v, op: %v, type: %v", query.Field, query.Op, query.Value)
+			typ := "text"
+			switch query.Value.(type) {
+			case int64:
+				typ = "int"
+			case bool:
+				typ = "boolean"
+			}
+			op := ""
+			switch query.Op {
+			case itemEquals:
+				op = "="
+			case itemGreaterThan:
+				op = ">"
+			case itemGreaterThanEquals:
+				op = ">="
+			case itemLessThan:
+				op = "<"
+			case itemLessThanEquals:
+				op = "<="
+			case itemNotEquals:
+				op = "!="
+			}
+			queryField := correctFieldName(query.Field)
+			db = db.Where(fmt.Sprintf("(%v)::%v %v ?", queryField, typ, op), query.Value)
 		}
-		op := ""
-		switch query.Op {
-		case itemEquals:
-			op = "="
-		case itemGreaterThan:
-			op = ">"
-		case itemGreaterThanEquals:
-			op = ">="
-		case itemLessThan:
-			op = "<"
-		case itemLessThanEquals:
-			op = "<="
-		case itemNotEquals:
-			op = "!="
-		}
-		queryField := correctFieldName(query.Field)
-		db = db.Where(fmt.Sprintf("(%v)::%v %v ?", queryField, typ, op), query.Value)
 	}
+
 	orderField := "created_at"
 	if req.OrderBy != "" {
 		orderField = req.OrderBy
