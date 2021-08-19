@@ -215,7 +215,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	db = db.Table(tableName)
 	if req.Id != "" {
 		logger.Infof("Query by id: %v", req.Id)
-		db = db.Where("id == ?", req.Id)
+		db = db.Where("id = ?", req.Id)
 	} else {
 		for _, query := range queries {
 			logger.Infof("Query field: %v, op: %v, type: %v", query.Field, query.Op, query.Value)
