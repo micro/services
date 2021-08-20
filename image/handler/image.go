@@ -15,6 +15,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/micro/micro/v3/service/config"
+	merrors "github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/store"
 	img "github.com/micro/services/image/proto"
 	"github.com/micro/services/pkg/tenant"
@@ -64,6 +65,7 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 		if err != nil {
 			return err
 		}
+		defer response.Body.Close()
 		switch {
 		case strings.HasSuffix(ur.Path, ".png"):
 			srcImage, err = png.Decode(response.Body)
@@ -73,7 +75,7 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 		if err != nil {
 			return err
 		}
-		defer response.Body.Close()
+
 	} else {
 		return errors.New("base64 or url param is required")
 	}
@@ -106,6 +108,9 @@ func base64ToImage(b64 string) (image.Image, string, error) {
 	ext := ""
 
 	parts := strings.Split(b64, ",")
+	if len(parts) != 2 {
+		return srcImage, "", merrors.BadRequest("image", "Incorrect format for base64 image, expected <encoding prefix>,<image data>")
+	}
 	prefix := parts[0]
 	b64 = strings.TrimSpace(parts[1])
 	res, err := base64.StdEncoding.DecodeString(b64)
@@ -149,6 +154,7 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		if err != nil {
 			return err
 		}
+		defer response.Body.Close()
 		switch {
 		case strings.HasSuffix(ur.Path, ".png"):
 			srcImage, err = png.Decode(response.Body)
@@ -158,7 +164,7 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 		if err != nil {
 			return err
 		}
-		defer response.Body.Close()
+
 	} else {
 		return errors.New("base64 or url param is required")
 	}
@@ -238,6 +244,7 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		if err != nil {
 			return err
 		}
+		defer response.Body.Close()
 		switch {
 		case strings.HasSuffix(ur.Path, ".png"):
 			srcImage, err = png.Decode(response.Body)
@@ -247,7 +254,7 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		if err != nil {
 			return err
 		}
-		defer response.Body.Close()
+
 	}
 
 	buf := new(bytes.Buffer)
