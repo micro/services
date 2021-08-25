@@ -146,7 +146,7 @@ func TestTsGen(t *testing.T) {
 			t.Fatal(err)
 		}
 		//spew.Dump(spec.Components.Schemas)
-		res := schemaToTs(c.key, spec.Components.Schemas[c.key])
+		res := schemaToType("typescript", "ServiceName", c.key, spec.Components.Schemas)
 		if res != c.tsresult {
 			t.Logf("Expected %v, got: %v", c.tsresult, res)
 		}

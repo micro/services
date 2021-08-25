@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,11 +13,18 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/fatih/camelcase"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stoewer/go-strcase"
 )
+
+type service struct {
+	Spec *openapi3.Swagger
+	Name string
+}
 
 func main() {
 	files, err := ioutil.ReadDir(os.Args[1])
@@ -25,11 +34,18 @@ func main() {
 	workDir, _ := os.Getwd()
 
 	tsPath := filepath.Join(workDir, "clients", "ts")
-
+	services := []service{}
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
 			serviceName := f.Name()
 			serviceDir := filepath.Join(workDir, f.Name())
+			cmd := exec.Command("make", "api")
+			cmd.Dir = serviceDir
+			outp, err := cmd.CombinedOutput()
+			if err != nil {
+				fmt.Println(string(outp))
+			}
+
 			serviceFiles, err := ioutil.ReadDir(serviceDir)
 			if err != nil {
 				fmt.Println("Failed to read service dir", err)
@@ -40,7 +56,7 @@ func main() {
 			// detect openapi json file
 			apiJSON := ""
 			for _, serviceFile := range serviceFiles {
-				if strings.Contains(serviceFile.Name(), "api") && strings.HasSuffix(serviceFile.Name(), ".json") {
+				if strings.Contains(serviceFile.Name(), "api") && strings.Contains(serviceFile.Name(), "-") && strings.HasSuffix(serviceFile.Name(), ".json") {
 					apiJSON = filepath.Join(serviceDir, serviceFile.Name())
 				}
 				if serviceFile.Name() == "skip" {
@@ -50,9 +66,8 @@ func main() {
 			if skip {
 				continue
 			}
-			fmt.Println(apiJSON)
 
-			fmt.Println("Processing folder", serviceDir)
+			fmt.Println("Processing folder", serviceDir, "api json", apiJSON)
 
 			// generate typescript files from openapi json
 			//gents := exec.Command("npx", "openapi-typescript", apiJSON, "--output", serviceName+".ts")
@@ -75,40 +90,64 @@ func main() {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
-
-			tsContent := ""
-			typeNames := []string{}
-			for k, v := range spec.Components.Schemas {
-				tsContent += schemaToTs(k, v) + "\n\n"
-				typeNames = append(typeNames, k)
-			}
-			os.MkdirAll(filepath.Join(tsPath, serviceName), 0777)
-			f, err := os.OpenFile(filepath.Join(tsPath, serviceName, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			if err != nil {
-				fmt.Println("Failed to open schema file", err)
-				os.Exit(1)
-			}
-			_, err = f.Write([]byte(tsContent))
-			if err != nil {
-				fmt.Println("Failed to append to schema file", err)
-				os.Exit(1)
-			}
-
-			f, err = os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			if err != nil {
-				fmt.Println("Failed to open index.ts", err)
-				os.Exit(1)
-			}
-
-			_, err = f.Write([]byte(""))
-			if err != nil {
-				fmt.Println("Failed to append to index file", err)
-				os.Exit(1)
-			}
+			fmt.Println(spec.Components.RequestBodies)
+			services = append(services, service{
+				Name: serviceName,
+				Spec: spec,
+			})
 		}
 	}
+	templ, err := template.New("tsclient").Funcs(map[string]interface{}{
+		"recursiveTypeDefinition": func(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {
+			return schemaToType(language, serviceName, typeName, schemas)
+		},
+		"requestTypeToEndpointName": func(requestType string) string {
+			parts := camelcase.Split(requestType)
+			return parts[1]
+		},
+		"requestTypeToResponseType": func(requestType string) string {
+			parts := camelcase.Split(requestType)
+			return strings.Join(parts[0:len(parts)-1], "") + "Response"
+		},
+		"title": strings.Title,
+		"untitle": func(t string) string {
+			return strcase.LowerCamelCase(t)
+		},
+	}).Parse(tsTemplate)
+	if err != nil {
+		fmt.Println("Failed to unmarshal", err)
+		os.Exit(1)
+	}
+	var b bytes.Buffer
+	buf := bufio.NewWriter(&b)
+	err = templ.Execute(buf, map[string]interface{}{
+		"services": services,
+	})
+	if err != nil {
+		fmt.Println("Failed to unmarshal", err)
+		os.Exit(1)
+	}
+
+	//tsContent += "export class " + strings.Title(serviceName) + "Service {\n"
+	//for k, v := range spec.Components.RequestBodies {
+	//	tsContent += schemaToMethods(k, v)
+	//}
+	//tsContent += "}\n"
+	f, err := os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		fmt.Println("Failed to open schema file", err)
+		os.Exit(1)
+	}
+	buf.Flush()
+	_, err = f.Write(b.Bytes())
+	if err != nil {
+		fmt.Println("Failed to append to schema file", err)
+		os.Exit(1)
+	}
+
+	return
 	// login to NPM
-	f, err := os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	f, err = os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		fmt.Println("Failed to open npmrc", err)
 		os.Exit(1)
@@ -175,9 +214,52 @@ func main() {
 	}
 }
 
-func schemaToTs(title string, spec *openapi3.SchemaRef) string {
+func schemaToType(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {
 	var recurse func(props map[string]*openapi3.SchemaRef, level int) string
 
+	var spec *openapi3.SchemaRef = schemas[typeName]
+	detectType := func(currentType string, properties map[string]*openapi3.SchemaRef) (string, bool) {
+		index := map[string]bool{}
+		for key, prop := range properties {
+			index[key+prop.Value.Title] = true
+		}
+		for k, schema := range schemas {
+			// we don't want to return the type matching itself
+			//fmt.Println("k:", k, "current type: ", currentType)
+			if strings.ToLower(k) == currentType {
+				continue
+			}
+			if len(schema.Value.Properties) != len(properties) {
+				continue
+			}
+			found := false
+			for key, prop := range schema.Value.Properties {
+
+				_, ok := index[key+prop.Value.Title]
+				found = ok
+				if !ok {
+					break
+				}
+			}
+			if found {
+				return schema.Value.Title, true
+			}
+		}
+		return "", false
+	}
+	var fieldSeparator, objectOpen, objectClose, arrayPrefix, arrayPostfix, fieldDelimiter, stringType, numberType, boolType string
+	switch language {
+	case "typescript":
+		fieldSeparator = "?: "
+		arrayPrefix = ""
+		arrayPostfix = "[]"
+		objectOpen = "{"
+		objectClose = "}"
+		fieldDelimiter = ";"
+		stringType = "string"
+		numberType = "number"
+		boolType = "boolean"
+	}
 	recurse = func(props map[string]*openapi3.SchemaRef, level int) string {
 		ret := ""
 
@@ -190,30 +272,30 @@ func schemaToTs(title string, spec *openapi3.SchemaRef) string {
 		for _, k := range keys {
 			v := props[k]
 			ret += strings.Repeat("  ", level)
-			k = strcase.SnakeCase(k)
+			//k = strcase.SnakeCase(k)
 			//v.Value.
 			switch v.Value.Type {
 			case "object":
-				// @todo identify what is a slice and what is not!
-				// currently the openapi converter messes this up
-				// see redoc html output
-				ret += k + "?: {\n" + recurse(v.Value.Properties, level+1) + strings.Repeat("  ", level) + "};"
-
-			case "array":
-				if len(v.Value.Items.Value.Properties) == 0 {
-					ret += k + "?: " + v.Value.Items.Value.Type + "[];"
+				typ, found := detectType(k, v.Value.Properties)
+				if found {
+					ret += k + fieldSeparator + strings.Title(serviceName) + strings.Title(typ) + fieldDelimiter
 				} else {
-					// @todo identify what is a slice and what is not!
-					// currently the openapi converter messes this up
-					// see redoc html output
-					ret += k + "?: {\n" + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + "}[];"
+					ret += k + fieldSeparator + objectOpen + "\n" + recurse(v.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + fieldDelimiter
+				}
+			case "array":
+				typ, found := detectType(k, v.Value.Items.Value.Properties)
+				if found {
+					ret += k + fieldSeparator + arrayPrefix + strings.Title(serviceName) + strings.Title(typ) + arrayPostfix + fieldDelimiter
+				} else {
+
+					ret += k + fieldSeparator + arrayPrefix + objectOpen + "\n" + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + arrayPostfix + fieldDelimiter
 				}
 			case "string":
-				ret += k + "?: " + "string;"
+				ret += k + fieldSeparator + stringType + fieldDelimiter
 			case "number":
-				ret += k + "?: " + "number;"
+				ret += k + fieldSeparator + numberType + fieldDelimiter
 			case "boolean":
-				ret += k + "?: " + "boolean;"
+				ret += k + fieldSeparator + boolType + fieldDelimiter
 			}
 
 			if i < len(props) {
@@ -224,7 +306,11 @@ func schemaToTs(title string, spec *openapi3.SchemaRef) string {
 		}
 		return ret
 	}
-	return "export interface " + title + " {\n" + recurse(spec.Value.Properties, 1) + "}"
+	return recurse(spec.Value.Properties, 1)
+}
+
+func schemaToMethods(title string, spec *openapi3.RequestBodyRef) string {
+	return ""
 }
 
 // CopyFile copies a file from src to dst. If src and dst files exist, and are
