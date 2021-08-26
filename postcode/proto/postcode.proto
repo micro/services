@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package postcode;
+
+option go_package = "./proto;postcode";
+
+service Postcode {
+	rpc Lookup(LookupRequest) returns (LookupResponse) {}
+}
+
+// Lookup a postcode to retrieve the related region, county, etc
+message LookupRequest {
+	string postcode = 1;
+}
+
+message LookupResponse {
+	string postcode = 1;
+	string country = 2;
+	string region = 3;
+	string district = 4;
+	string ward = 5;
+	double latitude = 6;
+	double longitude = 7;
+}
