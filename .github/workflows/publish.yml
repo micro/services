@@ -69,6 +69,7 @@ jobs:
           go install;
           cd ../..;
           clients .
+          cd clients/ts;
           npm install
 
       # publish to github first under micro/services
