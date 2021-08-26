@@ -149,7 +149,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	return
 	// login to NPM
 	f, err = os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
