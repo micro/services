@@ -2,7 +2,7 @@ package main
 
 const tsTemplate = `import * as m3o from '@m3o/m3o-node';
 
-class Client {
+export class Client {
 	constructor(token: string) {
 		{{ range $service := .services }}
 		this.{{ $service.Name}}Service = new {{ title $service.Name}}Service(token){{end}}
