@@ -19,6 +19,6 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
-    "@m3o/m3o-node": "^0.0.23"
+    "@m3o/m3o-node": "^0.0.24"
   }
 }

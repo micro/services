@@ -109,6 +109,10 @@ func main() {
 			parts := camelcase.Split(requestType)
 			return strings.Join(parts[0:len(parts)-1], "") + "Response"
 		},
+		"requestTypeToEndpointPath": func(requestType string) string {
+			parts := camelcase.Split(requestType)
+			return strings.Title(strings.Join(parts[1:len(parts)-1], ""))
+		},
 		"title": strings.Title,
 		"untitle": func(t string) string {
 			return strcase.LowerCamelCase(t)

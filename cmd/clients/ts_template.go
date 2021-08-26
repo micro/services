@@ -20,7 +20,7 @@ export class {{ title $service.Name }}Service{
 	}
 	{{ range $key, $req := $service.Spec.Components.RequestBodies }}
 	{{ $endpointName := requestTypeToEndpointName $key}}{{ untitle $endpointName}}(request: {{ $key }}): Promise<{{ requestTypeToResponseType $key }}> {
-		return this.client.call(request) as Promise<{{ requestTypeToResponseType $key }}>;
+		return this.client.call("{{ $service.Name }}", "{{ requestTypeToEndpointPath $key}}", request) as Promise<{{ requestTypeToResponseType $key }}>;
 	};
 	{{ end }}
 }
