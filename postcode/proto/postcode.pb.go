@@ -26,6 +26,7 @@ type LookupRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// UK postcode e.g SW1A 2AA
 	Postcode string `protobuf:"bytes,1,opt,name=postcode,proto3" json:"postcode,omitempty"`
 }
 
@@ -73,12 +74,19 @@ type LookupResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Postcode  string  `protobuf:"bytes,1,opt,name=postcode,proto3" json:"postcode,omitempty"`
-	Country   string  `protobuf:"bytes,2,opt,name=country,proto3" json:"country,omitempty"`
-	Region    string  `protobuf:"bytes,3,opt,name=region,proto3" json:"region,omitempty"`
-	District  string  `protobuf:"bytes,4,opt,name=district,proto3" json:"district,omitempty"`
-	Ward      string  `protobuf:"bytes,5,opt,name=ward,proto3" json:"ward,omitempty"`
-	Latitude  float64 `protobuf:"fixed64,6,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	// UK postcode e.g SW1A 2AA
+	Postcode string `protobuf:"bytes,1,opt,name=postcode,proto3" json:"postcode,omitempty"`
+	// country e.g United Kingdom
+	Country string `protobuf:"bytes,2,opt,name=country,proto3" json:"country,omitempty"`
+	// related region e.g London
+	Region string `protobuf:"bytes,3,opt,name=region,proto3" json:"region,omitempty"`
+	// e.g Westminster
+	District string `protobuf:"bytes,4,opt,name=district,proto3" json:"district,omitempty"`
+	// e.g St James's
+	Ward string `protobuf:"bytes,5,opt,name=ward,proto3" json:"ward,omitempty"`
+	// e.g 51.50354
+	Latitude float64 `protobuf:"fixed64,6,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	// e.g -0.127695
 	Longitude float64 `protobuf:"fixed64,7,opt,name=longitude,proto3" json:"longitude,omitempty"`
 }
 
@@ -163,6 +171,243 @@ func (x *LookupResponse) GetLongitude() float64 {
 	return 0
 }
 
+// Validate a postcode. Should return valid: true or valid: false
+type ValidateRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// UK postcode e.g SW1A 2AA
+	Postcode string `protobuf:"bytes,1,opt,name=postcode,proto3" json:"postcode,omitempty"`
+}
+
+func (x *ValidateRequest) Reset() {
+	*x = ValidateRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_postcode_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ValidateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateRequest) ProtoMessage() {}
+
+func (x *ValidateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_postcode_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateRequest.ProtoReflect.Descriptor instead.
+func (*ValidateRequest) Descriptor() ([]byte, []int) {
+	return file_proto_postcode_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ValidateRequest) GetPostcode() string {
+	if x != nil {
+		return x.Postcode
+	}
+	return ""
+}
+
+type ValidateResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Valid bool `protobuf:"varint,1,opt,name=valid,proto3" json:"valid,omitempty"`
+}
+
+func (x *ValidateResponse) Reset() {
+	*x = ValidateResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_postcode_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ValidateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateResponse) ProtoMessage() {}
+
+func (x *ValidateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_postcode_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateResponse.ProtoReflect.Descriptor instead.
+func (*ValidateResponse) Descriptor() ([]byte, []int) {
+	return file_proto_postcode_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ValidateResponse) GetValid() bool {
+	if x != nil {
+		return x.Valid
+	}
+	return false
+}
+
+// Return a random postcode and its related info
+type RandomRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *RandomRequest) Reset() {
+	*x = RandomRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_postcode_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RandomRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RandomRequest) ProtoMessage() {}
+
+func (x *RandomRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_postcode_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RandomRequest.ProtoReflect.Descriptor instead.
+func (*RandomRequest) Descriptor() ([]byte, []int) {
+	return file_proto_postcode_proto_rawDescGZIP(), []int{4}
+}
+
+type RandomResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// UK postcode e.g SW1A 2AA
+	Postcode string `protobuf:"bytes,1,opt,name=postcode,proto3" json:"postcode,omitempty"`
+	// country e.g United Kingdom
+	Country string `protobuf:"bytes,2,opt,name=country,proto3" json:"country,omitempty"`
+	// related region e.g London
+	Region string `protobuf:"bytes,3,opt,name=region,proto3" json:"region,omitempty"`
+	// e.g Westminster
+	District string `protobuf:"bytes,4,opt,name=district,proto3" json:"district,omitempty"`
+	// e.g St James's
+	Ward string `protobuf:"bytes,5,opt,name=ward,proto3" json:"ward,omitempty"`
+	// e.g 51.50354
+	Latitude float64 `protobuf:"fixed64,6,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	// e.g -0.127695
+	Longitude float64 `protobuf:"fixed64,7,opt,name=longitude,proto3" json:"longitude,omitempty"`
+}
+
+func (x *RandomResponse) Reset() {
+	*x = RandomResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_postcode_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RandomResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RandomResponse) ProtoMessage() {}
+
+func (x *RandomResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_postcode_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RandomResponse.ProtoReflect.Descriptor instead.
+func (*RandomResponse) Descriptor() ([]byte, []int) {
+	return file_proto_postcode_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *RandomResponse) GetPostcode() string {
+	if x != nil {
+		return x.Postcode
+	}
+	return ""
+}
+
+func (x *RandomResponse) GetCountry() string {
+	if x != nil {
+		return x.Country
+	}
+	return ""
+}
+
+func (x *RandomResponse) GetRegion() string {
+	if x != nil {
+		return x.Region
+	}
+	return ""
+}
+
+func (x *RandomResponse) GetDistrict() string {
+	if x != nil {
+		return x.District
+	}
+	return ""
+}
+
+func (x *RandomResponse) GetWard() string {
+	if x != nil {
+		return x.Ward
+	}
+	return ""
+}
+
+func (x *RandomResponse) GetLatitude() float64 {
+	if x != nil {
+		return x.Latitude
+	}
+	return 0
+}
+
+func (x *RandomResponse) GetLongitude() float64 {
+	if x != nil {
+		return x.Longitude
+	}
+	return 0
+}
+
 var File_proto_postcode_proto protoreflect.FileDescriptor
 
 var file_proto_postcode_proto_rawDesc = []byte{
@@ -183,13 +428,41 @@ var file_proto_postcode_proto_rawDesc = []byte{
 	0x0a, 0x08, 0x6c, 0x61, 0x74, 0x69, 0x74, 0x75, 0x64, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x01,
 	0x52, 0x08, 0x6c, 0x61, 0x74, 0x69, 0x74, 0x75, 0x64, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x6c, 0x6f,
 	0x6e, 0x67, 0x69, 0x74, 0x75, 0x64, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x01, 0x52, 0x09, 0x6c,
-	0x6f, 0x6e, 0x67, 0x69, 0x74, 0x75, 0x64, 0x65, 0x32, 0x49, 0x0a, 0x08, 0x50, 0x6f, 0x73, 0x74,
-	0x63, 0x6f, 0x64, 0x65, 0x12, 0x3d, 0x0a, 0x06, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x12, 0x17,
-	0x2e, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x2e, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f,
-	0x64, 0x65, 0x2e, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70,
-	0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x6e, 0x67, 0x69, 0x74, 0x75, 0x64, 0x65, 0x22, 0x2d, 0x0a, 0x0f, 0x56, 0x61, 0x6c, 0x69,
+	0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70,
+	0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
+	0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x22, 0x28, 0x0a, 0x10, 0x56, 0x61, 0x6c, 0x69, 0x64,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x76,
+	0x61, 0x6c, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x69,
+	0x64, 0x22, 0x0f, 0x0a, 0x0d, 0x52, 0x61, 0x6e, 0x64, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x22, 0xc8, 0x01, 0x0a, 0x0e, 0x52, 0x61, 0x6e, 0x64, 0x6f, 0x6d, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64,
+	0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x16, 0x0a, 0x06, 0x72,
+	0x65, 0x67, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x67,
+	0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x12,
+	0x12, 0x0a, 0x04, 0x77, 0x61, 0x72, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x77,
+	0x61, 0x72, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x61, 0x74, 0x69, 0x74, 0x75, 0x64, 0x65, 0x18,
+	0x06, 0x20, 0x01, 0x28, 0x01, 0x52, 0x08, 0x6c, 0x61, 0x74, 0x69, 0x74, 0x75, 0x64, 0x65, 0x12,
+	0x1c, 0x0a, 0x09, 0x6c, 0x6f, 0x6e, 0x67, 0x69, 0x74, 0x75, 0x64, 0x65, 0x18, 0x07, 0x20, 0x01,
+	0x28, 0x01, 0x52, 0x09, 0x6c, 0x6f, 0x6e, 0x67, 0x69, 0x74, 0x75, 0x64, 0x65, 0x32, 0xcd, 0x01,
+	0x0a, 0x08, 0x50, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x3d, 0x0a, 0x06, 0x4c, 0x6f,
+	0x6f, 0x6b, 0x75, 0x70, 0x12, 0x17, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x2e,
+	0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e,
+	0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x2e, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3d, 0x0a, 0x06, 0x52, 0x61, 0x6e,
+	0x64, 0x6f, 0x6d, 0x12, 0x17, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x2e, 0x52,
+	0x61, 0x6e, 0x64, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x70,
+	0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x2e, 0x52, 0x61, 0x6e, 0x64, 0x6f, 0x6d, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x43, 0x0a, 0x08, 0x56, 0x61, 0x6c, 0x69,
+	0x64, 0x61, 0x74, 0x65, 0x12, 0x19, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x2e,
+	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x1a, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64, 0x65, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x12, 0x5a,
+	0x10, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x6f, 0x73, 0x74, 0x63, 0x6f, 0x64,
+	0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -204,16 +477,24 @@ func file_proto_postcode_proto_rawDescGZIP() []byte {
 	return file_proto_postcode_proto_rawDescData
 }
 
-var file_proto_postcode_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_postcode_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_proto_postcode_proto_goTypes = []interface{}{
-	(*LookupRequest)(nil),  // 0: postcode.LookupRequest
-	(*LookupResponse)(nil), // 1: postcode.LookupResponse
+	(*LookupRequest)(nil),    // 0: postcode.LookupRequest
+	(*LookupResponse)(nil),   // 1: postcode.LookupResponse
+	(*ValidateRequest)(nil),  // 2: postcode.ValidateRequest
+	(*ValidateResponse)(nil), // 3: postcode.ValidateResponse
+	(*RandomRequest)(nil),    // 4: postcode.RandomRequest
+	(*RandomResponse)(nil),   // 5: postcode.RandomResponse
 }
 var file_proto_postcode_proto_depIdxs = []int32{
 	0, // 0: postcode.Postcode.Lookup:input_type -> postcode.LookupRequest
-	1, // 1: postcode.Postcode.Lookup:output_type -> postcode.LookupResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	4, // 1: postcode.Postcode.Random:input_type -> postcode.RandomRequest
+	2, // 2: postcode.Postcode.Validate:input_type -> postcode.ValidateRequest
+	1, // 3: postcode.Postcode.Lookup:output_type -> postcode.LookupResponse
+	5, // 4: postcode.Postcode.Random:output_type -> postcode.RandomResponse
+	3, // 5: postcode.Postcode.Validate:output_type -> postcode.ValidateResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -249,6 +530,54 @@ func file_proto_postcode_proto_init() {
 				return nil
 			}
 		}
+		file_proto_postcode_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ValidateRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_postcode_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ValidateResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_postcode_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RandomRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_postcode_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RandomResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -256,7 +585,7 @@ func file_proto_postcode_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_postcode_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

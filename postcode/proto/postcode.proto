@@ -6,19 +6,60 @@ option go_package = "./proto;postcode";
 
 service Postcode {
 	rpc Lookup(LookupRequest) returns (LookupResponse) {}
+	rpc Random(RandomRequest) returns (RandomResponse) {}
+	rpc Validate(ValidateRequest) returns (ValidateResponse) {}
 }
 
 // Lookup a postcode to retrieve the related region, county, etc
 message LookupRequest {
+	// UK postcode e.g SW1A 2AA
 	string postcode = 1;
 }
 
 message LookupResponse {
+	// UK postcode e.g SW1A 2AA
 	string postcode = 1;
+	// country e.g United Kingdom
 	string country = 2;
+	// related region e.g London
 	string region = 3;
+	// e.g Westminster
 	string district = 4;
+	// e.g St James's
 	string ward = 5;
+	// e.g 51.50354
 	double latitude = 6;
+	// e.g -0.127695
+	double longitude = 7;
+}
+
+// Validate a postcode. Should return valid: true or valid: false
+message ValidateRequest {
+	// UK postcode e.g SW1A 2AA
+	string postcode = 1;
+
+}
+
+message ValidateResponse {
+	bool valid = 1;
+}
+
+// Return a random postcode and its related info
+message RandomRequest {}
+
+message RandomResponse {
+	// UK postcode e.g SW1A 2AA
+	string postcode = 1;
+	// country e.g United Kingdom
+	string country = 2;
+	// related region e.g London
+	string region = 3;
+	// e.g Westminster
+	string district = 4;
+	// e.g St James's
+	string ward = 5;
+	// e.g 51.50354
+	double latitude = 6;
+	// e.g -0.127695
 	double longitude = 7;
 }

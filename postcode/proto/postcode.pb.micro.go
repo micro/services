@@ -43,6 +43,8 @@ func NewPostcodeEndpoints() []*api.Endpoint {
 
 type PostcodeService interface {
 	Lookup(ctx context.Context, in *LookupRequest, opts ...client.CallOption) (*LookupResponse, error)
+	Random(ctx context.Context, in *RandomRequest, opts ...client.CallOption) (*RandomResponse, error)
+	Validate(ctx context.Context, in *ValidateRequest, opts ...client.CallOption) (*ValidateResponse, error)
 }
 
 type postcodeService struct {
@@ -67,15 +69,39 @@ func (c *postcodeService) Lookup(ctx context.Context, in *LookupRequest, opts ..
 	return out, nil
 }
 
+func (c *postcodeService) Random(ctx context.Context, in *RandomRequest, opts ...client.CallOption) (*RandomResponse, error) {
+	req := c.c.NewRequest(c.name, "Postcode.Random", in)
+	out := new(RandomResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postcodeService) Validate(ctx context.Context, in *ValidateRequest, opts ...client.CallOption) (*ValidateResponse, error) {
+	req := c.c.NewRequest(c.name, "Postcode.Validate", in)
+	out := new(ValidateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Postcode service
 
 type PostcodeHandler interface {
 	Lookup(context.Context, *LookupRequest, *LookupResponse) error
+	Random(context.Context, *RandomRequest, *RandomResponse) error
+	Validate(context.Context, *ValidateRequest, *ValidateResponse) error
 }
 
 func RegisterPostcodeHandler(s server.Server, hdlr PostcodeHandler, opts ...server.HandlerOption) error {
 	type postcode interface {
 		Lookup(ctx context.Context, in *LookupRequest, out *LookupResponse) error
+		Random(ctx context.Context, in *RandomRequest, out *RandomResponse) error
+		Validate(ctx context.Context, in *ValidateRequest, out *ValidateResponse) error
 	}
 	type Postcode struct {
 		postcode
@@ -90,4 +116,12 @@ type postcodeHandler struct {
 
 func (h *postcodeHandler) Lookup(ctx context.Context, in *LookupRequest, out *LookupResponse) error {
 	return h.PostcodeHandler.Lookup(ctx, in, out)
+}
+
+func (h *postcodeHandler) Random(ctx context.Context, in *RandomRequest, out *RandomResponse) error {
+	return h.PostcodeHandler.Random(ctx, in, out)
+}
+
+func (h *postcodeHandler) Validate(ctx context.Context, in *ValidateRequest, out *ValidateResponse) error {
+	return h.PostcodeHandler.Validate(ctx, in, out)
 }
