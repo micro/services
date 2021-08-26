@@ -103,7 +103,7 @@ func main() {
 		},
 		"requestTypeToEndpointName": func(requestType string) string {
 			parts := camelcase.Split(requestType)
-			return parts[1]
+			return strings.Join(parts[1:len(parts)-1], "")
 		},
 		"requestTypeToResponseType": func(requestType string) string {
 			parts := camelcase.Split(requestType)
@@ -287,8 +287,16 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 				if found {
 					ret += k + fieldSeparator + arrayPrefix + strings.Title(serviceName) + strings.Title(typ) + arrayPostfix + fieldDelimiter
 				} else {
-
-					ret += k + fieldSeparator + arrayPrefix + objectOpen + "\n" + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + arrayPostfix + fieldDelimiter
+					switch v.Value.Items.Value.Type {
+					case "string":
+						ret += k + fieldSeparator + arrayPrefix + stringType + arrayPostfix + fieldDelimiter
+					case "number":
+						ret += k + fieldSeparator + arrayPrefix + numberType + arrayPostfix + fieldDelimiter
+					case "boolean":
+						ret += k + fieldSeparator + arrayPrefix + boolType + arrayPostfix + fieldDelimiter
+					case "object":
+						ret += k + fieldSeparator + arrayPrefix + objectOpen + "\n" + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + arrayPostfix + fieldDelimiter
+					}
 				}
 			case "string":
 				ret += k + fieldSeparator + stringType + fieldDelimiter
