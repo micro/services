@@ -65,7 +65,10 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          go run cmd/clients/main.go .
+          cd cmd/clients;
+          go install;
+          cd ../..;
+          clients .
 
       # publish to github first under micro/services
       # .npmrc has settings for it
