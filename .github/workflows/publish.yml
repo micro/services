@@ -69,6 +69,7 @@ jobs:
           go install;
           cd ../..;
           clients .
+          npm install
 
       # publish to github first under micro/services
       # .npmrc has settings for it
