@@ -71,6 +71,7 @@ jobs:
           clients .
           cd clients/ts;
           npm install
+          npm run build
 
       # publish to github first under micro/services
       # .npmrc has settings for it
