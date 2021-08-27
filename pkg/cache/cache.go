@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/logger"
 	"github.com/hashicorp/golang-lru"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/pkg/tenant"
 )
@@ -111,7 +111,6 @@ func (c *cache) Get(key string, val interface{}) error {
 	if err := json.Unmarshal(recs[0].Value, val); err != nil {
 		return err
 	}
-
 
 	// put it in the cache for future use
 	// set in the lru

@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/kevinburke/twilio-go"
 	"github.com/enescakir/emoji"
+	"github.com/kevinburke/twilio-go"
 	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/emoji/proto"
 )
 

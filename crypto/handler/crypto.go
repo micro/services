@@ -21,17 +21,17 @@ var (
 )
 
 type Article struct {
-	Title string
+	Title       string
 	Description string
-	Url string
-	Source string
-	Date string
+	Url         string
+	Source      string
+	Date        string
 }
 
 type News struct {
 	Ticker string
-	Limit int32
-	News []*Article
+	Limit  int32
+	News   []*Article
 }
 
 type Crypto struct {
@@ -120,11 +120,11 @@ func (c *Crypto) News(ctx context.Context, req *pb.NewsRequest, rsp *pb.NewsResp
 
 	for _, article := range respBody.News {
 		rsp.Articles = append(rsp.Articles, &pb.Article{
-			Title: article.Title,
+			Title:       article.Title,
 			Description: article.Description,
-			Url: article.Url,
-			Source: article.Source,
-			Date: article.Date,
+			Url:         article.Url,
+			Source:      article.Source,
+			Date:        article.Date,
 		})
 	}
 

@@ -145,7 +145,6 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 		req.Limit = int64(25)
 	}
 
-
 	// default query all
 	q := e.entriesDateIndex.ToQuery(nil)
 

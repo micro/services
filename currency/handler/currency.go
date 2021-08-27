@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
@@ -62,7 +62,7 @@ func (c *Currency) Codes(ctx context.Context, req *pb.CodesRequest, rsp *pb.Code
 	for _, code := range codes {
 		c := code.([]interface{})
 		rsp.Codes = append(rsp.Codes, &pb.Code{
-			Name: c[0].(string),
+			Name:     c[0].(string),
 			Currency: c[1].(string),
 		})
 	}
@@ -90,7 +90,7 @@ func (c *Currency) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.
 	}
 
 	// try the cache
-	if rates, ok := c.Cache.Get("history:" + req.Code+req.Date); ok {
+	if rates, ok := c.Cache.Get("history:" + req.Code + req.Date); ok {
 		rsp.Code = req.Code
 		rsp.Date = req.Date
 		rsp.Rates = rates.(map[string]float64)
@@ -135,11 +135,10 @@ func (c *Currency) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.
 	}
 
 	// set for a period of time
-	c.Cache.Set("history:"+req.Code+req.Date, rsp.Rates, time.Hour * 24)
+	c.Cache.Set("history:"+req.Code+req.Date, rsp.Rates, time.Hour*24)
 
 	return nil
 }
-
 
 func (c *Currency) Rates(ctx context.Context, req *pb.RatesRequest, rsp *pb.RatesResponse) error {
 	if len(req.Code) == 0 {
