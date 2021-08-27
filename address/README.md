@@ -1,6 +1,6 @@
-UK Address lookup by postcode
+Address lookup by postcode
 
 # Address Service
 
-Lookup UK addresses by postcode or address fragments. Includes PAF and multiple residence data.
+Lookup UK addresses by postcode. Simply provide a valid postcode and get a full list of addresses.
 
