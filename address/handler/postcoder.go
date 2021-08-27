@@ -13,27 +13,20 @@ import (
 )
 
 var (
-	AddressURL = "https://api.ideal-postcodes.co.uk/v1/"
+	PostcoderURL = "https://ws.postcoder.com/pcw/"
 )
 
-type Address struct {
+type Postcoder struct {
 	Url string
 	Key string
 }
 
-func field(key string, vals map[string]interface{}) string {
-	if v, ok := vals[key].(string); ok {
-		return v
-	}
-	return ""
-}
-
-func (a *Address) lookupPostcode(q string, rsp interface{}) error {
-	u := fmt.Sprintf("%saddresses?api_key=%s&postcode=%s", a.Url, a.Key, q)
+func (a *Postcoder) lookupPostcode(q string, rsp interface{}) error {
+	u := fmt.Sprintf("%s/%s/address/uk/%s?format=json&lines=2", a.Url, a.Key, q)
 	return api.Get(u, rsp)
 }
 
-func (a *Address) LookupPostcode(ctx context.Context, req *pb.LookupPostcodeRequest, rsp *pb.LookupPostcodeResponse) error {
+func (a *Postcoder) LookupPostcode(ctx context.Context, req *pb.LookupPostcodeRequest, rsp *pb.LookupPostcodeResponse) error {
 	if len(req.Postcode) == 0 {
 		return errors.BadRequest("address.lookup-postcode", "missing postcode")
 	}
@@ -53,28 +46,26 @@ func (a *Address) LookupPostcode(ctx context.Context, req *pb.LookupPostcodeRequ
 		return nil
 	}
 
-	var resp map[string]interface{}
+	var resp []interface{}
 
 	// lookup the address api for the given postcode
-	if err := a.lookupPostcode(postcode, &resp); err != nil {
+	if err := a.lookupPostcode(req.Postcode, &resp); err != nil {
 		logger.Errorf("Failed to lookup postcode %v: %v", req.Postcode, err)
 		return errors.InternalServerError("address.lookup-postcode", "failed to lookup postcode")
 	}
 
-	result := resp["result"].(map[string]interface{})
-	hits := result["hits"].([]interface{})
-
-	for _, res := range hits {
+	for _, res := range resp {
 		addr := res.(map[string]interface{})
 		rsp.Addresses = append(rsp.Addresses, &pb.Record{
-			LineOne:      field("line_1", addr),
-			LineTwo:      field("line_2", addr),
-			Organisation: field("organisation_name", addr),
-			BuildingName: field("building_name", addr),
+			LineOne:      field("addressline1", addr),
+			LineTwo:      field("addressline2", addr),
+			Summary:      field("summaryline", addr),
+			Organisation: field("organisation", addr),
+			BuildingName: field("buildingname", addr),
 			Premise:      field("premise", addr),
-			Street:       field("thoroughfare", addr),
-			Locality:     field("dependent_locality", addr),
-			Town:         field("post_town", addr),
+			Street:       field("street", addr),
+			Locality:     field("dependentlocality", addr),
+			Town:         field("posttown", addr),
 			County:       field("county", addr),
 			Postcode:     field("postcode", addr),
 		})
