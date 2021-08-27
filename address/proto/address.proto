@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package address;
+
+option go_package = "./proto;address";
+
+service Address {
+	rpc LookupPostcode(LookupPostcodeRequest) returns (LookupPostcodeResponse) {}
+}
+
+message Record {
+	// line one of address
+	string line_one = 1;
+	// line two of address
+	string line_two = 2;
+	// the complete address
+	string summary = 3;
+	// organisation if present
+	string organisation = 4;
+	// build name
+	string building_name = 5;
+	// the premise
+	string premise = 6;
+	// street name
+	string street = 7;
+	// dependent locality
+	string locality = 8;
+	// post town
+	string town = 9;
+	// the county
+	string county = 10;
+	// the postcode
+	string postcode = 11;
+	
+}
+
+// Lookup a list of UK addresses by postcode
+message LookupPostcodeRequest {
+	// UK postcode e.g SW1A 2AA
+	string postcode = 1;
+}
+
+message LookupPostcodeResponse {
+	repeated Record addresses = 1;
+}
