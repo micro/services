@@ -306,8 +306,8 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		boolType = "bool"
 		int32Type = "int32"
 		int64Type = "int64"
-		floatType = "float"
-		doubleType = "double"
+		floatType = "float32"
+		doubleType = "float64"
 	}
 	recurse = func(props map[string]*openapi3.SchemaRef, level int) string {
 		ret := ""
@@ -371,6 +371,10 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 					typ = int32Type
 				case "int64":
 					typ = int64Type
+				case "float":
+					typ = floatType
+				case "double":
+					typ = doubleType
 				}
 				ret += k + fieldSeparator + typ + fieldDelimiter
 			case "boolean":
