@@ -20,6 +20,14 @@ Run a service from source
 micro run github.com/micro/services/helloworld
 ```
 
+## Contribute
+
+We welcome contributions of additional services which are then hosted on [m3o.com](https://m3o.com).
+
+- Services must be built using Micro platform
+- Any dependency must be configured using the Micro Config
+- All services to be published must include a `publicapi.json`
+
 ## License
 
 [Polyform Shield](https://polyformproject.org/licenses/shield/1.0.0/)
