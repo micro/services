@@ -275,7 +275,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		return "", false
 	}
 	var fieldSeparator, objectOpen, objectClose, arrayPrefix, arrayPostfix, fieldDelimiter, stringType, numberType, boolType string
-	var int32Type, int64Type string
+	var int32Type, int64Type, floatType, doubleType string
 	var fieldUpperCase bool
 	switch language {
 	case "typescript":
@@ -291,6 +291,8 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		boolType = "boolean"
 		int32Type = "number"
 		int64Type = "number"
+		floatType = "number"
+		doubleType = "number"
 	case "go":
 		fieldUpperCase = true
 		fieldSeparator = " "
@@ -304,6 +306,8 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		boolType = "bool"
 		int32Type = "int32"
 		int64Type = "int64"
+		floatType = "float"
+		doubleType = "double"
 	}
 	recurse = func(props map[string]*openapi3.SchemaRef, level int) string {
 		ret := ""
@@ -346,6 +350,10 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 							typ = int32Type
 						case "int64":
 							typ = int64Type
+						case "float":
+							typ = floatType
+						case "double":
+							typ = doubleType
 						}
 						ret += k + fieldSeparator + arrayPrefix + typ + arrayPostfix + fieldDelimiter
 					case "boolean":
