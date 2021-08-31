@@ -29,6 +29,7 @@ require (
 	github.com/kevinburke/twilio-go v0.0.0-20210327194925-1623146bcf73
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
+	github.com/m3o/m3o-go v0.0.0-20210819131318-0fe1baa5762a
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/micro/v3 v3.3.1-0.20210611161948-fd9821dd4f52

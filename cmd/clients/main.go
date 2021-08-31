@@ -33,7 +33,6 @@ func main() {
 	}
 	workDir, _ := os.Getwd()
 
-	tsPath := filepath.Join(workDir, "clients", "ts")
 	services := []service{}
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
@@ -69,15 +68,6 @@ func main() {
 
 			fmt.Println("Processing folder", serviceDir, "api json", apiJSON)
 
-			// generate typescript files from openapi json
-			//gents := exec.Command("npx", "openapi-typescript", apiJSON, "--output", serviceName+".ts")
-			//gents.Dir = serviceDir
-			//fmt.Println(serviceDir)
-			//outp, err := gents.CombinedOutput()
-			//if err != nil {
-			//	fmt.Println("Failed to make docs", string(outp))
-			//	os.Exit(1)
-			//}
 			js, err := ioutil.ReadFile(apiJSON)
 
 			if err != nil {
@@ -90,14 +80,13 @@ func main() {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
-			fmt.Println(spec.Components.RequestBodies)
 			services = append(services, service{
 				Name: serviceName,
 				Spec: spec,
 			})
 		}
 	}
-	templ, err := template.New("tsclient").Funcs(map[string]interface{}{
+	funcs := map[string]interface{}{
 		"recursiveTypeDefinition": func(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {
 			return schemaToType(language, serviceName, typeName, schemas)
 		},
@@ -117,7 +106,8 @@ func main() {
 		"untitle": func(t string) string {
 			return strcase.LowerCamelCase(t)
 		},
-	}).Parse(tsTemplate)
+	}
+	templ, err := template.New("tsclient").Funcs(funcs).Parse(tsTemplate)
 	if err != nil {
 		fmt.Println("Failed to unmarshal", err)
 		os.Exit(1)
@@ -131,13 +121,45 @@ func main() {
 		fmt.Println("Failed to unmarshal", err)
 		os.Exit(1)
 	}
+	tsPath := filepath.Join(workDir, "clients", "ts")
+	err = os.MkdirAll(tsPath, 0777)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	f, err := os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+	if err != nil {
+		fmt.Println("Failed to open schema file", err)
+		os.Exit(1)
+	}
+	buf.Flush()
+	_, err = f.Write(b.Bytes())
+	if err != nil {
+		fmt.Println("Failed to append to schema file", err)
+		os.Exit(1)
+	}
 
-	//tsContent += "export class " + strings.Title(serviceName) + "Service {\n"
-	//for k, v := range spec.Components.RequestBodies {
-	//	tsContent += schemaToMethods(k, v)
-	//}
-	//tsContent += "}\n"
-	f, err := os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	templ, err = template.New("goclient").Funcs(funcs).Parse(goTemplate)
+	if err != nil {
+		fmt.Println("Failed to unmarshal", err)
+		os.Exit(1)
+	}
+	b = bytes.Buffer{}
+	buf = bufio.NewWriter(&b)
+	err = templ.Execute(buf, map[string]interface{}{
+		"services": services,
+	})
+	if err != nil {
+		fmt.Println("Failed to unmarshal", err)
+		os.Exit(1)
+	}
+	goPath := filepath.Join(workDir, "clients", "go")
+	err = os.MkdirAll(goPath, 0777)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	f, err = os.OpenFile(filepath.Join(goPath, "m3o.go"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
 	if err != nil {
 		fmt.Println("Failed to open schema file", err)
 		os.Exit(1)
@@ -228,8 +250,10 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		}
 		for k, schema := range schemas {
 			// we don't want to return the type matching itself
-			//fmt.Println("k:", k, "current type: ", currentType)
 			if strings.ToLower(k) == currentType {
+				continue
+			}
+			if strings.HasSuffix(k, "Request") || strings.HasSuffix(k, "Response") {
 				continue
 			}
 			if len(schema.Value.Properties) != len(properties) {
@@ -251,17 +275,35 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		return "", false
 	}
 	var fieldSeparator, objectOpen, objectClose, arrayPrefix, arrayPostfix, fieldDelimiter, stringType, numberType, boolType string
+	var int32Type, int64Type string
+	var fieldUpperCase bool
 	switch language {
 	case "typescript":
+		fieldUpperCase = false
 		fieldSeparator = "?: "
 		arrayPrefix = ""
 		arrayPostfix = "[]"
-		objectOpen = "{"
+		objectOpen = "{\n"
 		objectClose = "}"
 		fieldDelimiter = ";"
 		stringType = "string"
 		numberType = "number"
 		boolType = "boolean"
+		int32Type = "number"
+		int64Type = "number"
+	case "go":
+		fieldUpperCase = true
+		fieldSeparator = " "
+		arrayPrefix = "[]"
+		arrayPostfix = ""
+		objectOpen = "map[string]interface{}"
+		objectClose = ""
+		fieldDelimiter = ""
+		stringType = "string"
+		numberType = "int64"
+		boolType = "bool"
+		int32Type = "int32"
+		int64Type = "int64"
 	}
 	recurse = func(props map[string]*openapi3.SchemaRef, level int) string {
 		ret := ""
@@ -275,15 +317,19 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		for _, k := range keys {
 			v := props[k]
 			ret += strings.Repeat("  ", level)
-			//k = strcase.SnakeCase(k)
-			//v.Value.
+			if fieldUpperCase {
+				k = strcase.UpperCamelCase(k)
+			}
+			// @todo clean up this piece of code by
+			// separating out type string marshaling and not
+			// repeating code
 			switch v.Value.Type {
 			case "object":
 				typ, found := detectType(k, v.Value.Properties)
 				if found {
 					ret += k + fieldSeparator + strings.Title(serviceName) + strings.Title(typ) + fieldDelimiter
 				} else {
-					ret += k + fieldSeparator + objectOpen + "\n" + recurse(v.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + fieldDelimiter
+					ret += k + fieldSeparator + objectOpen + recurse(v.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + fieldDelimiter
 				}
 			case "array":
 				typ, found := detectType(k, v.Value.Items.Value.Properties)
@@ -294,19 +340,37 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 					case "string":
 						ret += k + fieldSeparator + arrayPrefix + stringType + arrayPostfix + fieldDelimiter
 					case "number":
-						ret += k + fieldSeparator + arrayPrefix + numberType + arrayPostfix + fieldDelimiter
+						typ := numberType
+						switch v.Value.Format {
+						case "int32":
+							typ = int32Type
+						case "int64":
+							typ = int64Type
+						}
+						ret += k + fieldSeparator + arrayPrefix + typ + arrayPostfix + fieldDelimiter
 					case "boolean":
 						ret += k + fieldSeparator + arrayPrefix + boolType + arrayPostfix + fieldDelimiter
 					case "object":
-						ret += k + fieldSeparator + arrayPrefix + objectOpen + "\n" + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + arrayPostfix + fieldDelimiter
+						ret += k + fieldSeparator + arrayPrefix + objectOpen + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + arrayPostfix + fieldDelimiter
 					}
 				}
 			case "string":
 				ret += k + fieldSeparator + stringType + fieldDelimiter
 			case "number":
-				ret += k + fieldSeparator + numberType + fieldDelimiter
+				typ := numberType
+				switch v.Value.Format {
+				case "int32":
+					typ = int32Type
+				case "int64":
+					typ = int64Type
+				}
+				ret += k + fieldSeparator + typ + fieldDelimiter
 			case "boolean":
 				ret += k + fieldSeparator + boolType + fieldDelimiter
+			}
+			// go specific hack for lowercase son
+			if language == "go" {
+				ret += " " + "`json:\"" + strcase.LowerCamelCase(k) + "\"`"
 			}
 
 			if i < len(props) {
