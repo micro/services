@@ -275,7 +275,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		return "", false
 	}
 	var fieldSeparator, objectOpen, objectClose, arrayPrefix, arrayPostfix, fieldDelimiter, stringType, numberType, boolType string
-	var int32Type, int64Type, floatType, doubleType string
+	var int32Type, int64Type, floatType, doubleType, mapType, anyType string
 	var fieldUpperCase bool
 	switch language {
 	case "typescript":
@@ -293,13 +293,15 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		int64Type = "number"
 		floatType = "number"
 		doubleType = "number"
+		anyType = "any"
+		mapType = "{ [key: string]: %v }"
 	case "go":
 		fieldUpperCase = true
 		fieldSeparator = " "
 		arrayPrefix = "[]"
 		arrayPostfix = ""
-		objectOpen = "map[string]interface{}"
-		objectClose = ""
+		objectOpen = "{"
+		objectClose = "}"
 		fieldDelimiter = ""
 		stringType = "string"
 		numberType = "int64"
@@ -308,7 +310,33 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		int64Type = "int64"
 		floatType = "float32"
 		doubleType = "float64"
+		mapType = "map[string]%v"
+		anyType = "interface{}"
 	}
+
+	valueToType := func(v *openapi3.SchemaRef) string {
+		switch v.Value.Type {
+		case "string":
+			return stringType
+		case "boolean":
+			return boolType
+		case "number":
+			switch v.Value.Format {
+			case "int32":
+				return int32Type
+			case "int64":
+				return int64Type
+			case "float":
+				return floatType
+			case "double":
+				return doubleType
+			}
+		default:
+			return "unrecognized: " + v.Value.Type
+		}
+		return ""
+	}
+
 	recurse = func(props map[string]*openapi3.SchemaRef, level int) string {
 		ret := ""
 
@@ -333,7 +361,14 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 				if found {
 					ret += k + fieldSeparator + strings.Title(serviceName) + strings.Title(typ) + fieldDelimiter
 				} else {
-					ret += k + fieldSeparator + objectOpen + recurse(v.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + fieldDelimiter
+					// type is a dynamic map
+					// if additional properties is not present, it's an any type,
+					// like the proto struct type
+					if v.Value.AdditionalProperties != nil {
+						ret += k + fieldSeparator + fmt.Sprintf(mapType, valueToType(v.Value.AdditionalProperties)) + fieldDelimiter
+					} else {
+						ret += k + fieldSeparator + fmt.Sprintf(mapType, anyType) + fieldDelimiter
+					}
 				}
 			case "array":
 				typ, found := detectType(k, v.Value.Items.Value.Properties)
