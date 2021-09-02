@@ -2,3 +2,4 @@ go
 ts/*
 !ts/package.json
 !ts/tsconfig.json
+!ts/.npmrc
