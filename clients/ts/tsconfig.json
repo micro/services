@@ -11,6 +11,6 @@
     "moduleResolution": "node",
     "esModuleInterop": true
   },
-  "include": ["index.ts"],
-  "exclude": ["src/**/*.spec.*", "./node_modules"]
+  "include": ["index.ts", "./*"],
+  "exclude": ["src/**/*.spec.*", "./dist", "./node_modules"]
 }
