@@ -1,25 +1,33 @@
 package main
 
-const goTemplate = `package m3o
+const goIndexTemplate = `package micro
 
 import(
-	"github.com/m3o/m3o-go/client"
+	{{ range $service := .services }}"github.com/micro/micro-go/{{ $service.Name}}"
+{{ end }}
 )
 
 func NewClient(token string) *Client {
 	return &Client{
 		token: token,
 		{{ range $service := .services }}
-		{{ title $service.Name}}Service: New{{ title $service.Name}}Service(token),{{end}}
+		{{ title $service.Name }}Service: {{ $service.Name }}.New{{ title $service.Name}}Service(token),{{end}}
 	}
 }
 
 type Client struct {
 	token string
 {{ range $service := .services }}
-	{{ title $service.Name}}Service *{{ title $service.Name}}Service{{end}}
+	{{ title $service.Name }}Service *{{ $service.Name }}.{{ title $service.Name }}Service{{end}}
 }
-{{ range $service := .services }}
+`
+
+const goServiceTemplate = `{{ $service := .service }}package {{ $service.Name }}
+
+import(
+	"github.com/m3o/m3o-go/client"
+)
+
 func New{{ title $service.Name }}Service(token string) *{{ title $service.Name }}Service {
 	return &{{ title $service.Name }}Service{
 		client: client.NewClient(&client.Options{
@@ -33,15 +41,15 @@ type {{ title $service.Name }}Service struct {
 }
 
 {{ range $key, $req := $service.Spec.Components.RequestBodies }}
-{{ $endpointName := requestTypeToEndpointName $key}}func (t *{{ title $service.Name }}Service) {{ $endpointName}}(request {{ $key }}) (*{{ requestTypeToResponseType $key }}, error) {
+{{ $endpointName := requestTypeToEndpointName $key}}func (t *{{ title $service.Name }}Service) {{ $endpointName }}(request {{ requestType $key }}) (*{{ requestTypeToResponseType $key }}, error) {
 	rsp := &{{ requestTypeToResponseType $key }}{}
 	return rsp, t.client.Call("{{ $service.Name }}", "{{ requestTypeToEndpointPath $key}}", request, rsp)
 }
 {{ end }}
-{{end}}
 
-{{ range $service := .services }}{{ range $typeName, $schema := .Spec.Components.Schemas }}
-type {{ title $service.Name }}{{ title $typeName }} struct {{ "{" }}
+
+{{ range $typeName, $schema := $service.Spec.Components.Schemas }}
+type {{ title $typeName }} struct {{ "{" }}
 {{ recursiveTypeDefinition "go" $service.Name $typeName $service.Spec.Components.Schemas }}{{ "}" }}
-{{end}}{{end}}
+{{end}}
 `

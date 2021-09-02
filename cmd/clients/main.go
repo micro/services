@@ -32,7 +32,44 @@ func main() {
 		log.Fatal(err)
 	}
 	workDir, _ := os.Getwd()
-
+	tsPath := filepath.Join(workDir, "clients", "ts")
+	err = os.MkdirAll(tsPath, 0777)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	goPath := filepath.Join(workDir, "clients", "go")
+	err = os.MkdirAll(goPath, 0777)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	funcs := map[string]interface{}{
+		"recursiveTypeDefinition": func(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {
+			return schemaToType(language, serviceName, typeName, schemas)
+		},
+		"requestTypeToEndpointName": func(requestType string) string {
+			parts := camelcase.Split(requestType)
+			return strings.Join(parts[1:len(parts)-1], "")
+		},
+		// strips service name from the request type
+		"requestType": func(requestType string) string {
+			parts := camelcase.Split(requestType)
+			return strings.Join(parts[1:], "")
+		},
+		"requestTypeToResponseType": func(requestType string) string {
+			parts := camelcase.Split(requestType)
+			return strings.Join(parts[1:len(parts)-1], "") + "Response"
+		},
+		"requestTypeToEndpointPath": func(requestType string) string {
+			parts := camelcase.Split(requestType)
+			return strings.Title(strings.Join(parts[1:len(parts)-1], ""))
+		},
+		"title": strings.Title,
+		"untitle": func(t string) string {
+			return strcase.LowerCamelCase(t)
+		},
+	}
 	services := []service{}
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
@@ -80,34 +117,78 @@ func main() {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
-			services = append(services, service{
+			service := service{
 				Name: serviceName,
 				Spec: spec,
+			}
+			services = append(services, service)
+
+			templ, err := template.New("ts" + serviceName).Funcs(funcs).Parse(tsServiceTemplate)
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			var b bytes.Buffer
+			buf := bufio.NewWriter(&b)
+			err = templ.Execute(buf, map[string]interface{}{
+				"service": service,
 			})
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+
+			err = os.MkdirAll(filepath.Join(tsPath, serviceName), 0777)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			f, err := os.OpenFile(filepath.Join(tsPath, serviceName, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+			if err != nil {
+				fmt.Println("Failed to open schema file", err)
+				os.Exit(1)
+			}
+			buf.Flush()
+			_, err = f.Write(b.Bytes())
+			if err != nil {
+				fmt.Println("Failed to append to schema file", err)
+				os.Exit(1)
+			}
+
+			templ, err = template.New("go" + serviceName).Funcs(funcs).Parse(goServiceTemplate)
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			b = bytes.Buffer{}
+			buf = bufio.NewWriter(&b)
+			err = templ.Execute(buf, map[string]interface{}{
+				"service": service,
+			})
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			err = os.MkdirAll(filepath.Join(goPath, serviceName), 0777)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			f, err = os.OpenFile(filepath.Join(goPath, serviceName, serviceName+".go"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+			if err != nil {
+				fmt.Println("Failed to open schema file", err)
+				os.Exit(1)
+			}
+			buf.Flush()
+			_, err = f.Write(b.Bytes())
+			if err != nil {
+				fmt.Println("Failed to append to schema file", err)
+				os.Exit(1)
+			}
 		}
 	}
-	funcs := map[string]interface{}{
-		"recursiveTypeDefinition": func(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {
-			return schemaToType(language, serviceName, typeName, schemas)
-		},
-		"requestTypeToEndpointName": func(requestType string) string {
-			parts := camelcase.Split(requestType)
-			return strings.Join(parts[1:len(parts)-1], "")
-		},
-		"requestTypeToResponseType": func(requestType string) string {
-			parts := camelcase.Split(requestType)
-			return strings.Join(parts[0:len(parts)-1], "") + "Response"
-		},
-		"requestTypeToEndpointPath": func(requestType string) string {
-			parts := camelcase.Split(requestType)
-			return strings.Title(strings.Join(parts[1:len(parts)-1], ""))
-		},
-		"title": strings.Title,
-		"untitle": func(t string) string {
-			return strcase.LowerCamelCase(t)
-		},
-	}
-	templ, err := template.New("tsclient").Funcs(funcs).Parse(tsTemplate)
+
+	templ, err := template.New("tsclient").Funcs(funcs).Parse(tsIndexTemplate)
 	if err != nil {
 		fmt.Println("Failed to unmarshal", err)
 		os.Exit(1)
@@ -121,12 +202,7 @@ func main() {
 		fmt.Println("Failed to unmarshal", err)
 		os.Exit(1)
 	}
-	tsPath := filepath.Join(workDir, "clients", "ts")
-	err = os.MkdirAll(tsPath, 0777)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+
 	f, err := os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
 	if err != nil {
 		fmt.Println("Failed to open schema file", err)
@@ -139,7 +215,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	templ, err = template.New("goclient").Funcs(funcs).Parse(goTemplate)
+	templ, err = template.New("goclient").Funcs(funcs).Parse(goIndexTemplate)
 	if err != nil {
 		fmt.Println("Failed to unmarshal", err)
 		os.Exit(1)
@@ -151,12 +227,6 @@ func main() {
 	})
 	if err != nil {
 		fmt.Println("Failed to unmarshal", err)
-		os.Exit(1)
-	}
-	goPath := filepath.Join(workDir, "clients", "go")
-	err = os.MkdirAll(goPath, 0777)
-	if err != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 	f, err = os.OpenFile(filepath.Join(goPath, "m3o.go"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
@@ -359,7 +429,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 			case "object":
 				typ, found := detectType(k, v.Value.Properties)
 				if found {
-					ret += k + fieldSeparator + strings.Title(serviceName) + strings.Title(typ) + fieldDelimiter
+					ret += k + fieldSeparator + strings.Title(typ) + fieldDelimiter
 				} else {
 					// type is a dynamic map
 					// if additional properties is not present, it's an any type,
@@ -373,7 +443,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 			case "array":
 				typ, found := detectType(k, v.Value.Items.Value.Properties)
 				if found {
-					ret += k + fieldSeparator + arrayPrefix + strings.Title(serviceName) + strings.Title(typ) + arrayPostfix + fieldDelimiter
+					ret += k + fieldSeparator + arrayPrefix + strings.Title(typ) + arrayPostfix + fieldDelimiter
 				} else {
 					switch v.Value.Items.Value.Type {
 					case "string":
