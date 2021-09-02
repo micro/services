@@ -56,7 +56,7 @@ message Direction {
 	repeated Intersection intersections = 7;
 }
 
-// Turn by turn directions from a starting and endpoint including maneuvers and bearings
+// Turn by turn directions from a start point to an end point including maneuvers and bearings
 message DirectionsRequest {
 	// The staring point for the journey
 	Point origin = 1;
@@ -81,7 +81,7 @@ message EtaRequest {
 	Point origin = 1;
 	// The end point for the eta calculation
 	Point destination = 2;
-	// type of transport e.g car, foot, bicycle
+	// type of transport. Only "car" is supported currently.
 	string type = 3;
 	// speed in kilometers
 	double speed = 4;

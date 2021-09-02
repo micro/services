@@ -1,5 +1,5 @@
-Instant and fast postcode lookup
+Fast UK postcode lookup
 
 # Postcode Service
 
-Lookup postcodes for their related country, region and additional information.
+Lookup UK postcodes for their related latitude/longitude, region, and additional information.

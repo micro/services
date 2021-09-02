@@ -56,12 +56,12 @@ message SaveRequest {
 message SaveResponse {
 }
 
-// List file by their project and optionally a path.
+// List files by their project and optionally a path.
 message ListRequest {
 	// Project, required for listing.
 	string project = 1;
 	// Defaults to '/', ie. lists all files in a project.
-	// Supply path if of a folder if you want to list
+	// Supply path to a folder if you want to list
 	// files inside that folder
 	// eg. '/docs'
 	string path = 2;

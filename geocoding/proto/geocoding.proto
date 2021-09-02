@@ -23,7 +23,7 @@ message Location {
 	double longitude = 2;
 }
 
-// Lookup returns a geocoded address including normalized address and gps coordinates
+// Lookup returns a geocoded address including normalized address and gps coordinates. All fields are optional, provide more to get more accurate results
 message LookupRequest {
 	string address = 1;
 	string city = 2;
