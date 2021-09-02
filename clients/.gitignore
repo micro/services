@@ -1,2 +1,4 @@
 go
-ts
+ts/*
+!ts/package.json
+!ts/tsconfig.json
