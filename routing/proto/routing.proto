@@ -60,7 +60,7 @@ message Direction {
 message DirectionsRequest {
 	// The staring point for the journey
 	Point origin = 1;
-	// The destinationg of the journey
+	// The destination of the journey
 	Point destination = 2;
 }
 

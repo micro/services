@@ -32,7 +32,7 @@ require (
 	github.com/m3o/m3o-go v0.0.0-20210819131318-0fe1baa5762a
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro/v3 v3.3.1-0.20210611161948-fd9821dd4f52
+	github.com/micro/micro/v3 v3.4.1-0.20210827085315-cdb3e3adc9b3
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/onsi/ginkgo v1.15.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect

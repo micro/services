@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/teris-io/shortid"
 	"github.com/google/uuid"
 	"github.com/mattheath/kala/bigflake"
 	"github.com/mattheath/kala/snowflake"
-	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/id/proto"
+	"github.com/teris-io/shortid"
 )
 
 type Id struct {
