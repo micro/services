@@ -33,7 +33,7 @@ message LookupResponse {
 	double longitude = 7;
 }
 
-// Validate a postcode. Should return valid: true or valid: false
+// Validate a postcode.
 message ValidateRequest {
 	// UK postcode e.g SW1A 2AA
 	string postcode = 1;
@@ -41,6 +41,7 @@ message ValidateRequest {
 }
 
 message ValidateResponse {
+	// Is the postcode valid (true) or not (false)
 	bool valid = 1;
 }
 

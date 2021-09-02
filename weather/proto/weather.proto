@@ -61,7 +61,7 @@ message ForecastResponse {
 	string timezone = 6;
 	// the local time
 	string local_time = 7;
-	// forecase for the next number of days
+	// forecast for the next number of days
 	repeated Forecast forecast = 8;
 }
 

@@ -16,7 +16,7 @@ service Db {
 
 // Read data from a table. Lookup can be by ID or via querying any field in the record.
 message ReadRequest {
-	// Optional table name
+	// Optional table name. Defaults to 'default'
 	string table = 1;
 	// Read by id. Equivalent to 'id == "your-id"'
 	string id = 2;
@@ -27,7 +27,7 @@ message ReadRequest {
 	// Accessing list elements is not supported yet.
 	string query = 3;
 	int32 offset = 4;
-	// Default limit is 25.
+	// Maximum number of records to return. Default limit is 25.
 	// Maximum limit is 1000. Anything higher will return an error.
 	int32 limit = 5;
 	// field name to order by
@@ -41,9 +41,9 @@ message ReadResponse {
 	repeated google.protobuf.Struct records = 1;
 }
 
-// Create a record in the database. Optionally include an "id" field otherwise its set automatically.
+// Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
 message CreateRequest {
-	// Optional table name
+	// Optional table name. Defaults to 'default'
 	string table = 1;
 	// JSON encoded record or records (can be array or object)
 	google.protobuf.Struct record = 2;
@@ -56,9 +56,9 @@ message CreateResponse {
 
 // Update a record in the database. Include an "id" in the record to update.
 message UpdateRequest {
-	// Optional table name
+	// Optional table name. Defaults to 'default'
 	string table = 1;
-	// The id of the record
+	// The id of the record. If not specified it is inferred from the 'id' field of the record
 	string id = 2;
 	// record, JSON object
 	google.protobuf.Struct record = 3;
@@ -68,7 +68,7 @@ message UpdateResponse {}
 
 // Delete a record in the database by id.
 message DeleteRequest {
-	// Optional table name
+	// Optional table name. Defaults to 'default'
 	string table = 1;
 	// id of the record
 	string id = 2;
@@ -80,7 +80,7 @@ message DeleteResponse {
 
 // Truncate the records in a table
 message TruncateRequest {
-	// Optional table name
+	// Optional table name. Defaults to 'default'
 	string table = 1;
 }
 
