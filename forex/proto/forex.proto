@@ -10,7 +10,7 @@ service Forex {
 	rpc History(HistoryRequest) returns (HistoryResponse) {}
 }
 
-// Get the last price for a given forex ticker
+// Get the latest price for a given forex ticker
 message PriceRequest {
 	// forex symbol e.g GBPUSD
 	string symbol = 1;
@@ -23,7 +23,7 @@ message PriceResponse {
 	double price = 2;
 }
 
-// Get the last quote for the forex
+// Get the latest quote for the forex
 message QuoteRequest {
 	// the forex symbol e.g GBPUSD
 	string symbol = 1;

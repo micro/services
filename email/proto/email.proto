@@ -8,9 +8,9 @@ service Email {
 	rpc Send(SendRequest) returns (SendResponse) {}
 }
 
-// Send an email by passing in from, to, subject and a text or html body
+// Send an email by passing in from, to, subject, and a text or html body
 message SendRequest {
-	// the name of the sender
+	// the display name of the sender
 	string from = 1;
 	// the email address of the recipient
 	string to = 2;

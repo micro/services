@@ -16,9 +16,9 @@ service Location {
 
 // A point is a GPS coordinate.
 message Point {
-        double latitude = 1;
-        double longitude = 2;
-        int64 timestamp = 3;
+	double latitude = 1;
+	double longitude = 2;
+	int64 timestamp = 3;
 }
 
 message Entity {
@@ -53,7 +53,7 @@ message SearchRequest {
 	double radius = 2;
 	// type of entities to filter
 	string type = 3;
-	// number of entities to return
+	// Maximum number of entities to return
 	int64 numEntities = 4;
 }
 

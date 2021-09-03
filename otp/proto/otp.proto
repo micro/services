@@ -33,6 +33,6 @@ message ValidateRequest {
 }
 
 message ValidateResponse {
-	// returns true if successful
+	// returns true if the code is valid for the ID
 	bool success = 1;
 }

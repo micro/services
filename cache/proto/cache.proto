@@ -53,32 +53,32 @@ message DeleteResponse {
 	string status = 1;
 }
 
-// Increment a value (if its a number)
+// Increment a value (if it's a number)
 message IncrementRequest {
 	// The key to increment
 	string key = 1;
-	// The value to add
+	// The amount to increment the value by
 	int64 value = 2;
 }
 
 message IncrementResponse {
 	// The key incremented
 	string key = 1;
-	// The result value
+	// The new value
 	int64 value = 2;
 }
 
-// Decrement a value (if its a number)
+// Decrement a value (if it's a number)
 message DecrementRequest {
 	// The key to decrement
 	string key = 1;
-	// The delta value to decrement
+	// The amount to decrement the value by
 	int64 value = 2;
 }
 
 message DecrementResponse {
-	// The key of the item
+	// The key decremented
 	string key = 1;
-	// The result value of the item
+	// The new value
 	int64 value = 2;
 }

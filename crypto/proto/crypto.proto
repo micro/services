@@ -39,7 +39,7 @@ message NewsResponse {
 
 // Get the last price for a given crypto ticker
 message PriceRequest {
-	// crypto symbol e.g BTCUSD
+	// the crypto symbol e.g BTCUSD
 	string symbol = 1;
 }
 
@@ -50,7 +50,7 @@ message PriceResponse {
 	double price = 2;
 }
 
-// Get the last quote for the crypto
+// Get the last quote for a given crypto ticker
 message QuoteRequest {
 	// the crypto symbol e.g BTCUSD
 	string symbol = 1;

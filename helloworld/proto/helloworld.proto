@@ -18,10 +18,11 @@ message CallResponse {
 	string message = 1;
 }
 
-// Stream returns a streaming helloworld response
+// Stream returns a stream of "Hello $name" responses
 message StreamRequest {
 	string name = 1;
-        int64 messages = 2;
+	// the number of messages to send back
+	int64 messages = 2;
 }
 
 message StreamResponse {

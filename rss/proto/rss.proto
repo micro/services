@@ -41,7 +41,7 @@ message Entry {
 	string date = 7;
 }
 
-// Add a new RSS feed with a name, url and category
+// Add a new RSS feed with a name, url, and category
 message AddRequest {
 	// rss feed name
 	// eg. a16z

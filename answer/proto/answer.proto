@@ -8,7 +8,7 @@ service Answer {
 	rpc Question(QuestionRequest) returns (QuestionResponse) {}
 }
 
-// Answer a question and receive an instant answer
+// Ask a question and receive an instant answer
 message QuestionRequest {
 	// the question to answer
 	string query = 1;
