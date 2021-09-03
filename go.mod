@@ -3,14 +3,12 @@ module github.com/micro/services
 go 1.14
 
 require (
-	github.com/HdrHistogram/hdrhistogram-go v1.1.0 // indirect
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/asim/mq v0.1.0
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
-	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/disintegration/imaging v1.6.2
 	github.com/enescakir/emoji v1.0.0
@@ -29,13 +27,10 @@ require (
 	github.com/kevinburke/twilio-go v0.0.0-20210327194925-1623146bcf73
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
-	github.com/m3o/m3o-go v0.0.0-20210819131318-0fe1baa5762a
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/micro/v3 v3.4.1-0.20210827085315-cdb3e3adc9b3
 	github.com/miekg/dns v1.1.31 // indirect
-	github.com/onsi/ginkgo v1.15.0 // indirect
-	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
@@ -48,8 +43,6 @@ require (
 	github.com/tkuchiki/go-timezone v0.2.2
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
-	github.com/uber/jaeger-client-go v2.29.1+incompatible // indirect
-	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	go.opencensus.io v0.22.4 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110

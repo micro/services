@@ -334,8 +334,6 @@ github.com/linode/linodego v0.10.0/go.mod h1:cziNP7pbvE3mXIPneHj0oRY8L1WtGEIKlZ8
 github.com/liquidweb/liquidweb-go v1.6.0/go.mod h1:UDcVnAMDkZxpw4Y7NOHkqoeiGacVLEIG/i5J9cyixzQ=
 github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945 h1:jcOqgh+pYNSaPoPOgDaaU5t9j45JzHG3wOBLXUMBfQ0=
 github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945/go.mod h1:wQOw7PY6509VQbepPrclbyXfbQ5lpOtIoHdBKbB+OGc=
-github.com/m3o/m3o-go v0.0.0-20210819131318-0fe1baa5762a h1:u1PQADkmPOkQ2Ul91g9ow24YZlIW5dbFUr5Uf/SxvoQ=
-github.com/m3o/m3o-go v0.0.0-20210819131318-0fe1baa5762a/go.mod h1:5njbDIganqINupBx6SX16VDhespKkVRpfu0MgoDcrcM=
 github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a h1:rnrxZue85aKdMU4nJ50GgKA31lCaVbft+7Xl8OXj55U=
 github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a/go.mod h1:hJJYoBMTZIONmUEpX3+9v2057zuRM0n3n77U4Ob4wE4=
 github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e h1:cj+w63ez19o7y7vunA8Q3rUIWwKEOUx7foqjnr4qbtI=
@@ -362,8 +360,6 @@ github.com/mattn/go-sqlite3 v1.14.5 h1:1IdxlwTNazvbKJQSxoJ5/9ECbEeaTTyeU7sEAZ5KK
 github.com/mattn/go-sqlite3 v1.14.5/go.mod h1:WVKg1VTActs4Qso6iwGbiFih2UIHo0ENGwNd0Lj+XmI=
 github.com/mattn/go-tty v0.0.0-20180219170247-931426f7535a/go.mod h1:XPvLUNfbS4fJH25nqRHfWLMa1ONC8Amw+mIA639KxkE=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/micro/micro/v3 v3.3.1-0.20210611161948-fd9821dd4f52 h1:laHYhHMiGtbv/jjykUubxxGW+1HAgTi0RFDsNOnwXxg=
-github.com/micro/micro/v3 v3.3.1-0.20210611161948-fd9821dd4f52/go.mod h1:0NVo+HuGK22cbFqkLe59rGZZeXh2++XBfhU+xheOh8g=
 github.com/micro/micro/v3 v3.4.1-0.20210827085315-cdb3e3adc9b3 h1:oS7027tNGjfpLeLOIFTHF06xXGJ2HjHXfk+8VaU19AY=
 github.com/micro/micro/v3 v3.4.1-0.20210827085315-cdb3e3adc9b3/go.mod h1:cgV1bNfRLOE4vytanTo+N/QvjsdTRJRKTVqKq6XH7AA=
 github.com/miekg/dns v1.1.15/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
