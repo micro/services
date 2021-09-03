@@ -2,10 +2,10 @@
 package api
 
 import (
-	"fmt"
-	"net/http"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"net/http"
 )
 
 func Get(url string, rsp interface{}) error {
