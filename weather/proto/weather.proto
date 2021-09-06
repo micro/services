@@ -30,7 +30,7 @@ message Forecast {
 	int32 chance_of_rain = 9;
 	// forecast condition
 	string condition = 10;
-	// forecast condition icon
+	// the URL of forecast condition icon. Simply prefix with either http or https to use it
 	string icon_url = 11;
 	// time of sunrise
 	string sunrise = 12;

@@ -45,7 +45,7 @@ type Forecast struct {
 	ChanceOfRain int32 `protobuf:"varint,9,opt,name=chance_of_rain,json=chanceOfRain,proto3" json:"chance_of_rain,omitempty"`
 	// forecast condition
 	Condition string `protobuf:"bytes,10,opt,name=condition,proto3" json:"condition,omitempty"`
-	// forecast condition icon
+	// the URL of forecast condition icon. Simply prefix with either http or https to use it
 	IconUrl string `protobuf:"bytes,11,opt,name=icon_url,json=iconUrl,proto3" json:"icon_url,omitempty"`
 	// time of sunrise
 	Sunrise string `protobuf:"bytes,12,opt,name=sunrise,proto3" json:"sunrise,omitempty"`
