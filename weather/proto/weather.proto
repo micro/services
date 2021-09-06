@@ -102,7 +102,7 @@ message NowResponse {
 	bool daytime = 14;
 	// the weather condition
 	string condition = 15;
-	// the related icon
+	// the URL of the related icon. Simply prefix with either http or https to use it
 	string icon_url = 16;
 	// wind in mph
 	double wind_mph = 17;
