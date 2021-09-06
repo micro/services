@@ -53,3 +53,19 @@ type {{ title $typeName }} struct {{ "{" }}
 {{ recursiveTypeDefinition "go" $service.Name $typeName $service.Spec.Components.Schemas }}{{ "}" }}
 {{end}}
 `
+
+const goExampleTemplate = `{{ $service := .service }}package main
+
+import(
+	"fmt"
+	"github.com/micro/micro-go/{{ $service.Name }}"
+)
+
+func main() {
+	{{ $service.Name }}Service := {{ $service.Name }}.New{{ title $service.Name }}Service("YOUR_MICRO_TOKEN_HERE")
+	rsp, _ := {{ $service.Name }}Service.{{ title .endpoint }}({{ $service.Name }}.{{ title .endpoint }}Request{
+		{{ goExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }}
+	})
+	fmt.Println(rsp)
+}
+`

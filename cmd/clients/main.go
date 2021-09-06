@@ -26,6 +26,13 @@ type service struct {
 	Name string
 }
 
+type example struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Request     map[string]interface{}
+	Response    map[string]interface{}
+}
+
 func main() {
 	files, err := ioutil.ReadDir(os.Args[1])
 	if err != nil {
@@ -68,6 +75,9 @@ func main() {
 		"title": strings.Title,
 		"untitle": func(t string) string {
 			return strcase.LowerCamelCase(t)
+		},
+		"goExampleRequest": func(serviceName, endpoint string, schemas map[string]*openapi3.SchemaRef, exampleJSON map[string]interface{}) string {
+			return schemaToGoExample(serviceName, strings.Title(endpoint)+"Request", schemas, exampleJSON)
 		},
 	}
 	services := []service{}
@@ -143,7 +153,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			f, err := os.OpenFile(filepath.Join(tsPath, serviceName, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+			f, err := os.OpenFile(filepath.Join(tsPath, serviceName, "index.ts"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
 				os.Exit(1)
@@ -174,7 +184,9 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			f, err = os.OpenFile(filepath.Join(goPath, serviceName, serviceName+".go"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+
+			goClientFile := filepath.Join(goPath, serviceName, serviceName+".go")
+			f, err = os.OpenFile(goClientFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
 				os.Exit(1)
@@ -184,6 +196,75 @@ func main() {
 			if err != nil {
 				fmt.Println("Failed to append to schema file", err)
 				os.Exit(1)
+			}
+
+			exam, err := ioutil.ReadFile(filepath.Join(workDir, serviceName, "examples.json"))
+			if err == nil {
+				m := map[string][]example{}
+				err = json.Unmarshal(exam, &m)
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
+
+				for endpoint, examples := range m {
+					for _, example := range examples {
+						templ, err = template.New("go" + serviceName + endpoint).Funcs(funcs).Parse(goExampleTemplate)
+						if err != nil {
+							fmt.Println("Failed to unmarshal", err)
+							os.Exit(1)
+						}
+						b = bytes.Buffer{}
+						buf = bufio.NewWriter(&b)
+						err = templ.Execute(buf, map[string]interface{}{
+							"service":  service,
+							"example":  example,
+							"endpoint": endpoint,
+						})
+						if err != nil {
+							fmt.Println(err)
+							os.Exit(1)
+						}
+
+						// create go examples directory
+						err = os.MkdirAll(filepath.Join(goPath, serviceName, "examples", endpoint), 0777)
+						if err != nil {
+							fmt.Println(err)
+							os.Exit(1)
+						}
+						goExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, "main.go")
+						f, err = os.OpenFile(goExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+						if err != nil {
+							fmt.Println("Failed to open schema file", err)
+							os.Exit(1)
+						}
+
+						buf.Flush()
+						_, err = f.Write(b.Bytes())
+						if err != nil {
+							fmt.Println("Failed to append to schema file", err)
+							os.Exit(1)
+						}
+
+						cmd := exec.Command("gofmt", "-w", "main.go")
+						cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
+						outp, err = cmd.CombinedOutput()
+						if err != nil {
+							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
+							os.Exit(1)
+						}
+
+						cmd = exec.Command("go", "build")
+						cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
+						outp, err = cmd.CombinedOutput()
+						if err != nil {
+							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
+							os.Exit(1)
+						}
+					}
+				}
+			} else {
+				fmt.Println(err)
 			}
 		}
 	}
@@ -203,7 +284,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	f, err := os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+	f, err := os.OpenFile(filepath.Join(tsPath, "index.ts"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 	if err != nil {
 		fmt.Println("Failed to open schema file", err)
 		os.Exit(1)
@@ -229,7 +310,7 @@ func main() {
 		fmt.Println("Failed to unmarshal", err)
 		os.Exit(1)
 	}
-	f, err = os.OpenFile(filepath.Join(goPath, "m3o.go"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+	f, err = os.OpenFile(filepath.Join(goPath, "m3o.go"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 	if err != nil {
 		fmt.Println("Failed to open schema file", err)
 		os.Exit(1)
