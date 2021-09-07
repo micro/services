@@ -54,14 +54,16 @@ type {{ title $typeName }} struct {{ "{" }}
 {{end}}
 `
 
-const goExampleTemplate = `{{ $service := .service }}package main
+const goExampleTemplate = `{{ $service := .service }}package example
 
 import(
 	"fmt"
 	"github.com/micro/micro-go/{{ $service.Name }}"
 )
 
-func main() {
+{{if .example.Description}}
+// {{ .example.Description }}{{end}}
+func {{ .funcName }}() {
 	{{ $service.Name }}Service := {{ $service.Name }}.New{{ title $service.Name }}Service("YOUR_MICRO_TOKEN_HERE")
 	rsp, _ := {{ $service.Name }}Service.{{ title .endpoint }}({{ $service.Name }}.{{ title .endpoint }}Request{
 		{{ goExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }}

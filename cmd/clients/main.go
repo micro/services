@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"text/template"
@@ -197,6 +198,20 @@ func main() {
 				fmt.Println("Failed to append to schema file", err)
 				os.Exit(1)
 			}
+			cmd = exec.Command("gofmt", "-w", serviceName+".go")
+			cmd.Dir = filepath.Join(goPath, serviceName)
+			outp, err = cmd.CombinedOutput()
+			if err != nil {
+				fmt.Println(fmt.Sprintf("Problem formatting '%v' client: %v", serviceName, string(outp)))
+				os.Exit(1)
+			}
+			cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
+			cmd.Dir = filepath.Join(goPath, serviceName)
+			outp, err = cmd.CombinedOutput()
+			if err != nil {
+				fmt.Println(fmt.Sprintf("Problem building '%v' example '%v': %v", serviceName, string(outp)))
+				os.Exit(1)
+			}
 
 			exam, err := ioutil.ReadFile(filepath.Join(workDir, serviceName, "examples.json"))
 			if err == nil {
@@ -209,6 +224,7 @@ func main() {
 
 				for endpoint, examples := range m {
 					for _, example := range examples {
+						title := regexp.MustCompile("[^a-zA-Z0-9]+").ReplaceAllString(strcase.LowerCamelCase(strings.Replace(example.Title, " ", "_", -1)), "")
 						templ, err = template.New("go" + serviceName + endpoint).Funcs(funcs).Parse(goExampleTemplate)
 						if err != nil {
 							fmt.Println("Failed to unmarshal", err)
@@ -220,6 +236,7 @@ func main() {
 							"service":  service,
 							"example":  example,
 							"endpoint": endpoint,
+							"funcName": strcase.UpperCamelCase(title),
 						})
 						if err != nil {
 							fmt.Println(err)
@@ -232,7 +249,7 @@ func main() {
 							fmt.Println(err)
 							os.Exit(1)
 						}
-						goExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, "main.go")
+						goExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, title+".go")
 						f, err = os.OpenFile(goExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -246,7 +263,7 @@ func main() {
 							os.Exit(1)
 						}
 
-						cmd := exec.Command("gofmt", "-w", "main.go")
+						cmd := exec.Command("gofmt", "-w", title+".go")
 						cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
@@ -254,7 +271,7 @@ func main() {
 							os.Exit(1)
 						}
 
-						cmd = exec.Command("go", "build")
+						cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
 						cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
@@ -319,6 +336,20 @@ func main() {
 	_, err = f.Write(b.Bytes())
 	if err != nil {
 		fmt.Println("Failed to append to schema file", err)
+		os.Exit(1)
+	}
+	cmd := exec.Command("gofmt", "-w", "m3o.go")
+	cmd.Dir = filepath.Join(goPath)
+	outp, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Problem with '%v' m3o.go '%v", string(outp)))
+		os.Exit(1)
+	}
+	cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
+	cmd.Dir = filepath.Join(goPath)
+	outp, err = cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Problem building m3o.go '%v'", string(outp)))
 		os.Exit(1)
 	}
 
@@ -500,6 +531,13 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		for _, k := range keys {
 			v := props[k]
 			ret += strings.Repeat("  ", level)
+			if v.Value.Description != "" {
+				for _, commentLine := range strings.Split(v.Value.Description, "\n") {
+					ret += "// " + strings.TrimSpace(commentLine) + "\n" + strings.Repeat("  ", level)
+				}
+
+			}
+
 			if fieldUpperCase {
 				k = strcase.UpperCamelCase(k)
 			}
