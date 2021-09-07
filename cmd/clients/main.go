@@ -374,7 +374,7 @@ func main() {
 	getVersions := exec.Command("npm", "show", "@micro/services", "--time", "--json")
 	getVersions.Dir = tsPath
 
-	outp, err := getVersions.CombinedOutput()
+	outp, err = getVersions.CombinedOutput()
 	if err != nil {
 		fmt.Println("Failed to get versions of NPM package", string(outp))
 		os.Exit(1)
