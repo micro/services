@@ -41,7 +41,7 @@ type {{ title $service.Name }}Service struct {
 }
 
 {{ range $key, $req := $service.Spec.Components.RequestBodies }}
-{{ $endpointName := requestTypeToEndpointName $key}}func (t *{{ title $service.Name }}Service) {{ $endpointName }}(request {{ requestType $key }}) (*{{ requestTypeToResponseType $key }}, error) {
+{{ $endpointName := requestTypeToEndpointName $key}}{{ if endpointComment $endpointName $service.Spec.Components.Schemas }}{{ endpointComment $endpointName $service.Spec.Components.Schemas }}{{ end }}func (t *{{ title $service.Name }}Service) {{ $endpointName }}(request {{ requestType $key }}) (*{{ requestTypeToResponseType $key }}, error) {
 	rsp := &{{ requestTypeToResponseType $key }}{}
 	return rsp, t.client.Call("{{ $service.Name }}", "{{ requestTypeToEndpointPath $key}}", request, rsp)
 }
@@ -58,13 +58,12 @@ const goExampleTemplate = `{{ $service := .service }}package example
 
 import(
 	"fmt"
+	"os"
 	"github.com/micro/micro-go/{{ $service.Name }}"
 )
 
-{{if .example.Description}}
-// {{ .example.Description }}{{end}}
-func {{ .funcName }}() {
-	{{ $service.Name }}Service := {{ $service.Name }}.New{{ title $service.Name }}Service("YOUR_MICRO_TOKEN_HERE")
+{{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}func {{ .funcName }}() {
+	{{ $service.Name }}Service := {{ $service.Name }}.New{{ title $service.Name }}Service(os.Getenv("MICRO_API_TOKEN"))
 	rsp, _ := {{ $service.Name }}Service.{{ title .endpoint }}({{ $service.Name }}.{{ title .endpoint }}Request{
 		{{ goExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }}
 	})

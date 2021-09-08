@@ -52,6 +52,7 @@ jobs:
         working-directory: services
         run: |
           sudo npm install -g openapi-to-postmanv2
+          sudo npm install -g prettier
           openapi2postmanv2 -h
 
       - name: Generate openapi spec and publish the api

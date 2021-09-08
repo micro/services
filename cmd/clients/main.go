@@ -69,6 +69,14 @@ func main() {
 			parts := camelcase.Split(requestType)
 			return strings.Join(parts[1:len(parts)-1], "") + "Response"
 		},
+		"endpointComment": func(endpoint string, schemas map[string]*openapi3.SchemaRef) string {
+			comm := schemas[strings.Title(endpoint)+"Request"].Value.Description
+			ret := ""
+			for _, line := range strings.Split(comm, "\n") {
+				ret += "// " + strings.TrimSpace(line) + "\n"
+			}
+			return ret
+		},
 		"requestTypeToEndpointPath": func(requestType string) string {
 			parts := camelcase.Split(requestType)
 			return strings.Title(strings.Join(parts[1:len(parts)-1], ""))
@@ -79,6 +87,10 @@ func main() {
 		},
 		"goExampleRequest": func(serviceName, endpoint string, schemas map[string]*openapi3.SchemaRef, exampleJSON map[string]interface{}) string {
 			return schemaToGoExample(serviceName, strings.Title(endpoint)+"Request", schemas, exampleJSON)
+		},
+		"tsExampleRequest": func(serviceName, endpoint string, schemas map[string]*openapi3.SchemaRef, exampleJSON map[string]interface{}) string {
+			bs, _ := json.MarshalIndent(exampleJSON, "", "  ")
+			return string(bs)
 		},
 	}
 	services := []service{}
@@ -163,6 +175,13 @@ func main() {
 			_, err = f.Write(b.Bytes())
 			if err != nil {
 				fmt.Println("Failed to append to schema file", err)
+				os.Exit(1)
+			}
+			cmd = exec.Command("prettier", "-w", "index.ts")
+			cmd.Dir = filepath.Join(tsPath, serviceName)
+			outp, err = cmd.CombinedOutput()
+			if err != nil {
+				fmt.Println(fmt.Sprintf("Problem formatting '%v' client: %v", serviceName, string(outp)))
 				os.Exit(1)
 			}
 
@@ -273,6 +292,48 @@ func main() {
 
 						cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
 						cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
+						outp, err = cmd.CombinedOutput()
+						if err != nil {
+							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
+							os.Exit(1)
+						}
+
+						// node example
+						templ, err = template.New("ts" + serviceName + endpoint).Funcs(funcs).Parse(tsExampleTemplate)
+						if err != nil {
+							fmt.Println("Failed to unmarshal", err)
+							os.Exit(1)
+						}
+						b = bytes.Buffer{}
+						buf = bufio.NewWriter(&b)
+						err = templ.Execute(buf, map[string]interface{}{
+							"service":  service,
+							"example":  example,
+							"endpoint": endpoint,
+							"funcName": strcase.UpperCamelCase(title),
+						})
+
+						err = os.MkdirAll(filepath.Join(tsPath, serviceName, "examples", endpoint), 0777)
+						if err != nil {
+							fmt.Println(err)
+							os.Exit(1)
+						}
+						tsExampleFile := filepath.Join(tsPath, serviceName, "examples", endpoint, title+".js")
+						f, err = os.OpenFile(tsExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+						if err != nil {
+							fmt.Println("Failed to open schema file", err)
+							os.Exit(1)
+						}
+
+						buf.Flush()
+						_, err = f.Write(b.Bytes())
+						if err != nil {
+							fmt.Println("Failed to append to schema file", err)
+							os.Exit(1)
+						}
+
+						cmd = exec.Command("prettier", "-w", title+".js")
+						cmd.Dir = filepath.Join(tsPath, serviceName, "examples", endpoint)
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
