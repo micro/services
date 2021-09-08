@@ -17,7 +17,7 @@ message Record {
 	string summary = 3;
 	// organisation if present
 	string organisation = 4;
-	// build name
+	// building name
 	string building_name = 5;
 	// the premise
 	string premise = 6;
