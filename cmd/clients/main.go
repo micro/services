@@ -373,6 +373,13 @@ func main() {
 		fmt.Println("Failed to append to schema file", err)
 		os.Exit(1)
 	}
+	cmd := exec.Command("prettier", "-w", "index.ts")
+	cmd.Dir = filepath.Join(tsPath)
+	outp, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Problem with '%v' m3o index.ts '%v", string(outp)))
+		os.Exit(1)
+	}
 
 	templ, err = template.New("goclient").Funcs(funcs).Parse(goIndexTemplate)
 	if err != nil {
@@ -399,9 +406,9 @@ func main() {
 		fmt.Println("Failed to append to schema file", err)
 		os.Exit(1)
 	}
-	cmd := exec.Command("gofmt", "-w", "m3o.go")
+	cmd = exec.Command("gofmt", "-w", "m3o.go")
 	cmd.Dir = filepath.Join(goPath)
-	outp, err := cmd.CombinedOutput()
+	outp, err = cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(fmt.Sprintf("Problem with '%v' m3o.go '%v", string(outp)))
 		os.Exit(1)
