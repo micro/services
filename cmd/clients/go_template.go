@@ -64,9 +64,9 @@ import(
 
 {{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}func {{ .funcName }}() {
 	{{ $service.Name }}Service := {{ $service.Name }}.New{{ title $service.Name }}Service(os.Getenv("MICRO_API_TOKEN"))
-	rsp, _ := {{ $service.Name }}Service.{{ title .endpoint }}(&{{ $service.Name }}.{{ title .endpoint }}Request{
+	rsp, err := {{ $service.Name }}Service.{{ title .endpoint }}(&{{ $service.Name }}.{{ title .endpoint }}Request{
 		{{ goExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }}
 	})
-	fmt.Println(rsp)
+	fmt.Println(rsp, err)
 }
 `
