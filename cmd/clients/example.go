@@ -54,7 +54,7 @@ func schemaToGoExample(serviceName, typeName string, schemas map[string]*openapi
 		return "", false
 	}
 	var fieldSeparator, objectOpen, objectClose, arrayPrefix, arrayPostfix, fieldDelimiter, stringType, boolType string
-	var int32Type, int64Type, floatType, doubleType, mapType, anyType string
+	var int32Type, int64Type, floatType, doubleType, mapType, anyType, typeInstancePrefix string
 	var fieldUpperCase bool
 	language := "go"
 	switch language {
@@ -74,6 +74,7 @@ func schemaToGoExample(serviceName, typeName string, schemas map[string]*openapi
 		doubleType = "float64"
 		mapType = "map[string]%v"
 		anyType = "interface{}"
+		typeInstancePrefix = "&"
 	}
 
 	valueToType := func(v *openapi3.SchemaRef) string {
@@ -144,7 +145,7 @@ func schemaToGoExample(serviceName, typeName string, schemas map[string]*openapi
 			case "object":
 				typ, found := detectType(k, v.Value.Properties)
 				if found {
-					ret += k + fieldSeparator + serviceName + "." + strings.Title(typ) + objectOpen + recurse(v.Value.Properties, append(path, k)) + objectClose + fieldDelimiter
+					ret += k + fieldSeparator + typeInstancePrefix + serviceName + "." + strings.Title(typ) + objectOpen + recurse(v.Value.Properties, append(path, k)) + objectClose + fieldDelimiter
 				} else {
 					// type is a dynamic map
 					// if additional properties is present, then it's a map string string or other typed map

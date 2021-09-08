@@ -290,14 +290,6 @@ func main() {
 							os.Exit(1)
 						}
 
-						cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
-						cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
-						outp, err = cmd.CombinedOutput()
-						if err != nil {
-							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
-							os.Exit(1)
-						}
-
 						// node example
 						templ, err = template.New("ts" + serviceName + endpoint).Funcs(funcs).Parse(tsExampleTemplate)
 						if err != nil {
@@ -339,6 +331,15 @@ func main() {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
 							os.Exit(1)
 						}
+					}
+					// only build after each example is generated as old files from
+					// previous generation might not compile
+					cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
+					cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
+					outp, err = cmd.CombinedOutput()
+					if err != nil {
+						fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
+						os.Exit(1)
 					}
 				}
 			} else {
@@ -525,7 +526,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		return "", false
 	}
 	var fieldSeparator, objectOpen, objectClose, arrayPrefix, arrayPostfix, fieldDelimiter, stringType, numberType, boolType string
-	var int32Type, int64Type, floatType, doubleType, mapType, anyType string
+	var int32Type, int64Type, floatType, doubleType, mapType, anyType, typePrefix string
 	var fieldUpperCase bool
 	switch language {
 	case "typescript":
@@ -545,6 +546,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		doubleType = "number"
 		anyType = "any"
 		mapType = "{ [key: string]: %v }"
+		typePrefix = ""
 	case "go":
 		fieldUpperCase = true
 		fieldSeparator = " "
@@ -562,6 +564,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		doubleType = "float64"
 		mapType = "map[string]%v"
 		anyType = "interface{}"
+		typePrefix = "*"
 	}
 
 	valueToType := func(v *openapi3.SchemaRef) string {
@@ -616,7 +619,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 			case "object":
 				typ, found := detectType(k, v.Value.Properties)
 				if found {
-					ret += k + fieldSeparator + strings.Title(typ) + fieldDelimiter
+					ret += k + fieldSeparator + typePrefix + strings.Title(typ) + fieldDelimiter
 				} else {
 					// type is a dynamic map
 					// if additional properties is not present, it's an any type,
