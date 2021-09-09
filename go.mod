@@ -33,7 +33,7 @@ require (
 	github.com/m3o/m3o-go/client v0.0.0-20210421144725-8bfd7992ada3
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro-go v0.0.0-20210907082922-e63f7ceaaa9f
+	github.com/micro/micro-go v0.0.0-20210908134848-0eb99593b556
 	github.com/micro/micro/v3 v3.4.1-0.20210903082606-b49d5b18ae9b
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
