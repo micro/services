@@ -52,6 +52,7 @@ jobs:
         working-directory: services
         run: |
           sudo npm install -g openapi-to-postmanv2
+          sudo npm install -g prettier
           openapi2postmanv2 -h
 
       - name: Generate openapi spec and publish the api
@@ -65,7 +66,13 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          go run cmd/clients/main.go .
+          cd cmd/clients;
+          go install;
+          cd ../..;
+          clients .
+          cd clients/ts;
+          npm install
+          npm run build
 
       # publish to github first under micro/services
       # .npmrc has settings for it

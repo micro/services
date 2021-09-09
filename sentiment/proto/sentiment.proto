@@ -5,18 +5,18 @@ package sentiment;
 option go_package = "./proto;sentiment";
 
 service Sentiment {
-	rpc Analyze(Request) returns (Response) {};
+	rpc Analyze(AnalyzeRequest) returns (AnalyzeResponse) {};
 }
 
 // Analyze and score a piece of text
-message Request {
+message AnalyzeRequest {
 	// The text to analyze
 	string text = 1;
 	// The language. Defaults to english.
 	string lang = 2;
 }
 
-message Response {
+message AnalyzeResponse {
 	// The score of the text {positive is 1, negative is 0}
 	double score = 1;
 }

@@ -42,7 +42,7 @@ func NewHelloworldEndpoints() []*api.Endpoint {
 // Client API for Helloworld service
 
 type HelloworldService interface {
-	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	Call(ctx context.Context, in *CallRequest, opts ...client.CallOption) (*CallResponse, error)
 	Stream(ctx context.Context, in *StreamRequest, opts ...client.CallOption) (Helloworld_StreamService, error)
 }
 
@@ -58,9 +58,9 @@ func NewHelloworldService(name string, c client.Client) HelloworldService {
 	}
 }
 
-func (c *helloworldService) Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+func (c *helloworldService) Call(ctx context.Context, in *CallRequest, opts ...client.CallOption) (*CallResponse, error) {
 	req := c.c.NewRequest(c.name, "Helloworld.Call", in)
-	out := new(Response)
+	out := new(CallResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -120,13 +120,13 @@ func (x *helloworldServiceStream) Recv() (*StreamResponse, error) {
 // Server API for Helloworld service
 
 type HelloworldHandler interface {
-	Call(context.Context, *Request, *Response) error
+	Call(context.Context, *CallRequest, *CallResponse) error
 	Stream(context.Context, *StreamRequest, Helloworld_StreamStream) error
 }
 
 func RegisterHelloworldHandler(s server.Server, hdlr HelloworldHandler, opts ...server.HandlerOption) error {
 	type helloworld interface {
-		Call(ctx context.Context, in *Request, out *Response) error
+		Call(ctx context.Context, in *CallRequest, out *CallResponse) error
 		Stream(ctx context.Context, stream server.Stream) error
 	}
 	type Helloworld struct {
@@ -140,7 +140,7 @@ type helloworldHandler struct {
 	HelloworldHandler
 }
 
-func (h *helloworldHandler) Call(ctx context.Context, in *Request, out *Response) error {
+func (h *helloworldHandler) Call(ctx context.Context, in *CallRequest, out *CallResponse) error {
 	return h.HelloworldHandler.Call(ctx, in, out)
 }
 

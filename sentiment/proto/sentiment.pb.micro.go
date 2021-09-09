@@ -42,7 +42,7 @@ func NewSentimentEndpoints() []*api.Endpoint {
 // Client API for Sentiment service
 
 type SentimentService interface {
-	Analyze(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	Analyze(ctx context.Context, in *AnalyzeRequest, opts ...client.CallOption) (*AnalyzeResponse, error)
 }
 
 type sentimentService struct {
@@ -57,9 +57,9 @@ func NewSentimentService(name string, c client.Client) SentimentService {
 	}
 }
 
-func (c *sentimentService) Analyze(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+func (c *sentimentService) Analyze(ctx context.Context, in *AnalyzeRequest, opts ...client.CallOption) (*AnalyzeResponse, error) {
 	req := c.c.NewRequest(c.name, "Sentiment.Analyze", in)
-	out := new(Response)
+	out := new(AnalyzeResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +70,12 @@ func (c *sentimentService) Analyze(ctx context.Context, in *Request, opts ...cli
 // Server API for Sentiment service
 
 type SentimentHandler interface {
-	Analyze(context.Context, *Request, *Response) error
+	Analyze(context.Context, *AnalyzeRequest, *AnalyzeResponse) error
 }
 
 func RegisterSentimentHandler(s server.Server, hdlr SentimentHandler, opts ...server.HandlerOption) error {
 	type sentiment interface {
-		Analyze(ctx context.Context, in *Request, out *Response) error
+		Analyze(ctx context.Context, in *AnalyzeRequest, out *AnalyzeResponse) error
 	}
 	type Sentiment struct {
 		sentiment
@@ -88,6 +88,6 @@ type sentimentHandler struct {
 	SentimentHandler
 }
 
-func (h *sentimentHandler) Analyze(ctx context.Context, in *Request, out *Response) error {
+func (h *sentimentHandler) Analyze(ctx context.Context, in *AnalyzeRequest, out *AnalyzeResponse) error {
 	return h.SentimentHandler.Analyze(ctx, in, out)
 }

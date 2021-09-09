@@ -10,7 +10,7 @@ import (
 
 type Sentiment struct{}
 
-func (e *Sentiment) Analyze(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
+func (e *Sentiment) Analyze(ctx context.Context, req *pb.AnalyzeRequest, rsp *pb.AnalyzeResponse) error {
 	if len(req.Text) == 0 {
 		return errors.BadRequest("sentiment.analyze", "text is blank")
 	}
