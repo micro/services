@@ -384,6 +384,14 @@ func main() {
 		fmt.Println(fmt.Sprintf("Problem with prettifying clients index.ts '%v", string(outp)))
 		os.Exit(1)
 	}
+	tsFiles := filepath.Join(workDir, "cmd", "clients", "ts")
+	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".npmrc"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
+	cmd.Dir = filepath.Join(tsPath)
+	outp, err = cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Problem with prettifying clients index.ts '%v", string(outp)))
+		os.Exit(1)
+	}
 
 	templ, err = template.New("goclient").Funcs(funcs).Parse(goIndexTemplate)
 	if err != nil {
