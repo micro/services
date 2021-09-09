@@ -39,7 +39,7 @@ const tsExampleTemplate = `{{ $service := .service }}const {{ $service.Name }} =
 
 {{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}async function {{ .funcName }}() {
 	let {{ $service.Name }}Service = {{ $service.Name }}.New{{ title $service.Name }}Service(process.env.MICRO_API_TOKEN)
-	let rsp = await {{ $service.Name }}Service.{{ title .endpoint }}({{ tsExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }})
+	let rsp = await {{ $service.Name }}Service.{{ .endpoint }}({{ tsExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }})
 	console.log(rsp)
 }
 
