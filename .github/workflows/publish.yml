@@ -1,7 +1,7 @@
 name: Publish APIs & Clients
 on:
   push:
-    branches: [master, generat]
+    branches: [master]
 
 jobs:
   docs:
