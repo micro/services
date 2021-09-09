@@ -94,9 +94,11 @@ func main() {
 		},
 	}
 	services := []service{}
+	tsExportsMap := map[string]string{}
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
 			serviceName := f.Name()
+			tsExportsMap["./"+serviceName] = "dist/" + serviceName + "index.js"
 			serviceDir := filepath.Join(workDir, f.Name())
 			cmd := exec.Command("make", "api")
 			cmd.Dir = serviceDir
@@ -486,6 +488,35 @@ func main() {
 	outp, err = repl.CombinedOutput()
 	if err != nil {
 		fmt.Println("Failed to make docs", string(outp))
+		os.Exit(1)
+	}
+
+	// apppend exports to to package.json
+	pak, err := ioutil.ReadFile(filepath.Join(tsPath, "package.json"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	m := map[string]interface{}{}
+	err = json.Unmarshal(pak, &m)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	m["exports"] = tsExportsMap
+	pakJS, err := json.Marshal(m)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	f, err = os.OpenFile(filepath.Join(tsPath, "package.json"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+	if err != nil {
+		fmt.Println("Failed to open package.json", err)
+		os.Exit(1)
+	}
+	_, err = f.Write(pakJS)
+	if err != nil {
+		fmt.Println("Failed to write to package.json", err)
 		os.Exit(1)
 	}
 }
