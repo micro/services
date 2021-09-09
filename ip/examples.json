@@ -2,6 +2,7 @@
     "lookup": [{
         "title": "Lookup IP info",
         "description": "Lookup the location info for an IP address",
+        "run_check": true,
         "request": {
           "ip": "93.148.214.31"
         },

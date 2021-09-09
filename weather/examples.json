@@ -2,6 +2,7 @@
     "now": [{
         "title": "Get current weather",
         "description": "Get the weather forecast right at this moment",
+        "run_check": true,
         "request": {
           "location": "london"
         },

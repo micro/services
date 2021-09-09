@@ -3,6 +3,7 @@
     "add": [{
         "title": "Add a new feed",
         "description": "Add a new rss feed to the crawler",
+        "run_check": true,
         "request": {
             "name": "bbc",
             "url": "http://feeds.bbci.co.uk/news/rss.xml",
@@ -13,6 +14,7 @@
     "feed": [{
         "title": "Read a feed",
         "description": "Read an rss feed by name",
+        "run_check": true,
         "request": {
             "name": "bbc"
         },
@@ -40,6 +42,7 @@
     "list": [{
         "title": "List rss feeds",
         "description": "List the saved rss feeds",
+        "run_check": true,
         "request": {},
         "response": {
 	    "feeds": [
@@ -55,6 +58,7 @@
     "remove": [{
         "title": "Remove a feed",
         "description": "Remove an rss feed from the crawler",
+        "run_check": true,
         "request": {
             "name": "bbc"
         },

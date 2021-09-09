@@ -1,6 +1,7 @@
 {
     "save": [{
         "title": "Save file",
+        "run_check": true,
         "request": {
             "file": {
                 "content": "file content example",
@@ -13,6 +14,7 @@
     }],
     "list": [{
         "title": "List files",
+        "run_check": true,
         "request": {
             "project": "examples"
         },
@@ -28,6 +30,7 @@
     }],
     "delete": [{
         "title": "Delete file",
+        "run_check": true,
         "request": {
             "project": "examples",
             "path": "/document/text-files/file.txt"
@@ -36,6 +39,7 @@
     }],
     "read": [{
         "title": "Read file",
+        "run_check": true,
         "request": {
             "project": "examples",
             "path": "/document/text-files/file.txt"

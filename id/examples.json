@@ -2,6 +2,7 @@
 {
     "generate": [{
         "title": "Generate a unique ID",
+        "run_check": true,
         "request": {
             "type": "uuid"
         },
@@ -12,6 +13,7 @@
     },
     {
         "title": "Generate a short ID",
+        "run_check": true,
         "request": {
             "type": "shortid"
         },
@@ -22,6 +24,7 @@
     },
     {
         "title": "Generate a snowflake ID",
+        "run_check": true,
         "request": {
             "type": "snowflake"
         },
@@ -32,6 +35,7 @@
     },
     {
         "title": "Generate a bigflake ID",
+        "run_check": true,
         "request": {
             "type": "bigflake"
         },

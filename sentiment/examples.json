@@ -2,6 +2,7 @@
     "analyze": [{
         "title": "Analyze a piece of text",
         "description": "Analyze and score a piece of text",
+        "run_check": true,
         "request": {
           "text": "this is amazing"
         },

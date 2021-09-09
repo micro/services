@@ -1,6 +1,7 @@
 {
     "create": [{
         "title": "Create an account",
+        "run_check": true,
         "request": {
             "id": "usrid-1",
             "username": "usrname-1",
@@ -12,6 +13,7 @@
     }],
     "read": [{
         "title": "Read an account by id",
+        "run_check": true,
         "request": {
             "id": "usrid-1"
         },
@@ -26,6 +28,7 @@
         }
     },{
         "title": "Read account by username or email",
+        "run_check": true,
         "request": {
             "username": "usrname-1"
         },
@@ -41,6 +44,7 @@
     },{
         
         "title": "Read account by email",
+        "run_check": true,
         "request": {
             "email": "joe@example.com"
         },
@@ -56,6 +60,7 @@
     }],
     "sendVerificationEmail": [{
         "title": "Send verification email",
+        "run_check": true,
         "request":     {
             "email": "joe@example.com",
             "subject": "Email verification",

@@ -2,6 +2,7 @@
     "save": [{
         "title": "Save an entity",
         "description": "Save the location of an entity",
+        "run_check": true,
         "request": {
           "entity": {
             "id": "1",
@@ -18,6 +19,7 @@
     "read": [{
       "title": "Get location by ID",
       "description": "Lookup the location of an entity by ID",
+      "run_check": true,
       "request": {
         "id": "1"
       },
@@ -36,6 +38,7 @@
     "search": [{
         "title": "Search for locations",
         "description": "Search a given radius for entities",
+        "run_check": true,
         "request": {
           "center": {
             "latitude": 51.511061,
@@ -55,7 +58,6 @@
               "timestamp": "1622802761"
             }
           }]
-        },
-        "response": {}
+        }
     }]
 }

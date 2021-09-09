@@ -1,6 +1,7 @@
 {
     "create": [{
         "title": "Create a record",
+        "run_check": true,
         "request": {
             "table": "users",
             "record": {
@@ -16,6 +17,7 @@
     }],
     "update": [{
         "title": "Update a record",
+        "run_check": true,
         "request": {
             "table": "users",
             "record": {
@@ -28,6 +30,7 @@
     }],
     "read": [{
         "title": "Read records",
+        "run_check": true,
         "request": {
             "table": "users",
             "query": "age == 43"
@@ -43,6 +46,7 @@
     }],
     "delete": [{
         "title": "Delete a record",
+        "run_check": true,
         "request": {
             "table": "users",
             "id": "1"

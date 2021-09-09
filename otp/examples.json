@@ -3,6 +3,7 @@
     "generate": [{
         "title": "Generate OTP",
         "description": "Generate a one time password for a unique id, email or user",
+        "run_check": true,
         "request": {
             "id": "asim@example.com"
         },
@@ -13,6 +14,7 @@
     "validate": [{
         "title": "Validate OTP",
         "description": "Validate the one time password created via generate",
+        "run_check": true,
         "request": {
             "id": "asim@example.com",
             "code": "656211"

@@ -2,6 +2,7 @@
     "question": [{
         "title": "Ask a question",
         "description": "Ask a question and get an instant answer",
+        "run_check": true,
         "request": {
           "query": "google"
         },

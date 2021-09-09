@@ -2,6 +2,7 @@
     "resize": [{
         "title": "Base64 to hosted image",
         "description": "Resize an input base64 encoded image and store the resulting resized image on our CDN.",
+        "run_check": true,
         "request": {
             "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
             "outputURL": true,
@@ -15,6 +16,7 @@
     }, {
         "title": "Base64 to base64 image",
         "description": "Resize a base64 encoded image on the fly without storing it anywhere",
+        "run_check": true,
         "request": {
             "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
             "width": 100,
@@ -26,6 +28,7 @@
     },{
         "title": "Base64 to base64 image with cropping",
         "description": "Resize a base64 encoded image on the fly without storing it anywhere",
+        "run_check": true,
         "request": {
             "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
             "width": 100,
