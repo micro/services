@@ -98,7 +98,8 @@ func main() {
 	for _, f := range files {
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
 			serviceName := f.Name()
-			tsExportsMap["./"+serviceName] = "dist/" + serviceName + "/index.js"
+			// see https://stackoverflow.com/questions/44345257/import-from-subfolder-of-npm-package
+			tsExportsMap["./"+serviceName] = "./dist/" + serviceName + "/index.js"
 			serviceDir := filepath.Join(workDir, f.Name())
 			cmd := exec.Command("make", "api")
 			cmd.Dir = serviceDir
