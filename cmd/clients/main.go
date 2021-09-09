@@ -228,7 +228,7 @@ func main() {
 			cmd.Dir = filepath.Join(goPath, serviceName)
 			outp, err = cmd.CombinedOutput()
 			if err != nil {
-				fmt.Println(fmt.Sprintf("Problem building '%v' example '%v': %v", serviceName, string(outp)))
+				fmt.Println(fmt.Sprintf("Problem building '%v' example: %v", serviceName, string(outp)))
 				os.Exit(1)
 			}
 
@@ -378,7 +378,7 @@ func main() {
 	cmd.Dir = filepath.Join(tsPath)
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(fmt.Sprintf("Problem with '%v' m3o index.ts '%v", string(outp)))
+		fmt.Println(fmt.Sprintf("Problem with prettifying clients index.ts '%v", string(outp)))
 		os.Exit(1)
 	}
 
@@ -411,7 +411,7 @@ func main() {
 	cmd.Dir = filepath.Join(goPath)
 	outp, err = cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(fmt.Sprintf("Problem with '%v' m3o.go '%v", string(outp)))
+		fmt.Println(fmt.Sprintf("Problem with formatting m3o.go '%v", string(outp)))
 		os.Exit(1)
 	}
 	cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
