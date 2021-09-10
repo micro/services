@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package function;
+
+import "google/protobuf/struct.proto";
+option go_package = "./proto;function";
+
+service Function {
+	rpc Call(CallRequest) returns (CallResponse) {}
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Describe(DescribeRequest) returns (DescribeResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+}
+	
+message Func {
+	// id of the function
+	string id = 1;
+	// name of the function e.g helloworld
+	string name = 2;
+	// language of the function e.g javascript
+	string lang = 3; 
+	// the script code for the function
+	string script = 4;
+	// time it was created
+	string created = 5;
+}
+
+// Create a new function with a given name and code
+message CreateRequest {
+	// name of the function e.g helloworld
+	string name = 1;
+	// the language the function is written in
+	string lang = 2;
+	// the script code for the function
+	string script = 3;
+}
+
+message CreateResponse {
+	// unique id allocated to the function
+	string id = 1;
+}
+
+// Call a function by name. Pass a JSON request to it
+message CallRequest {
+	// name of the function
+	string name = 1;
+	// request body to pass as JSON
+	google.protobuf.Struct request = 2;
+}
+
+message CallResponse {
+	// the response status
+	int32 status = 1;
+	// any error if it has occurred
+	string error = 2;
+	// the response if returned
+	string response = 3;
+}
+
+// Delete a function with a given name or id
+message DeleteRequest {
+	// optional id of the function
+	string id = 1;
+	// name of the function
+	string name = 2;
+}
+
+message DeleteResponse {
+
+}
+
+// Describe a function with a given name or id
+message DescribeRequest {
+	// optional id of the function
+	string id = 1;
+	// name of the function e.g helloworld
+	string name = 2;
+}
+
+message DescribeResponse {
+	// the function requested to describe
+	Func function = 1;
+}
+
+// List all the created functions
+message ListRequest {
+
+}
+
+message ListResponse {
+	repeated Func functions = 1;
+}
