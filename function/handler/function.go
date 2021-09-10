@@ -6,7 +6,15 @@ import (
 	pb "github.com/micro/services/function/proto"
 )
 
-type Function struct{}
+type Function struct {
+	key string
+}
+
+func New(apiKey string) *Function {
+	return &Function{
+		key: apiKey,
+	}
+}
 
 func (f *Function) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
 	return nil
