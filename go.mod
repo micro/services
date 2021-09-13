@@ -7,12 +7,10 @@ require (
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/asim/mq v0.1.0
-	github.com/bitly/go-simplejson v0.5.0
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/crufter/nested v0.0.0-20210903145606-dea42c476b37
-	github.com/davecgh/go-spew v1.1.1
 	github.com/disintegration/imaging v1.6.2
 	github.com/enescakir/emoji v1.0.0
 	github.com/fatih/camelcase v1.0.0
@@ -33,8 +31,8 @@ require (
 	github.com/m3o/m3o-go/client v0.0.0-20210421144725-8bfd7992ada3
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro-go v0.0.0-20210908134848-0eb99593b556
-	github.com/micro/micro/v3 v3.4.1-0.20210903082606-b49d5b18ae9b
+	github.com/micro/micro-go v0.0.0-20210909130028-36284fcb5def
+	github.com/micro/micro/v3 v3.4.1-0.20210910132548-f8bfb12823c0
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible

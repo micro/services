@@ -1,0 +1,52 @@
+{
+  "find": [
+    {
+      "title": "Find emoji",
+      "run_check": false,
+      "request": {
+        "alias": ":beer:"
+      },
+      "response": {
+        "emoji": "🍺"
+      }
+    }
+  ],
+  "flag": [
+    {
+      "title": "Get flag by country code",
+      "run_check": false,
+      "request": {
+        "alias": "GB"
+      },
+      "response": {
+        "flag": "🇬🇧"
+      }
+    }
+  ],
+  "print": [
+    {
+      "title": "Print text including emoji",
+      "run_check": false,
+      "request": {
+        "text": "let's grab a :beer:"
+      },
+      "response": {
+        "text": "let's grab a 🍺"
+      }
+    }
+  ],
+  "send": [
+    {
+      "title": "Send a text containing an emoji to anyone via SMS.",
+      "run_check": false,
+      "request": {
+        "from": "Alice",
+        "to": "+44782669123",
+        "message": "let's grab a :beer:"
+      },
+      "response": {
+        "text": "let's grab a 🍺"
+      }
+    }
+  ]
+}

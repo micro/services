@@ -1,0 +1,28 @@
+{
+  "lookupPostcode": [
+    {
+      "title": "Lookup postcode",
+      "run_check": false,
+      "request": {
+        "postcode": "SW1A 2AA"
+      },
+      "response": {
+        "addresses": [
+          {
+            "line_one": "Prime Minister & First Lord Of The Treasury",
+            "line_two": "10 Downing Street",
+            "summary": "",
+            "organisation": "Prime Minister & First Lord Of The Treasury",
+            "building_name": "",
+            "premise": "10",
+            "street": "Downing Street",
+            "locality": "",
+            "town": "LONDON",
+            "county": "London",
+            "postcode": "SW1A 2AA"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "screenshot": [
+    {
+      "title": "Take screenshot of a URL",
+      "run_check": true,
+      "request": {
+        "height": 600,
+        "url": "https://m3o.com",
+        "width": 600
+      },
+      "response": {
+        "imageURL": "https://cdn.m3ocontent.com/micro/images/micro/505237c9-f254-4014-9a4c-1ec7eac0882a/ef9749ef-40b0-4ba1-a413-6136a8b0924c.png"
+      }
+    }
+  ]
+}

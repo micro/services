@@ -70,7 +70,14 @@ func main() {
 			return strings.Join(parts[1:len(parts)-1], "") + "Response"
 		},
 		"endpointComment": func(endpoint string, schemas map[string]*openapi3.SchemaRef) string {
-			comm := schemas[strings.Title(endpoint)+"Request"].Value.Description
+			v := schemas[strings.Title(endpoint)+"Request"]
+			if v == nil {
+				panic("can't find " + strings.Title(endpoint) + "Request")
+			}
+			if v.Value == nil {
+				return ""
+			}
+			comm := v.Value.Description
 			ret := ""
 			for _, line := range strings.Split(comm, "\n") {
 				ret += "// " + strings.TrimSpace(line) + "\n"
@@ -236,11 +243,15 @@ func main() {
 			}
 
 			exam, err := ioutil.ReadFile(filepath.Join(workDir, serviceName, "examples.json"))
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
 			if err == nil {
 				m := map[string][]example{}
 				err = json.Unmarshal(exam, &m)
 				if err != nil {
-					fmt.Println(err)
+					fmt.Println(string(exam), err)
 					os.Exit(1)
 				}
 
@@ -594,7 +605,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		}
 		return "", false
 	}
-	var fieldSeparator, objectOpen, objectClose, arrayPrefix, arrayPostfix, fieldDelimiter, stringType, numberType, boolType string
+	var fieldSeparator, arrayPrefix, arrayPostfix, fieldDelimiter, stringType, numberType, boolType string
 	var int32Type, int64Type, floatType, doubleType, mapType, anyType, typePrefix string
 	var fieldUpperCase bool
 	switch language {
@@ -603,8 +614,8 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		fieldSeparator = "?: "
 		arrayPrefix = ""
 		arrayPostfix = "[]"
-		objectOpen = "{\n"
-		objectClose = "}"
+		//objectOpen = "{\n"
+		//objectClose = "}"
 		fieldDelimiter = ";"
 		stringType = "string"
 		numberType = "number"
@@ -621,8 +632,8 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 		fieldSeparator = " "
 		arrayPrefix = "[]"
 		arrayPostfix = ""
-		objectOpen = "{"
-		objectClose = "}"
+		//objectOpen = "{"
+		//	objectClose = "}"
 		fieldDelimiter = ""
 		stringType = "string"
 		numberType = "int64"
@@ -723,7 +734,14 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 					case "boolean":
 						ret += k + fieldSeparator + arrayPrefix + boolType + arrayPostfix + fieldDelimiter
 					case "object":
-						ret += k + fieldSeparator + arrayPrefix + objectOpen + recurse(v.Value.Items.Value.Properties, level+1) + strings.Repeat("  ", level) + objectClose + arrayPostfix + fieldDelimiter
+						// type is a dynamic map
+						// if additional properties is not present, it's an any type,
+						// like the proto struct type
+						if v.Value.AdditionalProperties != nil {
+							ret += k + fieldSeparator + arrayPrefix + fmt.Sprintf(mapType, valueToType(v.Value.AdditionalProperties)) + arrayPostfix + fieldDelimiter
+						} else {
+							ret += k + fieldSeparator + arrayPrefix + fmt.Sprintf(mapType, anyType) + arrayPostfix + fieldDelimiter
+						}
 					}
 				}
 			case "string":

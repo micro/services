@@ -1,0 +1,14 @@
+{
+    "send": [{
+        "title": "Send SMS",
+        "run_check": false,
+        "request": {
+          "from": "Alice",
+          "message": "Hi there!",
+          "to": "+447681129"
+        },
+        "response": {
+            "status": "ok"
+        }
+    }]
+}

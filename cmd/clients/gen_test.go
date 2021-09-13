@@ -157,6 +157,138 @@ func TestTsGen(t *testing.T) {
 	}
 }
 
+func TestTimeExample(t *testing.T) {
+	spec := &openapi3.Swagger{}
+	err := json.Unmarshal([]byte(timeExample), &spec)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(spec.Components.Schemas) == 0 {
+		t.Fatal("boo")
+	}
+
+	fmt.Println(spec.Components.Schemas)
+	res := schemaToGoExample("time", "NowRequest", spec.Components.Schemas, map[string]interface{}{
+		"location": "London",
+	})
+	if strings.TrimSpace(res) != strings.TrimSpace(timeExp) {
+		t.Log(res, timeExp)
+	}
+
+	fmt.Println(spec.Components.Schemas)
+	res = schemaToGoExample("time", "ZoneRequest", spec.Components.Schemas, map[string]interface{}{
+		"location": "London",
+	})
+	if strings.TrimSpace(res) != strings.TrimSpace(timeExp) {
+		t.Log(res, timeExp)
+	}
+}
+
+const timeExample = `{
+	"components": {
+		"schemas": {
+		
+				"NowRequest": {
+				  "description": "Get the current time",
+				  "properties": {
+					"location": {
+					  "description": "optional location, otherwise returns UTC",
+					  "type": "string"
+					}
+				  },
+				  "title": "NowRequest",
+				  "type": "object"
+				},
+				"NowResponse": {
+				  "properties": {
+					"localtime": {
+					  "description": "the current time as HH:MM:SS",
+					  "type": "string"
+					},
+					"location": {
+					  "description": "the location as Europe/London",
+					  "type": "string"
+					},
+					"timestamp": {
+					  "description": "timestamp as 2006-01-02T15:04:05.999999999Z07:00",
+					  "type": "string"
+					},
+					"timezone": {
+					  "description": "the timezone as BST",
+					  "type": "string"
+					},
+					"unix": {
+					  "description": "the unix timestamp",
+					  "format": "int64",
+					  "type": "number"
+					}
+				  },
+				  "title": "NowResponse",
+				  "type": "object"
+				},
+				"ZoneRequest": {
+				  "description": "Get the timezone info for a specific location",
+				  "properties": {
+					"location": {
+					  "description": "location to lookup e.g postcode, city, ip address",
+					  "type": "string"
+					}
+				  },
+				  "title": "ZoneRequest",
+				  "type": "object"
+				},
+				"ZoneResponse": {
+				  "properties": {
+					"abbreviation": {
+					  "description": "the abbreviated code e.g BST",
+					  "type": "string"
+					},
+					"country": {
+					  "description": "country of the timezone",
+					  "type": "string"
+					},
+					"dst": {
+					  "description": "is daylight savings",
+					  "type": "boolean"
+					},
+					"latitude": {
+					  "description": "e.g 51.42",
+					  "format": "double",
+					  "type": "number"
+					},
+					"localtime": {
+					  "description": "the local time",
+					  "type": "string"
+					},
+					"location": {
+					  "description": "location requested",
+					  "type": "string"
+					},
+					"longitude": {
+					  "description": "e.g -0.37",
+					  "format": "double",
+					  "type": "number"
+					},
+					"region": {
+					  "description": "region of timezone",
+					  "type": "string"
+					},
+					"timezone": {
+					  "description": "the timezone e.g Europe/London",
+					  "type": "string"
+					}
+				  },
+				  "title": "ZoneResponse",
+				  "type": "object"
+				}
+		
+		}
+	}
+}`
+
+const timeExp = `Location: London,
+`
+
 func TestExample(t *testing.T) {
 
 	spec := &openapi3.Swagger{}
