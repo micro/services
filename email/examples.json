@@ -1,0 +1,14 @@
+{
+  "send": [
+    {
+      "title": "Send email",
+      "run_check": false,
+      "request": {
+        "subject": "Email verification",
+        "textBody": "Hi there,\n\nPlease verify your email by clicking this link: $micro_verification_link",
+        "from": "Awesome Dot Com"
+      },
+      "response": {}
+    }
+  ]
+}

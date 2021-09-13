@@ -1,0 +1,48 @@
+{
+  "lookup": [
+    {
+      "title": "Lookup postcode",
+      "run_check": false,
+      "request": {
+        "postcode": "SW1A 2AA"
+      },
+      "response": {
+        "postcode": "SW1A 2AA",
+        "country": "England",
+        "region": "London",
+        "district": "Westminster",
+        "ward": "St James's",
+        "latitude": 51.50354,
+        "longitude": -0.127695
+      }
+    }
+  ],
+  "random": [
+    {
+      "title": "Return a random postcode and its information",
+      "run_check": false,
+      "request": {},
+      "response": {
+        "postcode": "OX26 2HA",
+        "country": "England",
+        "region": "South East",
+        "district": "Cherwell",
+        "ward": "Bicester West",
+        "latitude": 51.907678,
+        "longitude": -1.163954
+      }
+    }
+  ],
+  "validate": [
+    {
+      "title": "Return a random postcode and its information",
+      "run_check": false,
+      "request": {
+        "postcode": "SW1A 2AA"
+      },
+      "response": {
+        "valid": true
+      }
+    }
+  ]
+}

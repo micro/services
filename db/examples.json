@@ -52,5 +52,15 @@
             "id": "1"
         },
         "response": {}
+    }],
+    "truncate": [{
+        "title": "Truncate table",
+        "run_check": false,
+        "request": {
+            "table": "users"
+        },
+        "response": {
+            
+        }
     }]
 }

@@ -1,75 +1,118 @@
 {
-    "create": [{
-        "title": "Create an account",
-        "run_check": true,
-        "request": {
-            "id": "usrid-1",
-            "username": "usrname-1",
-            "email": "joe@example.com",
-            "password": "mySecretPass123"
-        },
-        "response": {
+  "create": [
+    {
+      "title": "Create an account",
+      "run_check": true,
+      "request": {
+        "id": "usrid-1",
+        "username": "usrname-1",
+        "email": "joe@example.com",
+        "password": "mySecretPass123"
+      },
+      "response": {}
+    }
+  ],
+  "read": [
+    {
+      "title": "Read an account by id",
+      "run_check": true,
+      "request": {
+        "id": "usrid-1"
+      },
+      "response": {
+        "account": {
+          "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+          "username": "usrname-1",
+          "email": "joe@example.com",
+          "created": "1623677579",
+          "updated": "1623677579"
         }
-    }],
-    "read": [{
-        "title": "Read an account by id",
-        "run_check": true,
-        "request": {
-            "id": "usrid-1"
-        },
-        "response": {
-            "account": {
-                "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-                "username": "usrname-1",
-                "email": "joe@example.com",
-                "created": "1623677579",
-                "updated": "1623677579"
-            }
+      }
+    },
+    {
+      "title": "Read account by username or email",
+      "run_check": true,
+      "request": {
+        "username": "usrname-1"
+      },
+      "response": {
+        "account": {
+          "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+          "username": "usrname-1",
+          "email": "joe@example.com",
+          "created": "1623677579",
+          "updated": "1623677579"
         }
-    },{
-        "title": "Read account by username or email",
-        "run_check": true,
-        "request": {
-            "username": "usrname-1"
-        },
-        "response": {
-            "account": {
-                "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-                "username": "usrname-1",
-                "email": "joe@example.com",
-                "created": "1623677579",
-                "updated": "1623677579"
-            }
+      }
+    },
+    {
+      "title": "Read account by email",
+      "run_check": true,
+      "request": {
+        "email": "joe@example.com"
+      },
+      "response": {
+        "account": {
+          "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+          "username": "usrname-1",
+          "email": "joe@example.com",
+          "created": "1623677579",
+          "updated": "1623677579"
         }
-    },{
-        
-        "title": "Read account by email",
-        "run_check": true,
-        "request": {
-            "email": "joe@example.com"
-        },
-        "response": {
-            "account": {
-                "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-                "username": "usrname-1",
-                "email": "joe@example.com",
-                "created": "1623677579",
-                "updated": "1623677579"
-            }
+      }
+    }
+  ],
+  "sendVerificationEmail": [
+    {
+      "title": "Send verification email",
+      "run_check": true,
+      "request": {
+        "email": "joe@example.com",
+        "subject": "Email verification",
+        "redirectUrl": "https://m3o.com",
+        "failureRedirectUrl": "https://m3o.com/verification-failed",
+        "textContent": "Hi there,\n\nPlease verify your email by clicking this link: $micro_verification_link",
+        "fromName": "Awesome Dot Com"
+      },
+      "response": {}
+    }
+  ],
+  "delete": [
+    {
+      "title": "Delete user account",
+      "run_check": false,
+      "request": {
+        "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f"
+      },
+      "response": {}
+    }
+  ],
+  "login": [
+    {
+      "title": "Log a user in",
+      "run_check": false,
+      "request": {
+        "email": "joe@example.com",
+        "password": "mySecretPass123"
+      },
+      "response": {
+        "session": {
+          "id": "sds34s34s34-s34s34-s43s43s34-s4s34s",
+          "created": "1623677579",
+          "expires": "1623699579",
+          "userId": "fdf34f34f34-f34f34-f43f43f34-f4f34f"
         }
-    }],
-    "sendVerificationEmail": [{
-        "title": "Send verification email",
-        "run_check": true,
-        "request":     {
-            "email": "joe@example.com",
-            "subject": "Email verification",
-            "redirectUrl": "https://m3o.com",
-            "failureRedirectUrl": "https://m3o.com/verification-failed",
-            "textContent": "Hi there,\n\nPlease verify your email by clicking this link: $micro_verification_link",
-            "fromName": "Awesome Dot Com"
-        },
-        "response": {
-        }
-    }]
+      }
+    }
+  ],
+  "logout": [
+    {
+      "title": "Log a user out",
+      "run_check": false,
+      "request": {
+        "sessionId": "sds34s34s34-s34s34-s43s43s34-s4s34s"
+      },
+      "response": {}
+    }
+  ]
 }
