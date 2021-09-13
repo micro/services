@@ -1,45 +1,88 @@
 {
-    "resize": [{
-        "title": "Base64 to hosted image",
-        "description": "Resize an input base64 encoded image and store the resulting resized image on our CDN.",
-        "run_check": true,
-        "request": {
-            "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
-            "outputURL": true,
-            "name": "cat.png",
-            "width": 100,
-            "height": 100
-        },
-        "response": {
-            "url": "cdn.images.m3o.com/your-account-id/cat.png"
+  "resize": [
+    {
+      "title": "Base64 to hosted image",
+      "description": "Resize an input base64 encoded image and store the resulting resized image on our CDN.",
+      "run_check": true,
+      "request": {
+        "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
+        "outputURL": true,
+        "name": "cat.png",
+        "width": 100,
+        "height": 100
+      },
+      "response": {
+        "url": "cdn.images.m3o.com/your-account-id/cat.png"
+      }
+    },
+    {
+      "title": "Base64 to base64 image",
+      "description": "Resize a base64 encoded image on the fly without storing it anywhere",
+      "run_check": true,
+      "request": {
+        "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
+        "width": 100,
+        "height": 100
+      },
+      "response": {
+        "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
+      }
+    },
+    {
+      "title": "Base64 to base64 image with cropping",
+      "description": "Resize a base64 encoded image on the fly without storing it anywhere",
+      "run_check": true,
+      "request": {
+        "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
+        "width": 100,
+        "height": 100,
+        "cropOptions": {
+          "width": 50,
+          "height": 50
         }
-    }, {
-        "title": "Base64 to base64 image",
-        "description": "Resize a base64 encoded image on the fly without storing it anywhere",
-        "run_check": true,
-        "request": {
-            "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
-            "width": 100,
-            "height": 100
-        },
-        "response": {
-            "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
-        }
-    },{
-        "title": "Base64 to base64 image with cropping",
-        "description": "Resize a base64 encoded image on the fly without storing it anywhere",
-        "run_check": true,
-        "request": {
-            "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
-            "width": 100,
-            "height": 100,
-            "cropOptions":{
-                "width": 50,
-                "height": 50
-            }
-        },
-        "response": {
-            "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAx0lEQVR4nOzaMaoDMQyE4ZHj+x82vVdhwQoTkzKQEcwP5r0ihT7sbjUTeAJ4HCegXQJYfOYefOyjDuBiz3yjwJBoCIl6QZOeUjTC1Ix1IxEJXF9+0KWsf2bD4bn37OO/c/wuQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9Sa/NG94Tf3j4WBdaxudMEkn4IM2rZBA0wBrvo7aOcpj2emXvLeVt0IGm0GVXUj91mvAAAA//+V2CZl+4AKXwAAAABJRU5ErkJggg=="
-        }        
-    }]
+      },
+      "response": {
+        "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAx0lEQVR4nOzaMaoDMQyE4ZHj+x82vVdhwQoTkzKQEcwP5r0ihT7sbjUTeAJ4HCegXQJYfOYefOyjDuBiz3yjwJBoCIl6QZOeUjTC1Ix1IxEJXF9+0KWsf2bD4bn37OO/c/wuQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9Sa/NG94Tf3j4WBdaxudMEkn4IM2rZBA0wBrvo7aOcpj2emXvLeVt0IGm0GVXUj91mvAAAA//+V2CZl+4AKXwAAAABJRU5ErkJggg=="
+      }
+    }
+  ],
+  "convert": [
+    {
+      "title": "Convert a png image to a jpeg, taken from a URL and saved to a URL on Micro's CDN",
+      "run_check": false,
+      "request": {
+        "url": "somewebsite.com/cat.png",
+        "name": "cat.jpeg",
+        "outputURL": true
+      },
+      "response": {
+        "url": "cdn.images.m3o.com/your-account-id/cat.jpeg"
+      }
+    }
+  ],
+  "upload": [
+    {
+      "title": "Upload a base64 image to Micro's CDN",
+      "run_check": false,
+      "request": {
+        "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAx0lEQVR4nOzaMaoDMQyE4ZHj+x82vVdhwQoTkzKQEcwP5r0ihT7sbjUTeAJ4HCegXQJYfOYefOyjDuBiz3yjwJBoCIl6QZOeUjTC1Ix1IxEJXF9+0KWsf2bD4bn37OO/c/wuQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9Sa/NG94Tf3j4WBdaxudMEkn4IM2rZBA0wBrvo7aOcpj2emXvLeVt0IGm0GVXUj91mvAAAA//+V2CZl+4AKXwAAAABJRU5ErkJggg==",
+        "name": "cat.jpeg",
+        "outputURL": true
+      },
+      "response": {
+        "url": "cdn.images.m3o.com/your-account-id/cat.jpeg"
+      }
+    },
+    {
+      "title": "Upload an image from a URL to Micro's CDN",
+      "run_check": false,
+      "request": {
+        "url": "somewebsite.com/cat.png",
+        "name": "cat.jpeg"
+      },
+      "response": {
+        "url": "cdn.images.m3o.com/your-account-id/cat.jpeg"
+      }
+    }
+  ]
 }

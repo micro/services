@@ -1,0 +1,36 @@
+{
+  "now": [
+    {
+      "title": "Returns current time, optionally with location",
+      "run_check": true,
+      "request": {},
+      "response": {
+        "localtime": "14:35:44",
+        "timestamp": "2021-09-13T14:35:44.144293723Z",
+        "location": "Prime Meridian",
+        "timezone": "UTC",
+        "unix": "1631543744"
+      }
+    }
+  ],
+  "zone": [
+    {
+      "title": "Get the timezone info for a specific location",
+      "run_check": false,
+      "request": {
+        "location": "London"
+      },
+      "response": {
+        "location": "London",
+        "region": "City of London, Greater London",
+        "country": "United Kingdom",
+        "latitude": 51.52,
+        "longitude": -0.11,
+        "timezone": "Europe/London",
+        "abbreviation": "BST",
+        "localtime": "2021-09-13 15:37",
+        "dst": true
+      }
+    }
+  ]
+}
