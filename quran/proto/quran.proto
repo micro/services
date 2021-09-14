@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package quran;
+
+option go_package = "./proto;quran";
+
+service Quran {
+	rpc Chapters(ChaptersRequest) returns (ChaptersResponse) {}
+	rpc Summary(SummaryRequest) returns (SummaryResponse) {}
+	rpc Verses(VersesRequest) returns (VersesResponse) {}
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+}
+
+message Chapter {
+	// The id of the chapter as a number e.g 1
+	int32 id = 1;
+	// The number of verses in the chapter
+	int32 verses = 2;
+	// The simple name of the chapter
+        string name = 3;
+	// The arabic name of the chapter
+	string arabic_name = 4;
+	// The complex name of the chapter
+	string complex_name = 5;
+	// The translated name
+	string translated_name = 6;
+	// Should the chapter start with bismillah
+	bool prefix_bismillah = 7;
+	// The place of revelation
+	string revelation_place = 8;
+	// The order in which it was revealed
+	int32 revelation_order = 9;
+	// The pages from and to e.g 1, 1
+	repeated int32 pages = 10;
+}
+
+message Verse {
+	// The unique id of the verse in the whole book
+	int32 id = 1;
+	// The verse number in this chapter
+	int32 number = 2;
+	// The key of this verse (chapter:verse) e.g 1:1
+	string key = 3;
+	// The page of the Quran this verse is on
+	int32 page = 4;
+	// The arabic text for this verse
+	string text = 5;
+	// The phonetic transliteration from arabic
+	string transliteration = 6;
+	// The basic translation of the verse
+	string translated_text = 7;
+	// The alternative translations for the verse
+	repeated Translation translations = 8;
+	// The interpretations of the verse
+	repeated Interpretation interpretations = 9;
+	// The individual words within the verse (Ayah)
+	repeated Word words = 10;
+}
+
+message Interpretation {
+	// The unique id of the interpretation
+	int32 id = 1;
+	// The source of the interpretation
+	string source = 2;
+	// The translated text
+	string text = 3;
+}
+
+message Translation {
+	// The unique id of the translation
+	int32 id = 1;
+	// The source of the translation
+	string source = 2;
+	// The translated text
+	string text = 3;
+}
+
+message Word {
+	// The id of the word within the verse
+	int32 id = 1;
+	// The position of the word
+	int32 position = 2;
+	// The character type e.g word, end
+	string char_type = 3;
+	// The page number
+	int32 page = 4;
+	// The line number
+	int32 line = 5;
+	// The arabic text for this word
+	string text = 6;
+	// The QCF v2 font code 
+	string code = 7;
+	// The translated text
+	string translation = 8;
+	// The transliteration text
+	string transliteration = 9;
+}
+
+message Result {
+	// The unique verse id across the Quran
+	int32 verse_id = 1;
+	// The verse key e.g 1:1
+	string verse_key = 2;
+	// The associated arabic text
+	string text = 3;
+	// The related translations to the text
+	repeated Translation translations = 4;
+}
+
+// List the Chapters (surahs) of the Quran
+message ChaptersRequest {
+	// Specify the language e.g en
+	string language = 1;
+}
+
+message ChaptersResponse {
+	repeated Chapter chapters = 1;
+}
+
+// Get a summary for a given chapter (surah)
+message SummaryRequest {
+	// The chapter id e.g 1
+	int32 chapter = 1;
+	// Specify the language e.g en
+	string language = 2;
+}
+
+message SummaryResponse {
+	// The chapter id
+	int32 chapter = 1;
+	// The short summary for the chapter
+	string summary = 2;
+	// The source of the summary
+	string source = 3;
+	// The full description for the chapter
+	string text = 4;
+}
+
+// Lookup the verses (ayahs) for a chapter
+message VersesRequest {
+	// The chapter id to retrieve
+	int32 chapter = 1;
+	// The language of translation
+	string language = 2;
+	// Return the individual words with the verses
+	bool words = 3;
+	// Return the interpretation (tafsir)
+	bool interpret = 4;
+	// Return alternate translations
+	bool translate = 5;
+	// The page number to request
+	int32 page = 6;
+	// The verses per page
+	int32 limit = 7;
+}
+
+message VersesResponse {
+	// The chapter requested
+	int32 chapter = 1;
+	// The page requested
+	int32 page = 2;
+	// The total pages
+	int32 total_pages = 3;
+	// The verses on the page
+	repeated Verse verses = 4;
+}
+
+// Search the Quran for any form of query or questions
+message SearchRequest {
+	// The query to ask
+	string query = 1;
+	// The language for translation
+	string language = 2;
+	// The number of results to return
+	int32 limit = 3;
+	// The pagination number
+	int32 page = 4;
+}
+
+message SearchResponse {
+	// The question asked
+	string query = 1;
+	// The total results returned
+	int32 total_results = 2;
+	// The current page
+	int32 page = 3;
+	// The total pages
+	int32 total_pages = 4;
+	// The results for the query
+	repeated Result results = 5;
+}
