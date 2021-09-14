@@ -100,10 +100,10 @@ type Word struct {
 }
 
 type Result struct {
-	VerseId      int32              `json:"verse_id"`
-	VerseKey     string             `json:"verse_key"`
-	Text         string             `json:"text"`
-	Translations []*TranslationText `json:"translations"`
+	VerseId      int32                `json:"verse_id"`
+	VerseKey     string               `json:"verse_key"`
+	Text         string               `json:"text"`
+	Translations []*SearchTranslation `json:"translations"`
 }
 
 type SearchResults struct {
@@ -112,6 +112,12 @@ type SearchResults struct {
 	CurrentPage  int32     `json:"current_page"`
 	TotalPages   int32     `json:"total_pages"`
 	Results      []*Result `json:"results"`
+}
+
+type SearchTranslation struct {
+	ResourceId int32  `json:"resource_id"`
+	Text       string `json:"text"`
+	Name       string `json:"name"`
 }
 
 type VersesByChapter struct {
@@ -185,8 +191,8 @@ func ResultToProto(r *Result) *pb.Result {
 
 	for _, tr := range r.Translations {
 		translations = append(translations, &pb.Translation{
-			Id:     tr.Id,
-			Source: tr.ResourceName,
+			Id:     tr.ResourceId,
+			Source: tr.Name,
 			Text:   tr.Text,
 		})
 	}
