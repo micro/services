@@ -361,7 +361,7 @@ func main() {
 							"funcName": strcase.UpperCamelCase(title),
 						})
 
-						curlExampleFile := filepath.Join(tsPath, serviceName, "examples", endpoint, title+".sh")
+						curlExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, title+".sh")
 						f, err = os.OpenFile(curlExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
