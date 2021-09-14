@@ -345,6 +345,35 @@ func main() {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
 							os.Exit(1)
 						}
+
+						// curl example
+						templ, err = template.New("curl" + serviceName + endpoint).Funcs(funcs).Parse(curlExampleTemplate)
+						if err != nil {
+							fmt.Println("Failed to unmarshal", err)
+							os.Exit(1)
+						}
+						b = bytes.Buffer{}
+						buf = bufio.NewWriter(&b)
+						err = templ.Execute(buf, map[string]interface{}{
+							"service":  service,
+							"example":  example,
+							"endpoint": endpoint,
+							"funcName": strcase.UpperCamelCase(title),
+						})
+
+						curlExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, title+".sh")
+						f, err = os.OpenFile(curlExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+						if err != nil {
+							fmt.Println("Failed to open schema file", err)
+							os.Exit(1)
+						}
+
+						buf.Flush()
+						_, err = f.Write(b.Bytes())
+						if err != nil {
+							fmt.Println("Failed to append to schema file", err)
+							os.Exit(1)
+						}
 					}
 					// only build after each example is generated as old files from
 					// previous generation might not compile
