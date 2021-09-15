@@ -58,12 +58,13 @@ func (q *Qr) Generate(ctx context.Context, request *qr.GenerateRequest, response
 		return errors.InternalServerError("qr.generate", "Error while generating QR code")
 	}
 
+	nsPrefix := "micro/qr/" + ten
 	fileName := fmt.Sprintf("%s.png", uuid.New().String())
 	if err := store.DefaultBlobStore.Write(
 		fileName, bytes.NewBuffer(qrc),
 		store.BlobContentType("image/png"),
 		store.BlobPublic(true),
-		store.BlobNamespace(ten)); err != nil {
+		store.BlobNamespace(nsPrefix)); err != nil {
 		log.Errorf("Error saving QR code to blob store %s", err)
 		return errors.InternalServerError("qr.generate", "Error while generating QR code")
 	}
@@ -75,12 +76,12 @@ func (q *Qr) Generate(ctx context.Context, request *qr.GenerateRequest, response
 	}
 	b, _ := json.Marshal(&rec)
 	if err := store.Write(&store.Record{
-		Key:   fmt.Sprintf("%s/%s/%s", prefixByTenant, ten, fileName),
+		Key:   fmt.Sprintf("%s/%s/%s", prefixByTenant, nsPrefix, fileName),
 		Value: b,
 	}); err != nil {
 		log.Errorf("Error saving QR code record %s", err)
 		return errors.InternalServerError("qr.generate", "Error while generating QR code")
 	}
-	response.Qr = fmt.Sprintf("%s/micro/qr/%s/%s", q.cdnPrefix, ten, rec.Filename)
+	response.Qr = fmt.Sprintf("%s/%s/%s", q.cdnPrefix, nsPrefix, rec.Filename)
 	return nil
 }
