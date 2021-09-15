@@ -80,7 +80,6 @@ jobs:
         working-directory: services
 
       - name: npm install
-        working-directory: services
         run: |
           npm install
           npm run build
