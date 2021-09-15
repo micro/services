@@ -1,0 +1,20 @@
+{
+    "timeline": [{
+        "title": "Get a twitter timeline",
+        "run_check": false,
+        "request": {
+          "username": "m3oservices",
+          "limit": 1
+        },
+        "response": {
+          "tweets": [{
+            "id": "1437415171966873611",
+	    "text": "Leveraging Micro APIs through Nocode (using @bubble) https://t.co/I5Z6bx31c7 #bubble #nocode #microapis #publicapis #m3o",
+	    "username": "m3oservices",
+	    "created_at": "Mon Sep 13 13:57:37 +0000 2021",
+	    "retweeted_count": "2",
+	    "favourited_count": "2"
+          }]
+        }
+    }]
+}
