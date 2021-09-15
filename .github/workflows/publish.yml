@@ -77,9 +77,9 @@ jobs:
           cd clients/ts;
 
       - uses: EndBug/add-and-commit@v7
-        working-directory: services
 
       - name: npm install
+        working-directory: services
         run: |
           npm install
           npm run build
