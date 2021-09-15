@@ -1,7 +1,7 @@
 name: Publish APIs & Clients
 on:
   push:
-    branches: [master]
+    branches: [master, changes]
 
 jobs:
   docs:
@@ -66,11 +66,20 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          mkdir clients
+          touch ./clients/skip
+          mkdir examples
+          touch ./examples/skip
           cd cmd/clients;
           go install;
           cd ../..;
           clients .
           cd clients/ts;
+
+      - uses: EndBug/add-and-commit@v7
+
+      - name: npm install
+        run: |
           npm install
           npm run build
 
