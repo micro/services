@@ -1,0 +1,133 @@
+{
+    "chapters": [{
+        "title": "List Chapters",
+        "run_check": false,
+        "request": {
+          "language": "en"
+        },
+        "response": {
+	       "chapters": [{
+			"id": 1,
+			"verses": 7,
+			"name": "Al-Fatihah",
+			"arabic_name": "الفاتحة",
+			"complex_name": "Al-Fātiĥah",
+			"translated_name": "The Opener",
+			"prefix_bismillah": false,
+			"revelation_place": "makkah",
+			"revelation_order": 5,
+			"pages": [
+				1,
+				1
+			]
+		},
+		{
+			"id": 2,
+			"verses": 286,
+			"name": "Al-Baqarah",
+			"arabic_name": "البقرة",
+			"complex_name": "Al-Baqarah",
+			"translated_name": "The Cow",
+			"prefix_bismillah": true,
+			"revelation_place": "madinah",
+			"revelation_order": 87,
+			"pages": [
+				2,
+				49
+			]
+		},
+		{
+			"id": 3,
+			"verses": 200,
+			"name": "Ali 'Imran",
+			"arabic_name": "آل عمران",
+			"complex_name": "Āli `Imrān",
+			"translated_name": "Family of Imran",
+			"prefix_bismillah": true,
+			"revelation_place": "madinah",
+			"revelation_order": 89,
+			"pages": [
+				50,
+				76
+			]
+		}]
+	}
+    }],
+    "summary": [{
+        "title": "Get chapter summary",
+        "run_check": false,
+        "request": {
+          "chapter": 1
+        },
+        "response": {
+		"chapter": 1,
+		"summary": "This Surah is named Al-Fatihah because of its subject matter. Fatihah is that which opens a subject or a book or any other thing. In other words, Al-Fatihah is a sort of preface.",
+		"source": "Sayyid Abul Ala Maududi - Tafhim al-Qur'an - The Meaning of the Quran",
+		"text": "\u003ch2\u003eName\u003c/h2\u003e\u003cp\u003eThis Surah is named Al-Fatihah because of its subject matter. Fatihah is that which opens a subject or a book or any other thing. In other words, Al-Fatihah is a sort of preface.\u003c/p\u003e\u003ch2\u003ePeriod of Revelation\u003c/h2\u003e\u003cp\u003eSurah Al-Fatihah is one of the very earliest Revelations to the Holy Prophet. As a matter of fact, we learn from authentic traditions that it was the first complete Surah that was revealed to Muhammad (Allah's peace be upon him). Before this, only a few miscellaneous verses were revealed which form parts of Alaq, Muzzammil, Muddaththir, etc.\u003c/p\u003e\u003ch2\u003eTheme\u003c/h2\u003e\u003cp\u003eThis Surah is in fact a prayer that Allah has taught to all those who want to make a study of His book. It has been placed at the very beginning of the Quran to teach this lesson to the reader: if you sincerely want to benefit from the Quran, you should offer this prayer to the Lord of the Universe.\u003c/p\u003e\u003cp\u003eThis preface is meant to create a strong desire in the heart of the reader to seek guidance from the Lord of the Universe Who alone can grant it. Thus Al-Fatihah indirectly teaches that the best thing for a man is to pray for guidance to the straight path, to study the Quran with the mental attitude of a seeker searching for the truth, and to recognize the fact that the Lord of the Universe is the source of all knowledge. He should, therefore, begin the study of the Quran with a prayer to Him for guidance.\u003c/p\u003e\u003cp\u003eFrom this theme, it becomes clear that the real relation between Al-Fatihah and the Quran is not that of an introduction to a book but that of a prayer and its answer. Al-Fatihah is the prayer from the servant and the Quran is the answer from the Master to the servant's prayer. The servant prays to Allah to show him guidance and the Master places the whole of the Quran before him in answer to his prayer, as if to say, \"This is the Guidance you begged from Me.\"\u003c/p\u003e"
+        }
+    }],
+    "verses": [{
+        "title": "Get verses of a chapter",
+        "run_check": false,
+        "request": {
+          "chapter": 1
+        },
+        "response": {
+		"chapter": 1,
+		"page": 1,
+		"total_pages": 1,
+		"verses": [{
+			"id": 1,
+			"number": 1,
+			"key": "1:1",
+			"page": 1,
+			"text": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+			"transliteration": "bis'mi l-lahi l-raḥmāni l-raḥīmi",
+			"translated_text": "In (the) name (of) Allah the Most Gracious the Most Merciful"
+		},
+		{
+			"id": 2,
+			"number": 2,
+			"key": "1:2",
+			"page": 1,
+			"text": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+			"transliteration": "al-ḥamdu lillahi rabbi l-ʿālamīna",
+			"translated_text": "All praises and thanks (be) to Allah the Lord of the universe"
+		},
+		{
+			"id": 3,
+			"number": 3,
+			"key": "1:3",
+			"page": 1,
+			"text": "الرَّحْمَٰنِ الرَّحِيمِ",
+			"transliteration": "al-raḥmāni l-raḥīmi",
+			"translated_text": "The Most Gracious the Most Merciful"
+		}]
+        }
+    }],
+    "search": [{
+        "title": "Search the Quran",
+        "run_check": false,
+        "request": {
+          "query": "messenger"
+        },
+        "response": {
+		"query": "messenger",
+		"total_results": 5756,
+		"page": 1,
+		"total_pages": 288,
+		"results": [{
+                        "verse_id": 4211,
+                        "verse_key": "40:78",
+                        "text": "وَلَقَدْ أَرْسَلْنَا رُسُلًا مِّن قَبْلِكَ مِنْهُم مَّن قَصَصْنَا عَلَيْكَ وَمِنْهُم مَّن لَّمْ نَقْصُصْ عَلَيْكَ ۗ وَمَا كَانَ لِرَسُولٍ أَن يَأْتِىَ بِـَٔايَةٍ إِلَّا بِإِذْنِ ٱللَّهِ ۚ فَإِذَا جَآءَ أَمْرُ ٱللَّهِ قُضِىَ بِٱلْحَقِّ وَخَسِرَ هُنَالِكَ ٱلْمُبْطِلُونَ",
+                        "translations": [
+                                {
+                                        "id": 171,
+                                        "source": "Abridged Explanation of the Quran",
+                                        "text": "O \u003cem\u003eMessenger\u003c/em\u003e! I have sent many \u003cem\u003emessengers\u003c/em\u003e before you to their people, but they rejected them and caused them harm. The \u003cem\u003emessengers\u003c/em\u003e were patient upon the rejection and harm they faced. From among these \u003cem\u003emessengers\u003c/em\u003e are those whom I have related their stories to you, and those whose stories I have not related. It is not correct for a \u003cem\u003emessenger\u003c/em\u003e to bring a sign to his people from his Lord, except if He (may He be glorified) wishes for him to bring it. So, for the disbelievers to demand signs is wrong. When the decree of Allah for victory or judgement in favour of the \u003cem\u003emessengers\u003c/em\u003e against their nations happens, the judgement will be made fairly. The disbelievers will then be destroyed and the \u003cem\u003emessengers\u003c/em\u003e will be saved. At that point when the judgement is made between the servants, the people of falsehood will lose out by having put themselves in a position of doom by committing disbelief."
+                                }
+                        ]
+                }]
+        }
+    }]
+}
