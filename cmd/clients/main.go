@@ -52,6 +52,12 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	examplesPath := filepath.Join(workDir, "examples")
+	err = os.MkdirAll(goPath, 0777)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	funcs := map[string]interface{}{
 		"recursiveTypeDefinition": func(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {
 			return schemaToType(language, serviceName, typeName, schemas)
@@ -277,12 +283,12 @@ func main() {
 						}
 
 						// create go examples directory
-						err = os.MkdirAll(filepath.Join(goPath, serviceName, "examples", endpoint), 0777)
+						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "go"), 0777)
 						if err != nil {
 							fmt.Println(err)
 							os.Exit(1)
 						}
-						goExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, title+".go")
+						goExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "go", title+".go")
 						f, err = os.OpenFile(goExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -297,7 +303,7 @@ func main() {
 						}
 
 						cmd := exec.Command("gofmt", "-w", title+".go")
-						cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
+						cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "go")
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
@@ -319,12 +325,12 @@ func main() {
 							"funcName": strcase.UpperCamelCase(title),
 						})
 
-						err = os.MkdirAll(filepath.Join(tsPath, serviceName, "examples", endpoint), 0777)
+						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "node"), 0777)
 						if err != nil {
 							fmt.Println(err)
 							os.Exit(1)
 						}
-						tsExampleFile := filepath.Join(tsPath, serviceName, "examples", endpoint, title+".js")
+						tsExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "node", title+".js")
 						f, err = os.OpenFile(tsExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -339,7 +345,7 @@ func main() {
 						}
 
 						cmd = exec.Command("prettier", "-w", title+".js")
-						cmd.Dir = filepath.Join(tsPath, serviceName, "examples", endpoint)
+						cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "node")
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
@@ -361,7 +367,13 @@ func main() {
 							"funcName": strcase.UpperCamelCase(title),
 						})
 
-						curlExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, title+".sh")
+						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "curl"), 0777)
+						if err != nil {
+							fmt.Println(err)
+							os.Exit(1)
+						}
+
+						curlExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "curl", title+".sh")
 						f, err = os.OpenFile(curlExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -378,7 +390,7 @@ func main() {
 					// only build after each example is generated as old files from
 					// previous generation might not compile
 					cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
-					cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
+					cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "go")
 					outp, err = cmd.CombinedOutput()
 					if err != nil {
 						fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))

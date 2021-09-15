@@ -1,9 +1,9 @@
 package main
 
-const goIndexTemplate = `package micro
+const goIndexTemplate = `package m3o
 
 import(
-	{{ range $service := .services }}"github.com/micro/micro-go/{{ $service.Name}}"
+	{{ range $service := .services }}"github.com/m3o/m3o-go/service/{{ $service.Name}}"
 {{ end }}
 )
 
@@ -59,7 +59,7 @@ const goExampleTemplate = `{{ $service := .service }}package example
 import(
 	"fmt"
 	"os"
-	"github.com/micro/micro-go/{{ $service.Name }}"
+	"github.com/m3o/m3o-go/service/{{ $service.Name}}"
 )
 
 {{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}func {{ .funcName }}() {
