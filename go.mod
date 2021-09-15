@@ -11,6 +11,7 @@ require (
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/crufter/nested v0.0.0-20210903145606-dea42c476b37
+	github.com/dghubble/go-twitter v0.0.0-20210609183100-2fdbf421508e
 	github.com/disintegration/imaging v1.6.2
 	github.com/enescakir/emoji v1.0.0
 	github.com/fatih/camelcase v1.0.0
@@ -47,6 +48,7 @@ require (
 	go.opencensus.io v0.22.4 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
+	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
 	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
 	google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 // indirect

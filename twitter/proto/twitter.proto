@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package twitter;
+
+option go_package = "./proto;twitter";
+
+service Twitter {
+	rpc Timeline(TimelineRequest) returns (TimelineResponse) {}
+}
+
+message Tweet {
+	// id of the tweet
+	int64 id = 1;
+	// text of the tweet
+	string text = 2;
+	// username of the person who tweeted
+	string username = 3;
+	// time of tweet
+	string created_at = 4;
+	// number of times retweeted
+	int64 retweeted_count = 5;
+	// number of times favourited
+	int64 favourited_count = 6;
+}
+
+// Get the timeline for a given user
+message TimelineRequest {
+	// the username to request the timeline for
+	string username = 1;
+	// number of tweets to return. default: 20
+	int32 limit = 2;
+}
+
+message TimelineResponse {
+	// The recent tweets for the user
+	repeated Tweet tweets = 1;
+}
