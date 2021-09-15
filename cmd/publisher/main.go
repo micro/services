@@ -68,7 +68,7 @@ func main() {
 	workDir, _ := os.Getwd()
 
 	for _, f := range files {
-		if strings.Contains(f.Name(), "clients") || strings.Contains(f.Name(), "clients") {
+		if strings.Contains(f.Name(), "clients") || strings.Contains(f.Name(), "examples") {
 			continue
 		}
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
