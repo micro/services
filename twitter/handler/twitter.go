@@ -76,8 +76,6 @@ func (t *Twitter) Timeline(ctx context.Context, req *pb.TimelineRequest, rsp *pb
 			CreatedAt:       tweet.CreatedAt,
 			FavouritedCount: int64(tweet.FavoriteCount),
 			RetweetedCount:  int64(tweet.RetweetCount),
-			ReplyCount:      int64(tweet.ReplyCount),
-			QuoteCount:      int64(tweet.QuoteCount),
 			Username:        tweet.User.ScreenName,
 		})
 	}
@@ -110,8 +108,6 @@ func (t *Twitter) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.Sea
 			CreatedAt:       tweet.CreatedAt,
 			FavouritedCount: int64(tweet.FavoriteCount),
 			RetweetedCount:  int64(tweet.RetweetCount),
-			ReplyCount:      int64(tweet.ReplyCount),
-			QuoteCount:      int64(tweet.QuoteCount),
 			Username:        tweet.User.ScreenName,
 		})
 	}
