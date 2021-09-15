@@ -71,7 +71,6 @@ jobs:
           go install;
           cd ../..;
           clients .
-          cd clients/ts;
 
       - uses: EndBug/add-and-commit@v7
         with:
@@ -80,6 +79,7 @@ jobs:
       - name: npm install
         working-directory: services
         run: |
+          cd clients/ts;
           npm install
           npm run build
 
