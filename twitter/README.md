@@ -1,23 +1,6 @@
+Simple twitter timeline
+
 # Twitter Service
 
-This is the Twitter service
+Retrieve the twitter timeline for a user without all the extra baggage
 
-Generated with
-
-```
-micro new twitter
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
