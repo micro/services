@@ -66,10 +66,7 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          mkdir clients
-          touch ./clients/skip
-          mkdir examples
-          touch ./examples/skip
+          pwd
           cd cmd/clients;
           go install;
           cd ../..;
