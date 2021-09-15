@@ -569,7 +569,7 @@ func main() {
 		os.Exit(1)
 	}
 	m["exports"] = tsExportsMap
-	pakJS, err := json.Marshal(m)
+	pakJS, err := json.MarshalIndent(m, "", " ")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
