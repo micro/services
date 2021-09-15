@@ -18,10 +18,14 @@ message Tweet {
 	string username = 3;
 	// time of tweet
 	string created_at = 4;
+	// number of replies
+	int64 reply_count = 5;
+	// number of times quoted
+	int64 quote_count = 6;
 	// number of times retweeted
-	int64 retweeted_count = 5;
+	int64 retweeted_count = 7;
 	// number of times favourited
-	int64 favourited_count = 6;
+	int64 favourited_count = 8;
 }
 
 // Get the timeline for a given user
