@@ -110,10 +110,10 @@ func main() {
 	services := []service{}
 	tsExportsMap := map[string]string{}
 	for _, f := range files {
+		if strings.Contains(f.Name(), "clients") || strings.Contains(f.Name(), "clients") {
+			continue
+		}
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
-			if f.Name() == "clients" || f.Name() == "examples" {
-				continue
-			}
 			serviceName := f.Name()
 			// see https://stackoverflow.com/questions/44345257/import-from-subfolder-of-npm-package
 			tsExportsMap["./"+serviceName] = "./dist/" + serviceName + "/index.js"
