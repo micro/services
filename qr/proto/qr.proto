@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package qr;
+
+option go_package = "./proto;qr";
+
+service Qr {
+	// Generate a QR code
+	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
+}
+
+message GenerateRequest {
+	// the text to encode as a QR code (URL, phone number, email, etc)
+	string text = 1;
+}
+
+message GenerateResponse {
+	// link to the QR code image in PNG format
+	string qr = 1;
+}
