@@ -44,6 +44,7 @@ func NewTwitterEndpoints() []*api.Endpoint {
 type TwitterService interface {
 	Timeline(ctx context.Context, in *TimelineRequest, opts ...client.CallOption) (*TimelineResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
+	User(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error)
 }
 
 type twitterService struct {
@@ -78,17 +79,29 @@ func (c *twitterService) Search(ctx context.Context, in *SearchRequest, opts ...
 	return out, nil
 }
 
+func (c *twitterService) User(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error) {
+	req := c.c.NewRequest(c.name, "Twitter.User", in)
+	out := new(UserResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Twitter service
 
 type TwitterHandler interface {
 	Timeline(context.Context, *TimelineRequest, *TimelineResponse) error
 	Search(context.Context, *SearchRequest, *SearchResponse) error
+	User(context.Context, *UserRequest, *UserResponse) error
 }
 
 func RegisterTwitterHandler(s server.Server, hdlr TwitterHandler, opts ...server.HandlerOption) error {
 	type twitter interface {
 		Timeline(ctx context.Context, in *TimelineRequest, out *TimelineResponse) error
 		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
+		User(ctx context.Context, in *UserRequest, out *UserResponse) error
 	}
 	type Twitter struct {
 		twitter
@@ -107,4 +120,8 @@ func (h *twitterHandler) Timeline(ctx context.Context, in *TimelineRequest, out 
 
 func (h *twitterHandler) Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error {
 	return h.TwitterHandler.Search(ctx, in, out)
+}
+
+func (h *twitterHandler) User(ctx context.Context, in *UserRequest, out *UserResponse) error {
+	return h.TwitterHandler.User(ctx, in, out)
 }

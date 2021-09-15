@@ -114,3 +114,40 @@ func (t *Twitter) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.Sea
 
 	return nil
 }
+
+func (t *Twitter) User(ctx context.Context, req *pb.UserRequest, rsp *pb.UserResponse) error {
+	if len(req.Username) == 0 {
+		return errors.BadRequest("twitter.user", "missing username")
+	}
+
+	user, _, err := t.Client.Users.Show(&twitter.UserShowParams{
+		ScreenName: req.Username,
+	})
+	if err != nil {
+		logger.Errorf("Failed to retrieve user profile for %v: %v", req.Username, err)
+		return errors.InternalServerError("twitter.user", "Failed to retrieve user profile for %v: %v", req.Username, err)
+	}
+
+	rsp.Status = &pb.Tweet{
+		Id:              user.Status.ID,
+		Text:            user.Status.Text,
+		CreatedAt:       user.Status.CreatedAt,
+		FavouritedCount: int64(user.Status.FavoriteCount),
+		RetweetedCount:  int64(user.Status.RetweetCount),
+		Username:        req.Username,
+	}
+
+	rsp.Profile = &pb.Profile{
+		Id:              user.ID,
+		Name:            user.Name,
+		Username:        user.ScreenName,
+		CreatedAt:       user.CreatedAt,
+		Description:     user.Description,
+		Followers:       int64(user.FollowersCount),
+		Private:         user.Protected,
+		Verified:        user.Verified,
+		ImageUrl: user.ProfileImageURL,
+	}
+
+	return nil
+}

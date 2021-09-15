@@ -7,6 +7,7 @@ option go_package = "./proto;twitter";
 service Twitter {
 	rpc Timeline(TimelineRequest) returns (TimelineResponse) {}
 	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc User(UserRequest) returns (UserResponse) {}
 }
 
 message Tweet {
@@ -22,6 +23,29 @@ message Tweet {
 	int64 retweeted_count = 7;
 	// number of times favourited
 	int64 favourited_count = 8;
+}
+
+message Profile {
+	// the user id
+	int64 id = 1;
+	// display name of the user
+	string name = 2;
+	// the username
+	string username = 3;
+	// the user description
+	string description = 4;
+	// the account creation date
+	string created_at = 5;
+	// the user's location
+	string location = 6;
+	// the follower count
+	int64 followers = 7;
+	// if the account is private
+	bool private = 8;
+	// if the account is verified
+	bool verified = 9;
+	// The user's profile picture
+	string image_url = 10;
 }
 
 // Get the timeline for a given user
@@ -48,4 +72,17 @@ message SearchRequest {
 message SearchResponse {
 	// the related tweets for the search
 	repeated Tweet tweets = 2;
+}
+
+// Get a user's twitter profile
+message UserRequest {
+	// the username to lookup
+	string username = 1;
+}
+
+message UserResponse {
+	// the current user status
+	Tweet status = 1; 
+	// The requested user profile
+	Profile profile = 2;
 }
