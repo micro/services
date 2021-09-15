@@ -490,7 +490,7 @@ func main() {
 	}
 
 	// login to NPM
-	f, err = os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	f, err = os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		fmt.Println("Failed to open npmrc", err)
 		os.Exit(1)
