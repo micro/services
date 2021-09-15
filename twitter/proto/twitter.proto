@@ -8,6 +8,7 @@ service Twitter {
 	rpc Timeline(TimelineRequest) returns (TimelineResponse) {}
 	rpc Search(SearchRequest) returns (SearchResponse) {}
 	rpc User(UserRequest) returns (UserResponse) {}
+	rpc Trends(TrendsRequest) returns (TrendsResponse) {}
 }
 
 message Tweet {
@@ -48,6 +49,15 @@ message Profile {
 	string image_url = 10;
 }
 
+message Trend {
+	// name of the trend
+	string name = 1;
+	// the twitter url
+	string url = 2;
+	// the volume of tweets in last 24 hours
+	int64 tweet_volume = 3;
+}
+
 // Get the timeline for a given user
 message TimelineRequest {
 	// the username to request the timeline for
@@ -85,4 +95,13 @@ message UserResponse {
 	Tweet status = 1; 
 	// The requested user profile
 	Profile profile = 2;
+}
+
+// Get the current global trending topics
+message TrendsRequest {
+}
+
+message TrendsResponse {
+	// a list of trending topics 
+	repeated Trend trends = 1;
 }

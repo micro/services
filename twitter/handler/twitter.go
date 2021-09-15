@@ -138,15 +138,35 @@ func (t *Twitter) User(ctx context.Context, req *pb.UserRequest, rsp *pb.UserRes
 	}
 
 	rsp.Profile = &pb.Profile{
-		Id:              user.ID,
-		Name:            user.Name,
-		Username:        user.ScreenName,
-		CreatedAt:       user.CreatedAt,
-		Description:     user.Description,
-		Followers:       int64(user.FollowersCount),
-		Private:         user.Protected,
-		Verified:        user.Verified,
-		ImageUrl: user.ProfileImageURL,
+		Id:          user.ID,
+		Name:        user.Name,
+		Username:    user.ScreenName,
+		CreatedAt:   user.CreatedAt,
+		Description: user.Description,
+		Followers:   int64(user.FollowersCount),
+		Private:     user.Protected,
+		Verified:    user.Verified,
+		ImageUrl:    user.ProfileImageURL,
+	}
+
+	return nil
+}
+
+func (t *Twitter) Trends(ctx context.Context, req *pb.TrendsRequest, rsp *pb.TrendsResponse) error {
+	trendRsp, _, err := t.Client.Trends.Place(1, &twitter.TrendsPlaceParams{WOEID: 1})
+	if err != nil {
+		logger.Errorf("Failed to retrieve trends: %v", err)
+		return errors.InternalServerError("twitter.trends", "Failed to retrieve trends")
+	}
+
+	for _, list := range trendRsp {
+		for _, trend := range list.Trends {
+			rsp.Trends = append(rsp.Trends, &pb.Trend{
+				Name:        trend.Name,
+				Url:         trend.URL,
+				TweetVolume: trend.TweetVolume,
+			})
+		}
 	}
 
 	return nil

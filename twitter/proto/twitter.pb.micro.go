@@ -45,6 +45,7 @@ type TwitterService interface {
 	Timeline(ctx context.Context, in *TimelineRequest, opts ...client.CallOption) (*TimelineResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
 	User(ctx context.Context, in *UserRequest, opts ...client.CallOption) (*UserResponse, error)
+	Trends(ctx context.Context, in *TrendsRequest, opts ...client.CallOption) (*TrendsResponse, error)
 }
 
 type twitterService struct {
@@ -89,12 +90,23 @@ func (c *twitterService) User(ctx context.Context, in *UserRequest, opts ...clie
 	return out, nil
 }
 
+func (c *twitterService) Trends(ctx context.Context, in *TrendsRequest, opts ...client.CallOption) (*TrendsResponse, error) {
+	req := c.c.NewRequest(c.name, "Twitter.Trends", in)
+	out := new(TrendsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Twitter service
 
 type TwitterHandler interface {
 	Timeline(context.Context, *TimelineRequest, *TimelineResponse) error
 	Search(context.Context, *SearchRequest, *SearchResponse) error
 	User(context.Context, *UserRequest, *UserResponse) error
+	Trends(context.Context, *TrendsRequest, *TrendsResponse) error
 }
 
 func RegisterTwitterHandler(s server.Server, hdlr TwitterHandler, opts ...server.HandlerOption) error {
@@ -102,6 +114,7 @@ func RegisterTwitterHandler(s server.Server, hdlr TwitterHandler, opts ...server
 		Timeline(ctx context.Context, in *TimelineRequest, out *TimelineResponse) error
 		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
 		User(ctx context.Context, in *UserRequest, out *UserResponse) error
+		Trends(ctx context.Context, in *TrendsRequest, out *TrendsResponse) error
 	}
 	type Twitter struct {
 		twitter
@@ -124,4 +137,8 @@ func (h *twitterHandler) Search(ctx context.Context, in *SearchRequest, out *Sea
 
 func (h *twitterHandler) User(ctx context.Context, in *UserRequest, out *UserResponse) error {
 	return h.TwitterHandler.User(ctx, in, out)
+}
+
+func (h *twitterHandler) Trends(ctx context.Context, in *TrendsRequest, out *TrendsResponse) error {
+	return h.TwitterHandler.Trends(ctx, in, out)
 }
