@@ -6,6 +6,7 @@ option go_package = "./proto;twitter";
 
 service Twitter {
 	rpc Timeline(TimelineRequest) returns (TimelineResponse) {}
+	rpc Search(SearchRequest) returns (SearchResponse) {}
 }
 
 message Tweet {
@@ -34,4 +35,17 @@ message TimelineRequest {
 message TimelineResponse {
 	// The recent tweets for the user
 	repeated Tweet tweets = 1;
+}
+
+// Search for tweets with a simple query
+message SearchRequest {
+	// the query to search for
+	string query = 1;
+	// number of tweets to return. default: 20
+	int32 limit = 2;
+}
+
+message SearchResponse {
+	// the related tweets for the search
+	repeated Tweet tweets = 2;
 }

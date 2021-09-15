@@ -82,3 +82,35 @@ func (t *Twitter) Timeline(ctx context.Context, req *pb.TimelineRequest, rsp *pb
 
 	return nil
 }
+
+func (t *Twitter) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.SearchResponse) error {
+	if len(req.Query) == 0 {
+		return errors.BadRequest("twitter.query", "missing query")
+	}
+
+	if req.Limit <= 0 {
+		req.Limit = 20
+	}
+
+	searchRsp, _, err := t.Client.Search.Tweets(&twitter.SearchTweetParams{
+		Query: req.Query,
+		Count: int(req.Limit),
+	})
+	if err != nil {
+		logger.Errorf("Failed to retrieve tweets for %v: %v", req.Query, err)
+		return errors.InternalServerError("twitter.search", "Failed to retrieve tweets for %v: %v", req.Query, err)
+	}
+
+	for _, tweet := range searchRsp.Statuses {
+		rsp.Tweets = append(rsp.Tweets, &pb.Tweet{
+			Id:              tweet.ID,
+			Text:            tweet.Text,
+			CreatedAt:       tweet.CreatedAt,
+			FavouritedCount: int64(tweet.FavoriteCount),
+			RetweetedCount:  int64(tweet.RetweetCount),
+			Username:        tweet.User.ScreenName,
+		})
+	}
+
+	return nil
+}
