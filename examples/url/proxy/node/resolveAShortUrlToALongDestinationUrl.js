@@ -1,4 +1,4 @@
-import * as url from "@m3o/services/url";
+import * as url from "m3o/url";
 
 // Proxy returns the destination URL of a short URL.
 async function ResolveAshortUrlToAlongDestinationUrl() {

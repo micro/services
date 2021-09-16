@@ -1,4 +1,4 @@
-import * as rss from "@m3o/services/rss";
+import * as rss from "m3o/rss";
 
 // Add a new RSS feed with a name, url, and category
 async function AddAnewFeed() {

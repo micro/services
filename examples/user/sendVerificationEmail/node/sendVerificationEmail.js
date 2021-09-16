@@ -1,4 +1,4 @@
-import * as user from "@m3o/services/user";
+import * as user from "m3o/user";
 
 // Send a verification email
 // to the user being signed up. Email from will be from 'support@m3o.com',

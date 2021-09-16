@@ -1,4 +1,4 @@
-import * as email from "@m3o/services/email";
+import * as email from "m3o/email";
 
 // Send an email by passing in from, to, subject, and a text or html body
 async function SendEmail() {

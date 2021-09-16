@@ -1,4 +1,4 @@
-import * as crypto from "@m3o/services/crypto";
+import * as crypto from "m3o/crypto";
 
 // Returns the history for the previous close
 async function GetPreviousClose() {

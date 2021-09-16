@@ -1,4 +1,4 @@
-import * as time from "@m3o/services/time";
+import * as time from "m3o/time";
 
 // Get the timezone info for a specific location
 async function GetTheTimezoneInfoForAspecificLocation() {

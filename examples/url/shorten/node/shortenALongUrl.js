@@ -1,4 +1,4 @@
-import * as url from "@m3o/services/url";
+import * as url from "m3o/url";
 
 // Shortens a destination URL and returns a full short URL.
 async function ShortenAlongUrl() {

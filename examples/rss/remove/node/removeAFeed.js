@@ -1,4 +1,4 @@
-import * as rss from "@m3o/services/rss";
+import * as rss from "m3o/rss";
 
 // Remove an RSS feed by name
 async function RemoveAfeed() {

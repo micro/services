@@ -1,4 +1,4 @@
-import * as emoji from "@m3o/services/emoji";
+import * as emoji from "m3o/emoji";
 
 // Print text and renders the emojis with aliases e.g
 // let's grab a :beer: becomes let's grab a 🍺

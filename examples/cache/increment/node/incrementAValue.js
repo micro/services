@@ -1,4 +1,4 @@
-import * as cache from "@m3o/services/cache";
+import * as cache from "m3o/cache";
 
 // Increment a value (if it's a number)
 async function IncrementAvalue() {

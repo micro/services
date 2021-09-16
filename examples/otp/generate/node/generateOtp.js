@@ -1,4 +1,4 @@
-import * as otp from "@m3o/services/otp";
+import * as otp from "m3o/otp";
 
 // Generate an OTP (one time pass) code
 async function GenerateOtp() {

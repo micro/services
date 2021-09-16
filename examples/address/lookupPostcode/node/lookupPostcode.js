@@ -1,4 +1,4 @@
-import * as address from "@m3o/services/address";
+import * as address from "m3o/address";
 
 // Lookup a list of UK addresses by postcode
 async function LookupPostcode() {

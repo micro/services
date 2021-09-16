@@ -1,4 +1,4 @@
-import * as stock from "@m3o/services/stock";
+import * as stock from "m3o/stock";
 
 // Get the historic order book and each trade by timestamp
 async function OrderBookHistory() {

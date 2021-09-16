@@ -1,4 +1,4 @@
-import * as emoji from "@m3o/services/emoji";
+import * as emoji from "m3o/emoji";
 
 // Find an emoji by its alias e.g :beer:
 async function FindEmoji() {

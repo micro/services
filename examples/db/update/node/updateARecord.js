@@ -1,4 +1,4 @@
-import * as db from "@m3o/services/db";
+import * as db from "m3o/db";
 
 // Update a record in the database. Include an "id" in the record to update.
 async function UpdateArecord() {

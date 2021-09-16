@@ -1,4 +1,4 @@
-import * as location from "@m3o/services/location";
+import * as location from "m3o/location";
 
 // Save an entity's current position
 async function SaveAnEntity() {

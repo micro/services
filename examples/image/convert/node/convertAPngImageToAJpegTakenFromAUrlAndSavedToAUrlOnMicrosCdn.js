@@ -1,4 +1,4 @@
-import * as image from "@m3o/services/image";
+import * as image from "m3o/image";
 
 // Convert an image from one format (jpeg, png etc.) to an other either on the fly (from base64 to base64),
 // or by uploading the conversion result.

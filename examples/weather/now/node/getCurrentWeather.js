@@ -1,4 +1,4 @@
-import * as weather from "@m3o/services/weather";
+import * as weather from "m3o/weather";
 
 // Get the current weather report for a location by postcode, city, zip code, ip address
 async function GetCurrentWeather() {

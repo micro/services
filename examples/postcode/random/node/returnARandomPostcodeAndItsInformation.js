@@ -1,4 +1,4 @@
-import * as postcode from "@m3o/services/postcode";
+import * as postcode from "m3o/postcode";
 
 // Return a random postcode and its related info
 async function ReturnArandomPostcodeAndItsInformation() {

@@ -1,4 +1,4 @@
-import * as id from "@m3o/services/id";
+import * as id from "m3o/id";
 
 // Generate a unique ID. Defaults to uuid.
 async function GenerateAbigflakeId() {

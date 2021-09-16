@@ -1,4 +1,4 @@
-import * as stream from "@m3o/services/stream";
+import * as stream from "m3o/stream";
 
 // Publish a message to the stream. Specify a topic to group messages for a specific topic.
 async function PublishAmessage() {

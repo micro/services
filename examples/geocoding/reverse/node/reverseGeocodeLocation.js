@@ -1,4 +1,4 @@
-import * as geocoding from "@m3o/services/geocoding";
+import * as geocoding from "m3o/geocoding";
 
 // Reverse lookup an address from gps coordinates
 async function ReverseGeocodeLocation() {

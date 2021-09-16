@@ -1,4 +1,4 @@
-import * as location from "@m3o/services/location";
+import * as location from "m3o/location";
 
 // Search for entities in a given radius
 async function SearchForLocations() {

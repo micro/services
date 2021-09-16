@@ -1,4 +1,4 @@
-import * as user from "@m3o/services/user";
+import * as user from "m3o/user";
 
 // Create a new user account. The email address and username for the account must be unique.
 async function CreateAnAccount() {

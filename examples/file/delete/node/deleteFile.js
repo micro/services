@@ -1,4 +1,4 @@
-import * as file from "@m3o/services/file";
+import * as file from "m3o/file";
 
 // Delete a file by project name/path
 async function DeleteFile() {

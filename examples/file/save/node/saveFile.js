@@ -1,4 +1,4 @@
-import * as file from "@m3o/services/file";
+import * as file from "m3o/file";
 
 // Save a file
 async function SaveFile() {

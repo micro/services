@@ -1,4 +1,4 @@
-import * as file from "@m3o/services/file";
+import * as file from "m3o/file";
 
 // List files by their project and optionally a path.
 async function ListFiles() {

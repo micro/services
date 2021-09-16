@@ -1,4 +1,4 @@
-import * as db from "@m3o/services/db";
+import * as db from "m3o/db";
 
 // Truncate the records in a table
 async function TruncateTable() {

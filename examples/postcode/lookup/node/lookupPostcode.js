@@ -1,4 +1,4 @@
-import * as postcode from "@m3o/services/postcode";
+import * as postcode from "m3o/postcode";
 
 // Lookup a postcode to retrieve the related region, county, etc
 async function LookupPostcode() {

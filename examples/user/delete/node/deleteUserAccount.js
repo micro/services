@@ -1,4 +1,4 @@
-import * as user from "@m3o/services/user";
+import * as user from "m3o/user";
 
 // Delete an account by id
 async function DeleteUserAccount() {

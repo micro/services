@@ -1,4 +1,4 @@
-import * as emoji from "@m3o/services/emoji";
+import * as emoji from "m3o/emoji";
 
 // Get the flag for a country. Requires country code e.g GB for great britain
 async function GetFlagByCountryCode() {

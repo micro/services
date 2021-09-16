@@ -1,4 +1,4 @@
-import * as cache from "@m3o/services/cache";
+import * as cache from "m3o/cache";
 
 // Delete a value from the cache
 async function DeleteAvalue() {

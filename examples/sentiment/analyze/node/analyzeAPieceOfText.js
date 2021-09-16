@@ -1,4 +1,4 @@
-import * as sentiment from "@m3o/services/sentiment";
+import * as sentiment from "m3o/sentiment";
 
 // Analyze and score a piece of text
 async function AnalyzeApieceOfText() {

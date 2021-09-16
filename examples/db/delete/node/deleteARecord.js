@@ -1,4 +1,4 @@
-import * as db from "@m3o/services/db";
+import * as db from "m3o/db";
 
 // Delete a record in the database by id.
 async function DeleteArecord() {

@@ -1,4 +1,4 @@
-import * as db from "@m3o/services/db";
+import * as db from "m3o/db";
 
 // Read data from a table. Lookup can be by ID or via querying any field in the record.
 async function ReadRecords() {

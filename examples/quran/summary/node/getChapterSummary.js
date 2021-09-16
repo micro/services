@@ -1,4 +1,4 @@
-import * as quran from "@m3o/services/quran";
+import * as quran from "m3o/quran";
 
 // Get a summary for a given chapter (surah)
 async function GetChapterSummary() {

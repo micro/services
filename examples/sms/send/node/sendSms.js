@@ -1,4 +1,4 @@
-import * as sms from "@m3o/services/sms";
+import * as sms from "m3o/sms";
 
 // Send an SMS.
 async function SendSms() {

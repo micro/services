@@ -1,4 +1,4 @@
-import * as forex from "@m3o/services/forex";
+import * as forex from "m3o/forex";
 
 // Get the latest price for a given forex ticker
 async function GetAnFxPrice() {

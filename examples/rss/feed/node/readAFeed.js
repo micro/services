@@ -1,4 +1,4 @@
-import * as rss from "@m3o/services/rss";
+import * as rss from "m3o/rss";
 
 // Get an RSS feed by name. If no name is given, all feeds are returned. Default limit is 25 entries.
 async function ReadAfeed() {

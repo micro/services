@@ -1,4 +1,4 @@
-import * as quran from "@m3o/services/quran";
+import * as quran from "m3o/quran";
 
 // Search the Quran for any form of query or questions
 async function SearchTheQuran() {

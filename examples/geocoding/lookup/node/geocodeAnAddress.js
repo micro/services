@@ -1,4 +1,4 @@
-import * as geocoding from "@m3o/services/geocoding";
+import * as geocoding from "m3o/geocoding";
 
 // Lookup returns a geocoded address including normalized address and gps coordinates. All fields are optional, provide more to get more accurate results
 async function GeocodeAnAddress() {

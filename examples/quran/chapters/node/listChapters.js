@@ -1,4 +1,4 @@
-import * as quran from "@m3o/services/quran";
+import * as quran from "m3o/quran";
 
 // List the Chapters (surahs) of the Quran
 async function ListChapters() {

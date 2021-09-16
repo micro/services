@@ -1,4 +1,4 @@
-import * as currency from "@m3o/services/currency";
+import * as currency from "m3o/currency";
 
 // Rates returns the currency rates for a given code e.g USD
 async function GetRatesForUsd() {

@@ -1,4 +1,4 @@
-import * as routing from "@m3o/services/routing";
+import * as routing from "m3o/routing";
 
 // Get the eta for a route from origin to destination. The eta is an estimated time based on car routes
 async function EtaFromPointAtoPointB() {

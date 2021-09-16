@@ -1,4 +1,4 @@
-import * as image from "@m3o/services/image";
+import * as image from "m3o/image";
 
 // Upload an image by either sending a base64 encoded image to this endpoint or a URL.
 // To resize an image before uploading, see the Resize endpoint.

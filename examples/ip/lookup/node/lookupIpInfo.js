@@ -1,4 +1,4 @@
-import * as ip from "@m3o/services/ip";
+import * as ip from "m3o/ip";
 
 // Lookup the geolocation information for an IP address
 async function LookupIpInfo() {

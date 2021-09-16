@@ -1,4 +1,4 @@
-import * as stock from "@m3o/services/stock";
+import * as stock from "m3o/stock";
 
 // Get the last quote for the stock
 async function GetAstockQuote() {

@@ -1,4 +1,4 @@
-import * as thumbnail from "@m3o/services/thumbnail";
+import * as thumbnail from "m3o/thumbnail";
 
 // Create a thumbnail screenshot by passing in a url, height and width
 async function TakeScreenshotOfAurl() {

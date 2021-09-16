@@ -1,4 +1,4 @@
-import * as cache from "@m3o/services/cache";
+import * as cache from "m3o/cache";
 
 // Decrement a value (if it's a number)
 async function DecrementAvalue() {

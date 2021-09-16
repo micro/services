@@ -1,4 +1,4 @@
-import * as emoji from "@m3o/services/emoji";
+import * as emoji from "m3o/emoji";
 
 // Send an emoji to anyone via SMS. Messages are sent in the form '<message> Sent from <from>'
 async function SendAtextContainingAnEmojiToAnyoneViaSms() {

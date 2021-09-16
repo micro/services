@@ -1,4 +1,4 @@
-import * as forex from "@m3o/services/forex";
+import * as forex from "m3o/forex";
 
 // Returns the data for the previous close
 async function GetPreviousClose() {

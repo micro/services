@@ -1,4 +1,4 @@
-import * as crypto from "@m3o/services/crypto";
+import * as crypto from "m3o/crypto";
 
 // Get the last price for a given crypto ticker
 async function GetCryptocurrencyPrice() {

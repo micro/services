@@ -1,4 +1,4 @@
-import * as routing from "@m3o/services/routing";
+import * as routing from "m3o/routing";
 
 // Turn by turn directions from a start point to an end point including maneuvers and bearings
 async function TurnByTurnDirections() {

@@ -1,4 +1,4 @@
-import * as url from "@m3o/services/url";
+import * as url from "m3o/url";
 
 // List information on all the shortened URLs that you have created
 async function ListYourShortenedUrls() {

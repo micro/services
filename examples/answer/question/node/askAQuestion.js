@@ -1,4 +1,4 @@
-import * as answer from "@m3o/services/answer";
+import * as answer from "m3o/answer";
 
 // Ask a question and receive an instant answer
 async function AskAquestion() {

@@ -1,4 +1,4 @@
-import * as cache from "@m3o/services/cache";
+import * as cache from "m3o/cache";
 
 // Set an item in the cache. Overwrites any existing value already set.
 async function SetAvalue() {

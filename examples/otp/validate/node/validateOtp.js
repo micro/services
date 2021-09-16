@@ -1,4 +1,4 @@
-import * as otp from "@m3o/services/otp";
+import * as otp from "m3o/otp";
 
 // Validate the OTP code
 async function ValidateOtp() {

@@ -1,4 +1,4 @@
-import * as currency from "@m3o/services/currency";
+import * as currency from "m3o/currency";
 
 // Convert returns the currency conversion rate between two pairs e.g USD/GBP
 async function ConvertUsdToGbp() {

@@ -1,4 +1,4 @@
-import * as cache from "@m3o/services/cache";
+import * as cache from "m3o/cache";
 
 // Get an item from the cache by key
 async function GetAvalue() {

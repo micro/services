@@ -1,4 +1,4 @@
-import * as user from "@m3o/services/user";
+import * as user from "m3o/user";
 
 // Login using username or email. The response will return a new session for successful login,
 // 401 in the case of login failure and 500 for any other error

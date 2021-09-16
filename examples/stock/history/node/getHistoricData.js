@@ -1,4 +1,4 @@
-import * as stock from "@m3o/services/stock";
+import * as stock from "m3o/stock";
 
 // Get the historic open-close for a given day
 async function GetHistoricData() {

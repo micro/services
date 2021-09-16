@@ -1,4 +1,4 @@
-import * as helloworld from "@m3o/services/helloworld";
+import * as helloworld from "m3o/helloworld";
 
 // Call returns a personalised "Hello $name" response
 async function CallTheHelloworldService() {

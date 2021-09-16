@@ -1,4 +1,4 @@
-import * as stock from "@m3o/services/stock";
+import * as stock from "m3o/stock";
 
 // Get the last price for a given stock ticker
 async function GetAstockPrice() {

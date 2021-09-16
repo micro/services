@@ -1,4 +1,4 @@
-import * as db from "@m3o/services/db";
+import * as db from "m3o/db";
 
 // Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
 async function CreateArecord() {

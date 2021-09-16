@@ -1,4 +1,4 @@
-import * as currency from "@m3o/services/currency";
+import * as currency from "m3o/currency";
 
 // Codes returns the supported currency codes for the API
 async function GetSupportedCodes() {

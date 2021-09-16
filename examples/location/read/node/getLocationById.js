@@ -1,4 +1,4 @@
-import * as location from "@m3o/services/location";
+import * as location from "m3o/location";
 
 // Read an entity by its ID
 async function GetLocationById() {

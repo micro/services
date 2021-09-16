@@ -1,4 +1,4 @@
-import * as routing from "@m3o/services/routing";
+import * as routing from "m3o/routing";
 
 // Retrieve a route as a simple list of gps points along with total distance and estimated duration
 async function GpsPointsForAroute() {

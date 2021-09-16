@@ -1,4 +1,4 @@
-import * as quran from "@m3o/services/quran";
+import * as quran from "m3o/quran";
 
 // Lookup the verses (ayahs) for a chapter
 async function GetVersesOfAchapter() {

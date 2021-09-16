@@ -1,4 +1,4 @@
-import * as forex from "@m3o/services/forex";
+import * as forex from "m3o/forex";
 
 // Get the latest quote for the forex
 async function GetAfxQuote() {
