@@ -517,7 +517,7 @@ func main() {
 	}
 
 	// get latest version from github
-	getVersions := exec.Command("npm", "show", "@micro/services", "--time", "--json")
+	getVersions := exec.Command("npm", "show", "@m3o/services", "--time", "--json")
 	getVersions.Dir = tsPath
 
 	outp, err = getVersions.CombinedOutput()
