@@ -136,7 +136,9 @@ message SummaryResponse {
 	string text = 4;
 }
 
-// Lookup the verses (ayahs) for a chapter
+// Lookup the verses (ayahs) for a chapter including 
+// translation, interpretation and breakdown by individual
+// words.
 message VersesRequest {
 	// The chapter id to retrieve
 	int32 chapter = 1;
