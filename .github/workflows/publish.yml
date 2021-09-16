@@ -72,9 +72,9 @@ jobs:
           cd ../..;
           clients .
 
-      - uses: EndBug/add-and-commit@v7
-        with:
-          cwd: './services'
+      #- uses: EndBug/add-and-commit@v7
+      #  with:
+      #    cwd: './services'
 
       - name: npm install
         working-directory: services

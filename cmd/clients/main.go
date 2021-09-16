@@ -501,7 +501,17 @@ func main() {
 		fmt.Println("No NPM_TOKEN env found")
 		os.Exit(1)
 	}
-	if _, err = f.WriteString("registry=https://npm.pkg.github.com/micro/:_authToken=" + os.Getenv("NPM_TOKEN")); err != nil {
+	if _, err = f.WriteString("//npm.pkg.github.com/:_authToken=TOKEN" + os.Getenv("NPM_TOKEN")); err != nil {
+		fmt.Println("Failed to open npmrc", err)
+		os.Exit(1)
+	}
+
+	f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		fmt.Println("Failed to open gitignore", err)
+		os.Exit(1)
+	}
+	if _, err = f.WriteString(".npmrc"); err != nil {
 		fmt.Println("Failed to open npmrc", err)
 		os.Exit(1)
 	}
