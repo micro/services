@@ -79,6 +79,7 @@ jobs:
       - name: npm install
         working-directory: services
         run: |
+          git status
           cd clients/ts;
           npm install
           npm run build
