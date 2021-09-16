@@ -95,7 +95,7 @@ jobs:
       #    token: ${{ secrets.NPM_TOKEN }}
 
       # publish to npm m3o/services
-      - name: Change npm settings
+      #- name: Change npm settings
       #  working-directory: services
       #  run: |
       #    rm clients/ts/.npmrc
