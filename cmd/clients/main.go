@@ -501,7 +501,7 @@ func main() {
 		fmt.Println("No NPM_TOKEN env found")
 		os.Exit(1)
 	}
-	if _, err = f.WriteString("//npm.pkg.github.com/:_authToken=TOKEN" + os.Getenv("NPM_TOKEN")); err != nil {
+	if _, err = f.WriteString("//registry.npmjs.org/:_authToken=TOKEN" + os.Getenv("NPM_TOKEN")); err != nil {
 		fmt.Println("Failed to open npmrc", err)
 		os.Exit(1)
 	}
