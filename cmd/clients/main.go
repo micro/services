@@ -441,7 +441,7 @@ func main() {
 		os.Exit(1)
 	}
 	tsFiles := filepath.Join(workDir, "cmd", "clients", "ts")
-	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".npmrc"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
+	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
 	cmd.Dir = filepath.Join(tsPath)
 	outp, err = cmd.CombinedOutput()
 	if err != nil {
@@ -502,16 +502,6 @@ func main() {
 		os.Exit(1)
 	}
 	if _, err = f.WriteString("//registry.npmjs.org/:_authToken=TOKEN" + os.Getenv("NPM_TOKEN")); err != nil {
-		fmt.Println("Failed to open npmrc", err)
-		os.Exit(1)
-	}
-
-	f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0600)
-	if err != nil {
-		fmt.Println("Failed to open gitignore", err)
-		os.Exit(1)
-	}
-	if _, err = f.WriteString(".npmrc"); err != nil {
 		fmt.Println("Failed to open npmrc", err)
 		os.Exit(1)
 	}

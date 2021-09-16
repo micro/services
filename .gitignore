@@ -4,3 +4,4 @@ redoc-static.html
 !docs
 node_modules
 postman.json
+.npmrc
