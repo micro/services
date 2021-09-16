@@ -35,7 +35,7 @@ export interface {{ title $typeName }}{{ "{" }}
 {{end}}
 `
 
-const tsExampleTemplate = `{{ $service := .service }}import * as {{ $service.Name }} from '@m3o/services/{{ $service.Name }}';
+const tsExampleTemplate = `{{ $service := .service }}import * as {{ $service.Name }} from 'm3o/{{ $service.Name }}';
 
 {{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}async function {{ .funcName }}() {
 	let {{ $service.Name }}Service = new {{ $service.Name }}.{{ title $service.Name }}Service(process.env.MICRO_API_TOKEN)

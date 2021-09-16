@@ -1,7 +1,5 @@
 name: Publish APIs & Clients
-on:
-  push:
-    branches: [master]
+on: [push]
 
 jobs:
   docs:
@@ -57,6 +55,7 @@ jobs:
 
       - name: Generate openapi spec and publish the api
         working-directory: services
+        if: github.ref == 'refs/heads/master'
         run: |
           go run cmd/publisher/main.go .
         env:
@@ -66,33 +65,22 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          pwd
           cd cmd/clients;
           go install;
           cd ../..;
           clients .
+
+      - uses: EndBug/add-and-commit@v7
+        with:
+          cwd: './services'
+
+      - name: npm install
+        working-directory: services
+        if: github.ref == 'refs/heads/master'
+        run: |
+          git status
           cd clients/ts;
           npm install
           npm run build
-
-      # publish to github first under micro/services
-      # .npmrc has settings for it
-      - uses: JS-DevTools/npm-publish@v1
-        #if: github.ref == 'refs/heads/master'
-        with:
-          access: public
-          package: services/clients/ts/package.json
-          token: ${{ secrets.NPM_TOKEN }}
-
-      # publish to npm m3o/services
-      - name: Change npm settings
-        working-directory: services
-        run: |
-          rm clients/ts/.npmrc
-          sed -i 's/micro/m3o/g' clients/ts/package.json
-
-      - uses: JS-DevTools/npm-publish@v1
-        #if: github.ref == 'refs/heads/master'
-        with:
-          access: public
-          package: services/clients/ts/package.json
-          token: ${{ secrets.NPM_SITE_TOKEN }}
+          npm publish --access public

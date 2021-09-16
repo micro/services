@@ -1,5 +1,5 @@
 {
-    "name": "@micro/services",
+    "name": "m3o",
     "version": "1.0.1",
     "description": "",
     "main": "dist/index.js",

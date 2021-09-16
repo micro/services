@@ -52,6 +52,13 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	examplesPath := filepath.Join(workDir, "examples")
+	err = os.MkdirAll(goPath, 0777)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	funcs := map[string]interface{}{
 		"recursiveTypeDefinition": func(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {
 			return schemaToType(language, serviceName, typeName, schemas)
@@ -103,6 +110,9 @@ func main() {
 	services := []service{}
 	tsExportsMap := map[string]string{}
 	for _, f := range files {
+		if strings.Contains(f.Name(), "clients") || strings.Contains(f.Name(), "examples") {
+			continue
+		}
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
 			serviceName := f.Name()
 			// see https://stackoverflow.com/questions/44345257/import-from-subfolder-of-npm-package
@@ -277,12 +287,12 @@ func main() {
 						}
 
 						// create go examples directory
-						err = os.MkdirAll(filepath.Join(goPath, serviceName, "examples", endpoint), 0777)
+						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "go"), 0777)
 						if err != nil {
 							fmt.Println(err)
 							os.Exit(1)
 						}
-						goExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, title+".go")
+						goExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "go", title+".go")
 						f, err = os.OpenFile(goExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -297,7 +307,7 @@ func main() {
 						}
 
 						cmd := exec.Command("gofmt", "-w", title+".go")
-						cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
+						cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "go")
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
@@ -319,12 +329,12 @@ func main() {
 							"funcName": strcase.UpperCamelCase(title),
 						})
 
-						err = os.MkdirAll(filepath.Join(tsPath, serviceName, "examples", endpoint), 0777)
+						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "node"), 0777)
 						if err != nil {
 							fmt.Println(err)
 							os.Exit(1)
 						}
-						tsExampleFile := filepath.Join(tsPath, serviceName, "examples", endpoint, title+".js")
+						tsExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "node", title+".js")
 						f, err = os.OpenFile(tsExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -339,7 +349,7 @@ func main() {
 						}
 
 						cmd = exec.Command("prettier", "-w", title+".js")
-						cmd.Dir = filepath.Join(tsPath, serviceName, "examples", endpoint)
+						cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "node")
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
@@ -361,7 +371,13 @@ func main() {
 							"funcName": strcase.UpperCamelCase(title),
 						})
 
-						curlExampleFile := filepath.Join(goPath, serviceName, "examples", endpoint, title+".sh")
+						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "curl"), 0777)
+						if err != nil {
+							fmt.Println(err)
+							os.Exit(1)
+						}
+
+						curlExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "curl", title+".sh")
 						f, err = os.OpenFile(curlExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -378,7 +394,7 @@ func main() {
 					// only build after each example is generated as old files from
 					// previous generation might not compile
 					cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
-					cmd.Dir = filepath.Join(goPath, serviceName, "examples", endpoint)
+					cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "go")
 					outp, err = cmd.CombinedOutput()
 					if err != nil {
 						fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
@@ -425,7 +441,7 @@ func main() {
 		os.Exit(1)
 	}
 	tsFiles := filepath.Join(workDir, "cmd", "clients", "ts")
-	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".npmrc"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
+	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
 	cmd.Dir = filepath.Join(tsPath)
 	outp, err = cmd.CombinedOutput()
 	if err != nil {
@@ -474,7 +490,7 @@ func main() {
 	}
 
 	// login to NPM
-	f, err = os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	f, err = os.OpenFile(filepath.Join(tsPath, ".npmrc"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		fmt.Println("Failed to open npmrc", err)
 		os.Exit(1)
@@ -485,13 +501,13 @@ func main() {
 		fmt.Println("No NPM_TOKEN env found")
 		os.Exit(1)
 	}
-	if _, err = f.WriteString("\n//npm.pkg.github.com/:_authToken=" + os.Getenv("NPM_TOKEN")); err != nil {
+	if _, err = f.WriteString("//registry.npmjs.org/:_authToken=" + os.Getenv("NPM_TOKEN")); err != nil {
 		fmt.Println("Failed to open npmrc", err)
 		os.Exit(1)
 	}
 
 	// get latest version from github
-	getVersions := exec.Command("npm", "show", "@micro/services", "--time", "--json")
+	getVersions := exec.Command("npm", "show", "m3o", "--time", "--json")
 	getVersions.Dir = tsPath
 
 	outp, err = getVersions.CombinedOutput()
@@ -553,7 +569,7 @@ func main() {
 		os.Exit(1)
 	}
 	m["exports"] = tsExportsMap
-	pakJS, err := json.Marshal(m)
+	pakJS, err := json.MarshalIndent(m, "", " ")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
