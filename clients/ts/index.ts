@@ -25,6 +25,7 @@ import * as stock from "./stock";
 import * as stream from "./stream";
 import * as thumbnail from "./thumbnail";
 import * as time from "./time";
+import * as twitter from "./twitter";
 import * as url from "./url";
 import * as user from "./user";
 import * as weather from "./weather";
@@ -58,6 +59,7 @@ export class Client {
     this.streamService = new stream.StreamService(token);
     this.thumbnailService = new thumbnail.ThumbnailService(token);
     this.timeService = new time.TimeService(token);
+    this.twitterService = new twitter.TwitterService(token);
     this.urlService = new url.UrlService(token);
     this.userService = new user.UserService(token);
     this.weatherService = new weather.WeatherService(token);
@@ -90,6 +92,7 @@ export class Client {
   streamService: stream.StreamService;
   thumbnailService: thumbnail.ThumbnailService;
   timeService: time.TimeService;
+  twitterService: twitter.TwitterService;
   urlService: url.UrlService;
   userService: user.UserService;
   weatherService: weather.WeatherService;

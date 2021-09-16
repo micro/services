@@ -28,6 +28,7 @@ import (
 	"github.com/micro/services/clients/go/stream"
 	"github.com/micro/services/clients/go/thumbnail"
 	"github.com/micro/services/clients/go/time"
+	"github.com/micro/services/clients/go/twitter"
 	"github.com/micro/services/clients/go/url"
 	"github.com/micro/services/clients/go/user"
 	"github.com/micro/services/clients/go/weather"
@@ -64,6 +65,7 @@ func NewClient(token string) *Client {
 		StreamService:     stream.NewStreamService(token),
 		ThumbnailService:  thumbnail.NewThumbnailService(token),
 		TimeService:       time.NewTimeService(token),
+		TwitterService:    twitter.NewTwitterService(token),
 		UrlService:        url.NewUrlService(token),
 		UserService:       user.NewUserService(token),
 		WeatherService:    weather.NewWeatherService(token),
@@ -100,6 +102,7 @@ type Client struct {
 	StreamService     *stream.StreamService
 	ThumbnailService  *thumbnail.ThumbnailService
 	TimeService       *time.TimeService
+	TwitterService    *twitter.TwitterService
 	UrlService        *url.UrlService
 	UserService       *user.UserService
 	WeatherService    *weather.WeatherService

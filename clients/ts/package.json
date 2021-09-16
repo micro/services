@@ -38,6 +38,7 @@
   "./test": "./dist/test/index.js",
   "./thumbnail": "./dist/thumbnail/index.js",
   "./time": "./dist/time/index.js",
+  "./twitter": "./dist/twitter/index.js",
   "./url": "./dist/url/index.js",
   "./user": "./dist/user/index.js",
   "./weather": "./dist/weather/index.js"
