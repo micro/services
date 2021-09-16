@@ -83,26 +83,27 @@ jobs:
           cd clients/ts;
           npm install
           npm run build
+          npm publish --access public
 
       # publish to github first under micro/services
       # .npmrc has settings for it
-      - uses: JS-DevTools/npm-publish@v1
+      #- uses: JS-DevTools/npm-publish@v1
         #if: github.ref == 'refs/heads/master'
-        with:
-          access: public
-          package: services/clients/ts/package.json
-          token: ${{ secrets.NPM_TOKEN }}
+      #  with:
+      #    access: public
+      #    package: services/clients/ts/package.json
+      #    token: ${{ secrets.NPM_TOKEN }}
 
       # publish to npm m3o/services
       - name: Change npm settings
-        working-directory: services
-        run: |
-          rm clients/ts/.npmrc
-          sed -i 's/@micro\/services/m3o/g' clients/ts/package.json
+      #  working-directory: services
+      #  run: |
+      #    rm clients/ts/.npmrc
+      #    sed -i 's/@micro\/services/m3o/g' clients/ts/package.json
 
-      - uses: JS-DevTools/npm-publish@v1
-        #if: github.ref == 'refs/heads/master'
-        with:
-          access: public
-          package: services/clients/ts/package.json
-          token: ${{ secrets.NPM_SITE_TOKEN }}
+      # - uses: JS-DevTools/npm-publish@v1
+      #if: github.ref == 'refs/heads/master'
+      #  with:
+      #    access: public
+      #    package: services/clients/ts/package.json
+      #    token: ${{ secrets.NPM_SITE_TOKEN }}
