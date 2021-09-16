@@ -6,7 +6,9 @@ import (
 	"os"
 )
 
-// Lookup the verses (ayahs) for a chapter
+// Lookup the verses (ayahs) for a chapter including
+// translation, interpretation and breakdown by individual
+// words.
 func GetVersesOfAchapter() {
 	quranService := quran.NewQuranService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := quranService.Verses(&quran.VersesRequest{

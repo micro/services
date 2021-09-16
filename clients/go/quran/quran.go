@@ -34,7 +34,9 @@ func (t *QuranService) Summary(request *SummaryRequest) (*SummaryResponse, error
 	return rsp, t.client.Call("quran", "Summary", request, rsp)
 }
 
-// Lookup the verses (ayahs) for a chapter
+// Lookup the verses (ayahs) for a chapter including
+// translation, interpretation and breakdown by individual
+// words.
 func (t *QuranService) Verses(request *VersesRequest) (*VersesResponse, error) {
 	rsp := &VersesResponse{}
 	return rsp, t.client.Call("quran", "Verses", request, rsp)
@@ -147,7 +149,7 @@ type Verse struct {
 	// The unique id of the verse in the whole book
 	Id int32 `json:"id"`
 	// The interpretations of the verse
-	Interpretations []Translation `json:"interpretations"`
+	Interpretations []Interpretation `json:"interpretations"`
 	// The key of this verse (chapter:verse) e.g 1:1
 	Key string `json:"key"`
 	// The verse number in this chapter
@@ -159,7 +161,7 @@ type Verse struct {
 	// The basic translation of the verse
 	TranslatedText string `json:"translatedText"`
 	// The alternative translations for the verse
-	Translations []Translation `json:"translations"`
+	Translations []Interpretation `json:"translations"`
 	// The phonetic transliteration from arabic
 	Transliteration string `json:"transliteration"`
 	// The individual words within the verse (Ayah)

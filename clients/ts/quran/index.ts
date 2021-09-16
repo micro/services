@@ -30,7 +30,9 @@ export class QuranService {
       request
     ) as Promise<SummaryResponse>;
   }
-  // Lookup the verses (ayahs) for a chapter
+  // Lookup the verses (ayahs) for a chapter including
+  // translation, interpretation and breakdown by individual
+  // words.
   verses(request: VersesRequest): Promise<VersesResponse> {
     return this.client.call(
       "quran",
@@ -85,7 +87,7 @@ export interface Result {
   // The associated arabic text
   text?: string;
   // The related translations to the text
-  translations?: Translation[];
+  translations?: Interpretation[];
   // The unique verse id across the Quran
   verseId?: number;
   // The verse key e.g 1:1
@@ -147,7 +149,7 @@ export interface Verse {
   // The unique id of the verse in the whole book
   id?: number;
   // The interpretations of the verse
-  interpretations?: Translation[];
+  interpretations?: Interpretation[];
   // The key of this verse (chapter:verse) e.g 1:1
   key?: string;
   // The verse number in this chapter
