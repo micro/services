@@ -28,7 +28,7 @@ import "github.com/micro/services/helloworld/proto"
 
 ## Clients
 
-API clients are generated in [clients](https://github.com/micro/services/tree/master/clients)
+API clients are generated in the [clients](https://github.com/micro/services/tree/master/clients) directory.
 
 To call a service via the api client import as follows
 
@@ -38,7 +38,7 @@ import "github.com/micro/services/clients/go/helloworld"
 
 ## Examples
 
-See the [examples](https://github.com/micro/services/tree/master/examples) directory
+See the [examples](https://github.com/micro/services/tree/master/examples) directory.
 
 ## Contribute
 
