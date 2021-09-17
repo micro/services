@@ -149,7 +149,7 @@ export interface Verse {
   // The unique id of the verse in the whole book
   id?: number;
   // The interpretations of the verse
-  interpretations?: Interpretation[];
+  interpretations?: Translation[];
   // The key of this verse (chapter:verse) e.g 1:1
   key?: string;
   // The verse number in this chapter
