@@ -20,6 +20,31 @@ Run a service from source
 micro run github.com/micro/services/helloworld
 ```
 
+To call a service from another
+
+```
+import (
+    pb "github.com/micro/services/db/proto"
+)
+```
+
+## Clients
+
+API clients are generated in [clients](https://github.com/micro/services/tree/master/clients)
+
+To call a service via the api client import as follows
+
+```
+import "github.com/micro/services/clients/go/db"
+
+client := db.NewDbService($MICRO_API_TOKEN)
+client.Create(...)
+```
+
+## Examples
+
+See the [examples](https://github.com/micro/services/tree/master/examples) directory
+
 ## Contribute
 
 We welcome contributions of additional services which are then hosted on [m3o.com](https://m3o.com).
