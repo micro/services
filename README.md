@@ -23,9 +23,7 @@ micro run github.com/micro/services/helloworld
 To call a service from another
 
 ```
-import (
-    pb "github.com/micro/services/helloworld/proto"
-)
+import "github.com/micro/services/helloworld/proto"
 ```
 
 ## Clients
@@ -35,10 +33,7 @@ API clients are generated in [clients](https://github.com/micro/services/tree/ma
 To call a service via the api client import as follows
 
 ```
-import "github.com/micro/services/clients/go/db"
-
-client := db.NewDbService($MICRO_API_TOKEN)
-client.Create(...)
+import "github.com/micro/services/clients/go/helloworld"
 ```
 
 ## Examples
