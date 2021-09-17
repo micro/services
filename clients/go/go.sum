@@ -1,5 +1,0 @@
-github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvKCM=
-github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
-github.com/m3o/m3o-go v0.0.0-20210915113633-a4f018a78d79 h1:WJ7AfarocyVqqvXLzjA11U4PEmZ6P2fqMtAXNhtmNU4=
-github.com/m3o/m3o-go/client v0.0.0-20210421144725-8bfd7992ada3 h1:RVt7rqWl4al36BH9OY9k7IXnnooOP0Feanu1bed6X2s=
-github.com/m3o/m3o-go/client v0.0.0-20210421144725-8bfd7992ada3/go.mod h1:vmeaYrKYpgVNhny/l7iH8mXS88S7ijUiYni3gZUrCq0=
