@@ -219,7 +219,6 @@ github.com/gorilla/handlers v1.5.1/go.mod h1:t8XrUpc4KVXb7HGyJ4/cEnwQiaxrX/hz1Zv
 github.com/gorilla/mux v1.6.2/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
 github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=
 github.com/gorilla/mux v1.7.3/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
-github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/grpc-ecosystem/grpc-gateway v1.8.5/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
@@ -347,9 +346,6 @@ github.com/linode/linodego v0.10.0/go.mod h1:cziNP7pbvE3mXIPneHj0oRY8L1WtGEIKlZ8
 github.com/liquidweb/liquidweb-go v1.6.0/go.mod h1:UDcVnAMDkZxpw4Y7NOHkqoeiGacVLEIG/i5J9cyixzQ=
 github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945 h1:jcOqgh+pYNSaPoPOgDaaU5t9j45JzHG3wOBLXUMBfQ0=
 github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945/go.mod h1:wQOw7PY6509VQbepPrclbyXfbQ5lpOtIoHdBKbB+OGc=
-github.com/m3o/m3o-go v0.0.0-20210915113633-a4f018a78d79 h1:WJ7AfarocyVqqvXLzjA11U4PEmZ6P2fqMtAXNhtmNU4=
-github.com/m3o/m3o-go/client v0.0.0-20210421144725-8bfd7992ada3 h1:RVt7rqWl4al36BH9OY9k7IXnnooOP0Feanu1bed6X2s=
-github.com/m3o/m3o-go/client v0.0.0-20210421144725-8bfd7992ada3/go.mod h1:vmeaYrKYpgVNhny/l7iH8mXS88S7ijUiYni3gZUrCq0=
 github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a h1:rnrxZue85aKdMU4nJ50GgKA31lCaVbft+7Xl8OXj55U=
 github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a/go.mod h1:hJJYoBMTZIONmUEpX3+9v2057zuRM0n3n77U4Ob4wE4=
 github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e h1:cj+w63ez19o7y7vunA8Q3rUIWwKEOUx7foqjnr4qbtI=
