@@ -24,7 +24,7 @@ To call a service from another
 
 ```
 import (
-    pb "github.com/micro/services/db/proto"
+    pb "github.com/micro/services/helloworld/proto"
 )
 ```
 
