@@ -16,7 +16,7 @@ type QrService struct {
 	client *client.Client
 }
 
-//
+// Generate a QR code with a specific text and size
 func (t *QrService) Generate(request *GenerateRequest) (*GenerateResponse, error) {
 	rsp := &GenerateResponse{}
 	return rsp, t.client.Call("qr", "Generate", request, rsp)

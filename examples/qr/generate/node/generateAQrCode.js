@@ -1,6 +1,6 @@
 import * as qr from "m3o/qr";
 
-//
+// Generate a QR code with a specific text and size
 async function GenerateAqrCode() {
   let qrService = new qr.QrService(process.env.MICRO_API_TOKEN);
   let rsp = await qrService.generate({

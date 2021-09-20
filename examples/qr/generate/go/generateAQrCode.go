@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-//
+// Generate a QR code with a specific text and size
 func GenerateAqrCode() {
 	qrService := qr.NewQrService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := qrService.Generate(&qr.GenerateRequest{
