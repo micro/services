@@ -12,6 +12,8 @@ service Qr {
 message GenerateRequest {
 	// the text to encode as a QR code (URL, phone number, email, etc)
 	string text = 1;
+	// the size (height and width) in pixels of the generated QR code. Defaults to 256
+	int64 size = 2;
 }
 
 message GenerateResponse {

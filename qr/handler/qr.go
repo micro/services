@@ -18,7 +18,8 @@ import (
 )
 
 const (
-	prefixByTenant = "qrByTenant"
+	prefixByTenant  = "qrByTenant"
+	defaultCodeSize = 256
 )
 
 type QrCode struct {
@@ -52,7 +53,11 @@ func (q *Qr) Generate(ctx context.Context, request *qr.GenerateRequest, response
 		log.Errorf("Error retrieving tenant")
 		return errors.Unauthorized("qr.generate", "Unauthorized")
 	}
-	qrc, err := qrcode.Encode(request.Text, qrcode.Medium, 256)
+	size := defaultCodeSize
+	if request.Size > 0 {
+		size = int(request.Size)
+	}
+	qrc, err := qrcode.Encode(request.Text, qrcode.Medium, size)
 	if err != nil {
 		log.Errorf("Error generating QR code %s", err)
 		return errors.InternalServerError("qr.generate", "Error while generating QR code")
