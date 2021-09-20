@@ -4,5 +4,5 @@ Exchange rates and currency conversion
 
 Real time currency conversion and exchange rates. Rate updates occur every 5 minutes.
 
-Powered by [ExchangeRate-API](https://www.exchangerate-api.com/)
+Powered by [www.exchangerate-api.com](https://www.exchangerate-api.com/).
 

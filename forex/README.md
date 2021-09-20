@@ -4,5 +4,4 @@ Foreign exchange (FX) rates
 
 Real-time and historical foreign exchange (FX) rates for over 200 world currencies. Get the latest rates and bid/ask prices. 
 
-Powered by [Finage](https://finage.co.uk)
-
+Powered by [finage.co.uk](https://finage.co.uk).

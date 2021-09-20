@@ -4,4 +4,4 @@ Live stock quotes and prices
 
 Get live stock quotes and prices for thousands of US and global stocks.
 
-Powered by [Finage](https://finage.co.uk/)
+Powered by [finage.co.uk](https://finage.co.uk/).

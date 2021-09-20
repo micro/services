@@ -4,4 +4,4 @@ Time, date, and timezone info
 
 Get the time, date, and timezone info for any given location in the world. 
 
-Powered by [Weather API](https://weatherapi.com)
+Powered by [www.weatherapi.com](https://weatherapi.com).

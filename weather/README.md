@@ -4,4 +4,4 @@ Real time weather forecast
 
 Get real time weather information including historic and future forecast data.
 
-Powered by [Weather API](https://www.weatherapi.com/)
+Powered by [www.weatherapi.com](https://www.weatherapi.com/).

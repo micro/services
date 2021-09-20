@@ -4,4 +4,4 @@ Instant answers to any question
 
 Ask a question and get an instant answer.
 
-Powered by [DuckDuckGo](https://duckduckgo.com)
+Powered by [duckduckgo.com](https://duckduckgo.com).

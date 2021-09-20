@@ -4,5 +4,5 @@ Send emails in a flash
 
 A quick and easy email API. Simply provide a from, to, and text or html body.
 
-Powered by [Sendgrid](https://sendgrid.com)
+Powered by [sendgrid.com](https://sendgrid.com).
 

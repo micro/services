@@ -4,4 +4,4 @@ Send an SMS message
 
 Send an SMS message in seconds. No fuss, no muss. 
 
-Powered by [Twilio](https://twilio.com)
+Powered by [twilio.com](https://twilio.com).
