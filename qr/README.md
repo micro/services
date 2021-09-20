@@ -1,6 +1,8 @@
-Quickly generate QR Codes with a single call
+QR code generator
 
 # QR Code Service
 
-Generate QR codes for whatever you like. Typically, used for website URLs but could be any text like email addresses, phone numbers, addresses etc.
+Quickly generate QR Codes for whatever you like with a single api call.
+Typically, used for website URLs but could be any text like email addresses, 
+phone numbers, addresses etc.
 
