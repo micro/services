@@ -28,6 +28,7 @@
   "./otp": "./dist/otp/index.js",
   "./pkg": "./dist/pkg/index.js",
   "./postcode": "./dist/postcode/index.js",
+  "./qr": "./dist/qr/index.js",
   "./quran": "./dist/quran/index.js",
   "./routing": "./dist/routing/index.js",
   "./rss": "./dist/rss/index.js",
@@ -57,5 +58,5 @@
  },
  "type": "module",
  "types": "dist/index.d.ts",
- "version": "1.0.514"
+ "version": "1.0.515"
 }

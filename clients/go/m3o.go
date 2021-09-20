@@ -19,6 +19,7 @@ import (
 	"github.com/micro/services/clients/go/location"
 	"github.com/micro/services/clients/go/otp"
 	"github.com/micro/services/clients/go/postcode"
+	"github.com/micro/services/clients/go/qr"
 	"github.com/micro/services/clients/go/quran"
 	"github.com/micro/services/clients/go/routing"
 	"github.com/micro/services/clients/go/rss"
@@ -56,6 +57,7 @@ func NewClient(token string) *Client {
 		LocationService:   location.NewLocationService(token),
 		OtpService:        otp.NewOtpService(token),
 		PostcodeService:   postcode.NewPostcodeService(token),
+		QrService:         qr.NewQrService(token),
 		QuranService:      quran.NewQuranService(token),
 		RoutingService:    routing.NewRoutingService(token),
 		RssService:        rss.NewRssService(token),
@@ -93,6 +95,7 @@ type Client struct {
 	LocationService   *location.LocationService
 	OtpService        *otp.OtpService
 	PostcodeService   *postcode.PostcodeService
+	QrService         *qr.QrService
 	QuranService      *quran.QuranService
 	RoutingService    *routing.RoutingService
 	RssService        *rss.RssService
