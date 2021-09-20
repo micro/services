@@ -9,6 +9,7 @@ service Qr {
 	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
 }
 
+// Generate a QR code with a specific text and size
 message GenerateRequest {
 	// the text to encode as a QR code (URL, phone number, email, etc)
 	string text = 1;
