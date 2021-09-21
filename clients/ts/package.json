@@ -37,6 +37,7 @@
   "./sms": "./dist/sms/index.js",
   "./stock": "./dist/stock/index.js",
   "./stream": "./dist/stream/index.js",
+  "./sunnah": "./dist/sunnah/index.js",
   "./test": "./dist/test/index.js",
   "./thumbnail": "./dist/thumbnail/index.js",
   "./time": "./dist/time/index.js",

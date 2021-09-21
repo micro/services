@@ -25,6 +25,7 @@ import * as sentiment from "./sentiment";
 import * as sms from "./sms";
 import * as stock from "./stock";
 import * as stream from "./stream";
+import * as sunnah from "./sunnah";
 import * as thumbnail from "./thumbnail";
 import * as time from "./time";
 import * as twitter from "./twitter";
@@ -61,6 +62,7 @@ export class Client {
     this.smsService = new sms.SmsService(token);
     this.stockService = new stock.StockService(token);
     this.streamService = new stream.StreamService(token);
+    this.sunnahService = new sunnah.SunnahService(token);
     this.thumbnailService = new thumbnail.ThumbnailService(token);
     this.timeService = new time.TimeService(token);
     this.twitterService = new twitter.TwitterService(token);
@@ -96,6 +98,7 @@ export class Client {
   smsService: sms.SmsService;
   stockService: stock.StockService;
   streamService: stream.StreamService;
+  sunnahService: sunnah.SunnahService;
   thumbnailService: thumbnail.ThumbnailService;
   timeService: time.TimeService;
   twitterService: twitter.TwitterService;

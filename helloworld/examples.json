@@ -10,5 +10,15 @@
         "response": {
             "message": "Hello John"
         }
+    }],
+    "stream": [{
+        "title": "Streams are currently temporarily not supported in clients",
+        "run_check": true,
+        "request": {
+            "name": "not supported"
+        },
+        "response": {
+            "message": "not supported"
+        }
     }]
 }

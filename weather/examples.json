@@ -1,32 +1,74 @@
 {
-    "now": [{
-        "title": "Get current weather",
-        "description": "Get the weather forecast right at this moment",
-        "run_check": true,
-        "request": {
-          "location": "london"
-        },
-        "response": {
-            "location": "London",
-            "region": "City of London, Greater London",
-            "country": "City of London, Greater London",
-            "latitude": 51.52,
-            "longitude": -0.11,
-            "timezone": "Europe/London",
-            "local_time": "2021-06-23 11:18",
-            "temp_c": 16,
-            "temp_f": 60.8,
-            "feels_like_c": 16,
-            "feels_like_f": 60.8,
-            "humidity": 48,
-            "cloud": 75,
-            "daytime": true,
+  "now": [
+    {
+      "title": "Get current weather",
+      "description": "Get the weather forecast right at this moment",
+      "run_check": true,
+      "request": {
+        "location": "london"
+      },
+      "response": {
+        "location": "London",
+        "region": "City of London, Greater London",
+        "country": "City of London, Greater London",
+        "latitude": 51.52,
+        "longitude": -0.11,
+        "timezone": "Europe/London",
+        "local_time": "2021-06-23 11:18",
+        "temp_c": 16,
+        "temp_f": 60.8,
+        "feels_like_c": 16,
+        "feels_like_f": 60.8,
+        "humidity": 48,
+        "cloud": 75,
+        "daytime": true,
+        "condition": "Partly cloudy",
+        "icon_url": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+        "wind_mph": 4.3,
+        "wind_kph": 6.8,
+        "wind_direction": "NE",
+        "wind_degree": 40
+      }
+    }
+  ],
+  "forecast": [
+    {
+      "title": "Forecase weather",
+      "run_check": false,
+      "request": {
+        "days": 2,
+        "location": "London"
+      },
+      "response": {
+        "forecast": [
+          {
+            "date": "2021-09-21",
+            "max_temp_c": 21.8,
+            "max_temp_f": 71.2,
+            "min_temp_c": 13,
+            "min_temp_f": 55.4,
+            "avg_temp_c": 17.3,
+            "avg_temp_f": 63.1,
             "condition": "Partly cloudy",
             "icon_url": "//cdn.weatherapi.com/weather/64x64/day/116.png",
-            "wind_mph": 4.3,
-            "wind_kph": 6.8,
-            "wind_direction": "NE",
-            "wind_degree": 40
-        }
-    }]
+            "sunrise": "06:45 AM",
+            "sunset": "07:01 PM"
+          },
+          {
+            "date": "2021-09-22",
+            "max_temp_c": 24.1,
+            "max_temp_f": 75.4,
+            "min_temp_c": 13.4,
+            "min_temp_f": 56.1,
+            "avg_temp_c": 18.1,
+            "avg_temp_f": 64.6,
+            "condition": "Partly cloudy",
+            "icon_url": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+            "sunrise": "06:47 AM",
+            "sunset": "06:58 PM"
+          }
+        ]
+      }
+    }
+  ]
 }

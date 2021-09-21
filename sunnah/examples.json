@@ -1,0 +1,99 @@
+{
+    "collections": [{
+        "title": "List available collections",
+        "run_check": false,
+        "request": {},
+        "response": {
+            "collections": [{
+		"name": "bukhari",
+		"title": "Sahih al-Bukhari",
+		"arabic_title": "صحيح البخاري",
+		"summary": "Sahih al-Bukhari is a collection of hadith compiled by Imam Muhammad al-Bukhari (d. 256 AH/870 AD) (rahimahullah).\r\n\r\nHis collection is recognized by the overwhelming majority of the Muslim world to be the most authentic collection of reports of the \u003ci\u003eSunnah\u003c/i\u003e of the Prophet Muhammad (ﷺ). It contains over 7500 hadith (with repetitions) in 97 books.\r\n\r\nThe translation provided here is by Dr. M. Muhsin Khan.",
+		"hadiths": 7291
+            }]
+	}
+    }],
+    "books": [{
+        "title": "Get the books within a collection",
+        "run_check": false,
+        "request": {
+          "collection": "bukhari"
+        },
+        "response": {
+		"collection": "bukhari",
+		"total": 97,
+		"page": 1,
+		"limit": 50,
+		"books": [
+			{
+				"id": 1,
+				"name": "Revelation",
+				"arabic_name": "كتاب بدء الوحى ",
+				"hadiths": 7
+			},
+			{
+				"id": 2,
+				"name": "Belief",
+				"arabic_name": "كتاب الإيمان ",
+				"hadiths": 51
+			},
+			{
+				"id": 3,
+				"name": "Knowledge",
+				"arabic_name": "كتاب العلم ",
+				"hadiths": 76
+			}
+                ]
+        }
+    }],
+    "chapters": [{
+        "title": "List the chapters in a book",
+        "run_check": false,
+        "request": {
+          "collection": "bukhari",
+          "book": 1
+        },
+        "response": {
+		"collection": "bukhari",
+		"book": 1,
+		"page": 1,
+		"limit": 50,
+		"total": 6,
+		"chapters": [
+			{
+				"id": 1,
+				"key": "1.00",
+				"book": 1,
+				"title": "How the Divine Revelation started being revealed to Allah's Messenger",
+				"arabic_title": "باب كَيْفَ كَانَ بَدْءُ الْوَحْىِ إِلَى رَسُولِ اللَّهِ صلى الله عليه وسلم"
+			}
+                ]
+        }
+    }],
+    "hadiths": [{
+        "title": "List the hadiths in a book",
+        "run_check": false,
+        "request": {
+          "collection": "bukhari",
+          "book": 1
+        },
+        "response": {
+		"collection": "bukhari",
+		"book": 1,
+		"page": 1,
+		"limit": 50,
+		"total": 7,
+		"hadiths": [
+			{
+				"id": 1,
+				"chapter": 1,
+				"chapter_key": "1.00",
+				"chapter_title": "How the Divine Revelation started being revealed to Allah's Messenger",
+				"arabic_chapter_title": "باب كَيْفَ كَانَ بَدْءُ الْوَحْىِ إِلَى رَسُولِ اللَّهِ صلى الله عليه وسلم",
+				"text": "\u003cp\u003eNarrated 'Umar bin Al-Khattab:\n\u003c/p\u003e\n\u003cp\u003e\n I heard Allah's Messenger (ﷺ) saying, \"The reward of deeds depends upon the \n intentions and every person will get the reward according to what he \n has intended. So whoever emigrated for worldly benefits or for a woman\n to marry, his emigration was for what he emigrated for.\"\n\u003c/p\u003e",
+				"arabic_text": "\u003cp\u003e[prematn]حَدَّثَنَا[narrator id=\"4698\" tooltip=\"عبد الله بن الزبير بن عيسى بن عبيد الله بن أسامة بن عبد الله بن حميد بن زهير بن الحارث بن أسد بن عبد العزى\"] الْحُمَيْدِيُّ عَبْدُ اللَّهِ بْنُ الزُّبَيْرِ [/narrator]، قَالَ : حَدَّثَنَا[narrator id=\"3443\" tooltip=\"سفيان بن عيينة بن ميمون\"] سُفْيَانُ [/narrator]، قَالَ : حَدَّثَنَا[narrator id=\"8272\" tooltip=\"يحيى بن سعيد بن قيس بن عمرو بن سهل بن ثعلبة بن الحارث بن زيد بن ثعلبة بن غنم بن مالك بن النجار\"] يَحْيَى بْنُ سَعِيدٍ الْأَنْصَارِيُّ [/narrator]، قَالَ : أَخْبَرَنِي[narrator id=\"6796\" tooltip=\"محمد بن إبراهيم بن الحارث بن خالد بن صخر بن عامر بن كعب بن سعد بن تيم بن مرة\"] مُحَمَّدُ بْنُ إِبْرَاهِيمَ التَّيْمِيُّ [/narrator]، أَنَّهُ سَمِعَ[narrator id=\"5719\" tooltip=\"علقمة بن وقاص بن محصن بن كلدة بن عبد ياليل\"] عَلْقَمَةَ بْنَ وَقَّاصٍ اللَّيْثِيَّ [/narrator]، يَقُولُ : سَمِعْتُ[narrator id=\"5913\" tooltip=\"عمر بن الخطاب بن نفيل بن عبد العزى بن رياح بن عبد الله بن قرط بن رزاح بن عدي بن كعب\"] عُمَرَ بْنَ الْخَطَّابِ [/narrator] رَضِيَ اللَّهُ عَنْهُ عَلَى الْمِنْبَرِ، قَالَ : سَمِعْتُ رَسُولَ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ، يَقُولُ : \"[/prematn]\n[matn]إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إِلَى دُنْيَا يُصِيبُهَا أَوْ إِلَى امْرَأَةٍ يَنْكِحُهَا، فَهِجْرَتُهُ إِلَى مَا هَاجَرَ إِلَيْهِ \"[/matn]\u003c/p\u003e"
+			}
+               ]
+        }
+    }]
+}
