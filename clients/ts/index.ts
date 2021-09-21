@@ -10,6 +10,7 @@ import * as file from "./file";
 import * as forex from "./forex";
 import * as geocoding from "./geocoding";
 import * as helloworld from "./helloworld";
+import * as holidays from "./holidays";
 import * as id from "./id";
 import * as image from "./image";
 import * as ip from "./ip";
@@ -45,6 +46,7 @@ export class Client {
     this.forexService = new forex.ForexService(token);
     this.geocodingService = new geocoding.GeocodingService(token);
     this.helloworldService = new helloworld.HelloworldService(token);
+    this.holidaysService = new holidays.HolidaysService(token);
     this.idService = new id.IdService(token);
     this.imageService = new image.ImageService(token);
     this.ipService = new ip.IpService(token);
@@ -79,6 +81,7 @@ export class Client {
   forexService: forex.ForexService;
   geocodingService: geocoding.GeocodingService;
   helloworldService: helloworld.HelloworldService;
+  holidaysService: holidays.HolidaysService;
   idService: id.IdService;
   imageService: image.ImageService;
   ipService: ip.IpService;
