@@ -161,7 +161,7 @@ type Verse struct {
 	// The basic translation of the verse
 	TranslatedText string `json:"translatedText"`
 	// The alternative translations for the verse
-	Translations []Translation `json:"translations"`
+	Translations []Interpretation `json:"translations"`
 	// The phonetic transliteration from arabic
 	Transliteration string `json:"transliteration"`
 	// The individual words within the verse (Ayah)
