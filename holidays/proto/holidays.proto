@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package holidays;
+
+option go_package = "./proto;holidays";
+
+service Holidays {
+	// Get the list of countries that are supported by this API
+	rpc Countries(CountriesRequest) returns (CountriesResponse) {}
+	// List the holiday dates for a given country and year
+	rpc List(ListRequest) returns (ListResponse) {}
+}
+
+message CountriesRequest {
+}
+
+message CountriesResponse {
+	repeated Country countries = 1;
+}
+
+message Country {
+	// The 2 letter country code (as defined in ISO 3166-1 alpha-2)
+	string code = 1;
+	// The English name of the country
+	string name = 2;
+}
+
+message ListRequest {
+	// The 2 letter country code (as defined in ISO 3166-1 alpha-2)
+	string country_code = 1;
+	// The year to list holidays for
+	int64 year = 2;
+}
+
+message ListResponse {
+	repeated Holiday holidays = 1;
+}
+
+message Holiday {
+	// date of the holiday in yyyy-mm-dd format
+	string date = 1;
+	// the name of the holiday in English
+	string name = 2;
+	// the local name of the holiday
+	string local_name = 3;
+	// the country this holiday occurs in
+	string country_code = 4;
+	// the regions within the country that observe this holiday (if not all of them)
+	repeated string regions = 5;
+	// the type of holiday Public, Bank, School, Authorities, Optional, Observance
+	repeated string types = 6;
+}

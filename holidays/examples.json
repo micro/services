@@ -1,0 +1,647 @@
+{
+    "countries": [{
+        "title": "List countries",
+        "run_check": true,
+        "request": {},
+        "response": {
+            "countries": [
+                    {
+                        "code": "AD",
+                        "name": "Andorra"
+                    },
+                    {
+                        "code": "AL",
+                        "name": "Albania"
+                    },
+                    {
+                        "code": "AR",
+                        "name": "Argentina"
+                    },
+                    {
+                        "code": "AT",
+                        "name": "Austria"
+                    },
+                    {
+                        "code": "AU",
+                        "name": "Australia"
+                    },
+                    {
+                        "code": "AX",
+                        "name": "Åland Islands"
+                    },
+                    {
+                        "code": "BA",
+                        "name": "Bosnia and Herzegovina"
+                    },
+                    {
+                        "code": "BB",
+                        "name": "Barbados"
+                    },
+                    {
+                        "code": "BE",
+                        "name": "Belgium"
+                    },
+                    {
+                        "code": "BG",
+                        "name": "Bulgaria"
+                    },
+                    {
+                        "code": "BJ",
+                        "name": "Benin"
+                    },
+                    {
+                        "code": "BO",
+                        "name": "Bolivia"
+                    },
+                    {
+                        "code": "BR",
+                        "name": "Brazil"
+                    },
+                    {
+                        "code": "BS",
+                        "name": "Bahamas"
+                    },
+                    {
+                        "code": "BW",
+                        "name": "Botswana"
+                    },
+                    {
+                        "code": "BY",
+                        "name": "Belarus"
+                    },
+                    {
+                        "code": "BZ",
+                        "name": "Belize"
+                    },
+                    {
+                        "code": "CA",
+                        "name": "Canada"
+                    },
+                    {
+                        "code": "CH",
+                        "name": "Switzerland"
+                    },
+                    {
+                        "code": "CL",
+                        "name": "Chile"
+                    },
+                    {
+                        "code": "CN",
+                        "name": "China"
+                    },
+                    {
+                        "code": "CO",
+                        "name": "Colombia"
+                    },
+                    {
+                        "code": "CR",
+                        "name": "Costa Rica"
+                    },
+                    {
+                        "code": "CU",
+                        "name": "Cuba"
+                    },
+                    {
+                        "code": "CY",
+                        "name": "Cyprus"
+                    },
+                    {
+                        "code": "CZ",
+                        "name": "Czechia"
+                    },
+                    {
+                        "code": "DE",
+                        "name": "Germany"
+                    },
+                    {
+                        "code": "DK",
+                        "name": "Denmark"
+                    },
+                    {
+                        "code": "DO",
+                        "name": "Dominican Republic"
+                    },
+                    {
+                        "code": "EC",
+                        "name": "Ecuador"
+                    },
+                    {
+                        "code": "EE",
+                        "name": "Estonia"
+                    },
+                    {
+                        "code": "EG",
+                        "name": "Egypt"
+                    },
+                    {
+                        "code": "ES",
+                        "name": "Spain"
+                    },
+                    {
+                        "code": "FI",
+                        "name": "Finland"
+                    },
+                    {
+                        "code": "FO",
+                        "name": "Faroe Islands"
+                    },
+                    {
+                        "code": "FR",
+                        "name": "France"
+                    },
+                    {
+                        "code": "GA",
+                        "name": "Gabon"
+                    },
+                    {
+                        "code": "GB",
+                        "name": "United Kingdom"
+                    },
+                    {
+                        "code": "GD",
+                        "name": "Grenada"
+                    },
+                    {
+                        "code": "GG",
+                        "name": "Guernsey"
+                    },
+                    {
+                        "code": "GI",
+                        "name": "Gibraltar"
+                    },
+                    {
+                        "code": "GL",
+                        "name": "Greenland"
+                    },
+                    {
+                        "code": "GM",
+                        "name": "Gambia"
+                    },
+                    {
+                        "code": "GR",
+                        "name": "Greece"
+                    },
+                    {
+                        "code": "GT",
+                        "name": "Guatemala"
+                    },
+                    {
+                        "code": "GY",
+                        "name": "Guyana"
+                    },
+                    {
+                        "code": "HN",
+                        "name": "Honduras"
+                    },
+                    {
+                        "code": "HR",
+                        "name": "Croatia"
+                    },
+                    {
+                        "code": "HT",
+                        "name": "Haiti"
+                    },
+                    {
+                        "code": "HU",
+                        "name": "Hungary"
+                    },
+                    {
+                        "code": "ID",
+                        "name": "Indonesia"
+                    },
+                    {
+                        "code": "IE",
+                        "name": "Ireland"
+                    },
+                    {
+                        "code": "IM",
+                        "name": "Isle of Man"
+                    },
+                    {
+                        "code": "IS",
+                        "name": "Iceland"
+                    },
+                    {
+                        "code": "IT",
+                        "name": "Italy"
+                    },
+                    {
+                        "code": "JE",
+                        "name": "Jersey"
+                    },
+                    {
+                        "code": "JM",
+                        "name": "Jamaica"
+                    },
+                    {
+                        "code": "JP",
+                        "name": "Japan"
+                    },
+                    {
+                        "code": "KR",
+                        "name": "South Korea"
+                    },
+                    {
+                        "code": "LI",
+                        "name": "Liechtenstein"
+                    },
+                    {
+                        "code": "LS",
+                        "name": "Lesotho"
+                    },
+                    {
+                        "code": "LT",
+                        "name": "Lithuania"
+                    },
+                    {
+                        "code": "LU",
+                        "name": "Luxembourg"
+                    },
+                    {
+                        "code": "LV",
+                        "name": "Latvia"
+                    },
+                    {
+                        "code": "MA",
+                        "name": "Morocco"
+                    },
+                    {
+                        "code": "MC",
+                        "name": "Monaco"
+                    },
+                    {
+                        "code": "MD",
+                        "name": "Moldova"
+                    },
+                    {
+                        "code": "ME",
+                        "name": "Montenegro"
+                    },
+                    {
+                        "code": "MG",
+                        "name": "Madagascar"
+                    },
+                    {
+                        "code": "MK",
+                        "name": "North Macedonia"
+                    },
+                    {
+                        "code": "MN",
+                        "name": "Mongolia"
+                    },
+                    {
+                        "code": "MS",
+                        "name": "Montserrat"
+                    },
+                    {
+                        "code": "MT",
+                        "name": "Malta"
+                    },
+                    {
+                        "code": "MX",
+                        "name": "Mexico"
+                    },
+                    {
+                        "code": "MZ",
+                        "name": "Mozambique"
+                    },
+                    {
+                        "code": "NA",
+                        "name": "Namibia"
+                    },
+                    {
+                        "code": "NE",
+                        "name": "Niger"
+                    },
+                    {
+                        "code": "NG",
+                        "name": "Nigeria"
+                    },
+                    {
+                        "code": "NI",
+                        "name": "Nicaragua"
+                    },
+                    {
+                        "code": "NL",
+                        "name": "Netherlands"
+                    },
+                    {
+                        "code": "NO",
+                        "name": "Norway"
+                    },
+                    {
+                        "code": "NZ",
+                        "name": "New Zealand"
+                    },
+                    {
+                        "code": "PA",
+                        "name": "Panama"
+                    },
+                    {
+                        "code": "PE",
+                        "name": "Peru"
+                    },
+                    {
+                        "code": "PG",
+                        "name": "Papua New Guinea"
+                    },
+                    {
+                        "code": "PL",
+                        "name": "Poland"
+                    },
+                    {
+                        "code": "PR",
+                        "name": "Puerto Rico"
+                    },
+                    {
+                        "code": "PT",
+                        "name": "Portugal"
+                    },
+                    {
+                        "code": "PY",
+                        "name": "Paraguay"
+                    },
+                    {
+                        "code": "RO",
+                        "name": "Romania"
+                    },
+                    {
+                        "code": "RS",
+                        "name": "Serbia"
+                    },
+                    {
+                        "code": "RU",
+                        "name": "Russia"
+                    },
+                    {
+                        "code": "SE",
+                        "name": "Sweden"
+                    },
+                    {
+                        "code": "SG",
+                        "name": "Singapore"
+                    },
+                    {
+                        "code": "SI",
+                        "name": "Slovenia"
+                    },
+                    {
+                        "code": "SJ",
+                        "name": "Svalbard and Jan Mayen"
+                    },
+                    {
+                        "code": "SK",
+                        "name": "Slovakia"
+                    },
+                    {
+                        "code": "SM",
+                        "name": "San Marino"
+                    },
+                    {
+                        "code": "SR",
+                        "name": "Suriname"
+                    },
+                    {
+                        "code": "SV",
+                        "name": "El Salvador"
+                    },
+                    {
+                        "code": "TN",
+                        "name": "Tunisia"
+                    },
+                    {
+                        "code": "TR",
+                        "name": "Turkey"
+                    },
+                    {
+                        "code": "UA",
+                        "name": "Ukraine"
+                    },
+                    {
+                        "code": "US",
+                        "name": "United States"
+                    },
+                    {
+                        "code": "UY",
+                        "name": "Uruguay"
+                    },
+                    {
+                        "code": "VA",
+                        "name": "Vatican City"
+                    },
+                    {
+                        "code": "VE",
+                        "name": "Venezuela"
+                    },
+                    {
+                        "code": "VN",
+                        "name": "Vietnam"
+                    },
+                    {
+                        "code": "ZA",
+                        "name": "South Africa"
+                    },
+                    {
+                        "code": "ZW",
+                        "name": "Zimbabwe"
+                    }
+                ]
+        }
+    }],
+    "list": [
+        {
+            "title": "Get holidays",
+            "run_check": true,
+            "request": {"country_code":  "GB", "year":  2022},
+            "response": {
+                "holidays": [
+                    {
+                        "date": "2022-01-01",
+                        "name": "New Year's Day",
+                        "local_name": "New Year's Day",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-NIR"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-01-03",
+                        "name": "New Year's Day",
+                        "local_name": "New Year's Day",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-ENG",
+                            "GB-WLS"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-01-03",
+                        "name": "New Year's Day",
+                        "local_name": "New Year's Day",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-SCT"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-01-04",
+                        "name": "New Year's Day",
+                        "local_name": "New Year's Day",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-SCT"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-03-17",
+                        "name": "Saint Patrick's Day",
+                        "local_name": "Saint Patrick's Day",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-NIR"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-04-15",
+                        "name": "Good Friday",
+                        "local_name": "Good Friday",
+                        "country_code": "GB",
+                        "regions": [],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-04-18",
+                        "name": "Easter Monday",
+                        "local_name": "Easter Monday",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-ENG",
+                            "GB-WLS",
+                            "GB-NIR"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-05-02",
+                        "name": "Early May Bank Holiday",
+                        "local_name": "Early May Bank Holiday",
+                        "country_code": "GB",
+                        "regions": [],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-06-02",
+                        "name": "Spring Bank Holiday",
+                        "local_name": "Spring Bank Holiday",
+                        "country_code": "GB",
+                        "regions": [],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-06-03",
+                        "name": "Queen’s Platinum Jubilee",
+                        "local_name": "Queen’s Platinum Jubilee",
+                        "country_code": "GB",
+                        "regions": [],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-07-12",
+                        "name": "Battle of the Boyne",
+                        "local_name": "Battle of the Boyne",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-NIR"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-08-01",
+                        "name": "Summer Bank Holiday",
+                        "local_name": "Summer Bank Holiday",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-SCT"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-08-29",
+                        "name": "Summer Bank Holiday",
+                        "local_name": "Summer Bank Holiday",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-ENG",
+                            "GB-WLS",
+                            "GB-NIR"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-11-30",
+                        "name": "Saint Andrew's Day",
+                        "local_name": "Saint Andrew's Day",
+                        "country_code": "GB",
+                        "regions": [
+                            "GB-SCT"
+                        ],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-12-26",
+                        "name": "St. Stephen's Day",
+                        "local_name": "Boxing Day",
+                        "country_code": "GB",
+                        "regions": [],
+                        "types": [
+                            "Public"
+                        ]
+                    },
+                    {
+                        "date": "2022-12-27",
+                        "name": "Christmas Day",
+                        "local_name": "Christmas Day",
+                        "country_code": "GB",
+                        "regions": [],
+                        "types": [
+                            "Public"
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

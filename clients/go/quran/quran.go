@@ -87,7 +87,7 @@ type Result struct {
 	// The associated arabic text
 	Text string `json:"text"`
 	// The related translations to the text
-	Translations []Translation `json:"translations"`
+	Translations []Interpretation `json:"translations"`
 	// The unique verse id across the Quran
 	VerseId int32 `json:"verseId"`
 	// The verse key e.g 1:1
@@ -161,7 +161,7 @@ type Verse struct {
 	// The basic translation of the verse
 	TranslatedText string `json:"translatedText"`
 	// The alternative translations for the verse
-	Translations []Translation `json:"translations"`
+	Translations []Interpretation `json:"translations"`
 	// The phonetic transliteration from arabic
 	Transliteration string `json:"transliteration"`
 	// The individual words within the verse (Ayah)

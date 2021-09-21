@@ -13,6 +13,7 @@ import (
 	"github.com/micro/services/clients/go/forex"
 	"github.com/micro/services/clients/go/geocoding"
 	"github.com/micro/services/clients/go/helloworld"
+	"github.com/micro/services/clients/go/holidays"
 	"github.com/micro/services/clients/go/id"
 	"github.com/micro/services/clients/go/image"
 	"github.com/micro/services/clients/go/ip"
@@ -52,6 +53,7 @@ func NewClient(token string) *Client {
 		ForexService:      forex.NewForexService(token),
 		GeocodingService:  geocoding.NewGeocodingService(token),
 		HelloworldService: helloworld.NewHelloworldService(token),
+		HolidaysService:   holidays.NewHolidaysService(token),
 		IdService:         id.NewIdService(token),
 		ImageService:      image.NewImageService(token),
 		IpService:         ip.NewIpService(token),
@@ -91,6 +93,7 @@ type Client struct {
 	ForexService      *forex.ForexService
 	GeocodingService  *geocoding.GeocodingService
 	HelloworldService *helloworld.HelloworldService
+	HolidaysService   *holidays.HolidaysService
 	IdService         *id.IdService
 	ImageService      *image.ImageService
 	IpService         *ip.IpService

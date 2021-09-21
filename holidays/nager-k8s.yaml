@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nager-latest
+  labels:
+    app: nager
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nager
+  template:
+    metadata:
+      labels:
+        app: nager
+    spec:
+      containers:
+        - name: nager
+          image: nager/nager-date:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: EnableCors
+              value: "true"
+            - name: EnableIpRateLimiting
+              value: "false"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nager
+spec:
+  selector:
+    app: nager
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
