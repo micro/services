@@ -87,7 +87,7 @@ type Result struct {
 	// The associated arabic text
 	Text string `json:"text"`
 	// The related translations to the text
-	Translations []Interpretation `json:"translations"`
+	Translations []Translation `json:"translations"`
 	// The unique verse id across the Quran
 	VerseId int32 `json:"verseId"`
 	// The verse key e.g 1:1
@@ -149,7 +149,7 @@ type Verse struct {
 	// The unique id of the verse in the whole book
 	Id int32 `json:"id"`
 	// The interpretations of the verse
-	Interpretations []Interpretation `json:"interpretations"`
+	Interpretations []Translation `json:"interpretations"`
 	// The key of this verse (chapter:verse) e.g 1:1
 	Key string `json:"key"`
 	// The verse number in this chapter

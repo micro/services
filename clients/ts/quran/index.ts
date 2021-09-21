@@ -87,7 +87,7 @@ export interface Result {
   // The associated arabic text
   text?: string;
   // The related translations to the text
-  translations?: Interpretation[];
+  translations?: Translation[];
   // The unique verse id across the Quran
   verseId?: number;
   // The verse key e.g 1:1
