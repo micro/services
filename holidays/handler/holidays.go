@@ -83,7 +83,12 @@ type nagerHoliday struct {
 }
 
 func (h Holidays) List(ctx context.Context, request *pb.ListRequest, response *pb.ListResponse) error {
-
+	if request.Year == 0 {
+		return errors.BadRequest("holidays.list", "Missing year argument")
+	}
+	if len(request.CountryCode) == 0 {
+		return errors.BadRequest("holidays.list", "Missing country code argument")
+	}
 	rsp, err := http.Get(fmt.Sprintf("%s/api/v3/PublicHolidays/%d/%s", h.conf.NagerHost, request.Year, request.CountryCode))
 	if err != nil {
 		log.Errorf("Error listing available countries %s", err)

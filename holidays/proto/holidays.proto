@@ -5,7 +5,9 @@ package holidays;
 option go_package = "./proto;holidays";
 
 service Holidays {
+	// Get the list of countries that are supported by this API
 	rpc Countries(CountriesRequest) returns (CountriesResponse) {}
+	// List the holiday dates for a given country and year
 	rpc List(ListRequest) returns (ListResponse) {}
 }
 
