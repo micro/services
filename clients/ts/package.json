@@ -1,0 +1,62 @@
+{
+ "author": "",
+ "dependencies": {
+  "@m3o/m3o-node": "^0.0.24"
+ },
+ "description": "",
+ "devDependencies": {
+  "typescript": "^3.5.1"
+ },
+ "exports": {
+  "./address": "./dist/address/index.js",
+  "./answer": "./dist/answer/index.js",
+  "./cache": "./dist/cache/index.js",
+  "./cmd": "./dist/cmd/index.js",
+  "./crypto": "./dist/crypto/index.js",
+  "./currency": "./dist/currency/index.js",
+  "./db": "./dist/db/index.js",
+  "./email": "./dist/email/index.js",
+  "./emoji": "./dist/emoji/index.js",
+  "./file": "./dist/file/index.js",
+  "./forex": "./dist/forex/index.js",
+  "./geocoding": "./dist/geocoding/index.js",
+  "./helloworld": "./dist/helloworld/index.js",
+  "./id": "./dist/id/index.js",
+  "./image": "./dist/image/index.js",
+  "./ip": "./dist/ip/index.js",
+  "./location": "./dist/location/index.js",
+  "./otp": "./dist/otp/index.js",
+  "./pkg": "./dist/pkg/index.js",
+  "./postcode": "./dist/postcode/index.js",
+  "./qr": "./dist/qr/index.js",
+  "./quran": "./dist/quran/index.js",
+  "./routing": "./dist/routing/index.js",
+  "./rss": "./dist/rss/index.js",
+  "./sentiment": "./dist/sentiment/index.js",
+  "./sms": "./dist/sms/index.js",
+  "./stock": "./dist/stock/index.js",
+  "./stream": "./dist/stream/index.js",
+  "./test": "./dist/test/index.js",
+  "./thumbnail": "./dist/thumbnail/index.js",
+  "./time": "./dist/time/index.js",
+  "./twitter": "./dist/twitter/index.js",
+  "./url": "./dist/url/index.js",
+  "./user": "./dist/user/index.js",
+  "./weather": "./dist/weather/index.js"
+ },
+ "license": "ISC",
+ "main": "dist/index.js",
+ "name": "m3o",
+ "repository": {
+  "type": "git",
+  "url": "https://github.com/micro/services"
+ },
+ "scripts": {
+  "build": "tsc",
+  "prepare": "npm run build",
+  "test": "echo \"Error: no test specified\" \u0026\u0026 exit 1"
+ },
+ "type": "module",
+ "types": "dist/index.d.ts",
+ "version": "1.0.521"
+}
