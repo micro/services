@@ -45,7 +45,7 @@
 			}
                 ]
         }
-    ],
+    }],
     "chapters": [{
         "title": "List the chapters in a book",
         "run_check": false,
