@@ -12,6 +12,30 @@
       "response": {}
     }
   ],
+  "update": [
+    {
+      "title": "Update an account",
+      "run_check": false,
+      "request": {
+        "id": "usrid-1",
+        "email": "joeotheremail@example.com"
+      },
+      "response": {}
+    }
+  ],
+  "updatePassword": [
+    {
+      "title": "Update the account password",
+      "run_check": false,
+      "request": {
+        "id": "usrid-1",
+        "oldPassword": "mySecretPass123",
+        "newPassword": "myEvenMoreSecretPass123",
+        "confirmPassword": "myEvenMoreSecretPass123"
+      },
+      "response": {}
+    }
+  ],
   "read": [
     {
       "title": "Read an account by id",
@@ -77,6 +101,16 @@
       "response": {}
     }
   ],
+  "verifyEmail": [
+    {
+      "title": "Verify email",
+      "run_check": false,
+      "request": {
+        "token": "t2323t232t"
+      },
+      "response": {}
+    }
+  ],
   "delete": [
     {
       "title": "Delete user account",
@@ -113,6 +147,23 @@
         "sessionId": "sds34s34s34-s34s34-s43s43s34-s4s34s"
       },
       "response": {}
+    }
+  ],
+  "readSession": [
+    {
+      "title": "Read a session by the session id.",
+      "run_check": false,
+      "request": {
+        "sessionId": "sds34s34s34-s34s34-s43s43s34-s4s34s"
+      },
+      "response": {
+        "session": {
+          "id": "sds34s34s34-s34s34-s43s43s34-s4s34s",
+          "created": "1623677579",
+          "expires": "1623699579",
+          "userId": "fdf34f34f34-f34f34-f43f43f34-f4f34f"
+        }
+      }
     }
   ]
 }

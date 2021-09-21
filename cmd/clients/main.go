@@ -264,7 +264,9 @@ func main() {
 					fmt.Println(string(exam), err)
 					os.Exit(1)
 				}
-
+				if len(service.Spec.Paths) != len(m) {
+					fmt.Printf("Service has %v endpoints, but only %v examples\n", len(service.Spec.Paths), len(m))
+				}
 				for endpoint, examples := range m {
 					for _, example := range examples {
 						title := regexp.MustCompile("[^a-zA-Z0-9]+").ReplaceAllString(strcase.LowerCamelCase(strings.Replace(example.Title, " ", "_", -1)), "")
