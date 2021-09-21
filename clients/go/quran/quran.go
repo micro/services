@@ -149,7 +149,7 @@ type Verse struct {
 	// The unique id of the verse in the whole book
 	Id int32 `json:"id"`
 	// The interpretations of the verse
-	Interpretations []Interpretation `json:"interpretations"`
+	Interpretations []Translation `json:"interpretations"`
 	// The key of this verse (chapter:verse) e.g 1:1
 	Key string `json:"key"`
 	// The verse number in this chapter
