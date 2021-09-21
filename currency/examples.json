@@ -1,86 +1,159 @@
-
 {
-    "codes": [{
-        "title": "Get supported codes",
-        "description": "Returns the supported currency codes (example response)",
-        "run_check": true,
-        "request": {},
-        "response": {
-            "codes": [
-                {
-                        "name": "AED",
-                        "currency": "UAE Dirham"
-                },
-                {
-                        "name": "AFN",
-                        "currency": "Afghan Afghani"
-                },
-                {
-                        "name": "ALL",
-                        "currency": "Albanian Lek"
-                },
-                {
-                        "name": "AMD",
-                        "currency": "Armenian Dram"
-                },
-                {
-                        "name": "ANG",
-                        "currency": "Netherlands Antillian Guilder"
-                }
-            ]
+  "codes": [
+    {
+      "title": "Get supported codes",
+      "description": "Returns the supported currency codes (example response)",
+      "run_check": true,
+      "request": {},
+      "response": {
+        "codes": [
+          {
+            "name": "AED",
+            "currency": "UAE Dirham"
+          },
+          {
+            "name": "AFN",
+            "currency": "Afghan Afghani"
+          },
+          {
+            "name": "ALL",
+            "currency": "Albanian Lek"
+          },
+          {
+            "name": "AMD",
+            "currency": "Armenian Dram"
+          },
+          {
+            "name": "ANG",
+            "currency": "Netherlands Antillian Guilder"
+          }
+        ]
+      }
+    }
+  ],
+  "rates": [
+    {
+      "title": "Get rates for USD",
+      "description": "Returns the rates for USD (sample response)",
+      "run_check": true,
+      "request": {
+        "code": "USD"
+      },
+      "response": {
+        "code": "usd",
+        "rates": {
+          "AED": 3.6725,
+          "AFN": 79.0514,
+          "ALL": 101.6054,
+          "AMD": 515.68,
+          "ANG": 1.79,
+          "AOA": 646.8737,
+          "ARS": 95.3433,
+          "AUD": 1.2998,
+          "AWG": 1.79,
+          "AZN": 1.7013
         }
-    }],
-    "rates": [{
-        "title": "Get rates for USD",
-        "description": "Returns the rates for USD (sample response)",
-        "run_check": true,
-        "request": {
-            "code": "USD"
-        },
-        "response": {
-            "code": "usd",
-            "rates": {
-                "AED": 3.6725,
-                "AFN": 79.0514,
-                "ALL": 101.6054,
-                "AMD": 515.68,
-                "ANG": 1.79,
-                "AOA": 646.8737,
-                "ARS": 95.3433,
-                "AUD": 1.2998,
-                "AWG": 1.79,
-                "AZN": 1.7013
-            }
+      }
+    }
+  ],
+  "convert": [
+    {
+      "title": "Convert USD to GBP",
+      "description": "Convert from USD to GBP",
+      "run_check": true,
+      "request": {
+        "from": "USD",
+        "to": "GBP"
+      },
+      "response": {
+        "from": "USD",
+        "to": "GBP",
+        "rate": 0.7104
+      }
+    },
+    {
+      "title": "Convert $10 USD to GBP",
+      "description": "Convert $10 from USD to GBP",
+      "run_check": true,
+      "request": {
+        "from": "USD",
+        "to": "GBP",
+        "amount": 10.0
+      },
+      "response": {
+        "from": "USD",
+        "to": "GBP",
+        "rate": 0.7104,
+        "amount": 7.104
+      }
+    }
+  ],
+  "history": [
+    {
+      "title": "Historic rates for a currency",
+      "description": "Date is in format YYYY-MM-DD",
+      "run_check": false,
+      "request": {
+        "code": "USD",
+        "date": "2021-05-30"
+      },
+      "response": {
+        "code": "USD",
+        "date": "2020-05-30",
+        "rates": {
+          "AED": 3.672,
+          "ARS": 68.3238,
+          "AUD": 1.5017,
+          "BGN": 1.7573,
+          "BRL": 5.372,
+          "BSD": 1,
+          "CAD": 1.3758,
+          "CHF": 0.9625,
+          "CLP": 810.6932,
+          "CNY": 7.1408,
+          "COP": 3711.2273,
+          "CZK": 24.2592,
+          "DKK": 6.7076,
+          "DOP": 55.3539,
+          "EGP": 15.8108,
+          "EUR": 0.9004,
+          "FJD": 2.2202,
+          "GBP": 0.8108,
+          "GTQ": 7.6924,
+          "HKD": 7.753,
+          "HRK": 6.8175,
+          "HUF": 313.7167,
+          "IDR": 14536.6684,
+          "ILS": 3.5082,
+          "INR": 75.5508,
+          "ISK": 135.7104,
+          "JPY": 107.4223,
+          "KRW": 1236.3642,
+          "KZT": 412.3586,
+          "MXN": 22.1514,
+          "MYR": 4.3465,
+          "NOK": 9.7236,
+          "NZD": 1.61,
+          "PAB": 1,
+          "PEN": 3.4361,
+          "PHP": 50.5076,
+          "PKR": 160.0922,
+          "PLN": 4.0015,
+          "PYG": 6803.9167,
+          "RON": 4.361,
+          "RUB": 70.561,
+          "SAR": 3.7548,
+          "SEK": 9.4421,
+          "SGD": 1.4125,
+          "THB": 31.8255,
+          "TRY": 6.8228,
+          "TWD": 30.0096,
+          "UAH": 26.8391,
+          "USD": 1,
+          "UYU": 43.0401,
+          "ZAR": 17.5029
         }
-    }],
-    "convert": [{
-        "title": "Convert USD to GBP",
-        "description": "Convert from USD to GBP",
-        "run_check": true,
-        "request": {
-            "from": "USD",
-            "to": "GBP"
-        },
-        "response": {
-            "from": "USD",
-            "to": "GBP",
-            "rate": 0.7104
-        }
-     },
-     {
-        "title": "Convert $10 USD to GBP",
-        "description": "Convert $10 from USD to GBP",
-        "run_check": true,
-        "request": {
-            "from": "USD",
-            "to": "GBP",
-            "amount": 10.0
-        },
-        "response": {
-            "from": "USD",
-            "to": "GBP",
-            "rate": 0.7104,
-            "amount": 7.104
-        }
-    }]
+      }
+    }
+  ]
 }
