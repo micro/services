@@ -5,12 +5,11 @@ package holidays;
 option go_package = "./proto;holidays";
 
 service Holidays {
-	// Get the list of countries that are supported by this API
 	rpc Countries(CountriesRequest) returns (CountriesResponse) {}
-	// List the holiday dates for a given country and year
 	rpc List(ListRequest) returns (ListResponse) {}
 }
 
+// Get the list of countries that are supported by this API
 message CountriesRequest {
 }
 
@@ -25,6 +24,7 @@ message Country {
 	string name = 2;
 }
 
+// List the holiday dates for a given country and year
 message ListRequest {
 	// The 2 letter country code (as defined in ISO 3166-1 alpha-2)
 	string country_code = 1;

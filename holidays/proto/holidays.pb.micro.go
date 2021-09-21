@@ -42,9 +42,7 @@ func NewHolidaysEndpoints() []*api.Endpoint {
 // Client API for Holidays service
 
 type HolidaysService interface {
-	// Get the list of countries that are supported by this API
 	Countries(ctx context.Context, in *CountriesRequest, opts ...client.CallOption) (*CountriesResponse, error)
-	// List the holiday dates for a given country and year
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 }
 
@@ -83,9 +81,7 @@ func (c *holidaysService) List(ctx context.Context, in *ListRequest, opts ...cli
 // Server API for Holidays service
 
 type HolidaysHandler interface {
-	// Get the list of countries that are supported by this API
 	Countries(context.Context, *CountriesRequest, *CountriesResponse) error
-	// List the holiday dates for a given country and year
 	List(context.Context, *ListRequest, *ListResponse) error
 }
 
