@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package sunnah;
+
+option go_package = "./proto;sunnah";
+
+service Sunnah {
+	rpc Collections(CollectionsRequest) returns (CollectionsResponse) {}
+	rpc Books(BooksRequest) returns (BooksResponse) {}
+	rpc Chapters(ChaptersRequest) returns (ChaptersResponse) {}
+	rpc Hadiths(HadithsRequest) returns (HadithsResponse) {}
+}
+
+message Collection {
+	// Name of the collection e.g bukhari
+	string name = 1;
+	// Title of the collection e.g Sahih al-Bukhari
+	string title = 2;
+	// Arabic title if available
+	string arabic_title = 3;
+	// An introduction explaining the collection	
+	string summary = 4;
+	// Total hadiths in the collection
+	int32 hadiths = 5;
+}
+
+message Book {
+	// number of the book e.g 1
+	int32 id = 1;
+	// name of the book
+	string name = 2;
+	// arabic name of the book
+	string arabic_name = 3;
+	// number of hadiths in the book
+	int32 hadiths = 4;
+}
+
+message Chapter {
+	// the chapter id e.g 1
+	int32 id = 1;
+	// the chapter key e.g 1.00
+	string key = 2;
+	// the book number
+	int32 book = 3;
+	// title of the chapter
+	string title = 4;
+	// arabic title
+	string arabic_title = 5;
+}
+
+message Hadith {
+	// hadith id
+	int32 id = 1;
+	// the chapter id
+	int32 chapter = 2;
+	// the chapter key
+	string chapter_key = 3;
+	// the chapter title
+	string chapter_title = 4;
+	// the arabic chapter title
+	string arabic_chapter_title = 5;
+	// hadith text
+	string text = 6;
+	// the arabic text
+	string arabic_text = 7;
+}
+
+// Get a list of available collections. A collection is 
+// a compilation of hadiths collected and written by an author.
+message CollectionsRequest {
+	// The page in the pagination
+	int32 page = 1;
+	// Number of collections to limit to
+	int32 limit = 2;
+}
+
+message CollectionsResponse {
+	repeated Collection collections = 1;
+}
+
+// Get a list of books from within a collection. A book can contain many chapters 
+// each with its own hadiths.
+message BooksRequest {
+	// Name of the collection
+	string collection = 1;
+	// The page in the pagination
+	int32 page = 2;
+	// Limit the number of books returned
+	int32 limit = 3;
+}
+
+message BooksResponse {
+	// Name of the collection
+	string collection = 1;
+	// The total overall books
+	int32 total = 2;
+	// The page requested
+	int32 page = 3;
+	// The limit specified
+	int32 limit = 4;
+	// A list of books
+	repeated Book books = 5;
+}
+
+// Get all the chapters of a given book within a collection.
+message ChaptersRequest {
+	// name of the collection
+	string collection = 1;
+	// number of the book
+	int32 book = 2;
+	// The page in the pagination
+	int32 page = 3;
+	// Limit the number of chapters returned
+	int32 limit = 4;
+}
+
+message ChaptersResponse {
+	// name of the collection
+	string collection = 1;
+	// number of the book
+	int32 book = 2;
+	// The page in the pagination
+	int32 page = 3;
+	// Limit the number of chapters returned
+	int32 limit = 4;
+	// Total chapters in the book	
+	int32 total = 5;
+	// The chapters of the book
+	repeated Chapter chapters = 6;
+}
+
+// Hadiths returns a list of hadiths and their corresponding text for a 
+// given book within a collection. 
+message HadithsRequest {
+	// name of the collection
+	string collection = 1;
+	// number of the book
+	int32 book = 2;
+	// The page in the pagination
+	int32 page = 3;
+	// Limit the number of hadiths
+	int32 limit = 4;
+}
+
+message HadithsResponse {
+	// name of the collection
+	string collection = 1;
+	// number of the book
+	int32 book = 2;
+	// The page in the pagination
+	int32 page = 3;
+	// Limit the number of hadiths returned
+	int32 limit = 4;
+	// Total hadiths in the  book
+	int32 total = 5;
+	// The hadiths of the book
+	repeated Hadith hadiths = 7;
+}
