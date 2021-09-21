@@ -161,7 +161,7 @@ export interface Verse {
   // The basic translation of the verse
   translatedText?: string;
   // The alternative translations for the verse
-  translations?: Translation[];
+  translations?: Interpretation[];
   // The phonetic transliteration from arabic
   transliteration?: string;
   // The individual words within the verse (Ayah)
