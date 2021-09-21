@@ -2,7 +2,7 @@ Find the holidays observed in a particular country
 
 # Holidays Service
 
-List holidays observed in a country or regions within that country. 
+List holidays observed in a country. Holidays may be at the country or region level.   
 
 Holiday types are:
 - Public - public holiday 
