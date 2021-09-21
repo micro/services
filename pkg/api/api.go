@@ -8,8 +8,27 @@ import (
 	"net/http"
 )
 
+var (
+	keys = map[string]string{}
+)
+
+// Set a key within the header
+func SetKey(k, v string) {
+	keys[k] = v
+}
+
+// Get a url and unmarshal a json body into the given value
 func Get(url string, rsp interface{}) error {
-	resp, err := http.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range keys {
+		req.Header.Set(k, v)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}

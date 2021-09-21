@@ -1,45 +1,76 @@
-
 {
-    "price": [{
-        "title": "Get cryptocurrency price",
-        "description": "Returns the last traded price of a currency",
-        "request": {
-            "symbol": "BTCUSD"
-        },
-        "response": {
-            "symbol": "BTCUSD",
-            "price": 34682.74
-        }
-    }],
-    "quote": [{
-        "title": "Get a cryptocurrency quote",
-        "description": "Returns the last quote for a currency including bid and ask prices",
-        "request": {
-            "symbol": "BTCUSD"
-        },
-        "response": {
-            "symbol": "BTCUSD",
-            "ask_price": 34679.87,
-            "bid_price": 34679.86,
-            "ask_size": 0.595412,
-            "bid_size": 0.122235,
-            "timestamp": "2021-06-20T17:25:50.772Z"
-        }
-    }],
-    "history": [{
-        "title": "Get previous close",
-        "description": "Returns the history for the previous close",
-        "request": {
-            "symbol": "BTCUSD"
-        },
-        "response": {
-            "symbol": "btcusd",
-            "open": 35483.72,
-            "close": 34470.8,
-            "high": 35922,
-            "low": 33336,
-            "volume": 66202.264956,
-            "date": "2021-06-20"
-        }
-    }]
+  "news": [
+    {
+      "title": "Get cryptocurrency news",
+      "request": {
+        "symbol": "BTCUSD"
+      },
+      "response": {
+        "articles": [
+          {
+            "title": "$80 Billion Brazilian Investment Bank Launches Bitcoin and Crypto Trading App",
+            "description": "Brazilian investment bank BTG Pactual becomes first large financial institution in Brazil to enable customers to make direct investments in Bitcoin.",
+            "url": "https://bitcoinmagazine.com/culture/80-billion-brazilian-investment-bank-launches-bitcoin-and-crypto-trading-app",
+            "date": "2021-09-21T13:13:01+00:00",
+            "source": "Bitcoin Magazine"
+          },
+          {
+            "title": "Bitcoin at $40,000, Ethereum at $2,800 Very Important Levels to Watch Now: Mike Novogratz",
+            "description": "Head of Galaxy Digital Mike Novogratz explains what levels are important for BTC and Ether now that the Chinese real-estate monster crisis is hitting the crypto market",
+            "url": "https://u.today/bitcoin-at-40000-ethereum-at-2800-very-important-levels-to-watch-now-mike-novogratz",
+            "date": "2021-09-21T12:51:00+00:00",
+            "source": "UToday"
+          }
+        ]
+      }
+    }
+  ],
+  "price": [
+    {
+      "title": "Get cryptocurrency price",
+      "description": "Returns the last traded price of a currency",
+      "request": {
+        "symbol": "BTCUSD"
+      },
+      "response": {
+        "symbol": "BTCUSD",
+        "price": 34682.74
+      }
+    }
+  ],
+  "quote": [
+    {
+      "title": "Get a cryptocurrency quote",
+      "description": "Returns the last quote for a currency including bid and ask prices",
+      "request": {
+        "symbol": "BTCUSD"
+      },
+      "response": {
+        "symbol": "BTCUSD",
+        "ask_price": 34679.87,
+        "bid_price": 34679.86,
+        "ask_size": 0.595412,
+        "bid_size": 0.122235,
+        "timestamp": "2021-06-20T17:25:50.772Z"
+      }
+    }
+  ],
+  "history": [
+    {
+      "title": "Get previous close",
+      "description": "Returns the history for the previous close",
+      "request": {
+        "symbol": "BTCUSD"
+      },
+      "response": {
+        "symbol": "btcusd",
+        "open": 35483.72,
+        "close": 34470.8,
+        "high": 35922,
+        "low": 33336,
+        "volume": 66202.264956,
+        "date": "2021-06-20"
+      }
+    }
+  ]
 }

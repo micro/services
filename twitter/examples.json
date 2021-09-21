@@ -1,20 +1,105 @@
 {
-    "timeline": [{
-        "title": "Get a twitter timeline",
-        "run_check": false,
-        "request": {
-          "username": "m3oservices",
-          "limit": 1
-        },
-        "response": {
-          "tweets": [{
+  "timeline": [
+    {
+      "title": "Get a twitter timeline",
+      "run_check": false,
+      "request": {
+        "username": "m3oservices",
+        "limit": 1
+      },
+      "response": {
+        "tweets": [
+          {
             "id": "1437415171966873611",
-	    "text": "Leveraging Micro APIs through Nocode (using @bubble) https://t.co/I5Z6bx31c7 #bubble #nocode #microapis #publicapis #m3o",
-	    "username": "m3oservices",
-	    "created_at": "Mon Sep 13 13:57:37 +0000 2021",
-	    "retweeted_count": "2",
-	    "favourited_count": "2"
-          }]
+            "text": "Leveraging Micro APIs through Nocode (using @bubble) https://t.co/I5Z6bx31c7 #bubble #nocode #microapis #publicapis #m3o",
+            "username": "m3oservices",
+            "created_at": "Mon Sep 13 13:57:37 +0000 2021",
+            "retweeted_count": "2",
+            "favourited_count": "2"
+          }
+        ]
+      }
+    }
+  ],
+  "search": [
+    {
+      "title": "Search for tweets",
+      "run_check": false,
+      "request": {
+        "query": "cats"
+      },
+      "response": {
+        "tweets": [
+          {
+            "id": "1440333358018424841",
+            "text": "RT @_Bomfha: In the world, I have cats on rainy days. 🌧️💧 https://t.co/C3n1NRRvhX",
+            "username": "syrupai",
+            "created_at": "Tue Sep 21 15:13:27 +0000 2021",
+            "retweeted_count": "114",
+            "favourited_count": "0"
+          },
+          {
+            "id": "1440333343636090882",
+            "text": "RT @jbdefsyg: Bam said it’s been a long time since he’s not been alone for Chuseok considering his family is in Thailand. Seulgi asked what…",
+            "username": "Blackbeau5",
+            "created_at": "Tue Sep 21 15:13:23 +0000 2021",
+            "retweeted_count": "656",
+            "favourited_count": "0"
+          }
+        ]
+      }
+    }
+  ],
+  "trends": [
+    {
+      "title": "Get the current global trending topics",
+      "run_check": false,
+      "request": {},
+      "response": {
+        "trends": [
+          {
+            "name": "#ios15",
+            "url": "http://twitter.com/search?q=%23ios15",
+            "tweet_volume": "255802"
+          },
+          {
+            "name": "#4toinformeedomex",
+            "url": "http://twitter.com/search?q=%234toinformeedomex",
+            "tweet_volume": "231617"
+          }
+        ]
+      }
+    }
+  ],
+  "user": [
+    {
+      "title": "Get a user's twitter profile",
+      "run_check": false,
+      "request": {
+        "username": "crufter"
+      },
+      "response": {
+        "status": {
+          "id": "1093875272926023681",
+          "text": "@O2 It's already sorted, thanks! At least your customer support is awesome. ;)",
+          "username": "crufter",
+          "created_at": "Fri Feb 08 14:12:42 +0000 2019",
+          "retweeted_count": "0",
+          "favourited_count": "0"
+        },
+        "profile": {
+          "id": "2788401541",
+          "name": "Janos Dobronszki",
+          "username": "crufter",
+          "description": "FOLLOWS YOU. Quietly hacking away and waiting for the AI surveillance apocalypse. Always high on sencha.",
+          "created_at": "Wed Sep 03 18:00:02 +0000 2014",
+          "location": "",
+          "followers": "168",
+          "private": false,
+          "verified": false,
+          "image_url": "http://pbs.twimg.com/profile_images/664040247211069440/IzdeZPPK_normal.jpg"
         }
-    }]
+      }
+    }
+  ]
 }
