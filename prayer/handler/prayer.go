@@ -78,7 +78,7 @@ func (p *Prayer) Times(ctx context.Context, req *pb.TimesRequest, rsp *pb.TimesR
 	}
 
 	// set time zone
-	zone := time.FixedZone(resp.Abbreviation, 0)
+	zone, _ := time.LoadLocation(resp.Timezone)
 	date = date.In(zone)
 
 	rsp.Location = req.Location
