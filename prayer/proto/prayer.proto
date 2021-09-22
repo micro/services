@@ -9,7 +9,7 @@ service Prayer {
 }
 
 message PrayerTime {
-	// date of the time
+	// date for prayer times in YYYY-MM-DD format
 	string date = 1;
 	// fajr time
 	string fajr = 2;
@@ -28,22 +28,28 @@ message PrayerTime {
 message TimesRequest {
 	// optional date in YYYY-MM-DD format, otherwise uses today
 	string date = 1;
+	// number of days to request times for
+	int32 days = 2;
 	// location to retrieve prayer times for. 
 	// this can be a specific address, city, etc
-	string location = 2;
+	string location = 3;
 	// optional latitude used in place of location
-	double latitude = 3;
+	double latitude = 4;
 	// optional longitude used in place of location
-	double longitude = 4;
+	double longitude = 5;
 }
 
 message TimesResponse {
+	// date of request
+	string date = 1;
+	// number of days
+	int32 days = 2;
 	// location for the request
-	string location = 2;
+	string location = 3;
 	// latitude of location
-	double latitude = 3;
+	double latitude = 4;
 	// longitude of location
-	double longitude = 4;
+	double longitude = 5;
 	// prayer times for the given location
-	repeated PrayerTime times = 5;
+	repeated PrayerTime times = 6;
 }

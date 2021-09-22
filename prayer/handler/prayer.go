@@ -71,34 +71,45 @@ func (p *Prayer) Times(ctx context.Context, req *pb.TimesRequest, rsp *pb.TimesR
 
 	// if date is specified then change it
 	if len(req.Date) > 0 {
-		d, err := time.Parse("20060102", req.Date)
+		d, err := time.Parse("2006-01-02", req.Date)
 		if err == nil {
 			date = d
 		}
+	}
+
+	if req.Days == 0 {
+		req.Days = 1
 	}
 
 	// set time zone
 	zone, _ := time.LoadLocation(resp.Timezone)
 	date = date.In(zone)
 
+	rsp.Date = date.Format("2006-01-02")
+	rsp.Days = req.Days
 	rsp.Location = req.Location
 	rsp.Latitude = latitude
 	rsp.Longitude = longitude
 
-	times, err := prayer.Calculate(cfg, date)
-	if err != nil {
-		return errors.InternalServerError("prayer.times", "failed to retrieve prayer times")
-	}
+	for _, i := 0; i < req.Days; i++ {
+		times, err := prayer.Calculate(cfg, date)
+		if err != nil {
+			return errors.InternalServerError("prayer.times", "failed to retrieve prayer times")
+		}
 
-	rsp.Times = append(rsp.Times, &pb.PrayerTime{
-		Date:    date.Format("2006-01-02"),
-		Fajr:    times.Fajr.Format("15:04"),
-		Sunrise: times.Sunrise.Format("15:04"),
-		Zuhr:    times.Zuhr.Format("15:04"),
-		Asr:     times.Asr.Format("15:04"),
-		Maghrib: times.Maghrib.Format("15:04"),
-		Isha:    times.Isha.Format("15:04"),
-	})
+		rsp.Times = append(rsp.Times, &pb.PrayerTime{
+			Date:    date.Format("2006-01-02"),
+			Fajr:    times.Fajr.Format("15:04"),
+			Sunrise: times.Sunrise.Format("15:04"),
+			Zuhr:    times.Zuhr.Format("15:04"),
+			Asr:     times.Asr.Format("15:04"),
+			Maghrib: times.Maghrib.Format("15:04"),
+			Isha:    times.Isha.Format("15:04"),
+		})
+
+		// add a day
+		date = date.AddDate(0, 0, 1)
+	}
 
 	return nil
 }
