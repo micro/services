@@ -17,6 +17,7 @@ import * as ip from "./ip";
 import * as location from "./location";
 import * as otp from "./otp";
 import * as postcode from "./postcode";
+import * as prayer from "./prayer";
 import * as qr from "./qr";
 import * as quran from "./quran";
 import * as routing from "./routing";
@@ -54,6 +55,7 @@ export class Client {
     this.locationService = new location.LocationService(token);
     this.otpService = new otp.OtpService(token);
     this.postcodeService = new postcode.PostcodeService(token);
+    this.prayerService = new prayer.PrayerService(token);
     this.qrService = new qr.QrService(token);
     this.quranService = new quran.QuranService(token);
     this.routingService = new routing.RoutingService(token);
@@ -90,6 +92,7 @@ export class Client {
   locationService: location.LocationService;
   otpService: otp.OtpService;
   postcodeService: postcode.PostcodeService;
+  prayerService: prayer.PrayerService;
   qrService: qr.QrService;
   quranService: quran.QuranService;
   routingService: routing.RoutingService;
