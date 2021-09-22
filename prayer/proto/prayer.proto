@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package prayer;
+
+option go_package = "./proto;prayer";
+
+service Prayer {
+	rpc Times(TimesRequest) returns (TimesResponse) {}
+}
+
+message PrayerTime {
+	// date for prayer times in YYYY-MM-DD format
+	string date = 1;
+	// fajr time
+	string fajr = 2;
+	// time of sunrise
+	string sunrise = 3;
+	// zuhr time
+	string zuhr = 4;
+	// asr time
+	string asr = 5;
+	// maghrib time
+	string maghrib = 6;
+	// isha time
+	string isha = 7;
+}
+
+message TimesRequest {
+	// optional date in YYYY-MM-DD format, otherwise uses today
+	string date = 1;
+	// number of days to request times for
+	int32 days = 2;
+	// location to retrieve prayer times for. 
+	// this can be a specific address, city, etc
+	string location = 3;
+	// optional latitude used in place of location
+	double latitude = 4;
+	// optional longitude used in place of location
+	double longitude = 5;
+}
+
+message TimesResponse {
+	// date of request
+	string date = 1;
+	// number of days
+	int32 days = 2;
+	// location for the request
+	string location = 3;
+	// latitude of location
+	double latitude = 4;
+	// longitude of location
+	double longitude = 5;
+	// prayer times for the given location
+	repeated PrayerTime times = 6;
+}

@@ -20,6 +20,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.1
 	github.com/google/uuid v1.1.2
+	github.com/hablullah/go-prayer v1.0.0
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
 	github.com/hashicorp/golang-lru v0.5.3
 	github.com/jackc/pgx/v4 v4.10.1
