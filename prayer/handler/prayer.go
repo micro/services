@@ -2,22 +2,26 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/hablullah/go-prayer"
 	"github.com/micro/micro/v3/service/client"
-	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/errors"
-	pb "github.com/micro/services/prayer/proto"
 	geocode "github.com/micro/services/geocoding/proto"
+	pb "github.com/micro/services/prayer/proto"
 	timepb "github.com/micro/services/time/proto"
 )
 
-type Prayer struct{}
+type Prayer struct{
+	Geocode geocode.GeocodingService
+	Time timepb.TimeService
+}
 
 func New(c client.Client) *Prayer {
 	return &Prayer{
 		Geocode: geocode.NewGeocodingService("geocoding", c),
-		Time: timepb.NewTimeService("time", c),
+		Time:    timepb.NewTimeService("time", c),
 	}
 }
 
@@ -75,7 +79,7 @@ func (p *Prayer) Times(ctx context.Context, req *pb.TimesRequest, rsp *pb.TimesR
 
 	// set time zone
 	zone := time.FixedZone(resp.Abbreviation, 0)
-	date = date.In(loc)
+	date = date.In(zone)
 
 	rsp.Location = req.Location
 	rsp.Latitude = latitude
@@ -87,15 +91,14 @@ func (p *Prayer) Times(ctx context.Context, req *pb.TimesRequest, rsp *pb.TimesR
 	}
 
 	rsp.Times = append(rsp.Times, &pb.PrayerTime{
-		Date: date.Format("2006-01-02"),
-		Fajr: times.Fajr.Format("15:04"),
+		Date:    date.Format("2006-01-02"),
+		Fajr:    times.Fajr.Format("15:04"),
 		Sunrise: times.Sunrise.Format("15:04"),
-		Zuhr: times.Zuhr.Format("15:04"),
-		Asr: times.Asr.Format("15:04"),
+		Zuhr:    times.Zuhr.Format("15:04"),
+		Asr:     times.Asr.Format("15:04"),
 		Maghrib: times.Maghrib.Format("15:04"),
-		Isha: times.Isha.Format("15:04"),
+		Isha:    times.Isha.Format("15:04"),
 	})
 
 	return nil
 }
-

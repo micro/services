@@ -13,14 +13,16 @@ message PrayerTime {
 	string date = 1;
 	// fajr time
 	string fajr = 2;
+	// time of sunrise
+	string sunrise = 3;
 	// zuhr time
-	string zuhr = 3;
+	string zuhr = 4;
 	// asr time
-	string asr = 4;
+	string asr = 5;
 	// maghrib time
-	string maghrib = 5;
+	string maghrib = 6;
 	// isha time
-	string isha = 6;
+	string isha = 7;
 }
 
 message TimesRequest {
