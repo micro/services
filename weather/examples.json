@@ -33,7 +33,7 @@
   ],
   "forecast": [
     {
-      "title": "Forecase weather",
+      "title": "Forecast weather",
       "run_check": false,
       "request": {
         "days": 2,
