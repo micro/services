@@ -91,7 +91,7 @@ func (p *Prayer) Times(ctx context.Context, req *pb.TimesRequest, rsp *pb.TimesR
 	rsp.Latitude = latitude
 	rsp.Longitude = longitude
 
-	for _, i := 0; i < req.Days; i++ {
+	for i := 0; i < req.Days; i++ {
 		times, err := prayer.Calculate(cfg, date)
 		if err != nil {
 			return errors.InternalServerError("prayer.times", "failed to retrieve prayer times")
