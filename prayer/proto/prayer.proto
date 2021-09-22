@@ -25,6 +25,7 @@ message PrayerTime {
 	string isha = 7;
 }
 
+// Get the prayer (salah) times for a location on a given date
 message TimesRequest {
 	// optional date in YYYY-MM-DD format, otherwise uses today
 	string date = 1;
