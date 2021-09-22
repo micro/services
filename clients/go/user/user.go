@@ -59,7 +59,7 @@ func (t *UserService) ReadSession(request *ReadSessionRequest) (*ReadSessionResp
 // The verification link will be injected in to the email as a template variable, $micro_verification_link.
 // Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
 // The variable will be replaced with an actual url that will look similar to this:
-// 'https://user.m3o.com/user/verify?token=a-verification-token&rediretUrl=your-redir-url'
+// 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
 func (t *UserService) SendVerificationEmail(request *SendVerificationEmailRequest) (*SendVerificationEmailResponse, error) {
 	rsp := &SendVerificationEmailResponse{}
 	return rsp, t.client.Call("user", "SendVerificationEmail", request, rsp)

@@ -87,7 +87,7 @@ type Result struct {
 	// The associated arabic text
 	Text string `json:"text"`
 	// The related translations to the text
-	Translations []Translation `json:"translations"`
+	Translations []Interpretation `json:"translations"`
 	// The unique verse id across the Quran
 	VerseId int32 `json:"verseId"`
 	// The verse key e.g 1:1
