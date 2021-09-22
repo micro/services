@@ -17,7 +17,7 @@ message Chapter {
 	// The number of verses in the chapter
 	int32 verses = 2;
 	// The simple name of the chapter
-        string name = 3;
+	string name = 3;
 	// The arabic name of the chapter
 	string arabic_name = 4;
 	// The complex name of the chapter

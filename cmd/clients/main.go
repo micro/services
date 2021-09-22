@@ -201,7 +201,7 @@ func main() {
 			cmd.Dir = filepath.Join(tsPath, serviceName)
 			outp, err = cmd.CombinedOutput()
 			if err != nil {
-				fmt.Println(fmt.Sprintf("Problem formatting '%v' client: %v", serviceName, string(outp)))
+				fmt.Println(fmt.Sprintf("Problem formatting '%v' client: %v %s", serviceName, string(outp), err.Error()))
 				os.Exit(1)
 			}
 
@@ -595,8 +595,9 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 	detectType := func(currentType string, properties map[string]*openapi3.SchemaRef) (string, bool) {
 		index := map[string]bool{}
 		for key, prop := range properties {
-			index[key+prop.Value.Title] = true
+			index[key+prop.Value.Title+prop.Value.Description] = true
 		}
+
 		for k, schema := range schemas {
 			// we don't want to return the type matching itself
 			if strings.ToLower(k) == currentType {
@@ -610,8 +611,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 			}
 			found := false
 			for key, prop := range schema.Value.Properties {
-
-				_, ok := index[key+prop.Value.Title]
+				_, ok := index[key+prop.Value.Title+prop.Value.Description]
 				found = ok
 				if !ok {
 					break

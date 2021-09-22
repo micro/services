@@ -87,7 +87,7 @@ export interface Result {
   // The associated arabic text
   text?: string;
   // The related translations to the text
-  translations?: Interpretation[];
+  translations?: Translation[];
   // The unique verse id across the Quran
   verseId?: number;
   // The verse key e.g 1:1
@@ -149,7 +149,7 @@ export interface Verse {
   // The unique id of the verse in the whole book
   id?: number;
   // The interpretations of the verse
-  interpretations?: Translation[];
+  interpretations?: Interpretation[];
   // The key of this verse (chapter:verse) e.g 1:1
   key?: string;
   // The verse number in this chapter
@@ -161,7 +161,7 @@ export interface Verse {
   // The basic translation of the verse
   translatedText?: string;
   // The alternative translations for the verse
-  translations?: Interpretation[];
+  translations?: Translation[];
   // The phonetic transliteration from arabic
   transliteration?: string;
   // The individual words within the verse (Ayah)
