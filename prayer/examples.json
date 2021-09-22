@@ -1,0 +1,27 @@
+{
+    "times": [{
+        "title": "Prayer times",
+        "run_check": false,
+        "request": {
+          "location": "london"
+        },
+        "response": {
+	  "date": "2021-09-22",
+	  "days": 1,
+	  "location": "london",
+	  "latitude": 51.5073509,
+	  "longitude": -0.1277583,
+	  "times": [
+	    {
+	      "date": "2021-09-22",
+	      "fajr": "04:38",
+	      "sunrise": "06:47",
+	      "zuhr": "12:53",
+	      "asr": "16:11",
+	      "maghrib": "18:59",
+	      "isha": "20:52"
+	    }
+	  ]
+        }
+    }]
+}
