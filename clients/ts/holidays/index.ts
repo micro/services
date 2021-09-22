@@ -6,7 +6,7 @@ export class HolidaysService {
   constructor(token: string) {
     this.client = new m3o.Client({ token: token });
   }
-  //
+  // Get the list of countries that are supported by this API
   countries(request: CountriesRequest): Promise<CountriesResponse> {
     return this.client.call(
       "holidays",
@@ -14,7 +14,7 @@ export class HolidaysService {
       request
     ) as Promise<CountriesResponse>;
   }
-  //
+  // List the holiday dates for a given country and year
   list(request: ListRequest): Promise<ListResponse> {
     return this.client.call(
       "holidays",

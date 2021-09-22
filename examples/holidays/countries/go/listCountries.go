@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-//
+// Get the list of countries that are supported by this API
 func ListCountries() {
 	holidaysService := holidays.NewHolidaysService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := holidaysService.Countries(&holidays.CountriesRequest{})
