@@ -24,7 +24,7 @@ func (t *QrService) Generate(request *GenerateRequest) (*GenerateResponse, error
 
 type GenerateRequest struct {
 	// the size (height and width) in pixels of the generated QR code. Defaults to 256
-	Size int64 `json:"size"`
+	Size int64 `json:"size,string"`
 	// the text to encode as a QR code (URL, phone number, email, etc)
 	Text string `json:"text"`
 }

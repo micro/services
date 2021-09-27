@@ -43,7 +43,7 @@ type NowResponse struct {
 	// the timezone as BST
 	Timezone string `json:"timezone"`
 	// the unix timestamp
-	Unix int64 `json:"unix"`
+	Unix int64 `json:"unix,string"`
 }
 
 type ZoneRequest struct {

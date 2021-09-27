@@ -62,12 +62,12 @@ type ShortenResponse struct {
 }
 
 type URLPair struct {
-	Created        int64  `json:"created"`
+	Created        int64  `json:"created,string"`
 	DestinationUrl string `json:"destinationUrl"`
 	// HitCount keeps track many times the short URL has been resolved.
 	// Hitcount only gets saved to disk (database) after every 10th hit, so
 	// its not intended to be 100% accurate, more like an almost correct estimate.
-	HitCount int64  `json:"hitCount"`
+	HitCount int64  `json:"hitCount,string"`
 	Owner    string `json:"owner"`
 	ShortUrl string `json:"shortUrl"`
 }

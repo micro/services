@@ -30,11 +30,11 @@ func (t *OtpService) Validate(request *ValidateRequest) (*ValidateResponse, erro
 
 type GenerateRequest struct {
 	// expiration in seconds (default: 60)
-	Expiry int64 `json:"expiry"`
+	Expiry int64 `json:"expiry,string"`
 	// unique id, email or user to generate an OTP for
 	Id string `json:"id"`
 	// number of characters (default: 6)
-	Size int64 `json:"size"`
+	Size int64 `json:"size,string"`
 }
 
 type GenerateResponse struct {
