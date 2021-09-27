@@ -2,10 +2,13 @@ package handler
 
 import (
 	"context"
+	"io/ioutil"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,6 +35,7 @@ type Evchargers struct {
 
 type conf struct {
 	MongoHost string `json:"mongo_host"`
+	CaCrt     string `json:"ca_crt"`
 }
 
 func New() *Evchargers {
@@ -46,12 +50,18 @@ func New() *Evchargers {
 	if len(conf.MongoHost) == 0 {
 		log.Fatalf("Missing mongodb host")
 	}
-
+	if len(conf.CaCrt) > 0 {
+		// write the cert to file
+		if err := ioutil.WriteFile(os.TempDir()+"/mongo.crt", []byte(conf.CaCrt), 0644); err != nil {
+			log.Fatalf("Failed to write crt file for mongodb %s", err)
+		}
+	}
+	opts := []*options.ClientOptions{options.Client().ApplyURI(conf.MongoHost)}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(conf.MongoHost))
+	client, err := mongo.Connect(ctx, opts...)
 	if err != nil {
-		log.Fatalf("Failed to connect to mongo db")
+		log.Fatalf("Failed to connect to mongo db %s", err)
 	}
 	ctx2, cancel2 := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel2()
