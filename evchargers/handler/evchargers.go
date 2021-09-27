@@ -72,13 +72,13 @@ func New() *Evchargers {
 	// make sure the indexes are set up
 	_, err = client.Database("ocm").Collection("poi").Indexes().CreateMany(context.Background(), []mongo.IndexModel{
 		{ // bounding box queries
-			Keys: bson.D{{"SpatialPosition.coordinates", 1}},
+			Keys: bson.D{{"SpatialPosition.coordinates", "2dsphere"}},
 			Options: &options.IndexOptions{
 				SphereVersion: &sphereIndexVersion,
 			},
 		},
 		{ // distance queries
-			Keys: bson.D{{"SpatialPosition", 1}},
+			Keys: bson.D{{"SpatialPosition", "2dsphere"}},
 			Options: &options.IndexOptions{
 				SphereVersion: &sphereIndexVersion,
 			},
