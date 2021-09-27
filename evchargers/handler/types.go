@@ -18,9 +18,24 @@ type Poi struct {
 }
 
 type Address struct {
-	Title     string  `bson:"Title"`
-	Latitude  float64 `bson:"Latitude"`
-	Longitude float64 `bson:"Longitude"`
+	Title           string  `bson:"Title"`
+	Latitude        float64 `bson:"Latitude"`
+	Longitude       float64 `bson:"Longitude"`
+	AddressLine1    string  `bson:"AddressLine1"`
+	AddressLine2    string  `bson:"AddressLine2"`
+	Town            string  `bson:"Town"`
+	StateOrProvince string  `bson:"StateOrProvince"`
+	AccessComments  string  `bson:"AccessComments"`
+	Postcode        string  `bson:"Postcode"`
+	CountryID       int64   `bson:"CountryID"`
+	Country         Country `bson:"Country"`
+}
+
+type Country struct {
+	ID            int64  `bson:"ID"`
+	Title         string `bson:"Title"`
+	ISOCode       string `bson:"ISOCode"`
+	ContinentCode string `bson:"ContinentCode"`
 }
 
 type Connection struct {

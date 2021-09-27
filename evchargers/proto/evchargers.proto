@@ -30,17 +30,11 @@ message SearchRequest {
 	repeated string levels = 8;
 	// TODO data not available for many chargers, still do this? Minimum power in KW
 	int64 min_power = 9;
-	// Status of the charge point
-	repeated string statuses = 10;
 	// Usage of the charge point (is it public, membership required, etc)
 	repeated string usage_types = 11;
-	// IDs of the data provider
-	repeated string data_providers = 12;
 
 	// TODO https://openchargemap.org/site/develop/api#POI
-	// comments - include comments ? we're not supporting adding comments...
-	// verbose -
-	// compact
+	// verbose / compact to only return IDs for ref data
 	// polygon
 	// polyline
 }
@@ -52,8 +46,8 @@ message Coordinates {
 
 // Box to search (top left and bottom right coordinates)
 message BoundingBox {
-	Coordinates top_left = 1;
-	Coordinates bottom_right = 2;
+	Coordinates bottom_left = 1;
+	Coordinates top_right = 2;
 }
 
 message SearchResponse {
@@ -70,7 +64,6 @@ message Poi {
 	int64 num_points = 7;
 	string cost = 8;
 
-	DataProvider data_provider = 9;
 	Operator operator = 10;
 	UsageType usage_type = 11;
 
@@ -79,6 +72,14 @@ message Poi {
 message Address {
 	Coordinates location = 1;
 	string title = 2;
+	string address_line_1 = 3;
+	string address_line_2 = 4;
+	string town = 5;
+	string state_or_province = 6;
+	string access_comments = 7;
+	string postcode = 8;
+	string country_id = 9;
+	Country country = 10;
 }
 
 message Connection {

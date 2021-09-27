@@ -128,6 +128,31 @@ func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchReque
 			"$maxDistance": distance,
 		},
 		}})
+	} else if request.Box != nil && request.Box.BottomLeft != nil {
+		filters = append(filters, bson.E{"SpatialPosition.coordinates", bson.M{"$geoWithin": bson.M{"$box": bson.A{
+			[]float32{request.Box.BottomLeft.Longitude, request.Box.BottomLeft.Latitude},
+			[]float32{request.Box.TopRight.Longitude, request.Box.TopRight.Latitude},
+		}}}})
+	}
+
+	if len(request.CountryCode) > 0 {
+
+	}
+
+	if len(request.Levels) > 0 {
+
+	}
+
+	if request.MinPower > 0 {
+
+	}
+
+	if len(request.Operators) > 0 {
+
+	}
+
+	if len(request.UsageTypes) > 0 {
+
 	}
 
 	maxLim := int64(100)
@@ -159,20 +184,36 @@ func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchReque
 					Latitude:  float32(result.Address.Latitude),
 					Longitude: float32(result.Address.Longitude),
 				},
-				Title: result.Address.Title,
+				Title:           result.Address.Title,
+				AddressLine_1:   result.Address.AddressLine1,
+				AddressLine_2:   result.Address.AddressLine2,
+				Town:            result.Address.Town,
+				StateOrProvince: result.Address.StateOrProvince,
+				AccessComments:  result.Address.AccessComments,
+				Postcode:        result.Address.Postcode,
+				CountryId:       strconv.Itoa(int(result.Address.CountryID)),
 			},
 			Connections: marshalConnections(result.Connections),
 			NumPoints:   result.NumberOfPoints,
 			Cost:        result.Cost,
 		}
 		if true { // verbose
-			poi.DataProvider = marshalDataProvider(result.DataProvider)
 			poi.Operator = marshalOperator(result.OperatorInfo)
 			poi.UsageType = marshalUsageType(result.UsageType)
+			poi.Address.Country = marshalCountry(result.Address.Country)
 		}
 		response.Pois = append(response.Pois, poi)
 	}
 	return nil
+}
+
+func marshalCountry(in Country) *evchargers.Country {
+	return &evchargers.Country{
+		Id:            strconv.Itoa(int(in.ID)),
+		Title:         in.Title,
+		IsoCode:       in.ISOCode,
+		ContinentCode: in.ContinentCode,
+	}
 }
 
 func marshalConnections(in []Connection) []*evchargers.Connection {
