@@ -1,0 +1,199 @@
+syntax = "proto3";
+
+package evchargers;
+
+option go_package = "./proto;evchargers";
+
+service Evchargers {
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc ReferenceData(ReferenceDataRequest) returns (ReferenceDataResponse) {}
+}
+
+
+// Search by giving a coordinate and a max distance or bounding box and optional filters
+message SearchRequest {
+	// Coordinates from which to begin search
+	Coordinates location = 1;
+	// Search distance from point in metres, defaults to 5000m
+	int64 distance = 2;
+	// Bounding box to search within (top left and bottom right coordinates)
+	BoundingBox box = 3;
+	// Maximum number of results to return, defaults to 100
+	int64 max_results = 4;
+	// TODO is this useful? GB, US etc. Single ISO Country Code.
+	string country_code = 5;
+	// IDs of the the EV charger operator
+	repeated string operators = 6;
+	// IDs of the connection type
+	repeated string connection_types = 7;
+	// Supported charging levels
+	repeated string levels = 8;
+	// TODO data not available for many chargers, still do this? Minimum power in KW
+	int64 min_power = 9;
+	// Status of the charge point
+	repeated string statuses = 10;
+	// Usage of the charge point (is it public, membership required, etc)
+	repeated string usage_types = 11;
+	// IDs of the data provider
+	repeated string data_providers = 12;
+
+	// TODO https://openchargemap.org/site/develop/api#POI
+	// comments - include comments ? we're not supporting adding comments...
+	// verbose -
+	// compact
+	// polygon
+	// polyline
+}
+
+message Coordinates {
+	float latitude = 1;
+	float longitude = 2;
+}
+
+// Box to search (top left and bottom right coordinates)
+message BoundingBox {
+	Coordinates top_left = 1;
+	Coordinates bottom_right = 2;
+}
+
+message SearchResponse {
+	repeated Poi pois = 1;
+}
+
+message Poi {
+	string id = 1;
+	string data_provider_id = 2;
+	string operator_id = 3;
+	string usage_type_id = 4;
+	Address address = 5;
+	repeated Connection connections = 6;
+	int64 num_points = 7;
+	string cost = 8;
+
+	DataProvider data_provider = 9;
+	Operator operator = 10;
+	UsageType usage_type = 11;
+
+}
+
+message Address {
+	Coordinates location = 1;
+	string title = 2;
+}
+
+message Connection {
+	string connection_type_id = 1;
+	string reference = 2;
+	string status = 3;
+	string level = 4;
+	float amps = 5;
+	float voltage = 6;
+	float power = 7;
+	string current = 8;
+
+	ConnectionType connection_type = 9;
+}
+
+message ReferenceDataRequest {}
+
+message ReferenceDataResponse {
+	repeated ChargerType charger_types = 1;
+	repeated ConnectionType connection_types = 2;
+	repeated CurrentType current_types = 3;
+	repeated Country countries = 4;
+	repeated DataProvider data_providers = 5;
+	repeated Operator operators = 6;
+	repeated StatusType status_types = 7;
+	repeated SubmissionStatusType submission_status_types = 8;
+	repeated UsageType usage_types = 9;
+	repeated UserCommentType user_comment_types = 10;
+	repeated CheckInStatusType check_in_status_types = 11;
+}
+
+message ChargerType {
+	string id = 1;
+	string title = 2;
+	string comments = 3;
+	bool is_fast_charge_capable = 4;
+}
+
+message ConnectionType {
+	string id = 1;
+	string title = 2;
+	string formal_name = 3;
+	bool is_discontinued = 4;
+	bool is_obsolete = 5;
+}
+
+message CurrentType {
+	string id = 1;
+	string title = 2;
+	string description = 3;
+}
+
+message Country {
+	string id = 1;
+	string title = 2;
+	string iso_code = 3;
+	string continent_code = 4;
+}
+
+message DataProvider {
+	string id = 1;
+	string title = 2;
+	string website = 3;
+	string comments = 4;
+	DataProviderStatusType data_provider_status_type = 5;
+	string license = 6;
+}
+
+message DataProviderStatusType {
+	string id = 1;
+	string title = 2;
+	bool is_provider_enabled = 3;
+}
+
+message Operator {
+	string id = 1;
+	string title = 2;
+	string website = 3;
+	string comments = 4;
+	bool is_private_individual = 5;
+	string contact_email = 6;
+	string phone_primary = 7;
+	string phone_secondary = 8;
+	string fault_report_email = 9;
+}
+
+message StatusType {
+	string id = 1;
+	string title = 2;
+	bool is_operational = 3;
+}
+
+message SubmissionStatusType {
+	string id = 1;
+	string title = 2;
+	bool is_live = 3;
+}
+
+message UsageType {
+	string id = 1;
+	string title = 2;
+	bool is_pay_at_location = 3;
+	bool is_membership_required = 4;
+	bool is_access_key_required = 5;
+}
+
+message UserCommentType {
+	string id = 1;
+	string title = 2;
+
+}
+
+message CheckInStatusType {
+	string id = 1;
+	string title = 2;
+	bool is_positive = 3;
+	bool is_automated = 4;
+}
