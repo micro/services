@@ -66,7 +66,7 @@ func New() *Evchargers {
 	ctx2, cancel2 := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel2()
 	if err := client.Ping(ctx2, nil); err != nil {
-		log.Fatalf("Failed to ping mongo db")
+		log.Fatalf("Failed to ping mongo db %s", err)
 	}
 
 	// make sure the indexes are set up
