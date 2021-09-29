@@ -1,0 +1,93 @@
+
+{
+    "create": [{
+        "title": "Create a note",
+        "description": "Create a simple text based note",
+        "run_check": true,
+        "request": {
+            "title": "New Note",
+            "text": "This is my note"
+        },
+        "response": {
+            "note": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:33:03+01:00",
+                "title": "New Note",
+                "text": "This is my note"
+            }
+        }
+    }],
+    "read": [{
+        "title": "Read a note",
+        "description": "Read a note by its ID",
+        "run_check": true,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "note": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:33:03+01:00",
+                "title": "New Note",
+                "text": "This is my note"
+            }
+        }
+    }],
+    "list": [{
+        "title": "List all notes",
+        "description": "List all your available notes",
+        "run_check": true,
+        "request": {},
+        "response": {
+            "notes": [
+                {
+                        "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                        "created": "2021-09-29T13:33:03+01:00",
+                        "updated": "2021-09-29T13:33:03+01:00",
+                        "title": "New Note",
+                        "text": "This is my note"
+                }
+            ]
+        }
+    }],
+    "update": [{
+        "title": "Update a Note",
+        "description": "Update the note title and text",
+        "run_check": true,
+        "request": {
+	    "note": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "title": "Update Note",
+                "text": "Updated note text"
+            }
+        },
+        "response": {
+            "note": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "title": "Update Note",
+                "text": "Updated note text"
+            }
+        }
+    }],
+    "delete": [{
+        "title": "Delete a Note",
+        "description": "Delete a note by id",
+        "run_check": true,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "note": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "title": "Update Note",
+                "text": "Updated note text"
+            }
+        }
+    }]
+}
