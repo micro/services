@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package notes;
+
+option go_package = "./proto;notes";
+
+service Notes {
+	rpc List(ListRequest) returns (ListResponse);
+	rpc Create(CreateRequest) returns (CreateResponse);
+	rpc Read(ReadRequest) returns (ReadResponse);
+	rpc Delete(DeleteRequest) returns (DeleteResponse);
+	rpc Update(UpdateRequest) returns (UpdateResponse);
+	rpc Subscribe(SubscribeRequest) returns (stream Event);
+}
+
+message Note {
+	// unique id for the note, generated if not specified
+	string id = 1;
+	// time at which the note was created
+	string created = 2;
+	// time at which the note was updated
+	string updated = 3;
+	// title of the note
+	string title = 4;
+	// text within the note
+	string text = 5;
+}
+
+// Create a new note
+message CreateRequest {
+	// note title
+	string title = 1;
+	// note text
+	string text = 2;
+}
+
+message CreateResponse {
+	// The created note
+	Note note = 1;
+}
+
+// Read a note
+message ReadRequest {
+	// the note id
+	string id = 1;
+}
+
+message ReadResponse {
+	// The note
+	Note note = 1;
+}
+
+// Update a note
+message UpdateRequest {
+	Note note = 1;
+}
+
+message UpdateResponse {
+	Note note = 1;
+}
+
+// Delete a note
+message DeleteRequest {
+	// specify the id of the note
+	string id = 1;
+}
+
+message DeleteResponse {
+	Note note = 1;
+}
+
+// List all the notes
+message ListRequest {}
+
+message ListResponse {
+	// the list of notes
+	repeated Note notes = 1;
+}
+
+// Specify the note to events
+message SubscribeRequest {
+	// optionally specify a note id
+	string id = 1;
+}
+
+message Event {
+	// the event which occured; created, deleted, updated
+	string type = 1;
+	// the note which the operation occured on
+	Note note = 2;
+}
