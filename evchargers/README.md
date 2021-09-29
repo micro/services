@@ -1,23 +1,11 @@
+Find electric vehicle chargers wherever you go 
+
 # Evchargers Service
 
-This is the Evchargers service
+This is the EV chargers API. Search for EV chargers using 
+- location and distance
+- bounding box
 
-Generated with
+and filter the results based on connection type, operator, and more.
 
-```
-micro new evchargers
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+Powered by https://openchargemap.org/

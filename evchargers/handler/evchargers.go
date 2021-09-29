@@ -135,24 +135,31 @@ func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchReque
 		}}}})
 	}
 
-	if len(request.CountryCode) > 0 {
-
+	if len(request.CountryId) > 0 {
+		i, _ := strconv.Atoi(request.CountryId)
+		filters = append(filters, bson.E{"AddressInfo.CountryID", i})
 	}
 
 	if len(request.Levels) > 0 {
-
+		vals := bson.A{}
+		vals = append(vals, toInt(request.Levels)...)
+		filters = append(filters, bson.E{"Connections.LevelID", bson.D{{"$in", vals}}})
 	}
 
 	if request.MinPower > 0 {
-
+		filters = append(filters, bson.E{"Connections.PowerKW", bson.D{{"$gte", request.MinPower}}})
 	}
 
 	if len(request.Operators) > 0 {
-
+		vals := bson.A{}
+		vals = append(vals, toInt(request.Operators)...)
+		filters = append(filters, bson.E{"OperatorID", bson.D{{"$in", vals}}})
 	}
 
 	if len(request.UsageTypes) > 0 {
-
+		vals := bson.A{}
+		vals = append(vals, toInt(request.UsageTypes)...)
+		filters = append(filters, bson.E{"UsageTypeID", bson.D{{"$in", vals}}})
 	}
 
 	maxLim := int64(100)
@@ -229,7 +236,6 @@ func marshalConnections(in []Connection) []*evchargers.Connection {
 				IsObsolete:     v.Type.IsObsolete,
 			},
 			Reference: v.Reference,
-			Status:    strconv.Itoa(int(v.StatusTypeID)),
 			Level:     strconv.Itoa(int(v.LevelID)),
 			Amps:      float32(v.Amps),
 			Voltage:   float32(v.Voltage),
