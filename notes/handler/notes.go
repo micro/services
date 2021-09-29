@@ -198,8 +198,8 @@ func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream 
 		}
 
 		// send back the event to the client
-		if err := stream.Send(&pb.Event{
-			Type: ev["type"].(string),
+		if err := stream.Send(&pb.SubscribeResponse{
+			Event: ev["type"].(string),
 			Note: note,
 		}); err != nil {
 			return nil

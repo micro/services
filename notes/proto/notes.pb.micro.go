@@ -129,7 +129,7 @@ type Notes_SubscribeService interface {
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
-	Recv() (*Event, error)
+	Recv() (*SubscribeResponse, error)
 }
 
 type notesServiceSubscribe struct {
@@ -152,8 +152,8 @@ func (x *notesServiceSubscribe) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *notesServiceSubscribe) Recv() (*Event, error) {
-	m := new(Event)
+func (x *notesServiceSubscribe) Recv() (*SubscribeResponse, error) {
+	m := new(SubscribeResponse)
 	err := x.stream.Recv(m)
 	if err != nil {
 		return nil, err
@@ -225,7 +225,7 @@ type Notes_SubscribeStream interface {
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
-	Send(*Event) error
+	Send(*SubscribeResponse) error
 }
 
 type notesSubscribeStream struct {
@@ -248,6 +248,6 @@ func (x *notesSubscribeStream) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *notesSubscribeStream) Send(m *Event) error {
+func (x *notesSubscribeStream) Send(m *SubscribeResponse) error {
 	return x.stream.Send(m)
 }
