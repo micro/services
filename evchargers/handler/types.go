@@ -1,119 +1,125 @@
 package handler
 
 type Poi struct {
-	ID              int64        `bson:"ID"`
-	DataProviderID  int64        `bson:"DataProviderID"`
-	DataProvider    DataProvider `bson:"DataProvider"`
-	OperatorID      int64        `bson:"OperatorID"`
-	OperatorInfo    Operator     `bson:"OperatorInfo"`
-	UsageTypeID     int64        `bson:"UsageTypeID"`
-	UsageType       UsageType    `bson:"UsageType"`
-	Cost            string       `bson:"UsageCost"`
-	Address         Address      `bson:"AddressInfo"`
-	Connections     []Connection `bson:"Connections"`
-	NumberOfPoints  int64        `bson:"NumberOfPoints"`
-	GeneralComments string       `bson:"GeneralComments"`
-	StatusTypeID    int64        `bson:"StatusTypeID"`
-	StatusType      StatusType   `bson:"StatusType"`
+	ID              int32        `bson:"ID" json:"ID"`
+	DataProviderID  int32        `bson:"DataProviderID" json:"DataProviderID"`
+	DataProvider    DataProvider `bson:"DataProvider" json:"DataProvider"`
+	OperatorID      int32        `bson:"OperatorID" json:"OperatorID"`
+	OperatorInfo    Operator     `bson:"OperatorInfo" json:"OperatorInfo"`
+	UsageTypeID     int32        `bson:"UsageTypeID" json:"UsageTypeID"`
+	UsageType       UsageType    `bson:"UsageType" json:"UsageType"`
+	Cost            string       `bson:"UsageCost" json:"UsageCost"`
+	Address         Address      `bson:"AddressInfo" json:"AddressInfo"`
+	Connections     []Connection `bson:"Connections" json:"Connections"`
+	NumberOfPoints  int32        `bson:"NumberOfPoints" json:"NumberOfPoints"`
+	GeneralComments string       `bson:"GeneralComments" json:"GeneralComments"`
+	StatusTypeID    int32        `bson:"StatusTypeID" json:"StatusTypeID"`
+	StatusType      StatusType   `bson:"StatusType" json:"StatusType"`
+	SpatialPosition Position     `bson:"SpatialPosition" json:"SpatialPosition"`
+}
+
+type Position struct {
+	Type        string    `bson:"type" json:"type"`
+	Coordinates []float64 `bson:"coordinates" json:"coordinates"`
 }
 
 type Address struct {
-	Title           string  `bson:"Title"`
-	Latitude        float64 `bson:"Latitude"`
-	Longitude       float64 `bson:"Longitude"`
-	AddressLine1    string  `bson:"AddressLine1"`
-	AddressLine2    string  `bson:"AddressLine2"`
-	Town            string  `bson:"Town"`
-	StateOrProvince string  `bson:"StateOrProvince"`
-	AccessComments  string  `bson:"AccessComments"`
-	Postcode        string  `bson:"Postcode"`
-	CountryID       int64   `bson:"CountryID"`
-	Country         Country `bson:"Country"`
+	Title           string  `bson:"Title" json:"Title"`
+	Latitude        float64 `bson:"Latitude" json:"Latitude"`
+	Longitude       float64 `bson:"Longitude" json:"Longitude"`
+	AddressLine1    string  `bson:"AddressLine1" json:"AddressLine1"`
+	AddressLine2    string  `bson:"AddressLine2" json:"AddressLine2"`
+	Town            string  `bson:"Town" json:"Town"`
+	StateOrProvince string  `bson:"StateOrProvince" json:"StateOrProvince"`
+	AccessComments  string  `bson:"AccessComments" json:"AccessComments"`
+	Postcode        string  `bson:"Postcode" json:"Postcode"`
+	CountryID       int32   `bson:"CountryID" json:"CountryID"`
+	Country         Country `bson:"Country" json:"Country"`
 }
 
 type Country struct {
-	ID            int64  `bson:"ID"`
-	Title         string `bson:"Title"`
-	ISOCode       string `bson:"ISOCode"`
-	ContinentCode string `bson:"ContinentCode"`
+	ID            int32  `bson:"ID" json:"ID"`
+	Title         string `bson:"Title" json:"Title"`
+	ISOCode       string `bson:"ISOCode" json:"ISOCode"`
+	ContinentCode string `bson:"ContinentCode" json:"ContinentCode"`
 }
 
 type Connection struct {
-	TypeID        int64          `bson:"ConnectionTypeID"`
-	Type          ConnectionType `bson:"ConnectionType"`
-	StatusTypeID  int64          `bson:"StatusTypeID"`
-	StatusType    StatusType     `bson:"StatusType"`
-	LevelID       int64          `bson:"LevelID"`
-	Level         Level          `bson:"Level"`
-	Amps          float64        `bson:"Amps"`
-	Voltage       float64        `bson:"Voltage"`
-	Power         float64        `bson:"PowerKW"`
-	CurrentTypeID int64          `bson:"CurrentTypeID"`
-	CurrentType   CurrentType    `bson:"CurrentType"`
-	Quantity      int64          `bson:"Quantity"`
-	Reference     string         `bson:"Reference"`
+	TypeID        int32          `bson:"ConnectionTypeID" json:"ConnectionTypeID"`
+	Type          ConnectionType `bson:"ConnectionType" json:"ConnectionType"`
+	StatusTypeID  int32          `bson:"StatusTypeID" json:"StatusTypeID"`
+	StatusType    StatusType     `bson:"StatusType" json:"StatusType"`
+	LevelID       int32          `bson:"LevelID" json:"LevelID"`
+	Level         Level          `bson:"Level" json:"Level"`
+	Amps          float64        `bson:"Amps" json:"Amps"`
+	Voltage       float64        `bson:"Voltage" json:"Voltage"`
+	Power         float64        `bson:"PowerKW" json:"PowerKW"`
+	CurrentTypeID int32          `bson:"CurrentTypeID" json:"CurrentTypeID"`
+	CurrentType   CurrentType    `bson:"CurrentType" json:"CurrentType"`
+	Quantity      int32          `bson:"Quantity" json:"Quantity"`
+	Reference     string         `bson:"Reference" json:"Reference"`
 }
 
 type Level struct {
-	ID                  int64  `bson:"ID"`
-	Title               string `bson:"Title"`
-	Comments            string `bson:"Comments"`
-	IsFastChargeCapable bool   `bson:"IsFastChargeCapable"`
+	ID                  int32  `bson:"ID" json:"ID"`
+	Title               string `bson:"Title" json:"Title"`
+	Comments            string `bson:"Comments" json:"Comments"`
+	IsFastChargeCapable bool   `bson:"IsFastChargeCapable" json:"IsFastChargeCapable"`
 }
 
 type CurrentType struct {
-	ID          int64  `bson:"ID"`
-	Title       string `bson:"Title"`
-	Description string `bson:"Description"`
+	ID          int32  `bson:"ID" json:"ID"`
+	Title       string `bson:"Title" json:"Title"`
+	Description string `bson:"Description" json:"Description"`
 }
 
 type ConnectionType struct {
-	ID             int64  `bson:"ID"`
-	Title          string `bson:"Title"`
-	FormalName     string `bson:"FormalName"`
-	IsDiscontinued bool   `bson:"IsDiscontinued"`
-	IsObsolete     bool   `bson:"IsObsolete"`
+	ID             int32  `bson:"ID" json:"ID"`
+	Title          string `bson:"Title" json:"Title"`
+	FormalName     string `bson:"FormalName" json:"FormalName"`
+	IsDiscontinued bool   `bson:"IsDiscontinued" json:"IsDiscontinued"`
+	IsObsolete     bool   `bson:"IsObsolete" json:"IsObsolete"`
 }
 
 type DataProvider struct {
-	ID                 int64              `bson:"ID"`
-	Title              string             `bson:"Title"`
-	WebsiteURL         string             `bson:"WebsiteURL"`
-	Comments           string             `bson:"Comments"`
-	DataProviderStatus DataProviderStatus `bson:"DataProviderStatusType"`
-	IsOpenDataLicensed bool               `bson:"IsOpenDataLicensed"`
-	License            string             `bson:"License"`
+	ID                 int32              `bson:"ID" json:"ID"`
+	Title              string             `bson:"Title" json:"Title"`
+	WebsiteURL         string             `bson:"WebsiteURL" json:"WebsiteURL"`
+	Comments           string             `bson:"Comments" json:"Comments"`
+	DataProviderStatus DataProviderStatus `bson:"DataProviderStatusType" json:"DataProviderStatusType"`
+	IsOpenDataLicensed bool               `bson:"IsOpenDataLicensed" json:"IsOpenDataLicensed"`
+	License            string             `bson:"License" json:"License"`
 }
 
 type DataProviderStatus struct {
-	ID                int64  `bson:"ID"`
-	Title             string `bson:"Title"`
-	IsProviderEnabled bool   `bson:"IsProviderEnabled"`
+	ID                int32  `bson:"ID" json:"ID"`
+	Title             string `bson:"Title" json:"Title"`
+	IsProviderEnabled bool   `bson:"IsProviderEnabled" json:"IsProviderEnabled"`
 }
 
 type Operator struct {
-	ID                  int64  `bson:"ID"`
-	Title               string `bson:"Title"`
-	WebsiteURL          string `bson:"WebsiteURL"`
-	Comments            string `bson:"Comments"`
-	PhonePrimary        string `bson:"PhonePrimaryContact"`
-	PhoneSecondary      string `bson:"PhoneSecondaryContact"`
-	IsPrivateIndividual bool   `bson:"IsPrivateIndividual"`
-	ContactEmail        string `bson:"ContactEmail"`
-	FaultReportEmail    string `bson:"FaultReportEmail"`
+	ID                  int32  `bson:"ID" json:"ID"`
+	Title               string `bson:"Title" json:"Title"`
+	WebsiteURL          string `bson:"WebsiteURL" json:"WebsiteURL"`
+	Comments            string `bson:"Comments" json:"Comments"`
+	PhonePrimary        string `bson:"PhonePrimaryContact" json:"PhonePrimaryContact"`
+	PhoneSecondary      string `bson:"PhoneSecondaryContact" json:"PhoneSecondaryContact"`
+	IsPrivateIndividual bool   `bson:"IsPrivateIndividual" json:"IsPrivateIndividual"`
+	ContactEmail        string `bson:"ContactEmail" json:"ContactEmail"`
+	FaultReportEmail    string `bson:"FaultReportEmail" json:"FaultReportEmail"`
 }
 
 type UsageType struct {
-	ID                   int64  `bson:"ID"`
-	Title                string `bson:"Title"`
-	IsPayAtLocation      bool   `bson:"IsPayAtLocation"`
-	IsMembershipRequired bool   `bson:"IsMembershipRequired"`
-	IsAccessKeyRequired  bool   `bson:"IsAccessKeyRequired"`
+	ID                   int32  `bson:"ID" json:"ID"`
+	Title                string `bson:"Title" json:"Title"`
+	IsPayAtLocation      bool   `bson:"IsPayAtLocation" json:"IsPayAtLocation"`
+	IsMembershipRequired bool   `bson:"IsMembershipRequired" json:"IsMembershipRequired"`
+	IsAccessKeyRequired  bool   `bson:"IsAccessKeyRequired" json:"IsAccessKeyRequired"`
 }
 
 type StatusType struct {
-	ID                int64  `bson:"ID"`
-	Title             string `bson:"Title"`
-	IsUsageSelectable bool   `bson:"IsUsageSelectable"`
-	IsOperational     bool   `bson:"IsOperational"`
+	ID                int32  `bson:"ID" json:"ID"`
+	Title             string `bson:"Title" json:"Title"`
+	IsUsageSelectable bool   `bson:"IsUsageSelectable" json:"IsUsageSelectable"`
+	IsOperational     bool   `bson:"IsOperational" json:"IsOperational"`
 }

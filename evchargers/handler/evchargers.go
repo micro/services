@@ -21,7 +21,7 @@ import (
 
 const (
 	defaultDistance = int64(5000) // 5km
-	//sphereIndexVersion = int32(3)
+
 )
 
 var (
@@ -36,6 +36,7 @@ type Evchargers struct {
 type conf struct {
 	MongoHost string `json:"mongo_host"`
 	CaCrt     string `json:"ca_crt"`
+	OCMKey    string `json:"ocm_key"`
 }
 
 func New() *Evchargers {
@@ -97,7 +98,12 @@ func New() *Evchargers {
 		log.Fatalf("Failed to craete indexes %s", err)
 	}
 
-	return &Evchargers{conf: conf, mdb: client}
+	ev := &Evchargers{conf: conf, mdb: client}
+	if len(conf.OCMKey) > 0 {
+		go ev.refreshDataFromSource()
+	}
+
+	return ev
 }
 
 func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchRequest, response *evchargers.SearchResponse) error {
@@ -201,7 +207,7 @@ func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchReque
 				CountryId:       strconv.Itoa(int(result.Address.CountryID)),
 			},
 			Connections: marshalConnections(result.Connections),
-			NumPoints:   result.NumberOfPoints,
+			NumPoints:   int64(result.NumberOfPoints),
 			Cost:        result.Cost,
 		}
 		if true { // verbose
