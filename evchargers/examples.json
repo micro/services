@@ -615,5 +615,27 @@
         ]
       }
     }
+  ],
+  "referenceData": [
+    {
+      "title": "Get reference data",
+      "run_check": true,
+      "request": {
+      },
+      "response": {
+        "charger_types": [],
+        "connection_types": [],
+        "current_types": [],
+        "countries": [],
+        "data_providers": [],
+        "operators": [],
+        "status_types": [],
+        "submission_status_types": [],
+        "usage_types": [],
+        "usage_types": [],
+        "user_comment_types": [],
+        "checkin_status_types": []
+      }
+    }
   ]
 }
