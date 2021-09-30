@@ -86,11 +86,11 @@ type Feed struct {
 
 type FeedRequest struct {
 	// limit entries returned
-	Limit int64 `json:"limit"`
+	Limit int64 `json:"limit,string"`
 	// rss feed name
 	Name string `json:"name"`
 	// offset entries
-	Offset int64 `json:"offset"`
+	Offset int64 `json:"offset,string"`
 }
 
 type FeedResponse struct {

@@ -19,6 +19,7 @@ import (
 	"github.com/micro/services/clients/go/image"
 	"github.com/micro/services/clients/go/ip"
 	"github.com/micro/services/clients/go/location"
+	"github.com/micro/services/clients/go/notes"
 	"github.com/micro/services/clients/go/otp"
 	"github.com/micro/services/clients/go/postcode"
 	"github.com/micro/services/clients/go/prayer"
@@ -61,6 +62,7 @@ func NewClient(token string) *Client {
 		ImageService:      image.NewImageService(token),
 		IpService:         ip.NewIpService(token),
 		LocationService:   location.NewLocationService(token),
+		NotesService:      notes.NewNotesService(token),
 		OtpService:        otp.NewOtpService(token),
 		PostcodeService:   postcode.NewPostcodeService(token),
 		PrayerService:     prayer.NewPrayerService(token),
@@ -103,6 +105,7 @@ type Client struct {
 	ImageService      *image.ImageService
 	IpService         *ip.IpService
 	LocationService   *location.LocationService
+	NotesService      *notes.NotesService
 	OtpService        *otp.OtpService
 	PostcodeService   *postcode.PostcodeService
 	PrayerService     *prayer.PrayerService

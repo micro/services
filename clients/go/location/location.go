@@ -43,7 +43,7 @@ type Entity struct {
 type Point struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
-	Timestamp int64   `json:"timestamp"`
+	Timestamp int64   `json:"timestamp,string"`
 }
 
 type ReadRequest struct {
@@ -66,7 +66,7 @@ type SearchRequest struct {
 	// Central position to search from
 	Center *Point `json:"center"`
 	// Maximum number of entities to return
-	NumEntities int64 `json:"numEntities"`
+	NumEntities int64 `json:"numEntities,string"`
 	// radius in meters
 	Radius float64 `json:"radius"`
 	// type of entities to filter

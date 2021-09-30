@@ -46,9 +46,9 @@ type Profile struct {
 	// the user description
 	Description string `json:"description"`
 	// the follower count
-	Followers int64 `json:"followers"`
+	Followers int64 `json:"followers,string"`
 	// the user id
-	Id int64 `json:"id"`
+	Id int64 `json:"id,string"`
 	// The user's profile picture
 	ImageUrl string `json:"imageUrl"`
 	// the user's location
@@ -91,7 +91,7 @@ type Trend struct {
 	// name of the trend
 	Name string `json:"name"`
 	// the volume of tweets in last 24 hours
-	TweetVolume int64 `json:"tweetVolume"`
+	TweetVolume int64 `json:"tweetVolume,string"`
 	// the twitter url
 	Url string `json:"url"`
 }
@@ -108,11 +108,11 @@ type Tweet struct {
 	// time of tweet
 	CreatedAt string `json:"createdAt"`
 	// number of times favourited
-	FavouritedCount int64 `json:"favouritedCount"`
+	FavouritedCount int64 `json:"favouritedCount,string"`
 	// id of the tweet
-	Id int64 `json:"id"`
+	Id int64 `json:"id,string"`
 	// number of times retweeted
-	RetweetedCount int64 `json:"retweetedCount"`
+	RetweetedCount int64 `json:"retweetedCount,string"`
 	// text of the tweet
 	Text string `json:"text"`
 	// username of the person who tweeted

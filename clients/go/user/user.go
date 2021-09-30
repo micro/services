@@ -85,7 +85,7 @@ func (t *UserService) VerifyEmail(request *VerifyEmailRequest) (*VerifyEmailResp
 
 type Account struct {
 	// unix timestamp
-	Created int64 `json:"created"`
+	Created int64 `json:"created,string"`
 	// an email address
 	Email string `json:"email"`
 	// unique account id
@@ -93,10 +93,10 @@ type Account struct {
 	// Store any custom data you want about your users in this fields.
 	Profile map[string]string `json:"profile"`
 	// unix timestamp
-	Updated int64 `json:"updated"`
+	Updated int64 `json:"updated,string"`
 	// alphanumeric username
 	Username         string `json:"username"`
-	VerificationDate int64  `json:"verificationDate"`
+	VerificationDate int64  `json:"verificationDate,string"`
 	Verified         bool   `json:"verified"`
 }
 
@@ -185,9 +185,9 @@ type SendVerificationEmailResponse struct {
 
 type Session struct {
 	// unix timestamp
-	Created int64 `json:"created"`
+	Created int64 `json:"created,string"`
 	// unix timestamp
-	Expires int64 `json:"expires"`
+	Expires int64 `json:"expires,string"`
 	// the session id
 	Id string `json:"id"`
 	// the associated user id

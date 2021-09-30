@@ -710,6 +710,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 			if fieldUpperCase {
 				k = strcase.UpperCamelCase(k)
 			}
+			var typ string
 			// @todo clean up this piece of code by
 			// separating out type string marshaling and not
 			// repeating code
@@ -765,7 +766,7 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 			case "string":
 				ret += k + fieldSeparator + stringType + fieldDelimiter
 			case "number":
-				typ := numberType
+				typ = numberType
 				switch v.Value.Format {
 				case "int32":
 					typ = int32Type
@@ -780,9 +781,13 @@ func schemaToType(language, serviceName, typeName string, schemas map[string]*op
 			case "boolean":
 				ret += k + fieldSeparator + boolType + fieldDelimiter
 			}
-			// go specific hack for lowercase son
+			// go specific hack for lowercase json
 			if language == "go" {
-				ret += " " + "`json:\"" + strcase.LowerCamelCase(k) + "\"`"
+				ret += " " + "`json:\"" + strcase.LowerCamelCase(k)
+				if typ == int64Type {
+					ret += ",string"
+				}
+				ret += "\"`"
 			}
 
 			if i < len(props) {

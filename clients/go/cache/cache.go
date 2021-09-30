@@ -50,14 +50,14 @@ type DecrementRequest struct {
 	// The key to decrement
 	Key string `json:"key"`
 	// The amount to decrement the value by
-	Value int64 `json:"value"`
+	Value int64 `json:"value,string"`
 }
 
 type DecrementResponse struct {
 	// The key decremented
 	Key string `json:"key"`
 	// The new value
-	Value int64 `json:"value"`
+	Value int64 `json:"value,string"`
 }
 
 type DeleteRequest struct {
@@ -79,7 +79,7 @@ type GetResponse struct {
 	// The key
 	Key string `json:"key"`
 	// Time to live in seconds
-	Ttl int64 `json:"ttl"`
+	Ttl int64 `json:"ttl,string"`
 	// The value
 	Value string `json:"value"`
 }
@@ -88,21 +88,21 @@ type IncrementRequest struct {
 	// The key to increment
 	Key string `json:"key"`
 	// The amount to increment the value by
-	Value int64 `json:"value"`
+	Value int64 `json:"value,string"`
 }
 
 type IncrementResponse struct {
 	// The key incremented
 	Key string `json:"key"`
 	// The new value
-	Value int64 `json:"value"`
+	Value int64 `json:"value,string"`
 }
 
 type SetRequest struct {
 	// The key to update
 	Key string `json:"key"`
 	// Time to live in seconds
-	Ttl int64 `json:"ttl"`
+	Ttl int64 `json:"ttl,string"`
 	// The value to set
 	Value string `json:"value"`
 }

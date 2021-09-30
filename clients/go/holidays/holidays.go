@@ -61,7 +61,7 @@ type ListRequest struct {
 	// The 2 letter country code (as defined in ISO 3166-1 alpha-2)
 	CountryCode string `json:"countryCode"`
 	// The year to list holidays for
-	Year int64 `json:"year"`
+	Year int64 `json:"year,string"`
 }
 
 type ListResponse struct {

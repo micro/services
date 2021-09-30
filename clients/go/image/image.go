@@ -85,14 +85,14 @@ type ResizeRequest struct {
 	// if provided, after resize, the image
 	// will be cropped
 	CropOptions *CropOptions `json:"cropOptions"`
-	Height      int64        `json:"height"`
+	Height      int64        `json:"height,string"`
 	// output name of the image including extension, ie. "cat.png"
 	Name string `json:"name"`
 	// make output a URL and not a base64 response
 	OutputUrl bool `json:"outputUrl"`
 	// url of the image to resize
 	Url   string `json:"url"`
-	Width int64  `json:"width"`
+	Width int64  `json:"width,string"`
 }
 
 type ResizeResponse struct {

@@ -27,6 +27,7 @@
   "./image": "./dist/image/index.js",
   "./ip": "./dist/ip/index.js",
   "./location": "./dist/location/index.js",
+  "./notes": "./dist/notes/index.js",
   "./otp": "./dist/otp/index.js",
   "./pkg": "./dist/pkg/index.js",
   "./postcode": "./dist/postcode/index.js",
