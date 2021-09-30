@@ -146,7 +146,7 @@ type Poi struct {
 	// The ID of the charger
 	Id string `json:"id"`
 	// The number of charging points
-	NumPoints int64 `json:"numPoints"`
+	NumPoints int64 `json:"numPoints,string"`
 	// The operator
 	Operator *Operator `json:"operator"`
 	// The ID of the operator of the charger
@@ -193,15 +193,15 @@ type SearchRequest struct {
 	// Country ID
 	CountryId string `json:"countryId"`
 	// Search distance from point in metres, defaults to 5000m
-	Distance int64 `json:"distance"`
+	Distance int64 `json:"distance,string"`
 	// Supported charging levels
 	Levels []string `json:"levels"`
 	// Coordinates from which to begin search
 	Location *Coordinates `json:"location"`
 	// Maximum number of results to return, defaults to 100
-	MaxResults int64 `json:"maxResults"`
+	MaxResults int64 `json:"maxResults,string"`
 	// Minimum power in KW. Note: data not available for many chargers
-	MinPower int64 `json:"minPower"`
+	MinPower int64 `json:"minPower,string"`
 	// IDs of the the EV charger operator
 	Operators []string `json:"operators"`
 	// Usage of the charge point (is it public, membership required, etc)
