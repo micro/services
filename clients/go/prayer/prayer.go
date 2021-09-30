@@ -16,7 +16,7 @@ type PrayerService struct {
 	client *client.Client
 }
 
-//
+// Get the prayer (salah) times for a location on a given date
 func (t *PrayerService) Times(request *TimesRequest) (*TimesResponse, error) {
 	rsp := &TimesResponse{}
 	return rsp, t.client.Call("prayer", "Times", request, rsp)

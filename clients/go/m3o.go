@@ -9,6 +9,7 @@ import (
 	"github.com/micro/services/clients/go/db"
 	"github.com/micro/services/clients/go/email"
 	"github.com/micro/services/clients/go/emoji"
+	"github.com/micro/services/clients/go/evchargers"
 	"github.com/micro/services/clients/go/file"
 	"github.com/micro/services/clients/go/forex"
 	"github.com/micro/services/clients/go/geocoding"
@@ -50,6 +51,7 @@ func NewClient(token string) *Client {
 		DbService:         db.NewDbService(token),
 		EmailService:      email.NewEmailService(token),
 		EmojiService:      emoji.NewEmojiService(token),
+		EvchargersService: evchargers.NewEvchargersService(token),
 		FileService:       file.NewFileService(token),
 		ForexService:      forex.NewForexService(token),
 		GeocodingService:  geocoding.NewGeocodingService(token),
@@ -91,6 +93,7 @@ type Client struct {
 	DbService         *db.DbService
 	EmailService      *email.EmailService
 	EmojiService      *emoji.EmojiService
+	EvchargersService *evchargers.EvchargersService
 	FileService       *file.FileService
 	ForexService      *forex.ForexService
 	GeocodingService  *geocoding.GeocodingService

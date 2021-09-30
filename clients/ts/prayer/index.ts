@@ -6,7 +6,7 @@ export class PrayerService {
   constructor(token: string) {
     this.client = new m3o.Client({ token: token });
   }
-  //
+  // Get the prayer (salah) times for a location on a given date
   times(request: TimesRequest): Promise<TimesResponse> {
     return this.client.call(
       "prayer",

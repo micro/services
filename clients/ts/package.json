@@ -17,6 +17,7 @@
   "./db": "./dist/db/index.js",
   "./email": "./dist/email/index.js",
   "./emoji": "./dist/emoji/index.js",
+  "./evchargers": "./dist/evchargers/index.js",
   "./file": "./dist/file/index.js",
   "./forex": "./dist/forex/index.js",
   "./geocoding": "./dist/geocoding/index.js",
@@ -61,5 +62,5 @@
  },
  "type": "module",
  "types": "dist/index.d.ts",
- "version": "1.0.527"
+ "version": "1.0.532"
 }

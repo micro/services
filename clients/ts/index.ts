@@ -6,6 +6,7 @@ import * as currency from "./currency";
 import * as db from "./db";
 import * as email from "./email";
 import * as emoji from "./emoji";
+import * as evchargers from "./evchargers";
 import * as file from "./file";
 import * as forex from "./forex";
 import * as geocoding from "./geocoding";
@@ -44,6 +45,7 @@ export class Client {
     this.dbService = new db.DbService(token);
     this.emailService = new email.EmailService(token);
     this.emojiService = new emoji.EmojiService(token);
+    this.evchargersService = new evchargers.EvchargersService(token);
     this.fileService = new file.FileService(token);
     this.forexService = new forex.ForexService(token);
     this.geocodingService = new geocoding.GeocodingService(token);
@@ -81,6 +83,7 @@ export class Client {
   dbService: db.DbService;
   emailService: email.EmailService;
   emojiService: emoji.EmojiService;
+  evchargersService: evchargers.EvchargersService;
   fileService: file.FileService;
   forexService: forex.ForexService;
   geocodingService: geocoding.GeocodingService;
