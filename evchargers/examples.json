@@ -416,7 +416,9 @@
         },
         "distance": 2000,
         "max_results": 2,
-        "levels": ["3"]
+        "levels": [
+          "3"
+        ]
       },
       "response": {
         "pois": [
