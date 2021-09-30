@@ -50,7 +50,7 @@ type Connection struct {
 	StatusTypeID  int32          `bson:"StatusTypeID" json:"StatusTypeID"`
 	StatusType    StatusType     `bson:"StatusType" json:"StatusType"`
 	LevelID       int32          `bson:"LevelID" json:"LevelID"`
-	Level         Level          `bson:"Level" json:"Level"`
+	Level         ChargerType    `bson:"Level" json:"Level"`
 	Amps          float64        `bson:"Amps" json:"Amps"`
 	Voltage       float64        `bson:"Voltage" json:"Voltage"`
 	Power         float64        `bson:"PowerKW" json:"PowerKW"`
@@ -60,7 +60,7 @@ type Connection struct {
 	Reference     string         `bson:"Reference" json:"Reference"`
 }
 
-type Level struct {
+type ChargerType struct {
 	ID                  int32  `bson:"ID" json:"ID"`
 	Title               string `bson:"Title" json:"Title"`
 	Comments            string `bson:"Comments" json:"Comments"`
@@ -122,4 +122,36 @@ type StatusType struct {
 	Title             string `bson:"Title" json:"Title"`
 	IsUsageSelectable bool   `bson:"IsUsageSelectable" json:"IsUsageSelectable"`
 	IsOperational     bool   `bson:"IsOperational" json:"IsOperational"`
+}
+
+type UserCommentType struct {
+	ID    int32  `bson:"ID" json:"ID"`
+	Title string `bson:"Title" json:"Title"`
+}
+
+type CheckinStatusType struct {
+	ID                 int32  `bson:"ID" json:"ID"`
+	Title              string `bson:"Title" json:"Title"`
+	IsPositive         bool   `bson:"IsPositive" json:"IsPositive"`
+	IsAutomatedCheckin bool   `bson:"IsAutomatedCheckin" json:"IsAutomatedCheckin"`
+}
+
+type ReferenceData struct {
+	ChargerTypes          []ChargerType          `bson:"ChargerTypes" json:"ChargerTypes"`
+	ConnectionTypes       []ConnectionType       `bson:"ConnectionTypes" json:"ConnectionTypes"`
+	CurrentTypes          []CurrentType          `bson:"CurrentTypes" json:"CurrentTypes"`
+	Countries             []Country              `bson:"Countries" json:"Countries"`
+	DataProviders         []DataProvider         `bson:"DataProviders" json:"DataProviders"`
+	Operators             []Operator             `bson:"Operators" json:"Operators"`
+	StatusTypes           []StatusType           `bson:"StatusTypes" json:"StatusTypes"`
+	UsageTypes            []UsageType            `bson:"UsageTypes" json:"UsageTypes"`
+	UserCommentTypes      []UserCommentType      `bson:"UserCommentTypes" json:"UserCommentTypes"`
+	CheckinStatusTypes    []CheckinStatusType    `bson:"CheckinStatusTypes" json:"CheckinStatusTypes"`
+	SubmissionStatusTypes []SubmissionStatusType `bson:"SubmissionStatusTypes" json:"SubmissionStatusTypes"`
+}
+
+type SubmissionStatusType struct {
+	ID     int32  `bson:"ID" json:"ID"`
+	Title  string `bson:"Title" json:"Title"`
+	IsLive bool   `bson:"IsLive" json:"IsLive"`
 }

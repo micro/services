@@ -13,7 +13,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (e *Evchargers) loadData(r io.Reader) (int, error) {
+func (e *Evchargers) loadPOIData(r io.Reader) (int, error) {
+	logger.Infof("Loading reference data")
 	dec := json.NewDecoder(r)
 	t, err := dec.Token()
 	if err != nil {
@@ -49,21 +50,51 @@ func (e *Evchargers) loadData(r io.Reader) (int, error) {
 
 }
 
+func (e *Evchargers) loadRefData(r io.Reader) error {
+	dec := json.NewDecoder(r)
+	var rd ReferenceData
+	if err := dec.Decode(&rd); err != nil {
+		return err
+	}
+	ctx := context.Background()
+	t := true
+	_, err := e.mdb.Database("ocm").Collection("reference").ReplaceOne(ctx, bson.D{bson.E{"_id", 1}}, rd, &options.ReplaceOptions{Upsert: &t})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (e *Evchargers) refreshDataFromSource() {
 	start := time.Now()
 	logger.Infof("Refreshing data")
+	logger.Infof("Retrieving poi data")
 	rsp, err := http.Get(fmt.Sprintf("https://api.openchargemap.io/v3/poi/?output=json&key=%s&maxresults=10000000", e.conf.OCMKey))
 	if err != nil {
 		logger.Errorf("Error refreshing data %s", err)
 		return
 	}
 	defer rsp.Body.Close()
-	logger.Infof("Loading data")
-	c, err := e.loadData(rsp.Body)
+	c, err := e.loadPOIData(rsp.Body)
 	if err != nil {
 		logger.Errorf("Error loading data %s", err)
 		return
 	}
-	logger.Infof("Updated %v. Took %s", c, time.Since(start))
+	logger.Infof("Updated %v items of POI data. Took %s", c, time.Since(start))
+
+	start = time.Now()
+	logger.Infof("Retrieving ref data")
+	rsp2, err := http.Get(fmt.Sprintf("https://api.openchargemap.io/v3/referencedata/?output=json&key=%s", e.conf.OCMKey))
+	if err != nil {
+		logger.Errorf("Error refreshing reference data %s", err)
+		return
+	}
+	defer rsp2.Body.Close()
+	if err := e.loadRefData(rsp2.Body); err != nil {
+		logger.Errorf("Error loading reference data %s", err)
+		return
+	}
+	logger.Infof("Updated ref data. Took %s", time.Since(start))
 
 }

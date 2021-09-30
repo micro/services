@@ -6,6 +6,7 @@ option go_package = "./proto;evchargers";
 
 service Evchargers {
 	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc ReferenceData(ReferenceDataRequest) returns (ReferenceDataResponse) {}
 }
 
 
@@ -108,26 +109,39 @@ message Connection {
 	ConnectionType connection_type = 9;
 }
 
+// Retrieve reference data as used by this API
 message ReferenceDataRequest {}
 
 message ReferenceDataResponse {
+	// The types of charger
 	repeated ChargerType charger_types = 1;
+	// The types of connection
 	repeated ConnectionType connection_types = 2;
+	// The types of current
 	repeated CurrentType current_types = 3;
+	// The countries
 	repeated Country countries = 4;
+	// The providers of the charger data
 	repeated DataProvider data_providers = 5;
+	// The companies operating the chargers
 	repeated Operator operators = 6;
+	// The status of the charger
 	repeated StatusType status_types = 7;
+	// The status of a submission
 	repeated SubmissionStatusType submission_status_types = 8;
+	// The different types of usage
 	repeated UsageType usage_types = 9;
+	// The types of user comment
 	repeated UserCommentType user_comment_types = 10;
-	repeated CheckInStatusType check_in_status_types = 11;
+	// The types of checkin status
+	repeated CheckinStatusType checkin_status_types = 11;
 }
 
 message ChargerType {
 	string id = 1;
 	string title = 2;
 	string comments = 3;
+	// Is this 40KW+
 	bool is_fast_charge_capable = 4;
 }
 
@@ -158,6 +172,7 @@ message DataProvider {
 	string website = 3;
 	string comments = 4;
 	DataProviderStatusType data_provider_status_type = 5;
+	// How is this data licensed
 	string license = 6;
 }
 
@@ -172,6 +187,7 @@ message Operator {
 	string title = 2;
 	string website = 3;
 	string comments = 4;
+	// Is this operator a private individual vs a company
 	bool is_private_individual = 5;
 	string contact_email = 6;
 	string phone_primary = 7;
@@ -202,10 +218,9 @@ message UsageType {
 message UserCommentType {
 	string id = 1;
 	string title = 2;
-
 }
 
-message CheckInStatusType {
+message CheckinStatusType {
 	string id = 1;
 	string title = 2;
 	bool is_positive = 3;

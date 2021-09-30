@@ -299,6 +299,140 @@ func marshalUsageType(in UsageType) *evchargers.UsageType {
 	}
 }
 
+func marshalCheckinStatusType(in CheckinStatusType) *evchargers.CheckinStatusType {
+	return &evchargers.CheckinStatusType{
+		Id:          strconv.Itoa(int(in.ID)),
+		Title:       in.Title,
+		IsPositive:  in.IsPositive,
+		IsAutomated: in.IsAutomatedCheckin,
+	}
+}
+
+func marshalUserCommentType(in UserCommentType) *evchargers.UserCommentType {
+	return &evchargers.UserCommentType{
+		Id:    strconv.Itoa(int(in.ID)),
+		Title: in.Title,
+	}
+}
+
+func marshalStatusType(in StatusType) *evchargers.StatusType {
+	return &evchargers.StatusType{
+		Id:            strconv.Itoa(int(in.ID)),
+		Title:         in.Title,
+		IsOperational: in.IsOperational,
+	}
+}
+
+func marshalCurrentType(in CurrentType) *evchargers.CurrentType {
+	return &evchargers.CurrentType{
+		Id:          strconv.Itoa(int(in.ID)),
+		Title:       in.Title,
+		Description: in.Description,
+	}
+}
+
+func marshalConnectionType(in ConnectionType) *evchargers.ConnectionType {
+	return &evchargers.ConnectionType{
+		Id:             strconv.Itoa(int(in.ID)),
+		Title:          in.Title,
+		FormalName:     in.FormalName,
+		IsDiscontinued: in.IsDiscontinued,
+		IsObsolete:     in.IsObsolete,
+	}
+}
+
+func marshalChargerType(in ChargerType) *evchargers.ChargerType {
+	return &evchargers.ChargerType{
+		Id:                  strconv.Itoa(int(in.ID)),
+		Title:               in.Title,
+		Comments:            in.Comments,
+		IsFastChargeCapable: in.IsFastChargeCapable,
+	}
+}
+
+func marshalSubmissionStatusType(in SubmissionStatusType) *evchargers.SubmissionStatusType {
+	return &evchargers.SubmissionStatusType{
+		Id:     strconv.Itoa(int(in.ID)),
+		Title:  in.Title,
+		IsLive: in.IsLive,
+	}
+}
+
 func (e *Evchargers) ReferenceData(ctx context.Context, request *evchargers.ReferenceDataRequest, response *evchargers.ReferenceDataResponse) error {
-	panic("implement me")
+
+	res := e.mdb.Database("ocm").Collection("reference").FindOne(ctx, bson.D{})
+	if res.Err() != nil {
+		log.Errorf("Error retrieving ref data %s", res.Err())
+		return errors.InternalServerError("evchargers.referencedata", "Error retrieving reference data")
+	}
+	var r ReferenceData
+	if err := res.Decode(&r); err != nil {
+		log.Errorf("Error decoding ref data %s", err)
+		return errors.InternalServerError("evchargers.referencedata", "Error retrieving reference data")
+	}
+	dps := make([]*evchargers.DataProvider, len(r.DataProviders))
+	for i, dp := range r.DataProviders {
+		dps[i] = marshalDataProvider(dp)
+	}
+	response.DataProviders = dps
+	cs := make([]*evchargers.Country, len(r.Countries))
+	for i, c := range r.Countries {
+		cs[i] = marshalCountry(c)
+	}
+	response.Countries = cs
+
+	cst := make([]*evchargers.CheckinStatusType, len(r.CheckinStatusTypes))
+	for i, v := range r.CheckinStatusTypes {
+		cst[i] = marshalCheckinStatusType(v)
+	}
+	response.CheckinStatusTypes = cst
+
+	uct := make([]*evchargers.UserCommentType, len(r.UserCommentTypes))
+	for i, v := range r.UserCommentTypes {
+		uct[i] = marshalUserCommentType(v)
+	}
+	response.UserCommentTypes = uct
+
+	st := make([]*evchargers.StatusType, len(r.StatusTypes))
+	for i, v := range r.StatusTypes {
+		st[i] = marshalStatusType(v)
+	}
+	response.StatusTypes = st
+
+	ut := make([]*evchargers.UsageType, len(r.UsageTypes))
+	for i, v := range r.UsageTypes {
+		ut[i] = marshalUsageType(v)
+	}
+	response.UsageTypes = ut
+
+	ct := make([]*evchargers.CurrentType, len(r.CurrentTypes))
+	for i, v := range r.CurrentTypes {
+		ct[i] = marshalCurrentType(v)
+	}
+	response.CurrentTypes = ct
+
+	connt := make([]*evchargers.ConnectionType, len(r.ConnectionTypes))
+	for i, v := range r.ConnectionTypes {
+		connt[i] = marshalConnectionType(v)
+	}
+	response.ConnectionTypes = connt
+	chrgt := make([]*evchargers.ChargerType, len(r.ChargerTypes))
+	for i, v := range r.ChargerTypes {
+		chrgt[i] = marshalChargerType(v)
+	}
+	response.ChargerTypes = chrgt
+
+	ops := make([]*evchargers.Operator, len(r.Operators))
+	for i, v := range r.Operators {
+		ops[i] = marshalOperator(v)
+	}
+	response.Operators = ops
+
+	sst := make([]*evchargers.SubmissionStatusType, len(r.SubmissionStatusTypes))
+	for i, v := range r.SubmissionStatusTypes {
+		sst[i] = marshalSubmissionStatusType(v)
+	}
+
+	response.SubmissionStatusTypes = sst
+	return nil
 }
