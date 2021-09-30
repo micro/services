@@ -11,6 +11,7 @@ import (
 )
 
 func TestDataLoad(t *testing.T) {
+	t.SkipNow()
 	s := Evchargers{}
 	opts := []*options.ClientOptions{options.Client().ApplyURI("mongodb://127.0.0.1:27017/ocm")}
 	var err error
@@ -33,6 +34,7 @@ func TestDataLoad(t *testing.T) {
 }
 
 func TestRefDataLoad(t *testing.T) {
+	t.SkipNow()
 	s := Evchargers{}
 	opts := []*options.ClientOptions{options.Client().ApplyURI("mongodb://127.0.0.1:27017/ocm")}
 	var err error
