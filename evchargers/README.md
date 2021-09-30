@@ -1,8 +1,8 @@
-Find electric vehicle chargers wherever you go 
+Find electric vehicle (EV) chargers wherever you go 
 
-# Evchargers Service
+# EV Chargers Service
 
-This is the EV chargers API. Search for EV chargers using 
+This is the E(lectric) V(ehicle) chargers API. Search for EV chargers using 
 - location and distance
 - bounding box
 
