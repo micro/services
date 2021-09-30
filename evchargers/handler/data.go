@@ -50,25 +50,20 @@ func (e *Evchargers) loadData(r io.Reader) (int, error) {
 }
 
 func (e *Evchargers) refreshDataFromSource() {
-	for {
-		start := time.Now()
-		logger.Infof("Refreshing data")
-		// TODO replace with cron
-		// wget "https://api.openchargemap.io/v3/poi/?output=json&key=<APIKEY>&maxresults=10000000" - response is json array of chargers (> 500MB).
-		rsp, err := http.Get(fmt.Sprintf("https://api.openchargemap.io/v3/poi/?output=json&key=%s&maxresults=10000000", e.conf.OCMKey))
-		if err != nil {
-			logger.Errorf("Error refreshing data %s", err)
-		} else {
-			logger.Infof("Loading data")
-			c, err := e.loadData(rsp.Body)
-			if err != nil {
-				logger.Errorf("Error loading data %s", err)
-			} else {
-				logger.Infof("Updated %v. Took %s", c, time.Since(start))
-			}
-			rsp.Body.Close()
-		}
-
-		time.Sleep(24 * time.Hour)
+	start := time.Now()
+	logger.Infof("Refreshing data")
+	rsp, err := http.Get(fmt.Sprintf("https://api.openchargemap.io/v3/poi/?output=json&key=%s&maxresults=10000000", e.conf.OCMKey))
+	if err != nil {
+		logger.Errorf("Error refreshing data %s", err)
+		return
 	}
+	defer rsp.Body.Close()
+	logger.Infof("Loading data")
+	c, err := e.loadData(rsp.Body)
+	if err != nil {
+		logger.Errorf("Error loading data %s", err)
+		return
+	}
+	logger.Infof("Updated %v. Took %s", c, time.Since(start))
+
 }

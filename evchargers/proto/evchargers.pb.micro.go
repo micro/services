@@ -43,7 +43,6 @@ func NewEvchargersEndpoints() []*api.Endpoint {
 
 type EvchargersService interface {
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
-	ReferenceData(ctx context.Context, in *ReferenceDataRequest, opts ...client.CallOption) (*ReferenceDataResponse, error)
 }
 
 type evchargersService struct {
@@ -68,27 +67,15 @@ func (c *evchargersService) Search(ctx context.Context, in *SearchRequest, opts 
 	return out, nil
 }
 
-func (c *evchargersService) ReferenceData(ctx context.Context, in *ReferenceDataRequest, opts ...client.CallOption) (*ReferenceDataResponse, error) {
-	req := c.c.NewRequest(c.name, "Evchargers.ReferenceData", in)
-	out := new(ReferenceDataResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // Server API for Evchargers service
 
 type EvchargersHandler interface {
 	Search(context.Context, *SearchRequest, *SearchResponse) error
-	ReferenceData(context.Context, *ReferenceDataRequest, *ReferenceDataResponse) error
 }
 
 func RegisterEvchargersHandler(s server.Server, hdlr EvchargersHandler, opts ...server.HandlerOption) error {
 	type evchargers interface {
 		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
-		ReferenceData(ctx context.Context, in *ReferenceDataRequest, out *ReferenceDataResponse) error
 	}
 	type Evchargers struct {
 		evchargers
@@ -103,8 +90,4 @@ type evchargersHandler struct {
 
 func (h *evchargersHandler) Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error {
 	return h.EvchargersHandler.Search(ctx, in, out)
-}
-
-func (h *evchargersHandler) ReferenceData(ctx context.Context, in *ReferenceDataRequest, out *ReferenceDataResponse) error {
-	return h.EvchargersHandler.ReferenceData(ctx, in, out)
 }

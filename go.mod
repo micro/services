@@ -39,6 +39,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
 	github.com/pquerna/otp v1.3.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.0+incompatible
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e

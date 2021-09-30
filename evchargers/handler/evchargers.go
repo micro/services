@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/robfig/cron/v3"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -100,7 +101,10 @@ func New() *Evchargers {
 
 	ev := &Evchargers{conf: conf, mdb: client}
 	if len(conf.OCMKey) > 0 {
-		go ev.refreshDataFromSource()
+		c := cron.New()
+		// 4am every Sunday for refresh
+		c.AddFunc("0 4 * * 0", ev.refreshDataFromSource)
+		c.Start()
 	}
 
 	return ev
