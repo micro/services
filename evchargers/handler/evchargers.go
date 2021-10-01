@@ -248,11 +248,17 @@ func marshalConnections(in []Connection) []*evchargers.Connection {
 				IsObsolete:     v.Type.IsObsolete,
 			},
 			Reference: v.Reference,
-			Level:     strconv.Itoa(int(v.LevelID)),
-			Amps:      float32(v.Amps),
-			Voltage:   float32(v.Voltage),
-			Power:     float32(v.Power),
-			Current:   strconv.Itoa(int(v.CurrentTypeID)),
+			LevelId:   strconv.Itoa(int(v.LevelID)),
+			Level: &evchargers.ChargerType{
+				Id:                  strconv.Itoa(int(v.Level.ID)),
+				Title:               v.Level.Title,
+				Comments:            v.Level.Comments,
+				IsFastChargeCapable: v.Level.IsFastChargeCapable,
+			},
+			Amps:    float32(v.Amps),
+			Voltage: float32(v.Voltage),
+			Power:   float32(v.Power),
+			Current: strconv.Itoa(int(v.CurrentTypeID)),
 		}
 	}
 	return res
