@@ -112,19 +112,23 @@ func New() *Evchargers {
 
 func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchRequest, response *evchargers.SearchResponse) error {
 
-	toInt := func(in []string) []interface{} {
-		res := make([]interface{}, len(in))
-		for i, v := range in {
-			res[i], _ = strconv.Atoi(v)
+	addFilter := func(filters bson.D, key, op string, in []string) bson.D {
+		vals := bson.A{}
+		for _, v := range in {
+			if v == "" {
+				continue
+			}
+			r, _ := strconv.Atoi(v)
+			vals = append(vals, r)
 		}
-		return res
+		if len(vals) == 0 {
+			return filters
+		}
+
+		filters = append(filters, bson.E{key, bson.D{{op, vals}}})
+		return filters
 	}
 	filters := bson.D{}
-	if len(request.ConnectionTypes) > 0 {
-		vals := bson.A{}
-		vals = append(vals, toInt(request.ConnectionTypes)...)
-		filters = append(filters, bson.E{"Connections.ConnectionTypeID", bson.D{{"$in", vals}}})
-	}
 
 	if request.Location != nil {
 		distance := defaultDistance
@@ -150,10 +154,12 @@ func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchReque
 		filters = append(filters, bson.E{"AddressInfo.CountryID", i})
 	}
 
+	if len(request.ConnectionTypes) > 0 {
+		filters = addFilter(filters, "Connections.ConnectionTypeID", "$in", request.ConnectionTypes)
+	}
+
 	if len(request.Levels) > 0 {
-		vals := bson.A{}
-		vals = append(vals, toInt(request.Levels)...)
-		filters = append(filters, bson.E{"Connections.LevelID", bson.D{{"$in", vals}}})
+		filters = addFilter(filters, "Connections.LevelID", "$in", request.Levels)
 	}
 
 	if request.MinPower > 0 {
@@ -161,16 +167,11 @@ func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchReque
 	}
 
 	if len(request.Operators) > 0 {
-		log.Infof("Operators %d %#v", len(request.Operators), request.Operators)
-		vals := bson.A{}
-		vals = append(vals, toInt(request.Operators)...)
-		filters = append(filters, bson.E{"OperatorID", bson.D{{"$in", vals}}})
+		filters = addFilter(filters, "OperatorID", "$in", request.Operators)
 	}
 
 	if len(request.UsageTypes) > 0 {
-		vals := bson.A{}
-		vals = append(vals, toInt(request.UsageTypes)...)
-		filters = append(filters, bson.E{"UsageTypeID", bson.D{{"$in", vals}}})
+		filters = addFilter(filters, "UsageTypeID", "$in", request.UsageTypes)
 	}
 
 	maxLim := int64(100)
