@@ -66,8 +66,9 @@ export interface Connection {
   connectionTypeId?: string;
   // The current
   current?: string;
+  level?: ChargerType;
   // The level of charging power available
-  level?: string;
+  levelId?: string;
   // The power in KW
   power?: number;
   reference?: string;
