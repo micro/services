@@ -161,6 +161,7 @@ func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchReque
 	}
 
 	if len(request.Operators) > 0 {
+		log.Infof("Operators %d %#v", len(request.Operators), request.Operators)
 		vals := bson.A{}
 		vals = append(vals, toInt(request.Operators)...)
 		filters = append(filters, bson.E{"OperatorID", bson.D{{"$in", vals}}})
