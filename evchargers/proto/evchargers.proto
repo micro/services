@@ -1,0 +1,228 @@
+syntax = "proto3";
+
+package evchargers;
+
+option go_package = "./proto;evchargers";
+
+service Evchargers {
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc ReferenceData(ReferenceDataRequest) returns (ReferenceDataResponse) {}
+}
+
+
+// Search by giving a coordinate and a max distance, or bounding box and optional filters
+message SearchRequest {
+	// Coordinates from which to begin search
+	Coordinates location = 1;
+	// Search distance from point in metres, defaults to 5000m
+	int64 distance = 2;
+	// Bounding box to search within (top left and bottom right coordinates)
+	BoundingBox box = 3;
+	// Maximum number of results to return, defaults to 100
+	int64 max_results = 4;
+	// Country ID
+	string country_id = 5;
+	// IDs of the the EV charger operator
+	repeated string operators = 6;
+	// IDs of the connection type
+	repeated string connection_types = 7;
+	// Supported charging levels
+	repeated string levels = 8;
+	// Minimum power in KW. Note: data not available for many chargers
+	int64 min_power = 9;
+	// Usage of the charge point (is it public, membership required, etc)
+	repeated string usage_types = 11;
+
+	// TODO https://openchargemap.org/site/develop/api#POI
+	// verbose / compact to only return IDs for ref data
+	// polygon
+	// polyline
+}
+
+message Coordinates {
+	float latitude = 1;
+	float longitude = 2;
+}
+
+// Box to search (top left and bottom right coordinates)
+message BoundingBox {
+	Coordinates bottom_left = 1;
+	Coordinates top_right = 2;
+}
+
+message SearchResponse {
+	repeated Poi pois = 1;
+}
+
+message Poi {
+	// The ID of the charger
+	string id = 1;
+	// The ID of the data provider
+	string data_provider_id = 2;
+	// The ID of the operator of the charger
+	string operator_id = 3;
+	// The type of usage for this charger point (is it public, membership required, etc)
+	string usage_type_id = 4;
+	// The address
+	Address address = 5;
+	// The connections available at this charge point
+	repeated Connection connections = 6;
+	// The number of charging points
+	int64 num_points = 7;
+	// The cost of charging
+	string cost = 8;
+	// The operator
+	Operator operator = 10;
+	// The type of usage
+	UsageType usage_type = 11;
+
+}
+
+message Address {
+	Coordinates location = 1;
+	string title = 2;
+	string address_line_1 = 3;
+	string address_line_2 = 4;
+	string town = 5;
+	string state_or_province = 6;
+	// Any comments about how to access the charger
+	string access_comments = 7;
+	string postcode = 8;
+	string country_id = 9;
+	Country country = 10;
+}
+
+message Connection {
+	// The ID of the connection type
+	string connection_type_id = 1;
+	string reference = 2;
+	// The level of charging power available
+	string level = 4;
+	// The amps offered
+	float amps = 5;
+	// The voltage offered
+	float voltage = 6;
+	// The power in KW
+	float power = 7;
+	// The current
+	string current = 8;
+	ConnectionType connection_type = 9;
+}
+
+// Retrieve reference data as used by this API
+message ReferenceDataRequest {}
+
+message ReferenceDataResponse {
+	// The types of charger
+	repeated ChargerType charger_types = 1;
+	// The types of connection
+	repeated ConnectionType connection_types = 2;
+	// The types of current
+	repeated CurrentType current_types = 3;
+	// The countries
+	repeated Country countries = 4;
+	// The providers of the charger data
+	repeated DataProvider data_providers = 5;
+	// The companies operating the chargers
+	repeated Operator operators = 6;
+	// The status of the charger
+	repeated StatusType status_types = 7;
+	// The status of a submission
+	repeated SubmissionStatusType submission_status_types = 8;
+	// The different types of usage
+	repeated UsageType usage_types = 9;
+	// The types of user comment
+	repeated UserCommentType user_comment_types = 10;
+	// The types of checkin status
+	repeated CheckinStatusType checkin_status_types = 11;
+}
+
+message ChargerType {
+	string id = 1;
+	string title = 2;
+	string comments = 3;
+	// Is this 40KW+
+	bool is_fast_charge_capable = 4;
+}
+
+message ConnectionType {
+	string id = 1;
+	string title = 2;
+	string formal_name = 3;
+	bool is_discontinued = 4;
+	bool is_obsolete = 5;
+}
+
+message CurrentType {
+	string id = 1;
+	string title = 2;
+	string description = 3;
+}
+
+message Country {
+	string id = 1;
+	string title = 2;
+	string iso_code = 3;
+	string continent_code = 4;
+}
+
+message DataProvider {
+	string id = 1;
+	string title = 2;
+	string website = 3;
+	string comments = 4;
+	DataProviderStatusType data_provider_status_type = 5;
+	// How is this data licensed
+	string license = 6;
+}
+
+message DataProviderStatusType {
+	string id = 1;
+	string title = 2;
+	bool is_provider_enabled = 3;
+}
+
+message Operator {
+	string id = 1;
+	string title = 2;
+	string website = 3;
+	string comments = 4;
+	// Is this operator a private individual vs a company
+	bool is_private_individual = 5;
+	string contact_email = 6;
+	string phone_primary = 7;
+	string phone_secondary = 8;
+	string fault_report_email = 9;
+}
+
+message StatusType {
+	string id = 1;
+	string title = 2;
+	bool is_operational = 3;
+}
+
+message SubmissionStatusType {
+	string id = 1;
+	string title = 2;
+	bool is_live = 3;
+}
+
+message UsageType {
+	string id = 1;
+	string title = 2;
+	bool is_pay_at_location = 3;
+	bool is_membership_required = 4;
+	bool is_access_key_required = 5;
+}
+
+message UserCommentType {
+	string id = 1;
+	string title = 2;
+}
+
+message CheckinStatusType {
+	string id = 1;
+	string title = 2;
+	bool is_positive = 3;
+	bool is_automated = 4;
+}

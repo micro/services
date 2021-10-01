@@ -140,7 +140,6 @@ func schemaToGoExample(serviceName, typeName string, schemas map[string]*openapi
 					continue
 				}
 			}
-
 			switch v.Value.Type {
 			case "object":
 				typ, found := detectType(k, v.Value.Properties)
@@ -162,9 +161,15 @@ func schemaToGoExample(serviceName, typeName string, schemas map[string]*openapi
 				if found {
 					ret += k + fieldSeparator + arrayPrefix + serviceName + "." + strings.Title(typ) + objectOpen + serviceName + "." + strings.Title(typ) + objectOpen + recurse(v.Value.Items.Value.Properties, append(append(path, k), "[0]")) + objectClose + objectClose + arrayPostfix + fieldDelimiter
 				} else {
+					arrint := val.([]interface{})
 					switch v.Value.Items.Value.Type {
 					case "string":
-						ret += k + fieldSeparator + arrayPrefix + fmt.Sprintf("\"%v\"", val) + arrayPostfix + fieldDelimiter
+						arrstr := make([]string, len(arrint))
+						for i, v := range arrint {
+							arrstr[i] = fmt.Sprintf("%v", v)
+						}
+
+						ret += k + fieldSeparator + fmt.Sprintf("%#v", arrstr) + fieldDelimiter
 					case "number", "boolean":
 						ret += k + fieldSeparator + arrayPrefix + fmt.Sprintf("%v", val) + arrayPostfix + fieldDelimiter
 					case "object":

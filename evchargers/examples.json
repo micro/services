@@ -1,0 +1,643 @@
+{
+  "search": [
+    {
+      "title": "Search by location",
+      "run_check": true,
+      "request": {
+        "location": {
+          "latitude": 51.53336351319885,
+          "longitude": -0.0252
+        },
+        "distance": 2000,
+        "max_results": 2
+      },
+      "response": {
+        "pois": [
+          {
+            "id": "121442",
+            "data_provider_id": "1",
+            "operator_id": "25",
+            "usage_type_id": "4",
+            "address": {
+              "location": {
+                "latitude": 51.539715,
+                "longitude": -0.02769
+              },
+              "title": "St Marks Gate",
+              "address_line_1": "Opposite 1 St Marks Gate",
+              "address_line_2": "",
+              "town": "London",
+              "state_or_province": "",
+              "access_comments": "",
+              "postcode": "E9 5HT",
+              "country_id": "1",
+              "country": {
+                "id": "1",
+                "title": "United Kingdom",
+                "iso_code": "GB",
+                "continent_code": "EU"
+              }
+            },
+            "connections": [
+              {
+                "connection_type_id": "1",
+                "reference": "",
+                "level": "2",
+                "amps": 16,
+                "voltage": 230,
+                "power": 4,
+                "current": "10",
+                "connection_type": {
+                  "id": "1",
+                  "title": "Type 1 (J1772)",
+                  "formal_name": "SAE J1772-2009",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "25",
+                "reference": "",
+                "level": "2",
+                "amps": 32,
+                "voltage": 230,
+                "power": 7,
+                "current": "10",
+                "connection_type": {
+                  "id": "25",
+                  "title": "Type 2 (Socket Only)",
+                  "formal_name": "IEC 62196-2 Type 2",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "1",
+                "reference": "",
+                "level": "2",
+                "amps": 16,
+                "voltage": 230,
+                "power": 4,
+                "current": "10",
+                "connection_type": {
+                  "id": "1",
+                  "title": "Type 1 (J1772)",
+                  "formal_name": "SAE J1772-2009",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "25",
+                "reference": "",
+                "level": "2",
+                "amps": 32,
+                "voltage": 230,
+                "power": 7,
+                "current": "10",
+                "connection_type": {
+                  "id": "25",
+                  "title": "Type 2 (Socket Only)",
+                  "formal_name": "IEC 62196-2 Type 2",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "1",
+                "reference": "",
+                "level": "2",
+                "amps": 16,
+                "voltage": 230,
+                "power": 4,
+                "current": "10",
+                "connection_type": {
+                  "id": "1",
+                  "title": "Type 1 (J1772)",
+                  "formal_name": "SAE J1772-2009",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "25",
+                "reference": "",
+                "level": "2",
+                "amps": 32,
+                "voltage": 230,
+                "power": 7,
+                "current": "10",
+                "connection_type": {
+                  "id": "25",
+                  "title": "Type 2 (Socket Only)",
+                  "formal_name": "IEC 62196-2 Type 2",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              }
+            ],
+            "num_points": "3",
+            "cost": "£0.059/minute; min £1.18; other tariffs available",
+            "operator": {
+              "id": "25",
+              "title": "Source London",
+              "website": "http://www.sourcelondon.net/",
+              "comments": "Monthly post-payment membership system, with per-minute billing and optional lower tariffs in return for monthly subscription payment.",
+              "is_private_individual": false,
+              "contact_email": "membership@sourcelondon.net",
+              "phone_primary": "",
+              "phone_secondary": "",
+              "fault_report_email": "membership@sourcelondon.net"
+            },
+            "usage_type": {
+              "id": "4",
+              "title": "Public - Membership Required",
+              "is_pay_at_location": false,
+              "is_membership_required": true,
+              "is_access_key_required": true
+            }
+          },
+          {
+            "id": "189330",
+            "data_provider_id": "1",
+            "operator_id": "3296",
+            "usage_type_id": "5",
+            "address": {
+              "location": {
+                "latitude": 51.529694,
+                "longitude": -0.015285153
+              },
+              "title": "McDonald's Bow",
+              "address_line_1": "4 Payne Road",
+              "address_line_2": "",
+              "town": "London",
+              "state_or_province": "England",
+              "access_comments": "",
+              "postcode": "E3 2SP",
+              "country_id": "1",
+              "country": {
+                "id": "1",
+                "title": "United Kingdom",
+                "iso_code": "GB",
+                "continent_code": "EU"
+              }
+            },
+            "connections": [
+              {
+                "connection_type_id": "33",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 50,
+                "current": "30",
+                "connection_type": {
+                  "id": "33",
+                  "title": "CCS (Type 2)",
+                  "formal_name": "IEC 62196-3 Configuration FF",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "2",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 50,
+                "current": "30",
+                "connection_type": {
+                  "id": "2",
+                  "title": "CHAdeMO",
+                  "formal_name": "IEC 62196-3 Configuration AA",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              }
+            ],
+            "num_points": "2",
+            "cost": "£0.40/kWh",
+            "operator": {
+              "id": "3296",
+              "title": "InstaVolt Ltd",
+              "website": "http://instavolt.co.uk/",
+              "comments": "Pay-as-you-go, charged per kWh, contactless bank card payment.",
+              "is_private_individual": false,
+              "contact_email": "",
+              "phone_primary": "",
+              "phone_secondary": "",
+              "fault_report_email": ""
+            },
+            "usage_type": {
+              "id": "5",
+              "title": "Public - Pay At Location",
+              "is_pay_at_location": true,
+              "is_membership_required": false,
+              "is_access_key_required": false
+            }
+          }
+        ]
+
+      }
+    },
+    {
+      "title": "Search by bounding box",
+      "run_check": true,
+      "request": {
+        "box": {
+          "bottom_left": {
+            "latitude":51.52627543859447,
+            "longitude": -0.03635349400295168
+          },
+          "top_right": {
+            "latitude": 51.56717121807993,
+            "longitude":-0.002293530559768285
+          }
+        },
+        "max_results": 2
+      },
+      "response": {
+        "pois": [
+          {
+            "id": "189330",
+            "data_provider_id": "1",
+            "operator_id": "3296",
+            "usage_type_id": "5",
+            "address": {
+              "location": {
+                "latitude": 51.529694,
+                "longitude": -0.015285153
+              },
+              "title": "McDonald's Bow",
+              "address_line_1": "4 Payne Road",
+              "address_line_2": "",
+              "town": "London",
+              "state_or_province": "England",
+              "access_comments": "",
+              "postcode": "E3 2SP",
+              "country_id": "1",
+              "country": {
+                "id": "1",
+                "title": "United Kingdom",
+                "iso_code": "GB",
+                "continent_code": "EU"
+              }
+            },
+            "connections": [
+              {
+                "connection_type_id": "33",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 50,
+                "current": "30",
+                "connection_type": {
+                  "id": "33",
+                  "title": "CCS (Type 2)",
+                  "formal_name": "IEC 62196-3 Configuration FF",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "2",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 50,
+                "current": "30",
+                "connection_type": {
+                  "id": "2",
+                  "title": "CHAdeMO",
+                  "formal_name": "IEC 62196-3 Configuration AA",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              }
+            ],
+            "num_points": "2",
+            "cost": "£0.40/kWh",
+            "operator": {
+              "id": "3296",
+              "title": "InstaVolt Ltd",
+              "website": "http://instavolt.co.uk/",
+              "comments": "Pay-as-you-go, charged per kWh, contactless bank card payment.",
+              "is_private_individual": false,
+              "contact_email": "",
+              "phone_primary": "",
+              "phone_secondary": "",
+              "fault_report_email": ""
+            },
+            "usage_type": {
+              "id": "5",
+              "title": "Public - Pay At Location",
+              "is_pay_at_location": true,
+              "is_membership_required": false,
+              "is_access_key_required": false
+            }
+          },
+          {
+            "id": "187765",
+            "data_provider_id": "18",
+            "operator_id": "3",
+            "usage_type_id": "1",
+            "address": {
+              "location": {
+                "latitude": 51.529995,
+                "longitude": -0.009934
+              },
+              "title": "Hunt's Lane",
+              "address_line_1": "Hunt's Lane",
+              "address_line_2": "",
+              "town": "London",
+              "state_or_province": "",
+              "access_comments": "",
+              "postcode": "E15 2QD",
+              "country_id": "1",
+              "country": {
+                "id": "1",
+                "title": "United Kingdom",
+                "iso_code": "GB",
+                "continent_code": "EU"
+              }
+            },
+            "connections": [
+              {
+                "connection_type_id": "25",
+                "reference": "0",
+                "level": "2",
+                "amps": 32,
+                "voltage": 230,
+                "power": 7,
+                "current": "10",
+                "connection_type": {
+                  "id": "25",
+                  "title": "Type 2 (Socket Only)",
+                  "formal_name": "IEC 62196-2 Type 2",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              }
+            ],
+            "num_points": "0",
+            "cost": "",
+            "operator": {
+              "id": "3",
+              "title": "POD Point (UK)",
+              "website": "http://www.pod-point.com/",
+              "comments": "Part of Groupe EDF",
+              "is_private_individual": false,
+              "contact_email": "enquiries@pod-point.com",
+              "phone_primary": "020 7247 4114",
+              "phone_secondary": "",
+              "fault_report_email": "enquiries@pod-point.com"
+            },
+            "usage_type": {
+              "id": "1",
+              "title": "Public",
+              "is_pay_at_location": false,
+              "is_membership_required": false,
+              "is_access_key_required": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "title": "Search with filters. Fast chargers only",
+      "run_check": true,
+      "request": {
+        "location": {
+          "latitude": 51.53336351319885,
+          "longitude": -0.0252
+        },
+        "distance": 2000,
+        "max_results": 2,
+        "levels": [
+          "3"
+        ]
+      },
+      "response": {
+        "pois": [
+          {
+            "id": "189330",
+            "data_provider_id": "1",
+            "operator_id": "3296",
+            "usage_type_id": "5",
+            "address": {
+              "location": {
+                "latitude": 51.529694,
+                "longitude": -0.015285153
+              },
+              "title": "McDonald's Bow",
+              "address_line_1": "4 Payne Road",
+              "address_line_2": "",
+              "town": "London",
+              "state_or_province": "England",
+              "access_comments": "",
+              "postcode": "E3 2SP",
+              "country_id": "1",
+              "country": {
+                "id": "1",
+                "title": "United Kingdom",
+                "iso_code": "GB",
+                "continent_code": "EU"
+              }
+            },
+            "connections": [
+              {
+                "connection_type_id": "33",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 50,
+                "current": "30",
+                "connection_type": {
+                  "id": "33",
+                  "title": "CCS (Type 2)",
+                  "formal_name": "IEC 62196-3 Configuration FF",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "2",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 50,
+                "current": "30",
+                "connection_type": {
+                  "id": "2",
+                  "title": "CHAdeMO",
+                  "formal_name": "IEC 62196-3 Configuration AA",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              }
+            ],
+            "num_points": "2",
+            "cost": "£0.40/kWh",
+            "operator": {
+              "id": "3296",
+              "title": "InstaVolt Ltd",
+              "website": "http://instavolt.co.uk/",
+              "comments": "Pay-as-you-go, charged per kWh, contactless bank card payment.",
+              "is_private_individual": false,
+              "contact_email": "",
+              "phone_primary": "",
+              "phone_secondary": "",
+              "fault_report_email": ""
+            },
+            "usage_type": {
+              "id": "5",
+              "title": "Public - Pay At Location",
+              "is_pay_at_location": true,
+              "is_membership_required": false,
+              "is_access_key_required": false
+            }
+          },
+          {
+            "id": "127251",
+            "data_provider_id": "1",
+            "operator_id": "32",
+            "usage_type_id": "4",
+            "address": {
+              "location": {
+                "latitude": 51.543983,
+                "longitude": -0.01991
+              },
+              "title": "Queen Elizabeth Olympic Park",
+              "address_line_1": "Queen Elizabeth Olympic Park",
+              "address_line_2": "",
+              "town": "Copper Box Car Park",
+              "state_or_province": "London",
+              "access_comments": "",
+              "postcode": "E20 2ST",
+              "country_id": "1",
+              "country": {
+                "id": "1",
+                "title": "United Kingdom",
+                "iso_code": "GB",
+                "continent_code": "EU"
+              }
+            },
+            "connections": [
+              {
+                "connection_type_id": "25",
+                "reference": "",
+                "level": "2",
+                "amps": 32,
+                "voltage": 400,
+                "power": 22,
+                "current": "20",
+                "connection_type": {
+                  "id": "25",
+                  "title": "Type 2 (Socket Only)",
+                  "formal_name": "IEC 62196-2 Type 2",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "2",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 50,
+                "current": "30",
+                "connection_type": {
+                  "id": "2",
+                  "title": "CHAdeMO",
+                  "formal_name": "IEC 62196-3 Configuration AA",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "33",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 50,
+                "current": "30",
+                "connection_type": {
+                  "id": "33",
+                  "title": "CCS (Type 2)",
+                  "formal_name": "IEC 62196-3 Configuration FF",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              },
+              {
+                "connection_type_id": "1036",
+                "reference": "",
+                "level": "3",
+                "amps": 0,
+                "voltage": 0,
+                "power": 43,
+                "current": "20",
+                "connection_type": {
+                  "id": "1036",
+                  "title": "Type 2 (Tethered Connector) ",
+                  "formal_name": "IEC 62196-2",
+                  "is_discontinued": false,
+                  "is_obsolete": false
+                }
+              }
+            ],
+            "num_points": "2",
+            "cost": "Inclusive; for Polar Plus subscription members only",
+            "operator": {
+              "id": "32",
+              "title": "BP Pulse",
+              "website": "https://www.bppulse.co.uk/",
+              "comments": "Formerly known as Polar Network, or BP Chargemaster",
+              "is_private_individual": false,
+              "contact_email": "polarenquiries@chargemasterplc.com",
+              "phone_primary": "01582 400331",
+              "phone_secondary": "",
+              "fault_report_email": "polarenquiries@chargemasterplc.com"
+            },
+            "usage_type": {
+              "id": "4",
+              "title": "Public - Membership Required",
+              "is_pay_at_location": false,
+              "is_membership_required": true,
+              "is_access_key_required": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "referenceData": [
+    {
+      "title": "Get reference data",
+      "run_check": true,
+      "request": {
+      },
+      "response": {
+        "charger_types": [],
+        "connection_types": [],
+        "current_types": [],
+        "countries": [],
+        "data_providers": [],
+        "operators": [],
+        "status_types": [],
+        "submission_status_types": [],
+        "usage_types": [],
+        "usage_types": [],
+        "user_comment_types": [],
+        "checkin_status_types": []
+      }
+    }
+  ]
+}
