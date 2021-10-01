@@ -6,7 +6,7 @@ export class EvchargersService {
   constructor(token: string) {
     this.client = new m3o.Client({ token: token });
   }
-  // Retrieve reference data as used by this API
+  // Retrieve reference data as used by this API and in conjunction with the Search endpoint
   referenceData(request: ReferenceDataRequest): Promise<ReferenceDataResponse> {
     return this.client.call(
       "evchargers",

@@ -16,7 +16,7 @@ type EvchargersService struct {
 	client *client.Client
 }
 
-// Retrieve reference data as used by this API
+// Retrieve reference data as used by this API and in conjunction with the Search endpoint
 func (t *EvchargersService) ReferenceData(request *ReferenceDataRequest) (*ReferenceDataResponse, error) {
 	rsp := &ReferenceDataResponse{}
 	return rsp, t.client.Call("evchargers", "ReferenceData", request, rsp)
