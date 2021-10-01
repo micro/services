@@ -674,7 +674,7 @@ func (x *Connection) GetLevel() *ChargerType {
 	return nil
 }
 
-// Retrieve reference data as used by this API
+// Retrieve reference data as used by this API and in conjunction with the Search endpoint
 type ReferenceDataRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

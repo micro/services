@@ -111,7 +111,7 @@ message Connection {
 	ChargerType level = 10;
 }
 
-// Retrieve reference data as used by this API
+// Retrieve reference data as used by this API and in conjunction with the Search endpoint
 message ReferenceDataRequest {}
 
 message ReferenceDataResponse {

@@ -9,3 +9,5 @@ This is the E(lectric) V(ehicle) chargers API. Search for EV chargers using
 and filter the results based on connection type, operator, and more.
 
 Powered by https://openchargemap.org/
+
+Use the `ReferenceData` endpoint to retrieve core reference data which is used in conjunction with the main `Search` endpoint. 
