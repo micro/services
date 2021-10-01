@@ -97,7 +97,7 @@ message Connection {
 	string connection_type_id = 1;
 	string reference = 2;
 	// The level of charging power available
-	string level = 4;
+	string level_id = 4;
 	// The amps offered
 	float amps = 5;
 	// The voltage offered
@@ -107,9 +107,11 @@ message Connection {
 	// The current
 	string current = 8;
 	ConnectionType connection_type = 9;
+
+	ChargerType level = 10;
 }
 
-// Retrieve reference data as used by this API
+// Retrieve reference data as used by this API and in conjunction with the Search endpoint
 message ReferenceDataRequest {}
 
 message ReferenceDataResponse {

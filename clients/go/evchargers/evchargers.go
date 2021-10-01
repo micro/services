@@ -16,7 +16,7 @@ type EvchargersService struct {
 	client *client.Client
 }
 
-// Retrieve reference data as used by this API
+// Retrieve reference data as used by this API and in conjunction with the Search endpoint
 func (t *EvchargersService) ReferenceData(request *ReferenceDataRequest) (*ReferenceDataResponse, error) {
 	rsp := &ReferenceDataResponse{}
 	return rsp, t.client.Call("evchargers", "ReferenceData", request, rsp)
@@ -69,9 +69,10 @@ type Connection struct {
 	// The ID of the connection type
 	ConnectionTypeId string `json:"connectionTypeId"`
 	// The current
-	Current string `json:"current"`
+	Current string       `json:"current"`
+	Level   *ChargerType `json:"level"`
 	// The level of charging power available
-	Level string `json:"level"`
+	LevelId string `json:"levelId"`
 	// The power in KW
 	Power     float64 `json:"power"`
 	Reference string  `json:"reference"`
