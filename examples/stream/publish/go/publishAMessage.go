@@ -11,9 +11,9 @@ func PublishAmessage() {
 	streamService := stream.NewStreamService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := streamService.Publish(&stream.PublishRequest{
 		Message: map[string]interface{}{
-			"id":   "1",
 			"type": "signup",
 			"user": "john",
+			"id":   "1",
 		},
 		Topic: "events",
 	})
