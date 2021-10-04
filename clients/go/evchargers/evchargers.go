@@ -35,6 +35,7 @@ type Address struct {
 	AddressLine2    string       `json:"addressLine2"`
 	Country         *Country     `json:"country"`
 	CountryId       string       `json:"countryId"`
+	LatLng          string       `json:"latLng"`
 	Location        *Coordinates `json:"location"`
 	Postcode        string       `json:"postcode"`
 	StateOrProvince string       `json:"stateOrProvince"`
