@@ -34,6 +34,7 @@ import * as time from "./time";
 import * as twitter from "./twitter";
 import * as url from "./url";
 import * as user from "./user";
+import * as vehicle from "./vehicle";
 import * as weather from "./weather";
 
 export class Client {
@@ -74,6 +75,7 @@ export class Client {
     this.twitterService = new twitter.TwitterService(token);
     this.urlService = new url.UrlService(token);
     this.userService = new user.UserService(token);
+    this.vehicleService = new vehicle.VehicleService(token);
     this.weatherService = new weather.WeatherService(token);
   }
 
@@ -113,5 +115,6 @@ export class Client {
   twitterService: twitter.TwitterService;
   urlService: url.UrlService;
   userService: user.UserService;
+  vehicleService: vehicle.VehicleService;
   weatherService: weather.WeatherService;
 }
