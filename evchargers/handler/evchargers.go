@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -211,6 +212,7 @@ func (e *Evchargers) Search(ctx context.Context, request *evchargers.SearchReque
 				AccessComments:  result.Address.AccessComments,
 				Postcode:        result.Address.Postcode,
 				CountryId:       strconv.Itoa(int(result.Address.CountryID)),
+				LatLng:          fmt.Sprintf("%v, %v", result.Address.Latitude, result.Address.Longitude),
 			},
 			Connections: marshalConnections(result.Connections),
 			NumPoints:   int64(result.NumberOfPoints),

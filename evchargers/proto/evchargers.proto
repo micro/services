@@ -90,6 +90,7 @@ message Address {
 	string postcode = 8;
 	string country_id = 9;
 	Country country = 10;
+	string lat_lng = 11;
 }
 
 message Connection {

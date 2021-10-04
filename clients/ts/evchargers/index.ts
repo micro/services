@@ -31,6 +31,7 @@ export interface Address {
   addressLine2?: string;
   country?: { [key: string]: any };
   countryId?: string;
+  latLng?: string;
   location?: Coordinates;
   postcode?: string;
   stateOrProvince?: string;
