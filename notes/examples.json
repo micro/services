@@ -21,7 +21,7 @@
     "read": [{
         "title": "Read a note",
         "description": "Read a note by its ID",
-        "run_check": true,
+        "run_check": false,
         "request": {
             "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
         },
@@ -38,7 +38,7 @@
     "list": [{
         "title": "List all notes",
         "description": "List all your available notes",
-        "run_check": true,
+        "run_check": false,
         "request": {},
         "response": {
             "notes": [
@@ -55,7 +55,7 @@
     "update": [{
         "title": "Update a Note",
         "description": "Update the note title and text",
-        "run_check": true,
+        "run_check": false,
         "request": {
 	    "note": {
                 "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
@@ -76,7 +76,7 @@
     "delete": [{
         "title": "Delete a Note",
         "description": "Delete a note by id",
-        "run_check": true,
+        "run_check": false,
         "request": {
             "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
         },
