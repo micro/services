@@ -1,0 +1,28 @@
+
+{
+    "lookup": [{
+        "title": "Lookup vehicle",
+        "description": "Lookup vehicle by UK registration",
+        "run_check": false,
+        "request": {
+            "registration": "LC60OTA"
+        },
+        "response": {
+		"registration": "LC60OTA",
+		"make": "MAZDA",
+		"colour": "BLUE",
+		"year_of_manufacture": 2010,
+		"co2_emissions": 119,
+		"engine_capacity": 1560,
+		"fuel_type": "DIESEL",
+		"month_of_first_registration": "2010-12",
+		"mot_status": "Valid",
+		"mot_expiry": "2022-01-15",
+		"tax_due_date": "2022-06-01",
+		"tax_status": "Taxed",
+		"type_approval": "M1",
+		"wheelplan": "2 AXLE RIGID BODY",
+		"last_v5_issued": "2018-01-12"
+        }
+    }]
+}

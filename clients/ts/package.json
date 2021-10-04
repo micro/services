@@ -47,6 +47,7 @@
   "./twitter": "./dist/twitter/index.js",
   "./url": "./dist/url/index.js",
   "./user": "./dist/user/index.js",
+  "./vehicle": "./dist/vehicle/index.js",
   "./weather": "./dist/weather/index.js"
  },
  "license": "ISC",

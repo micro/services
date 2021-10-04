@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package vehicle;
+
+option go_package = "./proto;vehicle";
+
+service Vehicle {
+	rpc Lookup(LookupRequest) returns (LookupResponse) {}
+}
+
+// Lookup a UK vehicle by it's registration number
+message LookupRequest {
+	// the vehicle registration number
+	string registration = 1;
+}
+
+message LookupResponse {
+	// registration number
+	string registration = 1;
+	// make of vehicle
+	string make = 2;
+	// colour of vehicle
+	string colour = 3;
+	// year of manufacture
+	int32 year_of_manufacture = 4;
+	// co2 emmissions
+	double co2_emissions = 5;
+	// engine capacity
+	int32 engine_capacity = 6;
+	// fuel type e.g petrol, diesel
+	string fuel_type = 7;
+	// month of first registration
+	string month_of_first_registration = 8;
+	// mot status
+	string mot_status = 9;
+	// mot expiry
+	string mot_expiry = 10;
+	// tax due data
+	string tax_due_date = 11;
+	// tax status
+	string tax_status = 12;
+	// type approvale
+	string type_approval = 13;
+	// wheel plan
+	string wheelplan = 14;
+	// date of last v5 issue
+	string last_v5_issued = 15;
+}
