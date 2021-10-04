@@ -3,7 +3,7 @@
     "create": [{
         "title": "Create a note",
         "description": "Create a simple text based note",
-        "run_check": true,
+        "run_check": false,
         "request": {
             "title": "New Note",
             "text": "This is my note"
