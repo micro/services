@@ -1,0 +1,35 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto";	
+
+package function;
+
+option go_package = "./proto;function";
+
+service Function {
+	rpc Call(CallRequest) returns (CallResponse) {}
+	rpc Deploy(DeployRequest) returns (DeployResponse) {}
+}
+
+// Call a function
+message CallRequest {
+	// Name of the function
+	string name = 1;
+	// Request body that will be passed to the function
+	google.protobuf.Struct request = 2;
+}
+
+message CallResponse {
+	// Response body that the function returned
+	google.protobuf.Struct response = 1;
+}
+
+// Deploy a group of functions
+message DeployRequest {
+	// github url to repo
+	string repo = 1;
+	// optional subfolder path
+	string subfolder = 2;
+}
+
+message DeployResponse {
+}
