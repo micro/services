@@ -86,7 +86,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	multitenantPrefix := ""
 
 	// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--trigger-http", "--project", e.project, "--runtime", "nodejs8")
+	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--trigger-http", "--project", e.project, "--runtime", "nodejs14")
 	cmd.Dir = filepath.Join(gitter.RepoDir(), req.Subfolder)
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
