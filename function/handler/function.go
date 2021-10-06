@@ -73,6 +73,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if err != nil {
 		return fmt.Errorf(string(outp))
 	}
+	log.Info(string(outp))
 	return nil
 }
 
