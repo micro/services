@@ -139,18 +139,20 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 	client := &http.Client{}
 	resp, err := client.Do(r)
 	if err != nil {
-		panic(err)
+		log.Errorf("error making request %v", err)
+		return err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(string(body))
+		log.Errorf("error reading body %v", string(body))
 		return err
 	}
 
 	err = json.Unmarshal(body, &rsp.Response)
 	if err != nil {
+		log.Errorf("error unmarshaling %v", err)
 		return err
 	}
 
