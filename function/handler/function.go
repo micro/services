@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"io/ioutil"
 	"os/exec"
 
@@ -17,7 +18,7 @@ type Function struct {
 }
 
 func NewFunction() *Function {
-	v, err := config.Get("function.service_account_keyfile")
+	v, err := config.Get("function.service_account_json")
 	if err != nil {
 		log.Fatalf("function.service_account_json: %v", err)
 	}
@@ -28,6 +29,12 @@ func NewFunction() *Function {
 		log.Fatalf("function.service_account: %v", err)
 	}
 	accName := v.String("")
+
+	m := map[string]interface{}{}
+	err = json.Unmarshal([]byte(keyfile), &m)
+	if err != nil {
+		log.Fatalf("invalid json: %v", err)
+	}
 
 	// only root
 	err = ioutil.WriteFile("/acc.json", []byte(keyfile), 0700)
