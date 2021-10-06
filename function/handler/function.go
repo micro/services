@@ -107,7 +107,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	}
 
 	// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--allow-unauthenticated", "--entry-point", req.Entrypoint, "--trigger-http", "--project", e.project, "--runtime", "nodejs14")
+	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+"-"+req.Name, "--allow-unauthenticated", "--entry-point", req.Entrypoint, "--trigger-http", "--project", e.project, "--runtime", "nodejs14")
 	cmd.Dir = filepath.Join(gitter.RepoDir(), req.Subfolder)
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
@@ -126,7 +126,7 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 	}
 	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
 
-	url := e.address + multitenantPrefix + req.Name
+	url := e.address + multitenantPrefix + "-" + req.Name
 	fmt.Println("URL:>", url)
 
 	js, _ := json.Marshal(req.Request)
