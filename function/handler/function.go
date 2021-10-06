@@ -87,7 +87,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if !ok {
 		tenantId = "micro"
 	}
-	multitenantPrefix := tenantId
+	multitenantPrefix := strins.Replace(tenantId, "/", "-", -1)
 
 	// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--trigger-http", "--project", e.project, "--runtime", "nodejs14")
