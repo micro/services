@@ -145,6 +145,7 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		log.Error(string(body))
 		return err
 	}
 
