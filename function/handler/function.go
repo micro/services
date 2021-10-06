@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -20,6 +22,8 @@ import (
 
 type Function struct {
 	project string
+	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
+	address string
 }
 
 func NewFunction() *Function {
@@ -30,6 +34,15 @@ func NewFunction() *Function {
 	keyfile := v.Bytes()
 	if len(keyfile) == 0 {
 		log.Fatalf("empty keyfile")
+	}
+
+	v, err = config.Get("function.address")
+	if err != nil {
+		log.Fatalf("function.address: %v", err)
+	}
+	address := v.String("")
+	if len(address) == 0 {
+		log.Fatalf("empty address")
 	}
 
 	v, err = config.Get("function.project")
@@ -73,7 +86,7 @@ func NewFunction() *Function {
 		log.Fatalf(string(outp))
 	}
 	log.Info(string(outp))
-	return &Function{project: project}
+	return &Function{project: project, address: address}
 }
 
 func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
@@ -106,6 +119,39 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 
 func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *function.CallResponse) error {
 	log.Info("Received Function.Call request")
+
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
+
+	url := e.address + multitenantPrefix + req.Name
+	fmt.Println("URL:>", url)
+
+	js, _ := json.Marshal(req.Request)
+	r, err := http.NewRequest("POST", url, bytes.NewBuffer(js))
+	if err != nil {
+		return err
+	}
+	r.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(r)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, &rsp.Response)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
