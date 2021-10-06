@@ -17,6 +17,7 @@ import (
 )
 
 type Function struct {
+	project string
 }
 
 func NewFunction() *Function {
@@ -27,6 +28,15 @@ func NewFunction() *Function {
 	keyfile := v.Bytes()
 	if len(keyfile) == 0 {
 		log.Fatalf("empty keyfile")
+	}
+
+	v, err = config.Get("function.project")
+	if err != nil {
+		log.Fatalf("function.project: %v", err)
+	}
+	project := v.String("")
+	if len(project) == 0 {
+		log.Fatalf("empty project")
 	}
 
 	v, err = config.Get("function.service_account")
@@ -52,7 +62,7 @@ func NewFunction() *Function {
 	if err != nil {
 		log.Fatalf(string(outp))
 	}
-	return &Function{}
+	return &Function{project: project}
 }
 
 func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
@@ -67,7 +77,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	multitenantPrefix := ""
 
 	// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--trigger-http", "--runtime", "nodejs8")
+	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--trigger-http", "--project", e.project, "--runtime", "nodejs8")
 	cmd.Dir = filepath.Join(gitter.RepoDir(), req.Subfolder)
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
