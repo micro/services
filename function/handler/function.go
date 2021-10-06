@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os/exec"
+	"strings"
 
 	"github.com/micro/micro/v3/service/config"
 	log "github.com/micro/micro/v3/service/logger"
@@ -23,6 +24,9 @@ func NewFunction() *Function {
 		log.Fatalf("function.service_account_json: %v", err)
 	}
 	keyfile := v.String("")
+	if strings.TrimSpace(keyfile) == "" {
+		log.Fatalf("empty keyfile")
+	}
 
 	v, err = config.Get("function.service_account")
 	if err != nil {
