@@ -14,6 +14,7 @@ import (
 	"github.com/micro/micro/v3/service/runtime/source/git"
 
 	function "github.com/micro/services/function/proto"
+	"github.com/micro/services/pkg/tenant"
 )
 
 type Function struct {
@@ -82,8 +83,11 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 		return err
 	}
 
-	// @todo
-	multitenantPrefix := ""
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	multitenantPrefix := tenantId
 
 	// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--trigger-http", "--project", e.project, "--runtime", "nodejs14")
