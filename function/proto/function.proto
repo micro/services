@@ -29,6 +29,8 @@ message DeployRequest {
 	string repo = 1;
 	// optional subfolder path
 	string subfolder = 2;
+	// function name
+	string name = 3;
 }
 
 message DeployResponse {

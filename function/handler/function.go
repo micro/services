@@ -3,8 +3,10 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/micro/micro/v3/service/config"
 	log "github.com/micro/micro/v3/service/logger"
@@ -61,6 +63,16 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 		return err
 	}
 
+	// @todo
+	multitenantPrefix := ""
+
+	// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
+	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--trigger-http", "--runtime", "nodejs8")
+	cmd.Dir = filepath.Join(gitter.RepoDir(), req.Subfolder)
+	outp, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf(string(outp))
+	}
 	return nil
 }
 
