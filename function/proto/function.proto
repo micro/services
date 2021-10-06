@@ -31,6 +31,8 @@ message DeployRequest {
 	string subfolder = 2;
 	// function name
 	string name = 3;
+	// entry point of function
+	string entryPoint = 4;
 }
 
 message DeployResponse {
