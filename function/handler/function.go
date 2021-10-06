@@ -152,7 +152,7 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 
 	err = json.Unmarshal(body, &rsp.Response)
 	if err != nil {
-		log.Errorf("error unmarshaling %v", err)
+		log.Errorf("error unmarshaling %v", string(body))
 		return err
 	}
 
