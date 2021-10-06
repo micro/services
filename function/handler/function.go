@@ -130,6 +130,9 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 	fmt.Println("URL:>", url)
 
 	js, _ := json.Marshal(req.Request)
+	if len(req.Request.Fields) == 0 {
+		js = []byte("{}")
+	}
 	r, err := http.NewRequest("POST", url, bytes.NewBuffer(js))
 	if err != nil {
 		return err
