@@ -57,11 +57,20 @@ func NewFunction() *Function {
 		log.Fatalf("function.service_account: %v", err)
 	}
 
+	// DO THIS STEP
+	// https://cloud.google.com/functions/docs/reference/iam/roles#additional-configuration
+
 	// https://cloud.google.com/sdk/docs/authorizing#authorizing_with_a_service_account
 	outp, err := exec.Command("gcloud", "auth", "activate-service-account", accName, "--key-file", "/acc.json").CombinedOutput()
 	if err != nil {
 		log.Fatalf(string(outp))
 	}
+
+	outp, err = exec.Command("gcloud", "auth", "list").CombinedOutput()
+	if err != nil {
+		log.Fatalf(string(outp))
+	}
+	log.Info(string(outp))
 	return &Function{project: project}
 }
 
