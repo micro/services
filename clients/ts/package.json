@@ -21,6 +21,7 @@
   "./file": "./dist/file/index.js",
   "./forex": "./dist/forex/index.js",
   "./geocoding": "./dist/geocoding/index.js",
+  "./gifs": "./dist/gifs/index.js",
   "./helloworld": "./dist/helloworld/index.js",
   "./holidays": "./dist/holidays/index.js",
   "./id": "./dist/id/index.js",
@@ -64,5 +65,5 @@
  },
  "type": "module",
  "types": "dist/index.d.ts",
- "version": "1.0.539"
+ "version": "1.0.540"
 }

@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package gifs;
+
+option go_package = "./proto;gifs";
+
+service Gifs {
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+}
+
+// Search for a gif
+message SearchRequest {
+	// The search term
+	string query = 1;
+	// Max number of gifs to return. Defaults to 25
+	int32 limit = 2;
+	// The start position of results (used with pagination)
+	int32 offset = 3;
+	// Apply age related content filter. "g", "pg", "pg-13", or "r". Defaults to "g"
+	string rating = 4;
+	// ISO 2 letter language code for regional content
+	string lang = 5;
+}
+
+message SearchResponse {
+	// list of results
+	repeated Gif data = 1;
+	// information on pagination
+	Pagination pagination = 2;
+}
+
+message Pagination {
+	// position in pagination
+	int32 offset = 1;
+	// total number of results available
+	int32 total_count = 2;
+	// total number returned in this response
+	int32 count = 3;
+
+}
+
+message Gif {
+	// The ID of the GIF
+	string id = 1;
+	// The slug used in the GIF's URL
+	string slug = 2;
+	// The URL for this GIF
+	string url = 3;
+	// A short URL for this GIF
+	string short_url = 4;
+	// URL used for embedding the GIF
+	string embed_url = 5;
+	// The page on which this GIF was found
+	string source = 6;
+	// The content rating for the GIF
+	string rating = 7;
+	// The title for this GIF
+	string title = 8;
+	// The different formats available for this GIF
+	ImageFormats images = 9;
+}
+
+// A map of different formats (or renditions) of a GIF. See https://developers.giphy.com/docs/optional-settings#rendition-guide
+message ImageFormats {
+	// The original GIF. Good for desktop use
+	ImageFormat original = 1;
+	// A downsized version of the GIF < 2MB
+	ImageFormat downsized  = 2;
+	// Version of the GIF with fixed height of 200 pixels. Good for mobile use
+	ImageFormat fixed_height = 3;
+	// Static image of the GIF with fixed height of 200 pixels
+	ImageFormat fixed_height_still = 4;
+	// Version of the GIF with fixed height of 200 pixels and number of frames reduced to 6
+	ImageFormat fixed_height_downsampled = 5;
+	// Version of the GIF with fixed width of 200 pixels. Good for mobile use
+	ImageFormat fixed_width = 6;
+	// Static image of the GIF with fixed width of 200 pixels
+	ImageFormat fixed_width_still = 7;
+	// Version of the GIF with fixed width of 200 pixels and number of frames reduced to 6
+	ImageFormat fixed_width_downsampled = 8;
+	// Version of the GIF with fixed height of 100 pixels. Good for mobile keyboards
+	ImageFormat fixed_height_small = 9;
+	// Static image of the GIF with fixed height of 100 pixels
+	ImageFormat fixed_height_small_still = 10;
+	// Version of the GIF with fixed width of 100 pixels. Good for mobile keyboards
+	ImageFormat fixed_width_small = 11;
+	// Static image of the GIF with fixed width of 100 pixels
+	ImageFormat fixed_width_small_still = 12;
+	// Static image of the downsized version of the GIF
+	ImageFormat downsized_still = 13;
+	// A downsized version of the GIF < 8MB
+	ImageFormat downsized_large  = 14;
+	// A downsized version of the GIF < 5MB
+	ImageFormat downsized_medium  = 15;
+	// A downsized version of the GIF < 200kb
+	ImageFormat downsized_small  = 16;
+	// Static image of the original version of the GIF
+	ImageFormat original_still = 17;
+	// 15 second version of the GIF looping
+	ImageFormat looping = 18;
+	// mp4 version of the GIF <50kb displaying first 1-2 secs
+	ImageFormat preview = 19;
+	// Version of the GIF <50kb displaying first 1-2 secs
+	ImageFormat preview_gif = 20;
+
+}
+
+message ImageFormat {
+	// height
+	int32 height = 1;
+	// width
+	int32 width = 2;
+	// size in bytes
+	int32 size = 3;
+	// URL of the gif
+	string url = 4;
+	// URL to an MP4 version of the gif
+	string mp4_url = 5;
+	// size of the MP4 version
+	int32 mp4_size = 6;
+	// URL to a webp version of the gif
+	string webp_url = 7;
+	// size of the webp version
+	int32 webp_size = 8;
+}
+
