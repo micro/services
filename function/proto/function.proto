@@ -31,8 +31,9 @@ message DeployRequest {
 	string subfolder = 2;
 	// function name
 	string name = 3;
-	// entry point of function
-	string entryPoint = 4;
+	// entry point, ie. handler name in the source code 
+	// if not provided, defaults to the name parameter
+	string entrypoint = 4;
 }
 
 message DeployResponse {
