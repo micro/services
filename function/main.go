@@ -16,7 +16,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterFunctionHandler(srv.Server(), new(handler.Function))
+	pb.RegisterFunctionHandler(srv.Server(), handler.NewFunction())
 
 	// Run service
 	if err := srv.Run(); err != nil {

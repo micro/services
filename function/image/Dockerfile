@@ -1,4 +1,4 @@
-FROM micro/micro:latest
+FROM micro/cells:v3 as builder
 
 RUN apk add curl
 
@@ -20,3 +20,5 @@ RUN mkdir -p /usr/local/gcloud \
 
 # Adding the package path to local
 ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
+
+
