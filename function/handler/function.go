@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/micro/micro/v3/service/config"
 	log "github.com/micro/micro/v3/service/logger"
@@ -87,7 +88,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if !ok {
 		tenantId = "micro"
 	}
-	multitenantPrefix := strins.Replace(tenantId, "/", "-", -1)
+	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
 
 	// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+req.Name, "--trigger-http", "--project", e.project, "--runtime", "nodejs14")
