@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os/exec"
-	"strings"
 
 	"github.com/micro/micro/v3/service/config"
 	log "github.com/micro/micro/v3/service/logger"
@@ -23,8 +22,8 @@ func NewFunction() *Function {
 	if err != nil {
 		log.Fatalf("function.service_account_json: %v", err)
 	}
-	keyfile := v.String("")
-	if strings.TrimSpace(keyfile) == "" {
+	keyfile := v.Bytes()
+	if len(keyfile) == 0 {
 		log.Fatalf("empty keyfile")
 	}
 
@@ -35,13 +34,13 @@ func NewFunction() *Function {
 	accName := v.String("")
 
 	m := map[string]interface{}{}
-	err = json.Unmarshal([]byte(keyfile), &m)
+	err = json.Unmarshal(keyfile, &m)
 	if err != nil {
 		log.Fatalf("invalid json: %v", err)
 	}
 
 	// only root
-	err = ioutil.WriteFile("/acc.json", []byte(keyfile), 0700)
+	err = ioutil.WriteFile("/acc.json", keyfile, 0700)
 	if err != nil {
 		log.Fatalf("function.service_account: %v", err)
 	}
