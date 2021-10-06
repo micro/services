@@ -36,7 +36,10 @@ func NewFunction() *Function {
 	}
 
 	// https://cloud.google.com/sdk/docs/authorizing#authorizing_with_a_service_account
-	exec.Command("gcloud", "auth", "activate-service-account", accName, "--key-file", "/acc.json")
+	outp, err := exec.Command("gcloud", "auth", "activate-service-account", accName, "--key-file", "/acc.json").CombinedOutput()
+	if err != nil {
+		log.Fatalf(string(outp))
+	}
 	return &Function{}
 }
 
@@ -47,6 +50,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
