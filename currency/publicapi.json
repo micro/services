@@ -1,5 +1,6 @@
 {
   "name": "currency",
   "icon": "💱",
-  "category": "money"
+  "category": "money",
+  "display_name": "Currency"
 }

@@ -1,5 +1,6 @@
 {
   "name": "holidays",
   "icon": "🏖️",
-  "category": "util"
+  "category": "util",
+  "display_name": "Holidays"
 }

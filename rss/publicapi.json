@@ -1,5 +1,6 @@
 {
   "name": "rss",
   "icon": "📰",
-  "category": "web"
+  "category": "web",
+  "display_name": "RSS"
 }

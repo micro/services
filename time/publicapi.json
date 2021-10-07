@@ -1,5 +1,6 @@
 {
   "name": "time",
   "icon": "🌐",
-  "category": "timezone"
+  "category": "timezone",
+  "display_name": "Time"
 }

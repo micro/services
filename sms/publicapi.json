@@ -4,5 +4,6 @@
   "category": "communication",
   "pricing": {
     "Sms.Send": 75000
-  }
+  },
+  "display_name": "SMS"
 }

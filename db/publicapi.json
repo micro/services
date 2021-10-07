@@ -1,5 +1,6 @@
 {
   "name": "db",
   "icon": "📦",
-  "category": "storage"
+  "category": "storage",
+  "display_name": "DB"
 }

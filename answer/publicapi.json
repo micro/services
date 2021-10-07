@@ -1,5 +1,6 @@
 {
   "name": "answer",
   "icon": "❓",
-  "category": "search"
+  "category": "search",
+  "display_name": "Answer"
 }

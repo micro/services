@@ -4,5 +4,6 @@
   "category": "communication",
   "pricing": {
     "Email.Send": 1000
-  }
+  },
+  "display_name": "Email"
 }

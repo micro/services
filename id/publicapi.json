@@ -1,5 +1,6 @@
 {
   "name": "id",
   "icon": "🆔",
-  "category": "util"
+  "category": "util",
+  "display_name": "ID"
 }

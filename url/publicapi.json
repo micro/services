@@ -1,5 +1,6 @@
 {
   "name": "url",
   "icon": "🔗",
-  "category": "web"
+  "category": "web",
+  "display_name": "URL"
 }

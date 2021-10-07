@@ -1,5 +1,6 @@
 {
   "name": "stream",
   "icon": "🌊",
-  "category": "messaging"
+  "category": "messaging",
+  "display_name": "Stream"
 }

@@ -1,5 +1,6 @@
 {
   "name": "emoji",
   "icon": "😀",
-  "category": "web"
+  "category": "web",
+  "display_name": "Emoji"
 }
