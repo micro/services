@@ -7,5 +7,6 @@
     "Crypto.Price": 2000,
     "Crypto.Quote": 2000,
     "Crypto.History": 3500
-  }
+  },
+  "display_name": "Crypto"
 }

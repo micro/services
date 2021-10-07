@@ -1,5 +1,6 @@
 {
   "name": "sentiment",
   "icon": "🤔",
-  "category": "web"
+  "category": "web",
+  "display_name": "Sentiment"
 }

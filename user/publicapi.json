@@ -1,5 +1,6 @@
 {
   "name": "user",
   "icon": "👤",
-  "category": "authentication"
+  "category": "authentication",
+  "display_name": "User"
 }

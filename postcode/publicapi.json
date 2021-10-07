@@ -1,5 +1,6 @@
 {
   "name": "postcode",
   "icon": "📮",
-  "category": "logistics"
+  "category": "logistics",
+  "display_name": "Postcode"
 }

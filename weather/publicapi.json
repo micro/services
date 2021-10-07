@@ -1,5 +1,6 @@
 {
   "name": "weather",
   "icon": "☀️",
-  "category": "climate"
+  "category": "climate",
+  "display_name": "Weather"
 }

@@ -1,5 +1,6 @@
 {
   "name": "helloworld",
   "icon": "👋",
-  "category": "example"
+  "category": "example",
+  "display_name": "Hello World"
 }

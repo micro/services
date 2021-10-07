@@ -1,5 +1,6 @@
 {
   "name": "evchargers",
   "icon": "🔋",
-  "category": "travel"
+  "category": "travel",
+  "display_name": "EV Chargers"
 }

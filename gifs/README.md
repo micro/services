@@ -1,7 +1,7 @@
 Quick and simple GIF search
 
-# Gifs Service
+# GIFs Service
 
-Add gifs to your project with keyword search and results in multiple sizes and formats. 
+Add GIFs to your project with keyword search and results in multiple sizes and formats. 
 
 Powered by [GIPHY](https://giphy.com).

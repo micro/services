@@ -1,5 +1,6 @@
 {
   "name": "vehicle",
   "icon": "🚗",
-  "category": "dvla"
+  "category": "dvla",
+  "display_name": "Vehicle"
 }

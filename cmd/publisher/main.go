@@ -26,6 +26,7 @@ type PublicAPI struct {
 	Pricing      map[string]int64 `json:"pricing,omitempty"`
 	ExamplesJson string           `json:"examples_json,omitempty"`
 	PostmanJson  string           `json:"postman_json,omitempty"`
+	DisplayName  string           `json:"display_name,omitempty"`
 }
 
 func publishAPI(apiSpec *PublicAPI) error {

@@ -7,5 +7,6 @@
     "Stock.Quote": 2000,
     "Stock.History": 3500,
     "Stock.OrderBook": 3500
-  }
+  },
+  "display_name": "Stock"
 }
