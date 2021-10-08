@@ -219,12 +219,12 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 }
 
 func (e *Function) Delete(ctx context.Context, req *function.DeleteRequest, rsp *function.DeleteResponse) error {
-	log.Info("Received Function.Call request")
+	log.Info("Received Function.Delete request")
 	return fmt.Errorf("not implemented yet")
 }
 
 func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
-	log.Info("Received Function.Call request")
+	log.Info("Received Function.List request")
 
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
