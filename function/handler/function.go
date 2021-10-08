@@ -241,6 +241,7 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 	if err != nil {
 		return err
 	}
+	log.Info(readRsp.Records)
 
 	rsp.Functions = []*function.Func{}
 	for _, record := range readRsp.Records {
