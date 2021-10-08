@@ -16,6 +16,8 @@ import (
 
 	"github.com/micro/micro/v3/service/runtime/source/git"
 
+	_struct "github.com/golang/protobuf/ptypes/struct"
+	db "github.com/micro/services/db/proto"
 	function "github.com/micro/services/function/proto"
 	"github.com/micro/services/pkg/tenant"
 )
@@ -24,9 +26,16 @@ type Function struct {
 	project string
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
+	db      db.DbService
 }
 
-func NewFunction() *Function {
+type Func struct {
+	Name    string `json:"name"`
+	Tenant  string `json:"tenant"`
+	Project string `json:"project"`
+}
+
+func NewFunction(db db.DbService) *Function {
 	v, err := config.Get("function.service_account_json")
 	if err != nil {
 		log.Fatalf("function.service_account_json: %v", err)
@@ -105,6 +114,18 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if req.Entrypoint == "" {
 		req.Entrypoint = req.Name
 	}
+	project := req.Project
+	if project == "" {
+		project = "default"
+	}
+
+	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
+		Table: "functions",
+		Query: fmt.Sprintf("tenantId == %v and project == %v and name == %v", tenantId, project, req.Name),
+	})
+	if err != nil {
+		return err
+	}
 
 	// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 	cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+"-"+req.Name, "--region", "europe-west1", "--allow-unauthenticated", "--entry-point", req.Entrypoint, "--trigger-http", "--project", e.project, "--runtime", "nodejs14")
@@ -114,7 +135,35 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 		return fmt.Errorf(string(outp))
 	}
 	log.Info(string(outp))
-	return nil
+
+	s := &_struct.Struct{}
+	id := fmt.Sprintf("%v-%v-%v", tenantId, project, req.Name)
+	jso, _ := json.Marshal(map[string]interface{}{
+		"id":         id,
+		"project":    project,
+		"name":       req.Name,
+		"tenantId":   tenantId,
+		"repo":       req.Repo,
+		"subfolder":  req.Subfolder,
+		"entrypoint": req.Entrypoint,
+	})
+	err = s.UnmarshalJSON(jso)
+	if err != nil {
+		return err
+	}
+	if len(readRsp.Records) > 0 {
+		_, err = e.db.Update(ctx, &db.UpdateRequest{
+			Table:  "functions",
+			Record: s,
+			Id:     id,
+		})
+		return err
+	}
+	_, err = e.db.Create(ctx, &db.CreateRequest{
+		Table:  "functions",
+		Record: s,
+	})
+	return err
 }
 
 func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *function.CallResponse) error {
@@ -159,5 +208,44 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 		return err
 	}
 
+	return nil
+}
+
+func (e *Function) Delete(ctx context.Context, req *function.DeleteRequest, rsp *function.DeleteResponse) error {
+	log.Info("Received Function.Call request")
+	return fmt.Errorf("not implemented yet")
+}
+
+func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
+	log.Info("Received Function.Call request")
+
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	project := req.Project
+	if project == "" {
+		project = "default"
+	}
+
+	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
+		Table: "functions",
+		Query: fmt.Sprintf("tenantId == %v", tenantId),
+	})
+	if err != nil {
+		return err
+	}
+
+	rsp.Functions = []*function.Func{}
+	for _, record := range readRsp.Records {
+		m := record.AsMap()
+		bs, _ := json.Marshal(m)
+		f := &function.Func{}
+		err = json.Unmarshal(bs, f)
+		if err != nil {
+			return err
+		}
+		rsp.Functions = append(rsp.Functions, f)
+	}
 	return nil
 }

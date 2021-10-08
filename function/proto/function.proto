@@ -8,6 +8,8 @@ option go_package = "./proto;function";
 service Function {
 	rpc Call(CallRequest) returns (CallResponse) {}
 	rpc Deploy(DeployRequest) returns (DeployResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 }
 
 // Call a function
@@ -34,7 +36,36 @@ message DeployRequest {
 	// entry point, ie. handler name in the source code 
 	// if not provided, defaults to the name parameter
 	string entrypoint = 4;
+	// project is used for namespacing your functions
+	// optional. defaults to "default".
+	string project = 5;
 }
 
 message DeployResponse {
+}
+
+message ListRequest {
+	// optional
+	string project = 1;
+}
+
+message Func {
+	string project = 1;
+	string name = 2;
+	string entrypoint = 3;
+	string repo = 4;
+	string subfolder = 5;
+}
+
+message ListResponse {
+	repeated Func functions = 1;
+}
+
+message DeleteRequest {
+	string project = 1;
+	string name = 2;
+}
+
+message DeleteResponse {
+	
 }

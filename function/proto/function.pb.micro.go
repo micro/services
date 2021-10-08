@@ -45,6 +45,8 @@ func NewFunctionEndpoints() []*api.Endpoint {
 type FunctionService interface {
 	Call(ctx context.Context, in *CallRequest, opts ...client.CallOption) (*CallResponse, error)
 	Deploy(ctx context.Context, in *DeployRequest, opts ...client.CallOption) (*DeployResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 }
 
 type functionService struct {
@@ -79,17 +81,41 @@ func (c *functionService) Deploy(ctx context.Context, in *DeployRequest, opts ..
 	return out, nil
 }
 
+func (c *functionService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "Function.List", in)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *functionService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+	req := c.c.NewRequest(c.name, "Function.Delete", in)
+	out := new(DeleteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Function service
 
 type FunctionHandler interface {
 	Call(context.Context, *CallRequest, *CallResponse) error
 	Deploy(context.Context, *DeployRequest, *DeployResponse) error
+	List(context.Context, *ListRequest, *ListResponse) error
+	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 }
 
 func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...server.HandlerOption) error {
 	type function interface {
 		Call(ctx context.Context, in *CallRequest, out *CallResponse) error
 		Deploy(ctx context.Context, in *DeployRequest, out *DeployResponse) error
+		List(ctx context.Context, in *ListRequest, out *ListResponse) error
+		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 	}
 	type Function struct {
 		function
@@ -108,4 +134,12 @@ func (h *functionHandler) Call(ctx context.Context, in *CallRequest, out *CallRe
 
 func (h *functionHandler) Deploy(ctx context.Context, in *DeployRequest, out *DeployResponse) error {
 	return h.FunctionHandler.Deploy(ctx, in, out)
+}
+
+func (h *functionHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
+	return h.FunctionHandler.List(ctx, in, out)
+}
+
+func (h *functionHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
+	return h.FunctionHandler.Delete(ctx, in, out)
 }
