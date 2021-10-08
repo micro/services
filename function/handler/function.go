@@ -231,13 +231,14 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 		tenantId = "micro"
 	}
 	project := req.Project
-	if project == "" {
-		project = "default"
-	}
 
+	q := fmt.Sprintf("tenantId == '%v'", tenantId)
+	if project != "" {
+		q += fmt.Sprintf(" and project == '%v'", project)
+	}
 	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
 		Table: "functions",
-		Query: fmt.Sprintf("tenantId == '%v'", tenantId),
+		Query: q,
 	})
 	if err != nil {
 		return err
