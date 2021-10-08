@@ -121,7 +121,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 
 	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
 		Table: "functions",
-		Query: fmt.Sprintf("tenantId == %v and project == %v and name == %v", tenantId, project, req.Name),
+		Query: fmt.Sprintf("tenantId == '%v' and project == '%v' and name == '%v'", tenantId, project, req.Name),
 	})
 	if err != nil {
 		return err
@@ -230,7 +230,7 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 
 	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
 		Table: "functions",
-		Query: fmt.Sprintf("tenantId == %v", tenantId),
+		Query: fmt.Sprintf("tenantId == '%v'", tenantId),
 	})
 	if err != nil {
 		return err
