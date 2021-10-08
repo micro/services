@@ -95,7 +95,7 @@ func NewFunction(db db.DbService) *Function {
 		log.Fatalf(string(outp))
 	}
 	log.Info(string(outp))
-	return &Function{project: project, address: address}
+	return &Function{project: project, address: address, db: db}
 }
 
 func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
