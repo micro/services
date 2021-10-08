@@ -236,6 +236,7 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 	if project != "" {
 		q += fmt.Sprintf(" and project == '%v'", project)
 	}
+	log.Infof("Making query %v", q)
 	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
 		Table: "functions",
 		Query: q,
