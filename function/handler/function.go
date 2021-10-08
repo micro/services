@@ -157,12 +157,18 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 			Record: s,
 			Id:     id,
 		})
+		if err != nil {
+			log.Error(err)
+		}
 		return err
 	}
 	_, err = e.db.Create(ctx, &db.CreateRequest{
 		Table:  "functions",
 		Record: s,
 	})
+	if err != nil {
+		log.Error(err)
+	}
 	return err
 }
 
