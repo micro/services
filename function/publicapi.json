@@ -1,6 +1,6 @@
 {
     "name": "function",
-    "icon": "✉️",
+    "icon": "🔥",
     "category": "hosting",
     "pricing": {
       "Function.Deploy": 1000
