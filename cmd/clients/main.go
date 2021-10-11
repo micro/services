@@ -25,6 +25,8 @@ import (
 type service struct {
 	Spec *openapi3.Swagger
 	Name string
+	// overwrite import name of service when it's a keyword ie function in javascript
+	ImportName string
 }
 
 type example struct {
@@ -161,8 +163,12 @@ func main() {
 				os.Exit(1)
 			}
 			service := service{
-				Name: serviceName,
-				Spec: spec,
+				Name:       serviceName,
+				ImportName: serviceName,
+				Spec:       spec,
+			}
+			if service.Name == "function" {
+				service.ImportName = "fx"
 			}
 			services = append(services, service)
 
