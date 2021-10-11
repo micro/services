@@ -4,5 +4,6 @@
   "category": "logistics",
   "pricing": {
     "Address.LookupPostcode": 75000
-  }
+  },
+  "display_name": "Address"
 }

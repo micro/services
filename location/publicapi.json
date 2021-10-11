@@ -1,5 +1,6 @@
 {
   "name": "location",
   "icon": "🛰️",
-  "category": "logistics"
+  "category": "logistics",
+  "display_name": "Location"
 }

@@ -22,6 +22,7 @@
   "./forex": "./dist/forex/index.js",
   "./function": "./dist/function/index.js",
   "./geocoding": "./dist/geocoding/index.js",
+  "./gifs": "./dist/gifs/index.js",
   "./helloworld": "./dist/helloworld/index.js",
   "./holidays": "./dist/holidays/index.js",
   "./id": "./dist/id/index.js",

@@ -1,5 +1,6 @@
 {
   "name": "notes",
   "icon": "📝",
-  "category": "storage"
+  "category": "storage",
+  "display_name": "Notes"
 }

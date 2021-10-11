@@ -1,5 +1,6 @@
 {
   "name": "prayer",
   "icon": "🙏",
-  "category": "religion"
+  "category": "religion",
+  "display_name": "Prayer"
 }

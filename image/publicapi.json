@@ -1,5 +1,6 @@
 {
   "name": "image",
   "icon": "🖼️",
-  "category": "web"
+  "category": "web",
+  "display_name": "Image"
 }

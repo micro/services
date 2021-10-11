@@ -1,5 +1,6 @@
 {
   "name": "qr",
   "icon": "🔲",
-  "category": "web"
+  "category": "web",
+  "display_name": "QR"
 }

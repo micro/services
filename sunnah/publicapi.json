@@ -1,5 +1,6 @@
 {
   "name": "sunnah",
   "icon": "📖",
-  "category": "religion"
+  "category": "religion",
+  "display_name": "Sunnah"
 }

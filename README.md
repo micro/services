@@ -50,4 +50,4 @@ We welcome contributions of additional services which are then hosted on [m3o.co
 
 ## License
 
-[Polyform Shield](https://polyformproject.org/licenses/shield/1.0.0/)
+[Apache 2.0](LICENSE)
