@@ -79,11 +79,18 @@ type DeployResponse struct {
 }
 
 type Func struct {
+	// name of handler in source code
 	Entrypoint string `json:"entrypoint"`
-	Name       string `json:"name"`
-	Project    string `json:"project"`
-	Repo       string `json:"repo"`
-	Subfolder  string `json:"subfolder"`
+	// function name
+	Name string `json:"name"`
+	// project of function, optional
+	// defaults to literal "default"
+	// used to namespace functions
+	Project string `json:"project"`
+	// git repo address
+	Repo string `json:"repo"`
+	// subfolder path to entrypoint
+	Subfolder string `json:"subfolder"`
 }
 
 type ListRequest struct {

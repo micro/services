@@ -77,10 +77,17 @@ export interface DeployRequest {
 export interface DeployResponse {}
 
 export interface Func {
+  // name of handler in source code
   entrypoint?: string;
+  // function name
   name?: string;
+  // project of function, optional
+  // defaults to literal "default"
+  // used to namespace functions
   project?: string;
+  // git repo address
   repo?: string;
+  // subfolder path to entrypoint
   subfolder?: string;
 }
 
