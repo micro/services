@@ -5,6 +5,7 @@
     "pricing": {
       "Function.Deploy": 1000,
       "Function.Call": 10
-    }
+    },
+    "display_name": "Function"
   }
   
