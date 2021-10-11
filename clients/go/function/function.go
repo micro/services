@@ -22,7 +22,7 @@ func (t *FunctionService) Call(request *CallRequest) (*CallResponse, error) {
 	return rsp, t.client.Call("function", "Call", request, rsp)
 }
 
-//
+// Delete a function by name
 func (t *FunctionService) Delete(request *DeleteRequest) (*DeleteResponse, error) {
 	rsp := &DeleteResponse{}
 	return rsp, t.client.Call("function", "Delete", request, rsp)
@@ -34,7 +34,7 @@ func (t *FunctionService) Deploy(request *DeployRequest) (*DeployResponse, error
 	return rsp, t.client.Call("function", "Deploy", request, rsp)
 }
 
-//
+// List all the deployed functions
 func (t *FunctionService) List(request *ListRequest) (*ListResponse, error) {
 	rsp := &ListResponse{}
 	return rsp, t.client.Call("function", "List", request, rsp)

@@ -14,7 +14,7 @@ export class FunctionService {
       request
     ) as Promise<CallResponse>;
   }
-  //
+  // Delete a function by name
   delete(request: DeleteRequest): Promise<DeleteResponse> {
     return this.client.call(
       "function",
@@ -30,7 +30,7 @@ export class FunctionService {
       request
     ) as Promise<DeployResponse>;
   }
-  //
+  // List all the deployed functions
   list(request: ListRequest): Promise<ListResponse> {
     return this.client.call(
       "function",
