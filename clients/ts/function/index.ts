@@ -53,7 +53,9 @@ export interface CallResponse {
 }
 
 export interface DeleteRequest {
+  // The name of the function
   name?: string;
+  // Optional project name
   project?: string;
 }
 
@@ -92,10 +94,11 @@ export interface Func {
 }
 
 export interface ListRequest {
-  // optional
+  // optional project name
   project?: string;
 }
 
 export interface ListResponse {
+  // List of functions deployed
   functions?: Func[];
 }
