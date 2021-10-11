@@ -53,7 +53,9 @@ type CallResponse struct {
 }
 
 type DeleteRequest struct {
-	Name    string `json:"name"`
+	// The name of the function
+	Name string `json:"name"`
+	// Optional project name
 	Project string `json:"project"`
 }
 
@@ -94,10 +96,11 @@ type Func struct {
 }
 
 type ListRequest struct {
-	// optional
+	// optional project name
 	Project string `json:"project"`
 }
 
 type ListResponse struct {
+	// List of functions deployed
 	Functions []Func `json:"functions"`
 }
