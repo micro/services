@@ -16,7 +16,7 @@ type FunctionService struct {
 	client *client.Client
 }
 
-// Call a function
+// Call a function by name
 func (t *FunctionService) Call(request *CallRequest) (*CallResponse, error) {
 	rsp := &CallResponse{}
 	return rsp, t.client.Call("function", "Call", request, rsp)

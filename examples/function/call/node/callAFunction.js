@@ -1,6 +1,6 @@
 import * as fx from "m3o/function";
 
-// Call a function
+// Call a function by name
 async function CallAfunction() {
   let functionService = new fx.FunctionService(process.env.MICRO_API_TOKEN);
   let rsp = await functionService.call({

@@ -6,7 +6,7 @@ export class FunctionService {
   constructor(token: string) {
     this.client = new m3o.Client({ token: token });
   }
-  // Call a function
+  // Call a function by name
   call(request: CallRequest): Promise<CallResponse> {
     return this.client.call(
       "function",
