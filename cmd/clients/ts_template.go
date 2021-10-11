@@ -1,16 +1,16 @@
 package main
 
-const tsIndexTemplate = `{{ range $service := .services }}import * as {{ $service.Name }} from './{{ $service.Name }}';
+const tsIndexTemplate = `{{ range $service := .services }}import * as {{ $service.ImportName }} from './{{ $service.Name }}';
 {{ end }}
 
 export class Client {
 	constructor(token: string) {
 		{{ range $service := .services }}
-		this.{{ $service.Name}}Service = new {{ $service.Name }}.{{ title $service.Name}}Service(token){{end}}
+		this.{{ $service.Name}}Service = new {{ $service.ImportName }}.{{ title $service.Name}}Service(token){{end}}
 	}
 
 {{ range $service := .services }}
-	{{ $service.Name}}Service: {{ $service.Name }}.{{ title $service.Name}}Service;{{end}}
+	{{ $service.Name}}Service: {{ $service.ImportName }}.{{ title $service.Name}}Service;{{end}}
 }
 `
 
@@ -35,10 +35,10 @@ export interface {{ title $typeName }}{{ "{" }}
 {{end}}
 `
 
-const tsExampleTemplate = `{{ $service := .service }}import * as {{ $service.Name }} from 'm3o/{{ $service.Name }}';
+const tsExampleTemplate = `{{ $service := .service }}import * as {{ $service.ImportName }} from 'm3o/{{ $service.Name }}';
 
 {{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}async function {{ .funcName }}() {
-	let {{ $service.Name }}Service = new {{ $service.Name }}.{{ title $service.Name }}Service(process.env.MICRO_API_TOKEN)
+	let {{ $service.Name }}Service = new {{ $service.ImportName }}.{{ title $service.Name }}Service(process.env.MICRO_API_TOKEN)
 	let rsp = await {{ $service.Name }}Service.{{ .endpoint }}({{ tsExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }})
 	console.log(rsp)
 }

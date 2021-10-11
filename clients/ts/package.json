@@ -20,6 +20,7 @@
   "./evchargers": "./dist/evchargers/index.js",
   "./file": "./dist/file/index.js",
   "./forex": "./dist/forex/index.js",
+  "./function": "./dist/function/index.js",
   "./geocoding": "./dist/geocoding/index.js",
   "./gifs": "./dist/gifs/index.js",
   "./helloworld": "./dist/helloworld/index.js",
@@ -65,5 +66,5 @@
  },
  "type": "module",
  "types": "dist/index.d.ts",
- "version": "1.0.543"
+ "version": "1.0.544"
 }

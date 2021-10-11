@@ -17,8 +17,9 @@ require (
 	github.com/fatih/camelcase v1.0.0
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
-	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/golang/protobuf v1.5.1
+	github.com/golang/protobuf v1.5.2
+	github.com/golang/snappy v0.0.3 // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/hablullah/go-prayer v1.0.0
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
@@ -50,14 +51,14 @@ require (
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
 	go.mongodb.org/mongo-driver v1.7.2
-	go.opencensus.io v0.22.4 // indirect
+	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
-	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
-	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
-	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
-	google.golang.org/genproto v0.0.0-20201001141541-efaab9d3c4f7 // indirect
-	google.golang.org/protobuf v1.26.0
+	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
+	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
+	golang.org/x/sys v0.0.0-20210917161153-d61c044b1678 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20210917145530-b395a37504d4 // indirect
+	google.golang.org/protobuf v1.27.1
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/datatypes v1.0.1

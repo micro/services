@@ -1,0 +1,78 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto";	
+
+package function;
+
+option go_package = "./proto;function";
+
+service Function {
+	rpc Call(CallRequest) returns (CallResponse) {}
+	rpc Deploy(DeployRequest) returns (DeployResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+}
+
+// Call a function
+message CallRequest {
+	// Name of the function
+	string name = 1;
+	// Request body that will be passed to the function
+	google.protobuf.Struct request = 2;
+}
+
+message CallResponse {
+	// Response body that the function returned
+	google.protobuf.Struct response = 1;
+}
+
+// Deploy a group of functions
+message DeployRequest {
+	// github url to repo
+	string repo = 1;
+	// optional subfolder path
+	string subfolder = 2;
+	// function name
+	string name = 3;
+	// entry point, ie. handler name in the source code 
+	// if not provided, defaults to the name parameter
+	string entrypoint = 4;
+	// project is used for namespacing your functions
+	// optional. defaults to "default".
+	string project = 5;
+}
+
+message DeployResponse {
+}
+
+message ListRequest {
+	// optional
+	string project = 1;
+}
+
+message Func {
+	// project of function, optional
+	// defaults to literal "default"
+	// used to namespace functions
+	string project = 1;
+	// function name
+	string name = 2;
+	// name of handler in source code
+	string entrypoint = 3;
+	// git repo address
+	string repo = 4;
+	// subfolder path to entrypoint
+	string subfolder = 5;
+}
+
+message ListResponse {
+	repeated Func functions = 1;
+}
+
+message DeleteRequest {
+	string project = 1;
+	string name = 2;
+}
+
+message DeleteResponse {
+	
+}
