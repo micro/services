@@ -9,6 +9,7 @@ import * as emoji from "./emoji";
 import * as evchargers from "./evchargers";
 import * as file from "./file";
 import * as forex from "./forex";
+import * as fx from "./function";
 import * as geocoding from "./geocoding";
 import * as helloworld from "./helloworld";
 import * as holidays from "./holidays";
@@ -50,6 +51,7 @@ export class Client {
     this.evchargersService = new evchargers.EvchargersService(token);
     this.fileService = new file.FileService(token);
     this.forexService = new forex.ForexService(token);
+    this.functionService = new fx.FunctionService(token);
     this.geocodingService = new geocoding.GeocodingService(token);
     this.helloworldService = new helloworld.HelloworldService(token);
     this.holidaysService = new holidays.HolidaysService(token);
@@ -90,6 +92,7 @@ export class Client {
   evchargersService: evchargers.EvchargersService;
   fileService: file.FileService;
   forexService: forex.ForexService;
+  functionService: fx.FunctionService;
   geocodingService: geocoding.GeocodingService;
   helloworldService: helloworld.HelloworldService;
   holidaysService: holidays.HolidaysService;

@@ -12,6 +12,7 @@ import (
 	"github.com/micro/services/clients/go/evchargers"
 	"github.com/micro/services/clients/go/file"
 	"github.com/micro/services/clients/go/forex"
+	"github.com/micro/services/clients/go/function"
 	"github.com/micro/services/clients/go/geocoding"
 	"github.com/micro/services/clients/go/helloworld"
 	"github.com/micro/services/clients/go/holidays"
@@ -56,6 +57,7 @@ func NewClient(token string) *Client {
 		EvchargersService: evchargers.NewEvchargersService(token),
 		FileService:       file.NewFileService(token),
 		ForexService:      forex.NewForexService(token),
+		FunctionService:   function.NewFunctionService(token),
 		GeocodingService:  geocoding.NewGeocodingService(token),
 		HelloworldService: helloworld.NewHelloworldService(token),
 		HolidaysService:   holidays.NewHolidaysService(token),
@@ -100,6 +102,7 @@ type Client struct {
 	EvchargersService *evchargers.EvchargersService
 	FileService       *file.FileService
 	ForexService      *forex.ForexService
+	FunctionService   *function.FunctionService
 	GeocodingService  *geocoding.GeocodingService
 	HelloworldService *helloworld.HelloworldService
 	HolidaysService   *holidays.HolidaysService
