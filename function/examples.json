@@ -3,7 +3,7 @@
     {
       "title": "Deploy a function",
       "request": {
-        "repo": "github.com/crufter/gcloud-nodejs-test",
+        "repo": "github.com/m3o/nodejs-function-example",
         "name": "my-first-func",
         "entrypoint": "helloworld",
         "project": "tests"
@@ -35,7 +35,7 @@
             "project": "a",
             "name": "test4",
             "entrypoint": "helloworld",
-            "repo": "github.com/crufter/gcloud-nodejs-test",
+            "repo": "github.com/m3o/nodejs-function-example",
             "subfolder": ""
           }
         ]
