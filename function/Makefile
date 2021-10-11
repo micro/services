@@ -8,7 +8,11 @@ init:
 .PHONY: proto
 proto:
 	protoc --proto_path=. --micro_out=. --go_out=:. proto/function.proto
-	
+
+.PHONY: api
+api:
+	protoc --openapi_out=. --proto_path=. proto/function.proto
+
 .PHONY: build
 build:
 	go build -o function *.go

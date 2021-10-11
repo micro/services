@@ -1,0 +1,55 @@
+{
+  "deploy": [
+    {
+      "title": "Deploy a function",
+      "request": {
+        "repo": "github.com/crufter/gcloud-nodejs-test",
+        "name": "my-first-func",
+        "entrypoint": "helloworld",
+        "project": "tests"
+      },
+      "response": {}
+    }
+  ],
+  "call": [
+    {
+      "title": "Call a function",
+      "request": {
+        "name": "my-first-func",
+        "request": {}
+      },
+      "response": {
+        "response": {
+          "message": "Hello World!"
+        }
+      }
+    }
+  ],
+  "list": [
+    {
+      "title": "List functions",
+      "request": {},
+      "response": {
+        "functions": [
+          {
+            "project": "a",
+            "name": "test4",
+            "entrypoint": "helloworld",
+            "repo": "github.com/crufter/gcloud-nodejs-test",
+            "subfolder": ""
+          }
+        ]
+      }
+    }
+  ],
+  "delete": [
+    {
+      "title": "Delete a function",
+      "request": {
+        "project": "tests",
+        "name": "my-first-func"
+      },
+      "response": {}
+    }
+  ]
+}
