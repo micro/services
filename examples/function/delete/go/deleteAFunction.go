@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-//
+// Delete a function by name
 func DeleteAfunction() {
 	functionService := function.NewFunctionService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := functionService.Delete(&function.DeleteRequest{
