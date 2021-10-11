@@ -50,10 +50,17 @@ message ListRequest {
 }
 
 message Func {
+	// project of function, optional
+	// defaults to literal "default"
+	// used to namespace functions
 	string project = 1;
+	// function name
 	string name = 2;
+	// name of handler in source code
 	string entrypoint = 3;
+	// git repo address
 	string repo = 4;
+	// subfolder path to entrypoint
 	string subfolder = 5;
 }
 
