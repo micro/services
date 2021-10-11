@@ -5,5 +5,5 @@ curl "https://api.m3o.com/v1/function/Deploy" \
   "entrypoint": "helloworld",
   "name": "my-first-func",
   "project": "tests",
-  "repo": "github.com/crufter/gcloud-nodejs-test"
+  "repo": "github.com/m3o/nodejs-function-example"
 }'

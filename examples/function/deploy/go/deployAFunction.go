@@ -13,7 +13,7 @@ func DeployAfunction() {
 		Entrypoint: "helloworld",
 		Name:       "my-first-func",
 		Project:    "tests",
-		Repo:       "github.com/crufter/gcloud-nodejs-test",
+		Repo:       "github.com/m3o/nodejs-function-example",
 	})
 	fmt.Println(rsp, err)
 }
