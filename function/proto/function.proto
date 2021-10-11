@@ -12,7 +12,7 @@ service Function {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 }
 
-// Call a function
+// Call a function by name
 message CallRequest {
 	// Name of the function
 	string name = 1;
