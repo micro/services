@@ -45,7 +45,7 @@ message DeployResponse {
 }
 
 message ListRequest {
-	// optional
+	// optional project name
 	string project = 1;
 }
 
@@ -65,11 +65,14 @@ message Func {
 }
 
 message ListResponse {
+	// List of functions deployed
 	repeated Func functions = 1;
 }
 
 message DeleteRequest {
+	// Optional project name
 	string project = 1;
+	// The name of the function
 	string name = 2;
 }
 
