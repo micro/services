@@ -256,7 +256,15 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 	if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
 	}
-	log.Info(string(outp))
+	lines := strings.Split(string(outp), "\n")
+	statuses := map[string]string{}
+	for _, line := range lines {
+		fields := strings.Fields(line)
+		if len(fields) < 2 {
+			continue
+		}
+		statuses[fields[0]] = fields[1]
+	}
 
 	rsp.Functions = []*function.Func{}
 	for _, record := range readRsp.Records {
@@ -267,6 +275,7 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 		if err != nil {
 			return err
 		}
+		f.Status = statuses[multitenantPrefix+"-"+f.Name]
 		rsp.Functions = append(rsp.Functions, f)
 	}
 	return nil
