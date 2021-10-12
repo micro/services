@@ -8,6 +8,7 @@ async function DeployAfunction() {
     name: "my-first-func",
     project: "tests",
     repo: "github.com/m3o/nodejs-function-example",
+    runtime: "nodejs14",
   });
   console.log(rsp);
 }

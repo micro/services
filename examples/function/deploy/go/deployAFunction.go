@@ -14,6 +14,7 @@ func DeployAfunction() {
 		Name:       "my-first-func",
 		Project:    "tests",
 		Repo:       "github.com/m3o/nodejs-function-example",
+		Runtime:    "nodejs14",
 	})
 	fmt.Println(rsp, err)
 }

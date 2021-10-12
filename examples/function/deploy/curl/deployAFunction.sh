@@ -5,5 +5,6 @@ curl "https://api.m3o.com/v1/function/Deploy" \
   "entrypoint": "helloworld",
   "name": "my-first-func",
   "project": "tests",
-  "repo": "github.com/m3o/nodejs-function-example"
+  "repo": "github.com/m3o/nodejs-function-example",
+  "runtime": "nodejs14"
 }'
