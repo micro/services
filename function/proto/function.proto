@@ -81,7 +81,7 @@ message Func {
 	// go111, go113, go116
 	// python37, python38, python39
 	string runtime = 6;
-	// eg. ACTIVE etc
+	// eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
 	string status = 7;
 }
 
