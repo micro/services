@@ -250,6 +250,22 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 	}
 	log.Info(readRsp.Records)
 
+	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
+	cmd := exec.Command("gcloud", "functions", "list", "--project", e.project, "--filter", "name~"+multitenantPrefix+"*")
+	outp, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Error(fmt.Errorf(string(outp)))
+	}
+	lines := strings.Split(string(outp), "\n")
+	statuses := map[string]string{}
+	for _, line := range lines {
+		fields := strings.Fields(line)
+		if len(fields) < 2 {
+			continue
+		}
+		statuses[fields[0]] = fields[1]
+	}
+
 	rsp.Functions = []*function.Func{}
 	for _, record := range readRsp.Records {
 		m := record.AsMap()
@@ -259,6 +275,7 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 		if err != nil {
 			return err
 		}
+		f.Status = statuses[multitenantPrefix+"-"+f.Name]
 		rsp.Functions = append(rsp.Functions, f)
 	}
 	return nil

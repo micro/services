@@ -38,7 +38,8 @@
             "entrypoint": "helloworld",
             "repo": "github.com/m3o/nodejs-function-example",
             "subfolder": "",
-            "runtime": "nodejs14"
+            "runtime": "nodejs14",
+            "status": "DEPLOY_IN_PROGRESS"
           }
         ]
       }

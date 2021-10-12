@@ -107,6 +107,8 @@ export interface Func {
   // go111, go113, go116
   // python37, python38, python39
   runtime?: string;
+  // eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
+  status?: string;
   // subfolder path to entrypoint
   subfolder?: string;
 }
