@@ -129,7 +129,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+"-"+req.Name, "--region", "europe-west1", "--allow-unauthenticated", "--entry-point", req.Entrypoint, "--trigger-http", "--project", e.project, "--runtime", "nodejs14")
+		cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+"-"+req.Name, "--region", "europe-west1", "--allow-unauthenticated", "--entry-point", req.Entrypoint, "--trigger-http", "--project", e.project, "--runtime", req.Runtime)
 		cmd.Dir = filepath.Join(gitter.RepoDir(), req.Subfolder)
 		outp, err := cmd.CombinedOutput()
 		if err != nil {

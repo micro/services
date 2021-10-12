@@ -39,6 +39,15 @@ message DeployRequest {
 	// project is used for namespacing your functions
 	// optional. defaults to "default".
 	string project = 5;
+	// runtime/language of the function
+	// eg: php74,
+	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
+	// dotnet3
+	// java11
+	// ruby26, ruby27
+	// go111, go113, go116
+	// python37, python38, python39
+	string runtime = 6;
 }
 
 message DeployResponse {
@@ -63,6 +72,15 @@ message Func {
 	string repo = 4;
 	// subfolder path to entrypoint
 	string subfolder = 5;
+	// runtime/language of the function
+	// eg: php74,
+	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
+	// dotnet3
+	// java11
+	// ruby26, ruby27
+	// go111, go113, go116
+	// python37, python38, python39
+	string runtime = 6;
 }
 
 message ListResponse {
