@@ -73,6 +73,15 @@ type DeployRequest struct {
 	Project string `json:"project"`
 	// github url to repo
 	Repo string `json:"repo"`
+	// runtime/language of the function
+	// eg: php74,
+	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
+	// dotnet3
+	// java11
+	// ruby26, ruby27
+	// go111, go113, go116
+	// python37, python38, python39
+	Runtime string `json:"runtime"`
 	// optional subfolder path
 	Subfolder string `json:"subfolder"`
 }
@@ -91,6 +100,15 @@ type Func struct {
 	Project string `json:"project"`
 	// git repo address
 	Repo string `json:"repo"`
+	// runtime/language of the function
+	// eg: php74,
+	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
+	// dotnet3
+	// java11
+	// ruby26, ruby27
+	// go111, go113, go116
+	// python37, python38, python39
+	Runtime string `json:"runtime"`
 	// subfolder path to entrypoint
 	Subfolder string `json:"subfolder"`
 }
