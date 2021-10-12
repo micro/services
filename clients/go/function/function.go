@@ -109,7 +109,7 @@ type Func struct {
 	// go111, go113, go116
 	// python37, python38, python39
 	Runtime string `json:"runtime"`
-	// eg. ACTIVE etc
+	// eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
 	Status string `json:"status"`
 	// subfolder path to entrypoint
 	Subfolder string `json:"subfolder"`
