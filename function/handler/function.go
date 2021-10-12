@@ -250,6 +250,14 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 	}
 	log.Info(readRsp.Records)
 
+	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
+	cmd := exec.Command("gcloud", "functions", "list", "--filter", multitenantPrefix+"*")
+	outp, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Error(fmt.Errorf(string(outp)))
+	}
+	log.Info(string(outp))
+
 	rsp.Functions = []*function.Func{}
 	for _, record := range readRsp.Records {
 		m := record.AsMap()
