@@ -150,6 +150,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 		"repo":       req.Repo,
 		"subfolder":  req.Subfolder,
 		"entrypoint": req.Entrypoint,
+		"runtime":    req.Runtime,
 	})
 	err = s.UnmarshalJSON(jso)
 	if err != nil {
