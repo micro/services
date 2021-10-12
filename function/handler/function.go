@@ -126,6 +126,9 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if err != nil {
 		return err
 	}
+	if req.Runtime == "" {
+		return fmt.Errorf("missing runtime field, please specify nodejs14, go116 etc")
+	}
 
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
