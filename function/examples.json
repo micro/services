@@ -6,7 +6,8 @@
         "repo": "github.com/m3o/nodejs-function-example",
         "name": "my-first-func",
         "entrypoint": "helloworld",
-        "project": "tests"
+        "project": "tests",
+        "runtime": "nodejs14"
       },
       "response": {}
     }
@@ -36,7 +37,8 @@
             "name": "test4",
             "entrypoint": "helloworld",
             "repo": "github.com/m3o/nodejs-function-example",
-            "subfolder": ""
+            "subfolder": "",
+            "runtime": "nodejs14"
           }
         ]
       }
