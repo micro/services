@@ -293,7 +293,7 @@ func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, 
 	}
 	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
 
-	cmd := exec.Command("gcloud", "functions", "describe", "--project", e.project, multitenantPrefix+"-"+req.Name)
+	cmd := exec.Command("gcloud", "functions", "describe", "--region", "europe-west1", "--project", e.project, multitenantPrefix+"-"+req.Name)
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
