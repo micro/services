@@ -1,4 +1,4 @@
-Quickly upload, resize, and convert images
+Upload, resize, and convert images
 
 # Image Service
 
