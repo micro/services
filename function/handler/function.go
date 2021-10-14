@@ -321,7 +321,7 @@ func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, 
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
-		return fmt.Errorf("something bad happened")
+		return fmt.Errorf("function does not exist")
 	}
 	log.Info(string(outp))
 	m := map[string]interface{}{}
