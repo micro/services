@@ -54,5 +54,19 @@
       },
       "response": {}
     }
+  ],
+  "describe": [
+    {
+      "title": "Describe function status",
+      "request": {
+        "project": "tests",
+        "name": "my-first-func"
+      },
+      "response": {
+        "updateTime": "2021-10-08T10:17:34.914Z",
+        "status": "ACTIVE",
+        "timeout": "60s"
+      }
+    }
   ]
 }

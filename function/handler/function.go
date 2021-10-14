@@ -13,6 +13,7 @@ import (
 
 	"github.com/micro/micro/v3/service/config"
 	log "github.com/micro/micro/v3/service/logger"
+	"gopkg.in/yaml.v2"
 
 	"github.com/micro/micro/v3/service/runtime/source/git"
 
@@ -224,7 +225,31 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 
 func (e *Function) Delete(ctx context.Context, req *function.DeleteRequest, rsp *function.DeleteResponse) error {
 	log.Info("Received Function.Delete request")
-	return fmt.Errorf("not implemented yet")
+
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
+
+	project := req.Project
+	if project == "" {
+		project = "default"
+	}
+
+	cmd := exec.Command("gcloud", "functions", "delete", "--project", e.project, "--region", "europe-west1", multitenantPrefix+"-"+req.Name)
+	outp, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Error(fmt.Errorf(string(outp)))
+		return err
+	}
+
+	id := fmt.Sprintf("%v-%v-%v", tenantId, project, req.Name)
+	_, err = e.db.Delete(ctx, &db.DeleteRequest{
+		Table: "functions",
+		Id:    id,
+	})
+	return err
 }
 
 func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
@@ -278,5 +303,34 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 		f.Status = statuses[multitenantPrefix+"-"+f.Name]
 		rsp.Functions = append(rsp.Functions, f)
 	}
+	return nil
+}
+
+func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, rsp *function.DescribeResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	project := req.Project
+	if project == "" {
+		project = "default"
+	}
+	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
+
+	cmd := exec.Command("gcloud", "functions", "describe", "--region", "europe-west1", "--project", e.project, multitenantPrefix+"-"+req.Name)
+	outp, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Error(fmt.Errorf(string(outp)))
+		return fmt.Errorf("function does not exist")
+	}
+	log.Info(string(outp))
+	m := map[string]interface{}{}
+	err = yaml.Unmarshal(outp, m)
+	if err != nil {
+		return err
+	}
+	rsp.Status = m["status"].(string)
+	rsp.Timeout = m["timeout"].(string)
+	rsp.UpdateTime = m["updateTime"].(string)
 	return nil
 }

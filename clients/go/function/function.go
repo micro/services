@@ -34,6 +34,12 @@ func (t *FunctionService) Deploy(request *DeployRequest) (*DeployResponse, error
 	return rsp, t.client.Call("function", "Deploy", request, rsp)
 }
 
+//
+func (t *FunctionService) Describe(request *DescribeRequest) (*DescribeResponse, error) {
+	rsp := &DescribeResponse{}
+	return rsp, t.client.Call("function", "Describe", request, rsp)
+}
+
 // List all the deployed functions
 func (t *FunctionService) List(request *ListRequest) (*ListResponse, error) {
 	rsp := &ListResponse{}
@@ -89,10 +95,24 @@ type DeployRequest struct {
 type DeployResponse struct {
 }
 
+type DescribeRequest struct {
+	// The name of the function
+	Name string `json:"name"`
+	// Optional project name
+	Project string `json:"project"`
+}
+
+type DescribeResponse struct {
+	Status     string `json:"status"`
+	Timeout    string `json:"timeout"`
+	UpdateTime string `json:"updateTime"`
+}
+
 type Func struct {
 	// name of handler in source code
 	Entrypoint string `json:"entrypoint"`
 	// function name
+	// limitation: must be unique across projects
 	Name string `json:"name"`
 	// project of function, optional
 	// defaults to literal "default"

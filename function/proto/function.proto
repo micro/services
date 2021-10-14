@@ -10,6 +10,7 @@ service Function {
 	rpc Deploy(DeployRequest) returns (DeployResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Describe(DescribeRequest) returns (DescribeResponse) {}
 }
 
 // Call a function by name
@@ -65,6 +66,7 @@ message Func {
 	// used to namespace functions
 	string project = 1;
 	// function name
+	// limitation: must be unique across projects
 	string name = 2;
 	// name of handler in source code
 	string entrypoint = 3;
@@ -92,12 +94,25 @@ message ListResponse {
 
 // Delete a function by name
 message DeleteRequest {
-	// Optional project name
-	string project = 1;
 	// The name of the function
-	string name = 2;
+	string name = 1;
+	// Optional project name
+	string project = 2;
 }
 
 message DeleteResponse {
 	
+}
+
+message DescribeRequest {
+	// The name of the function
+	string name = 1;
+	// Optional project name
+	string project = 2;
+}
+
+message DescribeResponse {
+	string updateTime = 1;
+	string status = 2;
+	string timeout = 3;
 }

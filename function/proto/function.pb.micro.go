@@ -47,6 +47,7 @@ type FunctionService interface {
 	Deploy(ctx context.Context, in *DeployRequest, opts ...client.CallOption) (*DeployResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
+	Describe(ctx context.Context, in *DescribeRequest, opts ...client.CallOption) (*DescribeResponse, error)
 }
 
 type functionService struct {
@@ -101,6 +102,16 @@ func (c *functionService) Delete(ctx context.Context, in *DeleteRequest, opts ..
 	return out, nil
 }
 
+func (c *functionService) Describe(ctx context.Context, in *DescribeRequest, opts ...client.CallOption) (*DescribeResponse, error) {
+	req := c.c.NewRequest(c.name, "Function.Describe", in)
+	out := new(DescribeResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Function service
 
 type FunctionHandler interface {
@@ -108,6 +119,7 @@ type FunctionHandler interface {
 	Deploy(context.Context, *DeployRequest, *DeployResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
+	Describe(context.Context, *DescribeRequest, *DescribeResponse) error
 }
 
 func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...server.HandlerOption) error {
@@ -116,6 +128,7 @@ func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...serv
 		Deploy(ctx context.Context, in *DeployRequest, out *DeployResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
+		Describe(ctx context.Context, in *DescribeRequest, out *DescribeResponse) error
 	}
 	type Function struct {
 		function
@@ -142,4 +155,8 @@ func (h *functionHandler) List(ctx context.Context, in *ListRequest, out *ListRe
 
 func (h *functionHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
 	return h.FunctionHandler.Delete(ctx, in, out)
+}
+
+func (h *functionHandler) Describe(ctx context.Context, in *DescribeRequest, out *DescribeResponse) error {
+	return h.FunctionHandler.Describe(ctx, in, out)
 }

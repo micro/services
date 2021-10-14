@@ -30,6 +30,14 @@ export class FunctionService {
       request
     ) as Promise<DeployResponse>;
   }
+  //
+  describe(request: DescribeRequest): Promise<DescribeResponse> {
+    return this.client.call(
+      "function",
+      "Describe",
+      request
+    ) as Promise<DescribeResponse>;
+  }
   // List all the deployed functions
   list(request: ListRequest): Promise<ListResponse> {
     return this.client.call(
@@ -87,10 +95,24 @@ export interface DeployRequest {
 
 export interface DeployResponse {}
 
+export interface DescribeRequest {
+  // The name of the function
+  name?: string;
+  // Optional project name
+  project?: string;
+}
+
+export interface DescribeResponse {
+  status?: string;
+  timeout?: string;
+  updateTime?: string;
+}
+
 export interface Func {
   // name of handler in source code
   entrypoint?: string;
   // function name
+  // limitation: must be unique across projects
   name?: string;
   // project of function, optional
   // defaults to literal "default"
