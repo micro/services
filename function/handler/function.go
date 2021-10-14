@@ -224,7 +224,31 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 
 func (e *Function) Delete(ctx context.Context, req *function.DeleteRequest, rsp *function.DeleteResponse) error {
 	log.Info("Received Function.Delete request")
-	return fmt.Errorf("not implemented yet")
+
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
+
+	project := req.Project
+	if project == "" {
+		project = "default"
+	}
+
+	cmd := exec.Command("gcloud", "functions", "delete", "--project", e.project, "--region", "europe-west1", multitenantPrefix+"-"+req.Name)
+	outp, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Error(fmt.Errorf(string(outp)))
+		return err
+	}
+
+	id := fmt.Sprintf("%v-%v-%v", tenantId, project, req.Name)
+	_, err = e.db.Delete(ctx, &db.DeleteRequest{
+		Table: "functions",
+		Id:    id,
+	})
+	return err
 }
 
 func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
