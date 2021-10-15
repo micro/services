@@ -2,7 +2,7 @@
     "name": "m3o",
     "version": "1.0.1",
     "description": "",
-    "main": "dist/index.js",
+    "main": "dist",
     "types": "dist/index.d.ts",
     "type": "module",
     "repository": {
