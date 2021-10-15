@@ -10,7 +10,7 @@ import (
 func AskAquestion() {
 	answerService := answer.NewAnswerService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := answerService.Question(&answer.QuestionRequest{
-		Query: "google",
+		Query: "microsoft",
 	})
 	fmt.Println(rsp, err)
 }

@@ -4,7 +4,7 @@ import * as answer from "m3o/answer";
 async function AskAquestion() {
   let answerService = new answer.AnswerService(process.env.MICRO_API_TOKEN);
   let rsp = await answerService.question({
-    query: "google",
+    query: "microsoft",
   });
   console.log(rsp);
 }
