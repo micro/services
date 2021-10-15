@@ -53,7 +53,7 @@
   "./weather": "./dist/weather/index.js"
  },
  "license": "ISC",
- "main": "dist/index.js",
+ "main": "dist",
  "name": "m3o",
  "repository": {
   "type": "git",
