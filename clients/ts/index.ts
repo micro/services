@@ -11,7 +11,6 @@ import * as file from "./file";
 import * as forex from "./forex";
 import * as fx from "./function";
 import * as geocoding from "./geocoding";
-import * as gifs from "./gifs";
 import * as helloworld from "./helloworld";
 import * as holidays from "./holidays";
 import * as id from "./id";
@@ -54,7 +53,6 @@ export class Client {
     this.forexService = new forex.ForexService(token);
     this.functionService = new fx.FunctionService(token);
     this.geocodingService = new geocoding.GeocodingService(token);
-    this.gifsService = new gifs.GifsService(token);
     this.helloworldService = new helloworld.HelloworldService(token);
     this.holidaysService = new holidays.HolidaysService(token);
     this.idService = new id.IdService(token);
@@ -96,7 +94,6 @@ export class Client {
   forexService: forex.ForexService;
   functionService: fx.FunctionService;
   geocodingService: geocoding.GeocodingService;
-  gifsService: gifs.GifsService;
   helloworldService: helloworld.HelloworldService;
   holidaysService: holidays.HolidaysService;
   idService: id.IdService;
