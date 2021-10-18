@@ -1,4 +1,4 @@
-Geocode an address to gps location and the reverse.
+Address geocoding and reverse lookup
 
 # Geocoding Service
 
