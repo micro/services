@@ -4,4 +4,4 @@ Quick and simple GIF search
 
 Add GIFs to your project with keyword search and results in multiple sizes and formats. 
 
-Powered by [GIPHY](https://giphy.com).
+![Powered by Giphy](assets/PoweredBy_200px-White_HorizLogo.png).
