@@ -23,7 +23,6 @@ import (
 const idKey = "id"
 const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
 const truncateStmt = `truncate table "%v"`
-const countStmt = "SELECT reltuples AS estimate FROM pg_class where relname = '%v';"
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
@@ -362,12 +361,8 @@ func (e *Db) Count(ctx context.Context, req *db.CountRequest, rsp *db.CountRespo
 		return err
 	}
 
-	q := db.Exec(fmt.Sprintf(countStmt, tableName))
-	if q.Error != nil {
-		return q.Error
-	}
-	var a int32
-	q.Scan(&a)
-	rsp.Count = a
+	var a int64
+	db.Model(&Record{}).Count(&a)
+	rsp.Count = int32(a)
 	return nil
 }
