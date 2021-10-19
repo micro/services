@@ -362,7 +362,7 @@ func (e *Db) Count(ctx context.Context, req *db.CountRequest, rsp *db.CountRespo
 	}
 
 	var a int64
-	db.Model(&Record{}).Count(&a)
+	db.Model(&Record{}).Table(tableName).Count(&a)
 	rsp.Count = int32(a)
 	return nil
 }
