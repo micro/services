@@ -16,6 +16,12 @@ type DbService struct {
 	client *client.Client
 }
 
+// Count records in a table
+func (t *DbService) Count(request *CountRequest) (*CountResponse, error) {
+	rsp := &CountResponse{}
+	return rsp, t.client.Call("db", "Count", request, rsp)
+}
+
 // Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
 func (t *DbService) Create(request *CreateRequest) (*CreateResponse, error) {
 	rsp := &CreateResponse{}
@@ -44,6 +50,14 @@ func (t *DbService) Truncate(request *TruncateRequest) (*TruncateResponse, error
 func (t *DbService) Update(request *UpdateRequest) (*UpdateResponse, error) {
 	rsp := &UpdateResponse{}
 	return rsp, t.client.Call("db", "Update", request, rsp)
+}
+
+type CountRequest struct {
+	Table string `json:"table"`
+}
+
+type CountResponse struct {
+	Count int32 `json:"count"`
 }
 
 type CreateRequest struct {

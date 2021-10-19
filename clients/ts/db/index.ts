@@ -6,6 +6,10 @@ export class DbService {
   constructor(token: string) {
     this.client = new m3o.Client({ token: token });
   }
+  // Count records in a table
+  count(request: CountRequest): Promise<CountResponse> {
+    return this.client.call("db", "Count", request) as Promise<CountResponse>;
+  }
   // Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
   create(request: CreateRequest): Promise<CreateResponse> {
     return this.client.call("db", "Create", request) as Promise<CreateResponse>;
@@ -30,6 +34,14 @@ export class DbService {
   update(request: UpdateRequest): Promise<UpdateResponse> {
     return this.client.call("db", "Update", request) as Promise<UpdateResponse>;
   }
+}
+
+export interface CountRequest {
+  table?: string;
+}
+
+export interface CountResponse {
+  count?: number;
 }
 
 export interface CreateRequest {
