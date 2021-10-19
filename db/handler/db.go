@@ -23,6 +23,7 @@ import (
 const idKey = "id"
 const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
 const truncateStmt = `truncate table "%v"`
+const countStmt = "SELECT reltuples AS estimate FROM pg_class where relname = '%v';"
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
@@ -121,7 +122,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+		return errors.BadRequest("db.update", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
 	logger.Infof("Updating table '%v'", tableName)
 
@@ -306,7 +307,7 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+		return errors.BadRequest("db.delete", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
 	logger.Infof("Deleting from table '%v'", tableName)
 
@@ -331,7 +332,7 @@ func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.Trun
 	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+		return errors.BadRequest("db.truncate", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
 	logger.Infof("Truncating table '%v'", tableName)
 
@@ -340,4 +341,33 @@ func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.Trun
 		return err
 	}
 	return db.Exec(fmt.Sprintf(truncateStmt, tableName)).Error
+}
+
+func (e *Db) Count(ctx context.Context, req *db.CountRequest, rsp *db.CountResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	if req.Table == "" {
+		req.Table = "default"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+	tableName := tenantId + "_" + req.Table
+	if !re.Match([]byte(tableName)) {
+		return errors.BadRequest("db.count", fmt.Sprintf("table name %v is invalid", req.Table))
+	}
+
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+
+	q := db.Exec(fmt.Sprintf(countStmt, tableName))
+	if q.Error != nil {
+		return q.Error
+	}
+	var a int32
+	q.Scan(&a)
+	rsp.Count = a
+	return nil
 }
