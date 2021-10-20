@@ -6,7 +6,6 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/services/location/handler"
 	pb "github.com/micro/services/location/proto"
-	"github.com/micro/services/location/subscriber"
 	"github.com/micro/services/pkg/tracing"
 )
 
@@ -17,7 +16,8 @@ func main() {
 
 	pb.RegisterLocationHandler(location.Server(), new(handler.Location))
 
-	service.Subscribe(subscriber.Topic, new(subscriber.Location))
+	// TODO reinstate me
+	//service.Subscribe(subscriber.Topic, new(subscriber.Location))
 	traceCloser := tracing.SetupOpentracing("location")
 	defer traceCloser.Close()
 

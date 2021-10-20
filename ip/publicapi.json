@@ -2,5 +2,5 @@
   "name": "ip",
   "icon": "🗺️",
   "category": "location",
-  "display_name": "Geo IP"
+  "display_name": "IP to Geo"
 }
