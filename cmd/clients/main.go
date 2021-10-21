@@ -537,6 +537,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	fmt.Println("npm output version: ", npmOutput.Versions)
 
 	for _, version := range npmOutput.Versions {
 		v, err := semver.NewVersion(version)
