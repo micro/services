@@ -63,7 +63,7 @@
  "license": "ISC",
  "main": "index.js",
  "module": "esm/index.js",
- "name": "@micro/services",
+ "name": "m3o",
  "repository": {
   "type": "git",
   "url": "https://github.com/micro/services"
