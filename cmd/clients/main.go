@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -525,6 +526,8 @@ func main() {
 	type npmVers struct {
 		Versions []string `json:"versions"`
 	}
+	beta := os.Getenv("IS_BETA") != ""
+
 	npmOutput := &npmVers{}
 	var latest *semver.Version
 	if len(outp) > 0 {
@@ -547,11 +550,26 @@ func main() {
 		if v.GreaterThan(latest) {
 			latest = v
 		}
+
 	}
+
 	if latest == nil {
 		latest, _ = semver.NewVersion("0.0.0")
 	}
-	newV := latest.IncPatch()
+
+	var newV semver.Version
+	if beta {
+		// bump a beta version
+		if strings.Contains(latest.String(), "beta") {
+			newV = incBeta(*latest)
+		} else {
+			// make beta out of latest non beta version
+			v, _ := semver.NewVersion(latest.IncPatch().String() + "-beta1")
+			newV = *v
+		}
+	} else {
+		newV = newV.IncPatch()
+	}
 
 	// add file list to gitignore
 	f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
@@ -601,6 +619,24 @@ func main() {
 		fmt.Println("Failed to write to package.json", err)
 		os.Exit(1)
 	}
+}
+
+func incBeta(ver semver.Version) semver.Version {
+	s := ver.String()
+	parts := strings.Split(s, "beta")
+	if len(parts) < 2 {
+		panic("not a beta version " + s)
+	}
+	i, err := strconv.ParseInt(parts[1], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	i++
+	v, err := semver.NewVersion(parts[0] + "beta" + fmt.Sprintf("%v", i))
+	if err != nil {
+		panic(err)
+	}
+	return *v
 }
 
 func schemaToType(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {

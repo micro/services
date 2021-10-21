@@ -84,3 +84,15 @@ jobs:
           npm install
           npm run build
           npm publish --access public
+
+      - name: npm install beta
+        working-directory: services
+        if: github.ref == 'refs/heads/beta'
+        env:
+          IS_BETA: yep
+        run: |
+          git status
+          cd clients/ts;
+          npm install
+          npm run build
+          npm publish --access public --tag beta
