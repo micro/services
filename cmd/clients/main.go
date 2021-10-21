@@ -110,15 +110,14 @@ func main() {
 		},
 	}
 	services := []service{}
-	tsExportsMap := map[string]string{}
+	tsFileList := []string{"esm", "index.js", "index.d.ts"}
 	for _, f := range files {
 		if strings.Contains(f.Name(), "clients") || strings.Contains(f.Name(), "examples") {
 			continue
 		}
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
 			serviceName := f.Name()
-			// see https://stackoverflow.com/questions/44345257/import-from-subfolder-of-npm-package
-			tsExportsMap["./"+serviceName] = "./dist/" + serviceName + "/index.js"
+			tsFileList = append(tsFileList, serviceName)
 			serviceDir := filepath.Join(workDir, f.Name())
 			cmd := exec.Command("make", "api")
 			cmd.Dir = serviceDir
@@ -187,12 +186,12 @@ func main() {
 				os.Exit(1)
 			}
 
-			err = os.MkdirAll(filepath.Join(tsPath, serviceName), 0777)
+			err = os.MkdirAll(filepath.Join(tsPath, "src", serviceName), 0777)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			f, err := os.OpenFile(filepath.Join(tsPath, serviceName, "index.ts"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+			f, err := os.OpenFile(filepath.Join(tsPath, "src", serviceName, "index.ts"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
 				os.Exit(1)
@@ -204,7 +203,7 @@ func main() {
 				os.Exit(1)
 			}
 			cmd = exec.Command("prettier", "-w", "index.ts")
-			cmd.Dir = filepath.Join(tsPath, serviceName)
+			cmd.Dir = filepath.Join(tsPath, "src", serviceName)
 			outp, err = cmd.CombinedOutput()
 			if err != nil {
 				fmt.Println(fmt.Sprintf("Problem formatting '%v' client: %v %s", serviceName, string(outp), err.Error()))
@@ -554,6 +553,16 @@ func main() {
 	}
 	newV := latest.IncPatch()
 
+	// add file list to gitignore
+	f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_APPEND, 0744)
+	for _, sname := range tsFileList {
+		_, err := f.Write([]byte(sname + "\n"))
+		if err != nil {
+			fmt.Println("failed to append service to gitignore", err)
+			os.Exit(1)
+		}
+	}
+
 	// bump package to latest version
 	fmt.Println("Bumping to ", newV.String())
 	repl := exec.Command("sed", "-i", "-e", "s/1.0.1/"+newV.String()+"/g", "package.json")
@@ -576,7 +585,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	m["exports"] = tsExportsMap
+	m["files"] = tsFileList
 	pakJS, err := json.MarshalIndent(m, "", " ")
 	if err != nil {
 		fmt.Println(err)
