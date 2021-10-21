@@ -526,7 +526,13 @@ func main() {
 	type npmVers struct {
 		Versions []string `json:"versions"`
 	}
+
 	beta := os.Getenv("IS_BETA") != ""
+	if beta {
+		fmt.Println("creating beta version")
+	} else {
+		fmt.Println("creating live version")
+	}
 
 	npmOutput := &npmVers{}
 	var latest *semver.Version
@@ -555,7 +561,8 @@ func main() {
 	}
 
 	if latest == nil {
-		latest, _ = semver.NewVersion("0.0.0")
+		fmt.Println("found no semver version")
+		os.Exit(1)
 	}
 
 	var newV semver.Version
@@ -569,7 +576,7 @@ func main() {
 			newV = *v
 		}
 	} else {
-		newV = newV.IncPatch()
+		newV = latest.IncPatch()
 	}
 
 	// add file list to gitignore
