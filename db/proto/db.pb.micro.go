@@ -6,7 +6,7 @@ package db
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/structpb"
+	_ "github.com/golang/protobuf/ptypes/struct"
 	math "math"
 )
 
@@ -48,6 +48,7 @@ type DbService interface {
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Truncate(ctx context.Context, in *TruncateRequest, opts ...client.CallOption) (*TruncateResponse, error)
+	Count(ctx context.Context, in *CountRequest, opts ...client.CallOption) (*CountResponse, error)
 }
 
 type dbService struct {
@@ -112,6 +113,16 @@ func (c *dbService) Truncate(ctx context.Context, in *TruncateRequest, opts ...c
 	return out, nil
 }
 
+func (c *dbService) Count(ctx context.Context, in *CountRequest, opts ...client.CallOption) (*CountResponse, error) {
+	req := c.c.NewRequest(c.name, "Db.Count", in)
+	out := new(CountResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Db service
 
 type DbHandler interface {
@@ -120,6 +131,7 @@ type DbHandler interface {
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Truncate(context.Context, *TruncateRequest, *TruncateResponse) error
+	Count(context.Context, *CountRequest, *CountResponse) error
 }
 
 func RegisterDbHandler(s server.Server, hdlr DbHandler, opts ...server.HandlerOption) error {
@@ -129,6 +141,7 @@ func RegisterDbHandler(s server.Server, hdlr DbHandler, opts ...server.HandlerOp
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Truncate(ctx context.Context, in *TruncateRequest, out *TruncateResponse) error
+		Count(ctx context.Context, in *CountRequest, out *CountResponse) error
 	}
 	type Db struct {
 		db
@@ -159,4 +172,8 @@ func (h *dbHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteRe
 
 func (h *dbHandler) Truncate(ctx context.Context, in *TruncateRequest, out *TruncateResponse) error {
 	return h.DbHandler.Truncate(ctx, in, out)
+}
+
+func (h *dbHandler) Count(ctx context.Context, in *CountRequest, out *CountResponse) error {
+	return h.DbHandler.Count(ctx, in, out)
 }

@@ -1,66 +1,87 @@
 {
-    "create": [{
-        "title": "Create a record",
-        "run_check": true,
-        "request": {
-            "table": "users",
-            "record": {
-                "id": "1",
-                "name": "Jane",
-                "age": 42,
-                "isActive":true
-            }
-        },
-        "response": {
-            "id": "1"
+  "create": [
+    {
+      "title": "Create a record",
+      "run_check": true,
+      "request": {
+        "table": "users",
+        "record": {
+          "id": "1",
+          "name": "Jane",
+          "age": 42,
+          "isActive": true
         }
-    }],
-    "update": [{
-        "title": "Update a record",
-        "run_check": true,
-        "request": {
-            "table": "users",
-            "record": {
-                "id": "1",
-                "age": 43
-            }
-        },
-        "response": {
+      },
+      "response": {
+        "id": "1"
+      }
+    }
+  ],
+  "update": [
+    {
+      "title": "Update a record",
+      "run_check": true,
+      "request": {
+        "table": "users",
+        "record": {
+          "id": "1",
+          "age": 43
         }
-    }],
-    "read": [{
-        "title": "Read records",
-        "run_check": true,
-        "request": {
-            "table": "users",
-            "query": "age == 43"
-        },
-        "response": {
-            "records": [{
-                "id": "1",
-                "name": "Jane",
-                "age": 43,
-                "isActive":true
-            }]
-        }
-    }],
-    "delete": [{
-        "title": "Delete a record",
-        "run_check": true,
-        "request": {
-            "table": "users",
-            "id": "1"
-        },
-        "response": {}
-    }],
-    "truncate": [{
-        "title": "Truncate table",
-        "run_check": false,
-        "request": {
-            "table": "users"
-        },
-        "response": {
-            
-        }
-    }]
+      },
+      "response": {}
+    }
+  ],
+  "read": [
+    {
+      "title": "Read records",
+      "run_check": true,
+      "request": {
+        "table": "users",
+        "query": "age == 43"
+      },
+      "response": {
+        "records": [
+          {
+            "id": "1",
+            "name": "Jane",
+            "age": 43,
+            "isActive": true
+          }
+        ]
+      }
+    }
+  ],
+  "delete": [
+    {
+      "title": "Delete a record",
+      "run_check": true,
+      "request": {
+        "table": "users",
+        "id": "1"
+      },
+      "response": {}
+    }
+  ],
+  "truncate": [
+    {
+      "title": "Truncate table",
+      "run_check": false,
+      "request": {
+        "table": "users"
+      },
+      "response": {}
+    }
+  ],
+  "count": [
+    {
+      "title": "Count entries in a table",
+      "run_check": false,
+      "request": {
+        "table": "users"
+      },
+      "response": {
+        "count": 31
+      }
+    }
+  ]
 }

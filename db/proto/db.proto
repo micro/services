@@ -11,6 +11,7 @@ service Db {
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Truncate(TruncateRequest) returns (TruncateResponse) {}
+	rpc Count(CountRequest) returns (CountResponse) {}
 }
 
 
@@ -87,4 +88,13 @@ message TruncateRequest {
 message TruncateResponse {
 	// The table truncated
 	string table = 1;
+}
+
+// Count records in a table
+message CountRequest {
+	string table = 1;
+}
+
+message CountResponse {
+	int32 count = 1;
 }
