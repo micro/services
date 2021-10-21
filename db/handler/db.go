@@ -121,7 +121,7 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+		return errors.BadRequest("db.update", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
 	logger.Infof("Updating table '%v'", tableName)
 
@@ -306,7 +306,7 @@ func (e *Db) Delete(ctx context.Context, req *db.DeleteRequest, rsp *db.DeleteRe
 	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+		return errors.BadRequest("db.delete", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
 	logger.Infof("Deleting from table '%v'", tableName)
 
@@ -331,7 +331,7 @@ func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.Trun
 	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 	tableName := tenantId + "_" + req.Table
 	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.create", fmt.Sprintf("table name %v is invalid", req.Table))
+		return errors.BadRequest("db.truncate", fmt.Sprintf("table name %v is invalid", req.Table))
 	}
 	logger.Infof("Truncating table '%v'", tableName)
 
@@ -340,4 +340,32 @@ func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.Trun
 		return err
 	}
 	return db.Exec(fmt.Sprintf(truncateStmt, tableName)).Error
+}
+
+func (e *Db) Count(ctx context.Context, req *db.CountRequest, rsp *db.CountResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	if req.Table == "" {
+		req.Table = "default"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+	tableName := tenantId + "_" + req.Table
+	if !re.Match([]byte(tableName)) {
+		return errors.BadRequest("db.count", fmt.Sprintf("table name %v is invalid", req.Table))
+	}
+
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+
+	var a int64
+	err = db.Table(tableName).Model(Record{}).Count(&a).Error
+	if err != nil {
+		return err
+	}
+	rsp.Count = int32(a)
+	return nil
 }
