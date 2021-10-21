@@ -448,7 +448,7 @@ func main() {
 		os.Exit(1)
 	}
 	tsFiles := filepath.Join(workDir, "cmd", "clients", "ts")
-	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
+	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "build.js"), filepath.Join(tsFiles, "tsconfig.es.json"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
 	cmd.Dir = filepath.Join(tsPath)
 	outp, err = cmd.CombinedOutput()
 	if err != nil {
@@ -554,7 +554,7 @@ func main() {
 	newV := latest.IncPatch()
 
 	// add file list to gitignore
-	f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_APPEND, 0744)
+	f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
 	for _, sname := range tsFileList {
 		_, err := f.Write([]byte(sname + "\n"))
 		if err != nil {
