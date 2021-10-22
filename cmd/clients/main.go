@@ -580,14 +580,14 @@ func main() {
 	}
 
 	// add file list to gitignore
-	f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
-	for _, sname := range tsFileList {
-		_, err := f.Write([]byte(sname + "\n"))
-		if err != nil {
-			fmt.Println("failed to append service to gitignore", err)
-			os.Exit(1)
-		}
-	}
+	//f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+	//for _, sname := range tsFileList {
+	//	_, err := f.Write([]byte(sname + "\n"))
+	//	if err != nil {
+	//		fmt.Println("failed to append service to gitignore", err)
+	//		os.Exit(1)
+	//	}
+	//}
 
 	// bump package to latest version
 	fmt.Println("Bumping to ", newV.String())
