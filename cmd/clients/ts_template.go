@@ -35,12 +35,12 @@ export interface {{ title $typeName }}{{ "{" }}
 {{end}}
 `
 
-const tsExampleTemplate = `{{ $service := .service }}import * as {{ $service.ImportName }} from 'm3o/{{ $service.Name }}';
+const tsExampleTemplate = `{{ $service := .service }}const { {{ title $service.Name }}Service } = require('m3o/{{ $service.Name }}');
 
-{{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}async function {{ .funcName }}() {
-	let {{ $service.Name }}Service = new {{ $service.ImportName }}.{{ title $service.Name }}Service(process.env.MICRO_API_TOKEN)
+{{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}async function {{ untitle .funcName }}() {
+	let {{ $service.Name }}Service = new {{ title $service.Name }}Service(process.env.MICRO_API_TOKEN)
 	let rsp = await {{ $service.Name }}Service.{{ .endpoint }}({{ tsExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }})
 	console.log(rsp)
 }
 
-await {{ .funcName }}()`
+{{.untitle funcName }}()`
