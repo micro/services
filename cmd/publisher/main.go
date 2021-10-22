@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -29,7 +30,11 @@ type PublicAPI struct {
 	DisplayName  string           `json:"display_name,omitempty"`
 }
 
-func publishAPI(apiSpec *PublicAPI) error {
+const (
+	prodAPIDomain = "api.m3o.com"
+)
+
+func publishAPI(apiSpec *PublicAPI, domain string) error {
 	client := &http.Client{}
 
 	//Encode the data
@@ -40,7 +45,7 @@ func publishAPI(apiSpec *PublicAPI) error {
 	rbody := bytes.NewBuffer(postBody)
 
 	//Leverage Go's HTTP Post function to make request
-	req, err := http.NewRequest("POST", "https://api.m3o.com/publicapi/Publish", rbody)
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://%s/publicapi/Publish", domain), rbody)
 
 	// Add auth headers here if needed
 	req.Header.Add("Authorization", `Bearer `+os.Getenv("MICRO_ADMIN_TOKEN"))
@@ -62,14 +67,20 @@ func publishAPI(apiSpec *PublicAPI) error {
 }
 
 func main() {
-	files, err := ioutil.ReadDir(os.Args[1])
+	workDir, _ := os.Getwd()
+	domainFlag := flag.String("domain", prodAPIDomain, "domain to publish to e.g. api.m3o.com")
+	serviceFlag := flag.String("service", "", "individual service to publish e.g. helloworld")
+	flag.Parse()
+
+	files, err := ioutil.ReadDir(flag.Arg(0))
 	if err != nil {
 		log.Fatal(err)
 	}
-	workDir, _ := os.Getwd()
-
 	for _, f := range files {
 		if strings.Contains(f.Name(), "clients") || strings.Contains(f.Name(), "examples") {
+			continue
+		}
+		if len(*serviceFlag) > 0 && f.Name() != *serviceFlag {
 			continue
 		}
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
@@ -180,7 +191,7 @@ func main() {
 			}
 
 			// publish the api
-			if err := publishAPI(publicApi); err != nil {
+			if err := publishAPI(publicApi, *domainFlag); err != nil {
 				fmt.Println("Failed to save data to publicapi service", err)
 				os.Exit(1)
 			}
