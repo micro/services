@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/vehicle"
 	"os"
+
+	"github.com/micro/services/clients/go/vehicle"
 )
 
 // Lookup a UK vehicle by it's registration number

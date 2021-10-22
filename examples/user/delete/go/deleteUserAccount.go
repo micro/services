@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/user"
 	"os"
+
+	"github.com/micro/services/clients/go/user"
 )
 
 // Delete an account by id

@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/emoji"
 	"os"
+
+	"github.com/micro/services/clients/go/emoji"
 )
 
 // Send an emoji to anyone via SMS. Messages are sent in the form '<message> Sent from <from>'

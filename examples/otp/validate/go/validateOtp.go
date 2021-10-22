@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/otp"
 	"os"
+
+	"github.com/micro/services/clients/go/otp"
 )
 
 // Validate the OTP code

@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/user"
 	"os"
+
+	"github.com/micro/services/clients/go/user"
 )
 
 // Verify the email address of an account from a token sent in an email to the user.

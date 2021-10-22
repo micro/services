@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/rss"
 	"os"
+
+	"github.com/micro/services/clients/go/rss"
 )
 
 // Get an RSS feed by name. If no name is given, all feeds are returned. Default limit is 25 entries.

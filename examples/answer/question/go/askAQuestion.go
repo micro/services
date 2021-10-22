@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/answer"
 	"os"
+
+	"github.com/micro/services/clients/go/answer"
 )
 
 // Ask a question and receive an instant answer

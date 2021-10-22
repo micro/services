@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/sunnah"
 	"os"
+
+	"github.com/micro/services/clients/go/sunnah"
 )
 
 // Hadiths returns a list of hadiths and their corresponding text for a

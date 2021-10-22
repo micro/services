@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/email"
 	"os"
+
+	"github.com/micro/services/clients/go/email"
 )
 
 // Send an email by passing in from, to, subject, and a text or html body

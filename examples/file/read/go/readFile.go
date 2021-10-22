@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/file"
 	"os"
+
+	"github.com/micro/services/clients/go/file"
 )
 
 // Read a file by path

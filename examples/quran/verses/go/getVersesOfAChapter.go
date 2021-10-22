@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/quran"
 	"os"
+
+	"github.com/micro/services/clients/go/quran"
 )
 
 // Lookup the verses (ayahs) for a chapter including

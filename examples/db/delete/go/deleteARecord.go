@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/db"
 	"os"
+
+	"github.com/micro/services/clients/go/db"
 )
 
 // Delete a record in the database by id.

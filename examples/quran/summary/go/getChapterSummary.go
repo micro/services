@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/quran"
 	"os"
+
+	"github.com/micro/services/clients/go/quran"
 )
 
 // Get a summary for a given chapter (surah)

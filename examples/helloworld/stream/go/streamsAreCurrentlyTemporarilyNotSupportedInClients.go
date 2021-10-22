@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/helloworld"
 	"os"
+
+	"github.com/micro/services/clients/go/helloworld"
 )
 
 // Stream returns a stream of "Hello $name" responses

@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/sunnah"
 	"os"
+
+	"github.com/micro/services/clients/go/sunnah"
 )
 
 // Get a list of available collections. A collection is

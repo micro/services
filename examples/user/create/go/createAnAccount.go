@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/user"
 	"os"
+
+	"github.com/micro/services/clients/go/user"
 )
 
 // Create a new user account. The email address and username for the account must be unique.

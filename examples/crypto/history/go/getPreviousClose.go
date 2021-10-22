@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/crypto"
 	"os"
+
+	"github.com/micro/services/clients/go/crypto"
 )
 
 // Returns the history for the previous close

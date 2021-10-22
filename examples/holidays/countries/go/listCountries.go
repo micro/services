@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/holidays"
 	"os"
+
+	"github.com/micro/services/clients/go/holidays"
 )
 
 // Get the list of countries that are supported by this API

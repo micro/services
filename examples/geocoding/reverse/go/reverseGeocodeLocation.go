@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/geocoding"
 	"os"
+
+	"github.com/micro/services/clients/go/geocoding"
 )
 
 // Reverse lookup an address from gps coordinates

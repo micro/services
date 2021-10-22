@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/location"
 	"os"
+
+	"github.com/micro/services/clients/go/location"
 )
 
 // Read an entity by its ID

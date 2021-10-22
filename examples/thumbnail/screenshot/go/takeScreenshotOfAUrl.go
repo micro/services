@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/thumbnail"
 	"os"
+
+	"github.com/micro/services/clients/go/thumbnail"
 )
 
 // Create a thumbnail screenshot by passing in a url, height and width

@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/geocoding"
 	"os"
+
+	"github.com/micro/services/clients/go/geocoding"
 )
 
 // Lookup returns a geocoded address including normalized address and gps coordinates. All fields are optional, provide more to get more accurate results

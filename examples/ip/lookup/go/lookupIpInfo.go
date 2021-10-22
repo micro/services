@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/ip"
 	"os"
+
+	"github.com/micro/services/clients/go/ip"
 )
 
 // Lookup the geolocation information for an IP address

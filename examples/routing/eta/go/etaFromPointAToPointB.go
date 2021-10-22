@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/routing"
 	"os"
+
+	"github.com/micro/services/clients/go/routing"
 )
 
 // Get the eta for a route from origin to destination. The eta is an estimated time based on car routes

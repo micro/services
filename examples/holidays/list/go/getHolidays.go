@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/holidays"
 	"os"
+
+	"github.com/micro/services/clients/go/holidays"
 )
 
 // List the holiday dates for a given country and year

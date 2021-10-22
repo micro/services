@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/address"
 	"os"
+
+	"github.com/micro/services/clients/go/address"
 )
 
 // Lookup a list of UK addresses by postcode

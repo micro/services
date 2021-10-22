@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/quran"
 	"os"
+
+	"github.com/micro/services/clients/go/quran"
 )
 
 // Search the Quran for any form of query or questions

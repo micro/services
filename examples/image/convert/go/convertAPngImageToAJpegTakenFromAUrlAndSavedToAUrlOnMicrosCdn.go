@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/image"
 	"os"
+
+	"github.com/micro/services/clients/go/image"
 )
 
 // Convert an image from one format (jpeg, png etc.) to an other either on the fly (from base64 to base64),

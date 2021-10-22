@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/emoji"
 	"os"
+
+	"github.com/micro/services/clients/go/emoji"
 )
 
 // Print text and renders the emojis with aliases e.g

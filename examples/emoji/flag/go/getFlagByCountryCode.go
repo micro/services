@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/emoji"
 	"os"
+
+	"github.com/micro/services/clients/go/emoji"
 )
 
 // Get the flag for a country. Requires country code e.g GB for great britain

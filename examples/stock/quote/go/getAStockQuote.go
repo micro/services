@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/stock"
 	"os"
+
+	"github.com/micro/services/clients/go/stock"
 )
 
 // Get the last quote for the stock

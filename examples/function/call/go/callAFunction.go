@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/function"
 	"os"
+
+	"github.com/micro/services/clients/go/function"
 )
 
 // Call a function by name

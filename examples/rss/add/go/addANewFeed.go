@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/rss"
 	"os"
+
+	"github.com/micro/services/clients/go/rss"
 )
 
 // Add a new RSS feed with a name, url, and category

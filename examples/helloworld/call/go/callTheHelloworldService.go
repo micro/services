@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/helloworld"
 	"os"
+
+	"github.com/micro/services/clients/go/helloworld"
 )
 
 // Call returns a personalised "Hello $name" response

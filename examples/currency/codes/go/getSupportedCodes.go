@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/currency"
 	"os"
+
+	"github.com/micro/services/clients/go/currency"
 )
 
 // Codes returns the supported currency codes for the API

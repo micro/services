@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/notes"
 	"os"
+
+	"github.com/micro/services/clients/go/notes"
 )
 
 // List all the notes

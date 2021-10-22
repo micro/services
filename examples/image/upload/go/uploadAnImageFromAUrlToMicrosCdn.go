@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/image"
 	"os"
+
+	"github.com/micro/services/clients/go/image"
 )
 
 // Upload an image by either sending a base64 encoded image to this endpoint or a URL.

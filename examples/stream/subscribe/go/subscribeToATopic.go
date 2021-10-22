@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/stream"
 	"os"
+
+	"github.com/micro/services/clients/go/stream"
 )
 
 // Subscribe to messages for a given topic.

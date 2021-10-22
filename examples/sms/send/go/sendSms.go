@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/sms"
 	"os"
+
+	"github.com/micro/services/clients/go/sms"
 )
 
 // Send an SMS.

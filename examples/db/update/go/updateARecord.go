@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/db"
 	"os"
+
+	"github.com/micro/services/clients/go/db"
 )
 
 // Update a record in the database. Include an "id" in the record to update.

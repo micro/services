@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/postcode"
 	"os"
+
+	"github.com/micro/services/clients/go/postcode"
 )
 
 // Return a random postcode and its related info

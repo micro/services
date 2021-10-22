@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/evchargers"
 	"os"
+
+	"github.com/micro/services/clients/go/evchargers"
 )
 
 // Search by giving a coordinate and a max distance, or bounding box and optional filters

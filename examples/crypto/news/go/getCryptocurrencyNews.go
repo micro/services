@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/crypto"
 	"os"
+
+	"github.com/micro/services/clients/go/crypto"
 )
 
 // Get news related to a currency

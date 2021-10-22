@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/function"
 	"os"
+
+	"github.com/micro/services/clients/go/function"
 )
 
 // Delete a function by name

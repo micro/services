@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/cache"
 	"os"
+
+	"github.com/micro/services/clients/go/cache"
 )
 
 // Delete a value from the cache

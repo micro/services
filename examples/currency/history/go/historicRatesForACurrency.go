@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/currency"
 	"os"
+
+	"github.com/micro/services/clients/go/currency"
 )
 
 // Returns the historic rates for a currency on a given date

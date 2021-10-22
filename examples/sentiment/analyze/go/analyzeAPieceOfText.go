@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/sentiment"
 	"os"
+
+	"github.com/micro/services/clients/go/sentiment"
 )
 
 // Analyze and score a piece of text

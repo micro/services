@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/forex"
 	"os"
+
+	"github.com/micro/services/clients/go/forex"
 )
 
 // Returns the data for the previous close

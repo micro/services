@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/prayer"
 	"os"
+
+	"github.com/micro/services/clients/go/prayer"
 )
 
 // Get the prayer (salah) times for a location on a given date

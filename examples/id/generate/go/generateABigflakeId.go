@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/id"
 	"os"
+
+	"github.com/micro/services/clients/go/id"
 )
 
 // Generate a unique ID. Defaults to uuid.

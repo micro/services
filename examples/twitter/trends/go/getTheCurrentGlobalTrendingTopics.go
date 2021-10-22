@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/twitter"
 	"os"
+
+	"github.com/micro/services/clients/go/twitter"
 )
 
 // Get the current global trending topics

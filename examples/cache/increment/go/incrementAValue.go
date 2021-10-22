@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/cache"
 	"os"
+
+	"github.com/micro/services/clients/go/cache"
 )
 
 // Increment a value (if it's a number)

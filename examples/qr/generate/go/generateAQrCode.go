@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/qr"
 	"os"
+
+	"github.com/micro/services/clients/go/qr"
 )
 
 // Generate a QR code with a specific text and size

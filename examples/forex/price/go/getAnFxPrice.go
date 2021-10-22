@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/forex"
 	"os"
+
+	"github.com/micro/services/clients/go/forex"
 )
 
 // Get the latest price for a given forex ticker

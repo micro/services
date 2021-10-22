@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/weather"
 	"os"
+
+	"github.com/micro/services/clients/go/weather"
 )
 
 // Get the current weather report for a location by postcode, city, zip code, ip address

@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/url"
 	"os"
+
+	"github.com/micro/services/clients/go/url"
 )
 
 // Proxy returns the destination URL of a short URL.

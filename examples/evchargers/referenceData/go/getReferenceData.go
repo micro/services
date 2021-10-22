@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/evchargers"
 	"os"
+
+	"github.com/micro/services/clients/go/evchargers"
 )
 
 // Retrieve reference data as used by this API and in conjunction with the Search endpoint

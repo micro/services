@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/cache"
 	"os"
+
+	"github.com/micro/services/clients/go/cache"
 )
 
 // Get an item from the cache by key

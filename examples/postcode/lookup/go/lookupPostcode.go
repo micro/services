@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/postcode"
 	"os"
+
+	"github.com/micro/services/clients/go/postcode"
 )
 
 // Lookup a postcode to retrieve the related region, county, etc

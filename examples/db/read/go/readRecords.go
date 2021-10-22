@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/db"
 	"os"
+
+	"github.com/micro/services/clients/go/db"
 )
 
 // Read data from a table. Lookup can be by ID or via querying any field in the record.

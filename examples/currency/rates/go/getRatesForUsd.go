@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/currency"
 	"os"
+
+	"github.com/micro/services/clients/go/currency"
 )
 
 // Rates returns the currency rates for a given code e.g USD

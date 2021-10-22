@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/sunnah"
 	"os"
+
+	"github.com/micro/services/clients/go/sunnah"
 )
 
 // Get all the chapters of a given book within a collection.

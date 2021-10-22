@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/emoji"
 	"os"
+
+	"github.com/micro/services/clients/go/emoji"
 )
 
 // Find an emoji by its alias e.g :beer:

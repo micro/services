@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/cache"
 	"os"
+
+	"github.com/micro/services/clients/go/cache"
 )
 
 // Set an item in the cache. Overwrites any existing value already set.

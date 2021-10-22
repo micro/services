@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/routing"
 	"os"
+
+	"github.com/micro/services/clients/go/routing"
 )
 
 // Retrieve a route as a simple list of gps points along with total distance and estimated duration

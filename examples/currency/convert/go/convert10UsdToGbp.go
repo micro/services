@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/currency"
 	"os"
+
+	"github.com/micro/services/clients/go/currency"
 )
 
 // Convert returns the currency conversion rate between two pairs e.g USD/GBP

@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/quran"
 	"os"
+
+	"github.com/micro/services/clients/go/quran"
 )
 
 // List the Chapters (surahs) of the Quran

@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/time"
 	"os"
+
+	"github.com/micro/services/clients/go/time"
 )
 
 // Get the current time

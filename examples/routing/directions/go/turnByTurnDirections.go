@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/routing"
 	"os"
+
+	"github.com/micro/services/clients/go/routing"
 )
 
 // Turn by turn directions from a start point to an end point including maneuvers and bearings

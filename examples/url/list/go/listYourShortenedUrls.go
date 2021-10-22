@@ -2,8 +2,9 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/url"
 	"os"
+
+	"github.com/micro/services/clients/go/url"
 )
 
 // List information on all the shortened URLs that you have created
