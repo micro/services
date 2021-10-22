@@ -1,8 +1,8 @@
-import * as cache from "m3o/cache";
+const { CacheService } = require("m3o/cache");
 
 // Decrement a value (if it's a number)
-async function DecrementAvalue() {
-  let cacheService = new cache.CacheService(process.env.MICRO_API_TOKEN);
+async function decrementAvalue() {
+  let cacheService = new CacheService(process.env.MICRO_API_TOKEN);
   let rsp = await cacheService.decrement({
     key: "counter",
     value: 2,
@@ -10,4 +10,4 @@ async function DecrementAvalue() {
   console.log(rsp);
 }
 
-await DecrementAvalue();
+decrementAvalue();

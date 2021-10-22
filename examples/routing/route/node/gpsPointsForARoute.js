@@ -1,8 +1,8 @@
-import * as routing from "m3o/routing";
+const { RoutingService } = require("m3o/routing");
 
 // Retrieve a route as a simple list of gps points along with total distance and estimated duration
-async function GpsPointsForAroute() {
-  let routingService = new routing.RoutingService(process.env.MICRO_API_TOKEN);
+async function gpsPointsForAroute() {
+  let routingService = new RoutingService(process.env.MICRO_API_TOKEN);
   let rsp = await routingService.route({
     destination: {
       latitude: 52.529407,
@@ -16,4 +16,4 @@ async function GpsPointsForAroute() {
   console.log(rsp);
 }
 
-await GpsPointsForAroute();
+gpsPointsForAroute();

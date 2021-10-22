@@ -1,12 +1,12 @@
-import * as notes from "m3o/notes";
+const { NotesService } = require("m3o/notes");
 
 // Read a note
-async function ReadAnote() {
-  let notesService = new notes.NotesService(process.env.MICRO_API_TOKEN);
+async function readAnote() {
+  let notesService = new NotesService(process.env.MICRO_API_TOKEN);
   let rsp = await notesService.read({
     id: "63c0cdf8-2121-11ec-a881-0242e36f037a",
   });
   console.log(rsp);
 }
 
-await ReadAnote();
+readAnote();

@@ -1,8 +1,8 @@
-import * as cache from "m3o/cache";
+const { CacheService } = require("m3o/cache");
 
 // Increment a value (if it's a number)
-async function IncrementAvalue() {
-  let cacheService = new cache.CacheService(process.env.MICRO_API_TOKEN);
+async function incrementAvalue() {
+  let cacheService = new CacheService(process.env.MICRO_API_TOKEN);
   let rsp = await cacheService.increment({
     key: "counter",
     value: 2,
@@ -10,4 +10,4 @@ async function IncrementAvalue() {
   console.log(rsp);
 }
 
-await IncrementAvalue();
+incrementAvalue();

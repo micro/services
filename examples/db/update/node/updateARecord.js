@@ -1,8 +1,8 @@
-import * as db from "m3o/db";
+const { DbService } = require("m3o/db");
 
 // Update a record in the database. Include an "id" in the record to update.
-async function UpdateArecord() {
-  let dbService = new db.DbService(process.env.MICRO_API_TOKEN);
+async function updateArecord() {
+  let dbService = new DbService(process.env.MICRO_API_TOKEN);
   let rsp = await dbService.update({
     record: {
       age: 43,
@@ -13,4 +13,4 @@ async function UpdateArecord() {
   console.log(rsp);
 }
 
-await UpdateArecord();
+updateArecord();

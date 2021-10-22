@@ -1,8 +1,8 @@
-import * as sms from "m3o/sms";
+const { SmsService } = require("m3o/sms");
 
 // Send an SMS.
-async function SendSms() {
-  let smsService = new sms.SmsService(process.env.MICRO_API_TOKEN);
+async function sendSms() {
+  let smsService = new SmsService(process.env.MICRO_API_TOKEN);
   let rsp = await smsService.send({
     from: "Alice",
     message: "Hi there!",
@@ -11,4 +11,4 @@ async function SendSms() {
   console.log(rsp);
 }
 
-await SendSms();
+sendSms();

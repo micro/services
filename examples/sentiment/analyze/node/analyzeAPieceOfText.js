@@ -1,14 +1,12 @@
-import * as sentiment from "m3o/sentiment";
+const { SentimentService } = require("m3o/sentiment");
 
 // Analyze and score a piece of text
-async function AnalyzeApieceOfText() {
-  let sentimentService = new sentiment.SentimentService(
-    process.env.MICRO_API_TOKEN
-  );
+async function analyzeApieceOfText() {
+  let sentimentService = new SentimentService(process.env.MICRO_API_TOKEN);
   let rsp = await sentimentService.analyze({
     text: "this is amazing",
   });
   console.log(rsp);
 }
 
-await AnalyzeApieceOfText();
+analyzeApieceOfText();
