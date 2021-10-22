@@ -59,6 +59,7 @@ const goExampleTemplate = `{{ $service := .service }}package example
 import(
 	"fmt"
 	"os"
+
 	"github.com/micro/services/clients/go/{{ $service.Name}}"
 )
 
