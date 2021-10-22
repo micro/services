@@ -43,4 +43,4 @@ const tsExampleTemplate = `{{ $service := .service }}const { {{ title $service.N
 	console.log(rsp)
 }
 
-{{.untitle funcName }}()`
+{{ untitle .funcName }}()`
