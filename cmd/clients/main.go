@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -110,15 +111,14 @@ func main() {
 		},
 	}
 	services := []service{}
-	tsExportsMap := map[string]string{}
+	tsFileList := []string{"esm", "index.js", "index.d.ts"}
 	for _, f := range files {
 		if strings.Contains(f.Name(), "clients") || strings.Contains(f.Name(), "examples") {
 			continue
 		}
 		if f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
 			serviceName := f.Name()
-			// see https://stackoverflow.com/questions/44345257/import-from-subfolder-of-npm-package
-			tsExportsMap["./"+serviceName] = "./dist/" + serviceName + "/index.js"
+			tsFileList = append(tsFileList, serviceName)
 			serviceDir := filepath.Join(workDir, f.Name())
 			cmd := exec.Command("make", "api")
 			cmd.Dir = serviceDir
@@ -187,12 +187,12 @@ func main() {
 				os.Exit(1)
 			}
 
-			err = os.MkdirAll(filepath.Join(tsPath, serviceName), 0777)
+			err = os.MkdirAll(filepath.Join(tsPath, "src", serviceName), 0777)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			f, err := os.OpenFile(filepath.Join(tsPath, serviceName, "index.ts"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+			f, err := os.OpenFile(filepath.Join(tsPath, "src", serviceName, "index.ts"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
 				os.Exit(1)
@@ -204,7 +204,7 @@ func main() {
 				os.Exit(1)
 			}
 			cmd = exec.Command("prettier", "-w", "index.ts")
-			cmd.Dir = filepath.Join(tsPath, serviceName)
+			cmd.Dir = filepath.Join(tsPath, "src", serviceName)
 			outp, err = cmd.CombinedOutput()
 			if err != nil {
 				fmt.Println(fmt.Sprintf("Problem formatting '%v' client: %v %s", serviceName, string(outp), err.Error()))
@@ -449,7 +449,7 @@ func main() {
 		os.Exit(1)
 	}
 	tsFiles := filepath.Join(workDir, "cmd", "clients", "ts")
-	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
+	cmd = exec.Command("cp", filepath.Join(tsFiles, "package.json"), filepath.Join(tsFiles, ".gitignore"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "build.js"), filepath.Join(tsFiles, "tsconfig.es.json"), filepath.Join(tsFiles, "package-lock.json"), filepath.Join(tsFiles, "tsconfig.json"), filepath.Join(workDir, "clients", "ts"))
 	cmd.Dir = filepath.Join(tsPath)
 	outp, err = cmd.CombinedOutput()
 	if err != nil {
@@ -526,6 +526,14 @@ func main() {
 	type npmVers struct {
 		Versions []string `json:"versions"`
 	}
+
+	beta := os.Getenv("IS_BETA") != ""
+	if beta {
+		fmt.Println("creating beta version")
+	} else {
+		fmt.Println("creating live version")
+	}
+
 	npmOutput := &npmVers{}
 	var latest *semver.Version
 	if len(outp) > 0 {
@@ -535,6 +543,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	fmt.Println("npm output version: ", npmOutput.Versions)
 
 	for _, version := range npmOutput.Versions {
 		v, err := semver.NewVersion(version)
@@ -548,11 +557,37 @@ func main() {
 		if v.GreaterThan(latest) {
 			latest = v
 		}
+
 	}
+
 	if latest == nil {
-		latest, _ = semver.NewVersion("0.0.0")
+		fmt.Println("found no semver version")
+		os.Exit(1)
 	}
-	newV := latest.IncPatch()
+
+	var newV semver.Version
+	if beta {
+		// bump a beta version
+		if strings.Contains(latest.String(), "beta") {
+			newV = incBeta(*latest)
+		} else {
+			// make beta out of latest non beta version
+			v, _ := semver.NewVersion(latest.IncPatch().String() + "-beta1")
+			newV = *v
+		}
+	} else {
+		newV = latest.IncPatch()
+	}
+
+	// add file list to gitignore
+	f, err = os.OpenFile(filepath.Join(tsPath, ".gitignore"), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+	for _, sname := range tsFileList {
+		_, err := f.Write([]byte(sname + "\n"))
+		if err != nil {
+			fmt.Println("failed to append service to gitignore", err)
+			os.Exit(1)
+		}
+	}
 
 	// bump package to latest version
 	fmt.Println("Bumping to ", newV.String())
@@ -576,7 +611,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	m["exports"] = tsExportsMap
+	m["files"] = tsFileList
 	pakJS, err := json.MarshalIndent(m, "", " ")
 	if err != nil {
 		fmt.Println(err)
@@ -592,6 +627,24 @@ func main() {
 		fmt.Println("Failed to write to package.json", err)
 		os.Exit(1)
 	}
+}
+
+func incBeta(ver semver.Version) semver.Version {
+	s := ver.String()
+	parts := strings.Split(s, "beta")
+	if len(parts) < 2 {
+		panic("not a beta version " + s)
+	}
+	i, err := strconv.ParseInt(parts[1], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	i++
+	v, err := semver.NewVersion(parts[0] + "beta" + fmt.Sprintf("%v", i))
+	if err != nil {
+		panic(err)
+	}
+	return *v
 }
 
 func schemaToType(language, serviceName, typeName string, schemas map[string]*openapi3.SchemaRef) string {

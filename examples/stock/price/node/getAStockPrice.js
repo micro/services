@@ -1,12 +1,12 @@
-import * as stock from "m3o/stock";
+const { StockService } = require("m3o/stock");
 
 // Get the last price for a given stock ticker
-async function GetAstockPrice() {
-  let stockService = new stock.StockService(process.env.MICRO_API_TOKEN);
+async function getAstockPrice() {
+  let stockService = new StockService(process.env.MICRO_API_TOKEN);
   let rsp = await stockService.price({
     symbol: "AAPL",
   });
   console.log(rsp);
 }
 
-await GetAstockPrice();
+getAstockPrice();

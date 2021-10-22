@@ -1,12 +1,12 @@
-import * as user from "m3o/user";
+const { UserService } = require("m3o/user");
 
 // Delete an account by id
-async function DeleteUserAccount() {
-  let userService = new user.UserService(process.env.MICRO_API_TOKEN);
+async function deleteUserAccount() {
+  let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.delete({
     id: "fdf34f34f34-f34f34-f43f43f34-f4f34f",
   });
   console.log(rsp);
 }
 
-await DeleteUserAccount();
+deleteUserAccount();

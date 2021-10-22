@@ -1,8 +1,8 @@
-import * as stock from "m3o/stock";
+const { StockService } = require("m3o/stock");
 
 // Get the historic order book and each trade by timestamp
-async function OrderBookHistory() {
-  let stockService = new stock.StockService(process.env.MICRO_API_TOKEN);
+async function orderBookHistory() {
+  let stockService = new StockService(process.env.MICRO_API_TOKEN);
   let rsp = await stockService.orderBook({
     date: "2020-10-01",
     end: "2020-10-01T11:00:00Z",
@@ -13,4 +13,4 @@ async function OrderBookHistory() {
   console.log(rsp);
 }
 
-await OrderBookHistory();
+orderBookHistory();

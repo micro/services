@@ -1,10 +1,8 @@
-import * as evchargers from "m3o/evchargers";
+const { EvchargersService } = require("m3o/evchargers");
 
 // Search by giving a coordinate and a max distance, or bounding box and optional filters
-async function SearchByLocation() {
-  let evchargersService = new evchargers.EvchargersService(
-    process.env.MICRO_API_TOKEN
-  );
+async function searchByLocation() {
+  let evchargersService = new EvchargersService(process.env.MICRO_API_TOKEN);
   let rsp = await evchargersService.search({
     distance: 2000,
     location: {
@@ -16,4 +14,4 @@ async function SearchByLocation() {
   console.log(rsp);
 }
 
-await SearchByLocation();
+searchByLocation();

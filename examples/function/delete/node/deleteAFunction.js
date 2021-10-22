@@ -1,8 +1,8 @@
-import * as fx from "m3o/function";
+const { FunctionService } = require("m3o/function");
 
 // Delete a function by name
-async function DeleteAfunction() {
-  let functionService = new fx.FunctionService(process.env.MICRO_API_TOKEN);
+async function deleteAfunction() {
+  let functionService = new FunctionService(process.env.MICRO_API_TOKEN);
   let rsp = await functionService.delete({
     name: "my-first-func",
     project: "tests",
@@ -10,4 +10,4 @@ async function DeleteAfunction() {
   console.log(rsp);
 }
 
-await DeleteAfunction();
+deleteAfunction();

@@ -1,12 +1,12 @@
-import * as crypto from "m3o/crypto";
+const { CryptoService } = require("m3o/crypto");
 
 // Get the last quote for a given crypto ticker
-async function GetAcryptocurrencyQuote() {
-  let cryptoService = new crypto.CryptoService(process.env.MICRO_API_TOKEN);
+async function getAcryptocurrencyQuote() {
+  let cryptoService = new CryptoService(process.env.MICRO_API_TOKEN);
   let rsp = await cryptoService.quote({
     symbol: "BTCUSD",
   });
   console.log(rsp);
 }
 
-await GetAcryptocurrencyQuote();
+getAcryptocurrencyQuote();

@@ -6,8 +6,35 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/getkin/kin-openapi/openapi3"
 )
+
+func TestSemver(t *testing.T) {
+	v, _ := semver.NewVersion("0.0.0-beta1")
+	if incBeta(*v).String() != "0.0.0-beta2" {
+		t.Fatal(v)
+	}
+
+	v1, _ := semver.NewVersion("0.0.1")
+	if !v1.GreaterThan(v) {
+		t.Fatal("no good")
+	}
+
+	v2, _ := semver.NewVersion("0.0.0")
+	if !v2.GreaterThan(v) {
+		t.Fatal("no good")
+	}
+
+	if v.String() != "0.0.0-beta1" {
+		t.Fatal("no good")
+	}
+
+	v3, _ := semver.NewVersion("0.0.0-beta2")
+	if !v3.GreaterThan(v) {
+		t.Fatal("no good")
+	}
+}
 
 type tspec struct {
 	openapi  string

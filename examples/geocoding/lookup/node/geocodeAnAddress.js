@@ -1,10 +1,8 @@
-import * as geocoding from "m3o/geocoding";
+const { GeocodingService } = require("m3o/geocoding");
 
 // Lookup returns a geocoded address including normalized address and gps coordinates. All fields are optional, provide more to get more accurate results
-async function GeocodeAnAddress() {
-  let geocodingService = new geocoding.GeocodingService(
-    process.env.MICRO_API_TOKEN
-  );
+async function geocodeAnAddress() {
+  let geocodingService = new GeocodingService(process.env.MICRO_API_TOKEN);
   let rsp = await geocodingService.lookup({
     address: "10 russell st",
     city: "london",
@@ -14,4 +12,4 @@ async function GeocodeAnAddress() {
   console.log(rsp);
 }
 
-await GeocodeAnAddress();
+geocodeAnAddress();

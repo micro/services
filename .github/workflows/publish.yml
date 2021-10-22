@@ -60,10 +60,25 @@ jobs:
           go run cmd/publisher/main.go .
         env:
           MICRO_ADMIN_TOKEN: ${{ secrets.MICRO_ADMIN_TOKEN }}
+
       - name: Generate package
         working-directory: services
+        if: github.ref == 'refs/heads/master'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          pwd
+          cd cmd/clients;
+          go install;
+          cd ../..;
+          clients .
+      
+      - name: Generate beta package
+        working-directory: services
+        if: github.ref == 'refs/heads/beta'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          IS_BETA: yup
         run: |
           pwd
           cd cmd/clients;
@@ -84,3 +99,13 @@ jobs:
           npm install
           npm run build
           npm publish --access public
+
+      - name: npm install beta
+        working-directory: services
+        if: github.ref == 'refs/heads/beta'
+        run: |
+          git status
+          cd clients/ts;
+          npm install
+          npm run build
+          npm publish --access public --tag beta

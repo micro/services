@@ -1,8 +1,8 @@
-import * as file from "m3o/file";
+const { FileService } = require("m3o/file");
 
 // Save a file
-async function SaveFile() {
-  let fileService = new file.FileService(process.env.MICRO_API_TOKEN);
+async function saveFile() {
+  let fileService = new FileService(process.env.MICRO_API_TOKEN);
   let rsp = await fileService.save({
     file: {
       content: "file content example",
@@ -13,4 +13,4 @@ async function SaveFile() {
   console.log(rsp);
 }
 
-await SaveFile();
+saveFile();

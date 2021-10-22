@@ -1,8 +1,8 @@
-import * as emoji from "m3o/emoji";
+const { EmojiService } = require("m3o/emoji");
 
 // Send an emoji to anyone via SMS. Messages are sent in the form '<message> Sent from <from>'
-async function SendAtextContainingAnEmojiToAnyoneViaSms() {
-  let emojiService = new emoji.EmojiService(process.env.MICRO_API_TOKEN);
+async function sendAtextContainingAnEmojiToAnyoneViaSms() {
+  let emojiService = new EmojiService(process.env.MICRO_API_TOKEN);
   let rsp = await emojiService.send({
     from: "Alice",
     message: "let's grab a :beer:",
@@ -11,4 +11,4 @@ async function SendAtextContainingAnEmojiToAnyoneViaSms() {
   console.log(rsp);
 }
 
-await SendAtextContainingAnEmojiToAnyoneViaSms();
+sendAtextContainingAnEmojiToAnyoneViaSms();
