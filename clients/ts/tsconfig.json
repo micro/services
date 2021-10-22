@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "module": "es6",
+    "module": "CommonJS",
     "target": "es5",
     "declaration": true,
     "lib": ["es2015", "dom"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "outDir": "./dist",
+    "outDir": "./tmp",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true
   },
-  "include": ["index.ts", "./*"],
-  "exclude": ["src/**/*.spec.*", "./dist", "./node_modules"]
+  "include": ["src/index.ts", "src/**/*"],
+  "exclude": ["./dist", "./node_modules"]
 }

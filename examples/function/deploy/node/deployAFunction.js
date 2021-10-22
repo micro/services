@@ -1,8 +1,8 @@
-import * as fx from "m3o/function";
+const { FunctionService } = require("m3o/function");
 
 // Deploy a group of functions
-async function DeployAfunction() {
-  let functionService = new fx.FunctionService(process.env.MICRO_API_TOKEN);
+async function deployAfunction() {
+  let functionService = new FunctionService(process.env.MICRO_API_TOKEN);
   let rsp = await functionService.deploy({
     entrypoint: "helloworld",
     name: "my-first-func",
@@ -13,4 +13,4 @@ async function DeployAfunction() {
   console.log(rsp);
 }
 
-await DeployAfunction();
+deployAfunction();

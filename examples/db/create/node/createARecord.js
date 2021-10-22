@@ -1,8 +1,8 @@
-import * as db from "m3o/db";
+const { DbService } = require("m3o/db");
 
 // Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
-async function CreateArecord() {
-  let dbService = new db.DbService(process.env.MICRO_API_TOKEN);
+async function createArecord() {
+  let dbService = new DbService(process.env.MICRO_API_TOKEN);
   let rsp = await dbService.create({
     record: {
       age: 42,
@@ -15,4 +15,4 @@ async function CreateArecord() {
   console.log(rsp);
 }
 
-await CreateArecord();
+createArecord();

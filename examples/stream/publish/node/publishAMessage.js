@@ -1,8 +1,8 @@
-import * as stream from "m3o/stream";
+const { StreamService } = require("m3o/stream");
 
 // Publish a message to the stream. Specify a topic to group messages for a specific topic.
-async function PublishAmessage() {
-  let streamService = new stream.StreamService(process.env.MICRO_API_TOKEN);
+async function publishAmessage() {
+  let streamService = new StreamService(process.env.MICRO_API_TOKEN);
   let rsp = await streamService.publish({
     message: {
       id: "1",
@@ -14,4 +14,4 @@ async function PublishAmessage() {
   console.log(rsp);
 }
 
-await PublishAmessage();
+publishAmessage();

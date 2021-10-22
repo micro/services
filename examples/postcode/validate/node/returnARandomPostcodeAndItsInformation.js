@@ -1,14 +1,12 @@
-import * as postcode from "m3o/postcode";
+const { PostcodeService } = require("m3o/postcode");
 
 // Validate a postcode.
-async function ReturnArandomPostcodeAndItsInformation() {
-  let postcodeService = new postcode.PostcodeService(
-    process.env.MICRO_API_TOKEN
-  );
+async function returnArandomPostcodeAndItsInformation() {
+  let postcodeService = new PostcodeService(process.env.MICRO_API_TOKEN);
   let rsp = await postcodeService.validate({
     postcode: "SW1A 2AA",
   });
   console.log(rsp);
 }
 
-await ReturnArandomPostcodeAndItsInformation();
+returnArandomPostcodeAndItsInformation();

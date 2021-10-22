@@ -1,9 +1,9 @@
-import * as image from "m3o/image";
+const { ImageService } = require("m3o/image");
 
 // Convert an image from one format (jpeg, png etc.) to an other either on the fly (from base64 to base64),
 // or by uploading the conversion result.
-async function ConvertApngImageToAjpegTakenFromAurlAndSavedToAurlOnMicrosCdn() {
-  let imageService = new image.ImageService(process.env.MICRO_API_TOKEN);
+async function convertApngImageToAjpegTakenFromAurlAndSavedToAurlOnMicrosCdn() {
+  let imageService = new ImageService(process.env.MICRO_API_TOKEN);
   let rsp = await imageService.convert({
     name: "cat.jpeg",
     outputURL: true,
@@ -12,4 +12,4 @@ async function ConvertApngImageToAjpegTakenFromAurlAndSavedToAurlOnMicrosCdn() {
   console.log(rsp);
 }
 
-await ConvertApngImageToAjpegTakenFromAurlAndSavedToAurlOnMicrosCdn();
+convertApngImageToAjpegTakenFromAurlAndSavedToAurlOnMicrosCdn();

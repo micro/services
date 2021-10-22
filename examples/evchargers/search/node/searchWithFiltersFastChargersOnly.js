@@ -1,10 +1,8 @@
-import * as evchargers from "m3o/evchargers";
+const { EvchargersService } = require("m3o/evchargers");
 
 // Search by giving a coordinate and a max distance, or bounding box and optional filters
-async function SearchWithFiltersFastChargersOnly() {
-  let evchargersService = new evchargers.EvchargersService(
-    process.env.MICRO_API_TOKEN
-  );
+async function searchWithFiltersFastChargersOnly() {
+  let evchargersService = new EvchargersService(process.env.MICRO_API_TOKEN);
   let rsp = await evchargersService.search({
     distance: 2000,
     levels: ["3"],
@@ -17,4 +15,4 @@ async function SearchWithFiltersFastChargersOnly() {
   console.log(rsp);
 }
 
-await SearchWithFiltersFastChargersOnly();
+searchWithFiltersFastChargersOnly();

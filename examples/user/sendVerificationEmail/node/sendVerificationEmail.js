@@ -1,4 +1,4 @@
-import * as user from "m3o/user";
+const { UserService } = require("m3o/user");
 
 // Send a verification email
 // to the user being signed up. Email from will be from 'support@m3o.com',
@@ -7,8 +7,8 @@ import * as user from "m3o/user";
 // Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
 // The variable will be replaced with an actual url that will look similar to this:
 // 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
-async function SendVerificationEmail() {
-  let userService = new user.UserService(process.env.MICRO_API_TOKEN);
+async function sendVerificationEmail() {
+  let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.sendVerificationEmail({
     email: "joe@example.com",
     failureRedirectUrl: "https://m3o.com/verification-failed",
@@ -21,4 +21,4 @@ async function SendVerificationEmail() {
   console.log(rsp);
 }
 
-await SendVerificationEmail();
+sendVerificationEmail();
