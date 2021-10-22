@@ -61,9 +61,8 @@ jobs:
         env:
           MICRO_ADMIN_TOKEN: ${{ secrets.MICRO_ADMIN_TOKEN }}
 
-      - name: Generate package
+      - name: Generate package for all branches
         working-directory: services
-        if: github.ref == 'refs/heads/master'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -78,7 +77,7 @@ jobs:
         if: github.ref == 'refs/heads/beta'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          IS_BETA: yup
+          IS_BETA: yup  
         run: |
           pwd
           cd cmd/clients;
