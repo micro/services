@@ -31,6 +31,7 @@
   "function",
   "geocoding",
   "gifs",
+  "google",
   "helloworld",
   "holidays",
   "id",
@@ -75,5 +76,5 @@
   "prepare": "npm run build"
  },
  "types": "index.d.ts",
- "version": "1.0.560"
+ "version": "1.0.561"
 }
