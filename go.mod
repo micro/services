@@ -54,10 +54,9 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
-	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
-	golang.org/x/sys v0.0.0-20210917161153-d61c044b1678 // indirect
+	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
+	google.golang.org/api v0.59.0
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20210917145530-b395a37504d4 // indirect
 	google.golang.org/protobuf v1.27.1
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v2 v2.3.0
@@ -67,4 +66,3 @@ require (
 	gorm.io/gorm v1.21.10
 )
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.26.0

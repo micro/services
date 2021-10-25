@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package youtube;
+
+option go_package = "./proto;youtube";
+
+service Youtube {
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+}
+
+message SearchResult {
+	// id of the result
+	string id = 1;
+	// kind of result; "video", "channel", "playlist"
+	string kind = 2;
+	// title of the result
+	string title = 3;
+	// the result description
+	string description = 4;
+	// the channel id
+	string channel_id = 5;
+	// the channel title
+	string channel_title = 6;
+	// published at time
+	string published_at = 7;
+	// if live broadcast then indicates activity. 
+	// none, upcoming, live, completed
+	string broadcasting = 8;
+	// the associated url
+	string url = 9;
+}
+
+// Search for videos on YouTube
+message SearchRequest {
+	// Query to search for
+	string query = 1;
+}
+
+message SearchResponse {
+	// List of results for the query
+	repeated SearchResult results = 1;
+}
