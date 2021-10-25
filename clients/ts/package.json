@@ -58,7 +58,8 @@
   "url",
   "user",
   "vehicle",
-  "weather"
+  "weather",
+  "youtube"
  ],
  "license": "ISC",
  "main": "index.js",
@@ -74,5 +75,5 @@
   "prepare": "npm run build"
  },
  "types": "index.d.ts",
- "version": "1.0.559"
+ "version": "1.0.560"
 }

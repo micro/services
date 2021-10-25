@@ -37,6 +37,7 @@ import * as url from "./url";
 import * as user from "./user";
 import * as vehicle from "./vehicle";
 import * as weather from "./weather";
+import * as youtube from "./youtube";
 
 export class Client {
   constructor(token: string) {
@@ -79,6 +80,7 @@ export class Client {
     this.userService = new user.UserService(token);
     this.vehicleService = new vehicle.VehicleService(token);
     this.weatherService = new weather.WeatherService(token);
+    this.youtubeService = new youtube.YoutubeService(token);
   }
 
   addressService: address.AddressService;
@@ -120,4 +122,5 @@ export class Client {
   userService: user.UserService;
   vehicleService: vehicle.VehicleService;
   weatherService: weather.WeatherService;
+  youtubeService: youtube.YoutubeService;
 }

@@ -40,6 +40,7 @@ import (
 	"github.com/micro/services/clients/go/user"
 	"github.com/micro/services/clients/go/vehicle"
 	"github.com/micro/services/clients/go/weather"
+	"github.com/micro/services/clients/go/youtube"
 )
 
 func NewClient(token string) *Client {
@@ -85,6 +86,7 @@ func NewClient(token string) *Client {
 		UserService:       user.NewUserService(token),
 		VehicleService:    vehicle.NewVehicleService(token),
 		WeatherService:    weather.NewWeatherService(token),
+		YoutubeService:    youtube.NewYoutubeService(token),
 	}
 }
 
@@ -130,4 +132,5 @@ type Client struct {
 	UserService       *user.UserService
 	VehicleService    *vehicle.VehicleService
 	WeatherService    *weather.WeatherService
+	YoutubeService    *youtube.YoutubeService
 }
