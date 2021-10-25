@@ -1,0 +1,9 @@
+{
+  "name": "google",
+  "icon": "🔍",
+  "category": "search",
+  "display_name": "Google",
+  "pricing": {
+    "Google.Search": 10000
+  }
+}

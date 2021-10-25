@@ -1,0 +1,47 @@
+
+{
+    "search": [{
+        "title": "Search for videos",
+        "run_check": false,
+        "description": "Search for videos on google",
+        "request": {
+           "query": "how to make donuts"
+        },
+        "response": {
+            "results": [
+                {
+                        "id": "g0h-szLkVy8J",
+                        "kind": "result",
+                        "title": "How to Make Homemade Glazed Doughnuts - Sally's Baking Addiction",
+                        "snippet": "May 2, 2016 ... Ingredients · 1 cup (240ml) whole milk, warmed to about 110°F (43°C)* · 1 Tablespoon active dry yeast* · 1/3 cup (65g) granulated sugar · 2 large ...",
+                        "url": "https://sallysbakingaddiction.com/how-to-make-homemade-glazed-doughnuts/",
+                        "display_url": "sallysbakingaddiction.com"
+                },
+                {
+                        "id": "7Rg9Zme3k3EJ",
+                        "kind": "result",
+                        "title": "How to Make Donuts at Home - Homemade Doughnuts Recipe",
+                        "snippet": "Apr 12, 2021 ... In a medium bowl, whisk together flour and salt. In a large bowl, whisk together remaining sugar, butter, eggs, and vanilla with a wooden spoon.",
+                        "url": "https://www.delish.com/cooking/recipe-ideas/a24788319/how-to-make-donuts-at-home/",
+                        "display_url": "www.delish.com"
+                },
+                {
+                        "id": "y9u1t370RBoJ",
+                        "kind": "result",
+                        "title": "How to Make Homemade Donuts in 15 Minutes - Cooking Classy",
+                        "snippet": "May 3, 2020 ... Ingredients · 1 1/4 cups (176g) all-purpose flour (scoop and level to measure) · 2 tsp baking powder · 1/4 tsp salt · 1/2 cup (120 ml) buttermilk* ...",
+                        "url": "https://www.cookingclassy.com/15-minute-donuts-from-scratch/",
+                        "display_url": "www.cookingclassy.com"
+                },
+                {
+                        "id": "u30VwVPlat8J",
+                        "kind": "result",
+                        "title": "How to Make Homemade Donuts | The Recipe Critic",
+                        "snippet": "Oct 24, 2020 ... How to Make Homemade Donuts · Heat up the cream, milk and sugar and allow it to cool down a bit before adding the yeast to activate it. · Once the ...",
+                        "url": "https://therecipecritic.com/homemade-donuts/",
+                        "display_url": "therecipecritic.com"
+                }
+            ]
+        }
+    }]
+}

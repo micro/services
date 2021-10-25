@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package google;
+
+option go_package = "./proto;google";
+
+service Google {
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+}
+
+message SearchResult {
+	// id of the result
+	string id = 1;
+	// kind of result; "search"
+	string kind = 2;
+	// title of the result
+	string title = 3;
+	// the result snippet
+	string snippet = 4;
+	// the full url for the result
+	string url = 5;
+	// abridged version of this search result’s URL, e.g. www.exampe.com
+	string display_url = 6;
+}
+
+// Search for videos on Google
+message SearchRequest {
+	// Query to search for
+	string query = 1;
+}
+
+message SearchResponse {
+	// List of results for the query
+	repeated SearchResult results = 1;
+}

@@ -18,8 +18,6 @@ require (
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang/protobuf v1.5.2
-	github.com/golang/snappy v0.0.3 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/hablullah/go-prayer v1.0.0
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
@@ -51,12 +49,10 @@ require (
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
 	go.mongodb.org/mongo-driver v1.7.2
-	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 	google.golang.org/api v0.59.0
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.27.1
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v2 v2.3.0
@@ -65,4 +61,3 @@ require (
 	gorm.io/driver/postgres v1.0.8
 	gorm.io/gorm v1.21.10
 )
-
