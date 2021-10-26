@@ -115,7 +115,10 @@ message DescribeRequest {
 }
 
 message DescribeResponse {
+	// The time at which the function was updated
 	string updateTime = 1;
+	// The last known status of the function
 	string status = 2;
+	// The timeout for requests to the function
 	string timeout = 3;
 }
