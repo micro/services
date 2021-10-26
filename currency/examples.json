@@ -3,7 +3,7 @@
     {
       "title": "Get supported codes",
       "description": "Returns the supported currency codes (example response)",
-      "run_check": true,
+      "run_check": false,
       "request": {},
       "response": {
         "codes": [
@@ -35,7 +35,7 @@
     {
       "title": "Get rates for USD",
       "description": "Returns the rates for USD (sample response)",
-      "run_check": true,
+      "run_check": false,
       "request": {
         "code": "USD"
       },
@@ -60,7 +60,7 @@
     {
       "title": "Convert USD to GBP",
       "description": "Convert from USD to GBP",
-      "run_check": true,
+      "run_check": false,
       "request": {
         "from": "USD",
         "to": "GBP"
@@ -74,7 +74,7 @@
     {
       "title": "Convert $10 USD to GBP",
       "description": "Convert $10 from USD to GBP",
-      "run_check": true,
+      "run_check": false,
       "request": {
         "from": "USD",
         "to": "GBP",
