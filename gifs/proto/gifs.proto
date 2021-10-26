@@ -8,7 +8,7 @@ service Gifs {
 	rpc Search(SearchRequest) returns (SearchResponse) {}
 }
 
-// Search for a gif
+// Search for a GIF
 message SearchRequest {
 	// The search term
 	string query = 1;
