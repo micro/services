@@ -372,7 +372,7 @@ func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, 
 	// set describe info
 	rsp.Status = m["status"].(string)
 	rsp.Timeout = m["timeout"].(string)
-	rsp.UpdateTime = m["updateTime"].(string)
+	rsp.UpdatedAt = m["updateTime"].(string)
 
 	return nil
 }
