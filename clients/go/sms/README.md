@@ -1,56 +1,35 @@
-package sms
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewSmsService(token string) *SmsService {
-	return &SmsService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type SmsService struct {
-	client *client.Client
-}
-
-
-// Send an SMS.
-func (t *SmsService) Send(request *SendRequest) (*SendResponse, error) {
-	rsp := &SendResponse{}
-	return rsp, t.client.Call("sms", "Send", request, rsp)
-}
-
-
-
-
-type SendRequest struct {
-  // who is the message from? The message will be suffixed with "Sent from <from>"
-  From string `json:"from"`
-  // the main body of the message to send
-  Message string `json:"message"`
-  // the destination phone number including the international dialling code (e.g. +44)
-  To string `json:"to"`
-}
-
-type SendResponse struct {
-  // any additional info
-  Info string `json:"info"`
-  // will return "ok" if successful
-  Status string `json:"status"`
-}
-
-# { Sms
+# Sms
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Sms/api](https://m3o.com/Sms/api).
 
 Endpoints:
 
-#send
+## Send
+
+Send an SMS.
+
+
+[https://m3o.com/sms/api#Send](https://m3o.com/sms/api#Send)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/sms"
+)
 
 // Send an SMS.
+func SendSms() {
+	smsService := sms.NewSmsService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := smsService.Send(&sms.SendRequest{
+		From: "Alice",
+Message: "Hi there!",
+To: "+447681129",
 
-
-[https://m3o.com/sms/api#send](https://m3o.com/sms/api#send)
+	})
+	fmt.Println(rsp, err)
+}
+```

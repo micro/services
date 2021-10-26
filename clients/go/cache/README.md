@@ -1,154 +1,144 @@
-package cache
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewCacheService(token string) *CacheService {
-	return &CacheService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type CacheService struct {
-	client *client.Client
-}
-
-
-// Decrement a value (if it's a number)
-func (t *CacheService) Decrement(request *DecrementRequest) (*DecrementResponse, error) {
-	rsp := &DecrementResponse{}
-	return rsp, t.client.Call("cache", "Decrement", request, rsp)
-}
-
-// Delete a value from the cache
-func (t *CacheService) Delete(request *DeleteRequest) (*DeleteResponse, error) {
-	rsp := &DeleteResponse{}
-	return rsp, t.client.Call("cache", "Delete", request, rsp)
-}
-
-// Get an item from the cache by key
-func (t *CacheService) Get(request *GetRequest) (*GetResponse, error) {
-	rsp := &GetResponse{}
-	return rsp, t.client.Call("cache", "Get", request, rsp)
-}
-
-// Increment a value (if it's a number)
-func (t *CacheService) Increment(request *IncrementRequest) (*IncrementResponse, error) {
-	rsp := &IncrementResponse{}
-	return rsp, t.client.Call("cache", "Increment", request, rsp)
-}
-
-// Set an item in the cache. Overwrites any existing value already set.
-func (t *CacheService) Set(request *SetRequest) (*SetResponse, error) {
-	rsp := &SetResponse{}
-	return rsp, t.client.Call("cache", "Set", request, rsp)
-}
-
-
-
-
-type DecrementRequest struct {
-  // The key to decrement
-  Key string `json:"key"`
-  // The amount to decrement the value by
-  Value int64 `json:"value,string"`
-}
-
-type DecrementResponse struct {
-  // The key decremented
-  Key string `json:"key"`
-  // The new value
-  Value int64 `json:"value,string"`
-}
-
-type DeleteRequest struct {
-  // The key to delete
-  Key string `json:"key"`
-}
-
-type DeleteResponse struct {
-  // Returns "ok" if successful
-  Status string `json:"status"`
-}
-
-type GetRequest struct {
-  // The key to retrieve
-  Key string `json:"key"`
-}
-
-type GetResponse struct {
-  // The key
-  Key string `json:"key"`
-  // Time to live in seconds
-  Ttl int64 `json:"ttl,string"`
-  // The value
-  Value string `json:"value"`
-}
-
-type IncrementRequest struct {
-  // The key to increment
-  Key string `json:"key"`
-  // The amount to increment the value by
-  Value int64 `json:"value,string"`
-}
-
-type IncrementResponse struct {
-  // The key incremented
-  Key string `json:"key"`
-  // The new value
-  Value int64 `json:"value,string"`
-}
-
-type SetRequest struct {
-  // The key to update
-  Key string `json:"key"`
-  // Time to live in seconds
-  Ttl int64 `json:"ttl,string"`
-  // The value to set
-  Value string `json:"value"`
-}
-
-type SetResponse struct {
-  // Returns "ok" if successful
-  Status string `json:"status"`
-}
-
-# { Cache
+# Cache
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Cache/api](https://m3o.com/Cache/api).
 
 Endpoints:
 
-#decrement
+## Delete
 
-// Decrement a value (if it's a number)
+Delete a value from the cache
 
 
-[https://m3o.com/cache/api#decrement](https://m3o.com/cache/api#decrement)
-#delete
+[https://m3o.com/cache/api#Delete](https://m3o.com/cache/api#Delete)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/cache"
+)
 
 // Delete a value from the cache
+func DeleteAvalue() {
+	cacheService := cache.NewCacheService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := cacheService.Delete(&cache.DeleteRequest{
+		Key: "foo",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Increment
+
+Increment a value (if it's a number)
 
 
-[https://m3o.com/cache/api#delete](https://m3o.com/cache/api#delete)
-#get
+[https://m3o.com/cache/api#Increment](https://m3o.com/cache/api#Increment)
 
-// Get an item from the cache by key
+```go
+package example
 
+import(
+	"fmt"
+	"os"
 
-[https://m3o.com/cache/api#get](https://m3o.com/cache/api#get)
-#increment
+	"github.com/micro/services/clients/go/cache"
+)
 
 // Increment a value (if it's a number)
+func IncrementAvalue() {
+	cacheService := cache.NewCacheService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := cacheService.Increment(&cache.IncrementRequest{
+		Key: "counter",
+Value: 2,
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Decrement
+
+Decrement a value (if it's a number)
 
 
-[https://m3o.com/cache/api#increment](https://m3o.com/cache/api#increment)
-#set
+[https://m3o.com/cache/api#Decrement](https://m3o.com/cache/api#Decrement)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/cache"
+)
+
+// Decrement a value (if it's a number)
+func DecrementAvalue() {
+	cacheService := cache.NewCacheService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := cacheService.Decrement(&cache.DecrementRequest{
+		Key: "counter",
+Value: 2,
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Set
+
+Set an item in the cache. Overwrites any existing value already set.
+
+
+[https://m3o.com/cache/api#Set](https://m3o.com/cache/api#Set)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/cache"
+)
 
 // Set an item in the cache. Overwrites any existing value already set.
+func SetAvalue() {
+	cacheService := cache.NewCacheService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := cacheService.Set(&cache.SetRequest{
+		Key: "foo",
+Value: "bar",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Get
+
+Get an item from the cache by key
 
 
-[https://m3o.com/cache/api#set](https://m3o.com/cache/api#set)
+[https://m3o.com/cache/api#Get](https://m3o.com/cache/api#Get)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/cache"
+)
+
+// Get an item from the cache by key
+func GetAvalue() {
+	cacheService := cache.NewCacheService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := cacheService.Get(&cache.GetRequest{
+		Key: "foo",
+
+	})
+	fmt.Println(rsp, err)
+}
+```

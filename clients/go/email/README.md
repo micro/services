@@ -1,58 +1,37 @@
-package email
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewEmailService(token string) *EmailService {
-	return &EmailService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type EmailService struct {
-	client *client.Client
-}
-
-
-// Send an email by passing in from, to, subject, and a text or html body
-func (t *EmailService) Send(request *SendRequest) (*SendResponse, error) {
-	rsp := &SendResponse{}
-	return rsp, t.client.Call("email", "Send", request, rsp)
-}
-
-
-
-
-type SendRequest struct {
-  // the display name of the sender
-  From string `json:"from"`
-  // the html body
-  HtmlBody string `json:"htmlBody"`
-  // an optional reply to email address
-  ReplyTo string `json:"replyTo"`
-  // the email subject
-  Subject string `json:"subject"`
-  // the text body
-  TextBody string `json:"textBody"`
-  // the email address of the recipient
-  To string `json:"to"`
-}
-
-type SendResponse struct {
-}
-
-# { Email
+# Email
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Email/api](https://m3o.com/Email/api).
 
 Endpoints:
 
-#send
+## Send
+
+Send an email by passing in from, to, subject, and a text or html body
+
+
+[https://m3o.com/email/api#Send](https://m3o.com/email/api#Send)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/email"
+)
 
 // Send an email by passing in from, to, subject, and a text or html body
+func SendEmail() {
+	emailService := email.NewEmailService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := emailService.Send(&email.SendRequest{
+		From: "Awesome Dot Com",
+Subject: "Email verification",
+TextBody: `Hi there,
 
+Please verify your email by clicking this link: $micro_verification_link`,
 
-[https://m3o.com/email/api#send](https://m3o.com/email/api#send)
+	})
+	fmt.Println(rsp, err)
+}
+```

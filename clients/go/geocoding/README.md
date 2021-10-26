@@ -1,87 +1,64 @@
-package geocoding
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewGeocodingService(token string) *GeocodingService {
-	return &GeocodingService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type GeocodingService struct {
-	client *client.Client
-}
-
-
-// Lookup returns a geocoded address including normalized address and gps coordinates. All fields are optional, provide more to get more accurate results
-func (t *GeocodingService) Lookup(request *LookupRequest) (*LookupResponse, error) {
-	rsp := &LookupResponse{}
-	return rsp, t.client.Call("geocoding", "Lookup", request, rsp)
-}
-
-// Reverse lookup an address from gps coordinates
-func (t *GeocodingService) Reverse(request *ReverseRequest) (*ReverseResponse, error) {
-	rsp := &ReverseResponse{}
-	return rsp, t.client.Call("geocoding", "Reverse", request, rsp)
-}
-
-
-
-
-type Address struct {
-  City string `json:"city"`
-  Country string `json:"country"`
-  LineOne string `json:"lineOne"`
-  LineTwo string `json:"lineTwo"`
-  Postcode string `json:"postcode"`
-}
-
-type Location struct {
-  Latitude float64 `json:"latitude"`
-  Longitude float64 `json:"longitude"`
-}
-
-type LookupRequest struct {
-  Address string `json:"address"`
-  City string `json:"city"`
-  Country string `json:"country"`
-  Postcode string `json:"postcode"`
-}
-
-type LookupResponse struct {
-  Address *Address `json:"address"`
-  Location *Location `json:"location"`
-}
-
-type ReverseRequest struct {
-  Latitude float64 `json:"latitude"`
-  Longitude float64 `json:"longitude"`
-}
-
-type ReverseResponse struct {
-  Address *Address `json:"address"`
-  Location *Location `json:"location"`
-}
-
-# { Geocoding
+# Geocoding
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Geocoding/api](https://m3o.com/Geocoding/api).
 
 Endpoints:
 
-#lookup
+## Lookup
+
+Lookup returns a geocoded address including normalized address and gps coordinates. All fields are optional, provide more to get more accurate results
+
+
+[https://m3o.com/geocoding/api#Lookup](https://m3o.com/geocoding/api#Lookup)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/geocoding"
+)
 
 // Lookup returns a geocoded address including normalized address and gps coordinates. All fields are optional, provide more to get more accurate results
+func GeocodeAnAddress() {
+	geocodingService := geocoding.NewGeocodingService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := geocodingService.Lookup(&geocoding.LookupRequest{
+		Address: "10 russell st",
+City: "london",
+Country: "uk",
+Postcode: "wc2b",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Reverse
+
+Reverse lookup an address from gps coordinates
 
 
-[https://m3o.com/geocoding/api#lookup](https://m3o.com/geocoding/api#lookup)
-#reverse
+[https://m3o.com/geocoding/api#Reverse](https://m3o.com/geocoding/api#Reverse)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/geocoding"
+)
 
 // Reverse lookup an address from gps coordinates
+func ReverseGeocodeLocation() {
+	geocodingService := geocoding.NewGeocodingService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := geocodingService.Reverse(&geocoding.ReverseRequest{
+		Latitude: 51.5123064,
+Longitude: -0.1216235,
 
-
-[https://m3o.com/geocoding/api#reverse](https://m3o.com/geocoding/api#reverse)
+	})
+	fmt.Println(rsp, err)
+}
+```

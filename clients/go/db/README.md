@@ -1,178 +1,180 @@
-package db
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewDbService(token string) *DbService {
-	return &DbService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type DbService struct {
-	client *client.Client
-}
-
-
-// Count records in a table
-func (t *DbService) Count(request *CountRequest) (*CountResponse, error) {
-	rsp := &CountResponse{}
-	return rsp, t.client.Call("db", "Count", request, rsp)
-}
-
-// Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
-func (t *DbService) Create(request *CreateRequest) (*CreateResponse, error) {
-	rsp := &CreateResponse{}
-	return rsp, t.client.Call("db", "Create", request, rsp)
-}
-
-// Delete a record in the database by id.
-func (t *DbService) Delete(request *DeleteRequest) (*DeleteResponse, error) {
-	rsp := &DeleteResponse{}
-	return rsp, t.client.Call("db", "Delete", request, rsp)
-}
-
-// Read data from a table. Lookup can be by ID or via querying any field in the record.
-func (t *DbService) Read(request *ReadRequest) (*ReadResponse, error) {
-	rsp := &ReadResponse{}
-	return rsp, t.client.Call("db", "Read", request, rsp)
-}
-
-// Truncate the records in a table
-func (t *DbService) Truncate(request *TruncateRequest) (*TruncateResponse, error) {
-	rsp := &TruncateResponse{}
-	return rsp, t.client.Call("db", "Truncate", request, rsp)
-}
-
-// Update a record in the database. Include an "id" in the record to update.
-func (t *DbService) Update(request *UpdateRequest) (*UpdateResponse, error) {
-	rsp := &UpdateResponse{}
-	return rsp, t.client.Call("db", "Update", request, rsp)
-}
-
-
-
-
-type CountRequest struct {
-  Table string `json:"table"`
-}
-
-type CountResponse struct {
-  Count int32 `json:"count"`
-}
-
-type CreateRequest struct {
-  // JSON encoded record or records (can be array or object)
-  Record map[string]interface{} `json:"record"`
-  // Optional table name. Defaults to 'default'
-  Table string `json:"table"`
-}
-
-type CreateResponse struct {
-  // The id of the record (either specified or automatically created)
-  Id string `json:"id"`
-}
-
-type DeleteRequest struct {
-  // id of the record
-  Id string `json:"id"`
-  // Optional table name. Defaults to 'default'
-  Table string `json:"table"`
-}
-
-type DeleteResponse struct {
-}
-
-type ReadRequest struct {
-  // Read by id. Equivalent to 'id == "your-id"'
-  Id string `json:"id"`
-  // Maximum number of records to return. Default limit is 25.
-  // Maximum limit is 1000. Anything higher will return an error.
-  Limit int32 `json:"limit"`
-  Offset int32 `json:"offset"`
-  // 'asc' (default), 'desc'
-  Order string `json:"order"`
-  // field name to order by
-  OrderBy string `json:"orderBy"`
-  // Examples: 'age >= 18', 'age >= 18 and verified == true'
-  // Comparison operators: '==', '!=', '<', '>', '<=', '>='
-  // Logical operator: 'and'
-  // Dot access is supported, eg: 'user.age == 11'
-  // Accessing list elements is not supported yet.
-  Query string `json:"query"`
-  // Optional table name. Defaults to 'default'
-  Table string `json:"table"`
-}
-
-type ReadResponse struct {
-  // JSON encoded records
-  Records []map[string]interface{} `json:"records"`
-}
-
-type TruncateRequest struct {
-  // Optional table name. Defaults to 'default'
-  Table string `json:"table"`
-}
-
-type TruncateResponse struct {
-  // The table truncated
-  Table string `json:"table"`
-}
-
-type UpdateRequest struct {
-  // The id of the record. If not specified it is inferred from the 'id' field of the record
-  Id string `json:"id"`
-  // record, JSON object
-  Record map[string]interface{} `json:"record"`
-  // Optional table name. Defaults to 'default'
-  Table string `json:"table"`
-}
-
-type UpdateResponse struct {
-}
-
-# { Db
+# Db
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Db/api](https://m3o.com/Db/api).
 
 Endpoints:
 
-#count
+## Delete
 
-// Count records in a table
-
-
-[https://m3o.com/db/api#count](https://m3o.com/db/api#count)
-#create
-
-// Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
+Delete a record in the database by id.
 
 
-[https://m3o.com/db/api#create](https://m3o.com/db/api#create)
-#delete
+[https://m3o.com/db/api#Delete](https://m3o.com/db/api#Delete)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/db"
+)
 
 // Delete a record in the database by id.
+func DeleteArecord() {
+	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := dbService.Delete(&db.DeleteRequest{
+		Id: "1",
+Table: "users",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Truncate
+
+Truncate the records in a table
 
 
-[https://m3o.com/db/api#delete](https://m3o.com/db/api#delete)
-#read
+[https://m3o.com/db/api#Truncate](https://m3o.com/db/api#Truncate)
 
-// Read data from a table. Lookup can be by ID or via querying any field in the record.
+```go
+package example
 
+import(
+	"fmt"
+	"os"
 
-[https://m3o.com/db/api#read](https://m3o.com/db/api#read)
-#truncate
+	"github.com/micro/services/clients/go/db"
+)
 
 // Truncate the records in a table
+func TruncateTable() {
+	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := dbService.Truncate(&db.TruncateRequest{
+		Table: "users",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Count
+
+Count records in a table
 
 
-[https://m3o.com/db/api#truncate](https://m3o.com/db/api#truncate)
-#update
+[https://m3o.com/db/api#Count](https://m3o.com/db/api#Count)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/db"
+)
+
+// Count records in a table
+func CountEntriesInAtable() {
+	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := dbService.Count(&db.CountRequest{
+		Table: "users",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Create
+
+Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
+
+
+[https://m3o.com/db/api#Create](https://m3o.com/db/api#Create)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/db"
+)
+
+// Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
+func CreateArecord() {
+	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := dbService.Create(&db.CreateRequest{
+		Record: map[string]interface{}{
+	"id": "1",
+	"name": "Jane",
+	"age": 42,
+	"isActive": true,
+},
+Table: "users",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Update
+
+Update a record in the database. Include an "id" in the record to update.
+
+
+[https://m3o.com/db/api#Update](https://m3o.com/db/api#Update)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/db"
+)
 
 // Update a record in the database. Include an "id" in the record to update.
+func UpdateArecord() {
+	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := dbService.Update(&db.UpdateRequest{
+		Record: map[string]interface{}{
+	"id": "1",
+	"age": 43,
+},
+Table: "users",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Read
+
+Read data from a table. Lookup can be by ID or via querying any field in the record.
 
 
-[https://m3o.com/db/api#update](https://m3o.com/db/api#update)
+[https://m3o.com/db/api#Read](https://m3o.com/db/api#Read)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/db"
+)
+
+// Read data from a table. Lookup can be by ID or via querying any field in the record.
+func ReadRecords() {
+	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := dbService.Read(&db.ReadRequest{
+		Query: "age == 43",
+Table: "users",
+
+	})
+	fmt.Println(rsp, err)
+}
+```

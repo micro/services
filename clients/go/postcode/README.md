@@ -1,116 +1,86 @@
-package postcode
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewPostcodeService(token string) *PostcodeService {
-	return &PostcodeService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type PostcodeService struct {
-	client *client.Client
-}
-
-
-// Lookup a postcode to retrieve the related region, county, etc
-func (t *PostcodeService) Lookup(request *LookupRequest) (*LookupResponse, error) {
-	rsp := &LookupResponse{}
-	return rsp, t.client.Call("postcode", "Lookup", request, rsp)
-}
-
-// Return a random postcode and its related info
-func (t *PostcodeService) Random(request *RandomRequest) (*RandomResponse, error) {
-	rsp := &RandomResponse{}
-	return rsp, t.client.Call("postcode", "Random", request, rsp)
-}
-
-// Validate a postcode.
-func (t *PostcodeService) Validate(request *ValidateRequest) (*ValidateResponse, error) {
-	rsp := &ValidateResponse{}
-	return rsp, t.client.Call("postcode", "Validate", request, rsp)
-}
-
-
-
-
-type LookupRequest struct {
-  // UK postcode e.g SW1A 2AA
-  Postcode string `json:"postcode"`
-}
-
-type LookupResponse struct {
-  // country e.g United Kingdom
-  Country string `json:"country"`
-  // e.g Westminster
-  District string `json:"district"`
-  // e.g 51.50354
-  Latitude float64 `json:"latitude"`
-  // e.g -0.127695
-  Longitude float64 `json:"longitude"`
-  // UK postcode e.g SW1A 2AA
-  Postcode string `json:"postcode"`
-  // related region e.g London
-  Region string `json:"region"`
-  // e.g St James's
-  Ward string `json:"ward"`
-}
-
-type RandomRequest struct {
-}
-
-type RandomResponse struct {
-  // country e.g United Kingdom
-  Country string `json:"country"`
-  // e.g Westminster
-  District string `json:"district"`
-  // e.g 51.50354
-  Latitude float64 `json:"latitude"`
-  // e.g -0.127695
-  Longitude float64 `json:"longitude"`
-  // UK postcode e.g SW1A 2AA
-  Postcode string `json:"postcode"`
-  // related region e.g London
-  Region string `json:"region"`
-  // e.g St James's
-  Ward string `json:"ward"`
-}
-
-type ValidateRequest struct {
-  // UK postcode e.g SW1A 2AA
-  Postcode string `json:"postcode"`
-}
-
-type ValidateResponse struct {
-  // Is the postcode valid (true) or not (false)
-  Valid bool `json:"valid"`
-}
-
-# { Postcode
+# Postcode
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Postcode/api](https://m3o.com/Postcode/api).
 
 Endpoints:
 
-#lookup
+## Lookup
+
+Lookup a postcode to retrieve the related region, county, etc
+
+
+[https://m3o.com/postcode/api#Lookup](https://m3o.com/postcode/api#Lookup)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/postcode"
+)
 
 // Lookup a postcode to retrieve the related region, county, etc
+func LookupPostcode() {
+	postcodeService := postcode.NewPostcodeService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := postcodeService.Lookup(&postcode.LookupRequest{
+		Postcode: "SW1A 2AA",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Random
+
+Return a random postcode and its related info
 
 
-[https://m3o.com/postcode/api#lookup](https://m3o.com/postcode/api#lookup)
-#random
+[https://m3o.com/postcode/api#Random](https://m3o.com/postcode/api#Random)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/postcode"
+)
 
 // Return a random postcode and its related info
+func ReturnArandomPostcodeAndItsInformation() {
+	postcodeService := postcode.NewPostcodeService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := postcodeService.Random(&postcode.RandomRequest{
+		
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Validate
+
+Validate a postcode.
 
 
-[https://m3o.com/postcode/api#random](https://m3o.com/postcode/api#random)
-#validate
+[https://m3o.com/postcode/api#Validate](https://m3o.com/postcode/api#Validate)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/postcode"
+)
 
 // Validate a postcode.
+func ReturnArandomPostcodeAndItsInformation() {
+	postcodeService := postcode.NewPostcodeService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := postcodeService.Validate(&postcode.ValidateRequest{
+		Postcode: "SW1A 2AA",
 
-
-[https://m3o.com/postcode/api#validate](https://m3o.com/postcode/api#validate)
+	})
+	fmt.Println(rsp, err)
+}
+```

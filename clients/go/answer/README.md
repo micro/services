@@ -1,54 +1,33 @@
-package answer
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewAnswerService(token string) *AnswerService {
-	return &AnswerService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type AnswerService struct {
-	client *client.Client
-}
-
-
-// Ask a question and receive an instant answer
-func (t *AnswerService) Question(request *QuestionRequest) (*QuestionResponse, error) {
-	rsp := &QuestionResponse{}
-	return rsp, t.client.Call("answer", "Question", request, rsp)
-}
-
-
-
-
-type QuestionRequest struct {
-  // the question to answer
-  Query string `json:"query"`
-}
-
-type QuestionResponse struct {
-  // the answer to your question
-  Answer string `json:"answer"`
-  // any related image
-  Image string `json:"image"`
-  // a related url
-  Url string `json:"url"`
-}
-
-# { Answer
+# Answer
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Answer/api](https://m3o.com/Answer/api).
 
 Endpoints:
 
-#question
+## Question
+
+Ask a question and receive an instant answer
+
+
+[https://m3o.com/answer/api#Question](https://m3o.com/answer/api#Question)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/answer"
+)
 
 // Ask a question and receive an instant answer
+func AskAquestion() {
+	answerService := answer.NewAnswerService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := answerService.Question(&answer.QuestionRequest{
+		Query: "microsoft",
 
-
-[https://m3o.com/answer/api#question](https://m3o.com/answer/api#question)
+	})
+	fmt.Println(rsp, err)
+}
+```

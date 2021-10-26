@@ -1,283 +1,141 @@
-package user
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewUserService(token string) *UserService {
-	return &UserService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type UserService struct {
-	client *client.Client
-}
-
-
-// Create a new user account. The email address and username for the account must be unique.
-func (t *UserService) Create(request *CreateRequest) (*CreateResponse, error) {
-	rsp := &CreateResponse{}
-	return rsp, t.client.Call("user", "Create", request, rsp)
-}
-
-// Delete an account by id
-func (t *UserService) Delete(request *DeleteRequest) (*DeleteResponse, error) {
-	rsp := &DeleteResponse{}
-	return rsp, t.client.Call("user", "Delete", request, rsp)
-}
-
-// Login using username or email. The response will return a new session for successful login,
-// 401 in the case of login failure and 500 for any other error
-func (t *UserService) Login(request *LoginRequest) (*LoginResponse, error) {
-	rsp := &LoginResponse{}
-	return rsp, t.client.Call("user", "Login", request, rsp)
-}
-
-// Logout a user account
-func (t *UserService) Logout(request *LogoutRequest) (*LogoutResponse, error) {
-	rsp := &LogoutResponse{}
-	return rsp, t.client.Call("user", "Logout", request, rsp)
-}
-
-// Read an account by id, username or email. Only one need to be specified.
-func (t *UserService) Read(request *ReadRequest) (*ReadResponse, error) {
-	rsp := &ReadResponse{}
-	return rsp, t.client.Call("user", "Read", request, rsp)
-}
-
-// Read a session by the session id. In the event it has expired or is not found and error is returned.
-func (t *UserService) ReadSession(request *ReadSessionRequest) (*ReadSessionResponse, error) {
-	rsp := &ReadSessionResponse{}
-	return rsp, t.client.Call("user", "ReadSession", request, rsp)
-}
-
-// Send a verification email
-// to the user being signed up. Email from will be from 'support@m3o.com',
-// but you can provide the title and contents.
-// The verification link will be injected in to the email as a template variable, $micro_verification_link.
-// Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
-// The variable will be replaced with an actual url that will look similar to this:
-// 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
-func (t *UserService) SendVerificationEmail(request *SendVerificationEmailRequest) (*SendVerificationEmailResponse, error) {
-	rsp := &SendVerificationEmailResponse{}
-	return rsp, t.client.Call("user", "SendVerificationEmail", request, rsp)
-}
-
-// Update the account password
-func (t *UserService) UpdatePassword(request *UpdatePasswordRequest) (*UpdatePasswordResponse, error) {
-	rsp := &UpdatePasswordResponse{}
-	return rsp, t.client.Call("user", "UpdatePassword", request, rsp)
-}
-
-// Update the account username or email
-func (t *UserService) Update(request *UpdateRequest) (*UpdateResponse, error) {
-	rsp := &UpdateResponse{}
-	return rsp, t.client.Call("user", "Update", request, rsp)
-}
-
-// Verify the email address of an account from a token sent in an email to the user.
-func (t *UserService) VerifyEmail(request *VerifyEmailRequest) (*VerifyEmailResponse, error) {
-	rsp := &VerifyEmailResponse{}
-	return rsp, t.client.Call("user", "VerifyEmail", request, rsp)
-}
-
-
-
-
-type Account struct {
-  // unix timestamp
-  Created int64 `json:"created,string"`
-  // an email address
-  Email string `json:"email"`
-  // unique account id
-  Id string `json:"id"`
-  // Store any custom data you want about your users in this fields.
-  Profile map[string]string `json:"profile"`
-  // unix timestamp
-  Updated int64 `json:"updated,string"`
-  // alphanumeric username
-  Username string `json:"username"`
-  VerificationDate int64 `json:"verificationDate,string"`
-  Verified bool `json:"verified"`
-}
-
-type CreateRequest struct {
-  // the email address
-  Email string `json:"email"`
-  // optional account id
-  Id string `json:"id"`
-  // the user password
-  Password string `json:"password"`
-  // optional user profile as map<string,string>
-  Profile map[string]string `json:"profile"`
-  // the username
-  Username string `json:"username"`
-}
-
-type CreateResponse struct {
-  Account *Account `json:"account"`
-}
-
-type DeleteRequest struct {
-  // the account id
-  Id string `json:"id"`
-}
-
-type DeleteResponse struct {
-}
-
-type LoginRequest struct {
-  // The email address of the user
-  Email string `json:"email"`
-  // The password of the user
-  Password string `json:"password"`
-  // The username of the user
-  Username string `json:"username"`
-}
-
-type LoginResponse struct {
-  // The session of the logged in  user
-  Session *Session `json:"session"`
-}
-
-type LogoutRequest struct {
-  SessionId string `json:"sessionId"`
-}
-
-type LogoutResponse struct {
-}
-
-type ReadRequest struct {
-  // the account email
-  Email string `json:"email"`
-  // the account id
-  Id string `json:"id"`
-  // the account username
-  Username string `json:"username"`
-}
-
-type ReadResponse struct {
-  Account *Account `json:"account"`
-}
-
-type ReadSessionRequest struct {
-  // The unique session id
-  SessionId string `json:"sessionId"`
-}
-
-type ReadSessionResponse struct {
-  Session *Session `json:"session"`
-}
-
-type SendVerificationEmailRequest struct {
-  Email string `json:"email"`
-  FailureRedirectUrl string `json:"failureRedirectUrl"`
-  // Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
-  FromName string `json:"fromName"`
-  RedirectUrl string `json:"redirectUrl"`
-  Subject string `json:"subject"`
-  // Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
-  // HTML emails are not available currently.
-  TextContent string `json:"textContent"`
-}
-
-type SendVerificationEmailResponse struct {
-}
-
-type Session struct {
-  // unix timestamp
-  Created int64 `json:"created,string"`
-  // unix timestamp
-  Expires int64 `json:"expires,string"`
-  // the session id
-  Id string `json:"id"`
-  // the associated user id
-  UserId string `json:"userId"`
-}
-
-type UpdatePasswordRequest struct {
-  // confirm new password
-  ConfirmPassword string `json:"confirmPassword"`
-  // the new password
-  NewPassword string `json:"newPassword"`
-  // the old password
-  OldPassword string `json:"oldPassword"`
-  // the account id
-  UserId string `json:"userId"`
-}
-
-type UpdatePasswordResponse struct {
-}
-
-type UpdateRequest struct {
-  // the new email address
-  Email string `json:"email"`
-  // the account id
-  Id string `json:"id"`
-  // the user profile as map<string,string>
-  Profile map[string]string `json:"profile"`
-  // the new username
-  Username string `json:"username"`
-}
-
-type UpdateResponse struct {
-}
-
-type VerifyEmailRequest struct {
-  // The token from the verification email
-  Token string `json:"token"`
-}
-
-type VerifyEmailResponse struct {
-}
-
-# { User
+# User
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/User/api](https://m3o.com/User/api).
 
 Endpoints:
 
-#create
+## UpdatePassword
 
-// Create a new user account. The email address and username for the account must be unique.
-
-
-[https://m3o.com/user/api#create](https://m3o.com/user/api#create)
-#delete
-
-// Delete an account by id
+Update the account password
 
 
-[https://m3o.com/user/api#delete](https://m3o.com/user/api#delete)
-#login
+[https://m3o.com/user/api#UpdatePassword](https://m3o.com/user/api#UpdatePassword)
 
-// Login using username or email. The response will return a new session for successful login,
-// 401 in the case of login failure and 500 for any other error
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Update the account password
+func UpdateTheAccountPassword() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.UpdatePassword(&user.UpdatePasswordRequest{
+		ConfirmPassword: "myEvenMoreSecretPass123",
+NewPassword: "myEvenMoreSecretPass123",
+OldPassword: "mySecretPass123",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Read
+
+Read an account by id, username or email. Only one need to be specified.
 
 
-[https://m3o.com/user/api#login](https://m3o.com/user/api#login)
-#logout
+[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
 
-// Logout a user account
+```go
+package example
 
+import(
+	"fmt"
+	"os"
 
-[https://m3o.com/user/api#logout](https://m3o.com/user/api#logout)
-#read
+	"github.com/micro/services/clients/go/user"
+)
 
 // Read an account by id, username or email. Only one need to be specified.
+func ReadAnAccountById() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.Read(&user.ReadRequest{
+		Id: "usrid-1",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Read
+
+Read an account by id, username or email. Only one need to be specified.
 
 
-[https://m3o.com/user/api#read](https://m3o.com/user/api#read)
-#readSession
+[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
 
-// Read a session by the session id. In the event it has expired or is not found and error is returned.
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Read an account by id, username or email. Only one need to be specified.
+func ReadAccountByUsernameOrEmail() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.Read(&user.ReadRequest{
+		Username: "usrname-1",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Read
+
+Read an account by id, username or email. Only one need to be specified.
 
 
-[https://m3o.com/user/api#readSession](https://m3o.com/user/api#readSession)
-#sendVerificationEmail
+[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Read an account by id, username or email. Only one need to be specified.
+func ReadAccountByEmail() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.Read(&user.ReadRequest{
+		Email: "joe@example.com",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## SendVerificationEmail
+
+Send a verification email
+to the user being signed up. Email from will be from 'support@m3o.com',
+but you can provide the title and contents.
+The verification link will be injected in to the email as a template variable, $micro_verification_link.
+Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
+The variable will be replaced with an actual url that will look similar to this:
+'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
+
+
+[https://m3o.com/user/api#SendVerificationEmail](https://m3o.com/user/api#SendVerificationEmail)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
 
 // Send a verification email
 // to the user being signed up. Email from will be from 'support@m3o.com',
@@ -286,24 +144,215 @@ Endpoints:
 // Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
 // The variable will be replaced with an actual url that will look similar to this:
 // 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
+func SendVerificationEmail() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.SendVerificationEmail(&user.SendVerificationEmailRequest{
+		Email: "joe@example.com",
+FailureRedirectUrl: "https://m3o.com/verification-failed",
+FromName: "Awesome Dot Com",
+RedirectUrl: "https://m3o.com",
+Subject: "Email verification",
+TextContent: `Hi there,
+
+Please verify your email by clicking this link: $micro_verification_link`,
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## VerifyEmail
+
+Verify the email address of an account from a token sent in an email to the user.
 
 
-[https://m3o.com/user/api#sendVerificationEmail](https://m3o.com/user/api#sendVerificationEmail)
-#updatePassword
+[https://m3o.com/user/api#VerifyEmail](https://m3o.com/user/api#VerifyEmail)
 
-// Update the account password
+```go
+package example
 
+import(
+	"fmt"
+	"os"
 
-[https://m3o.com/user/api#updatePassword](https://m3o.com/user/api#updatePassword)
-#update
-
-// Update the account username or email
-
-
-[https://m3o.com/user/api#update](https://m3o.com/user/api#update)
-#verifyEmail
+	"github.com/micro/services/clients/go/user"
+)
 
 // Verify the email address of an account from a token sent in an email to the user.
+func VerifyEmail() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.VerifyEmail(&user.VerifyEmailRequest{
+		Token: "t2323t232t",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Delete
+
+Delete an account by id
 
 
-[https://m3o.com/user/api#verifyEmail](https://m3o.com/user/api#verifyEmail)
+[https://m3o.com/user/api#Delete](https://m3o.com/user/api#Delete)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Delete an account by id
+func DeleteUserAccount() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.Delete(&user.DeleteRequest{
+		Id: "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Logout
+
+Logout a user account
+
+
+[https://m3o.com/user/api#Logout](https://m3o.com/user/api#Logout)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Logout a user account
+func LogAuserOut() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.Logout(&user.LogoutRequest{
+		SessionId: "sds34s34s34-s34s34-s43s43s34-s4s34s",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## ReadSession
+
+Read a session by the session id. In the event it has expired or is not found and error is returned.
+
+
+[https://m3o.com/user/api#ReadSession](https://m3o.com/user/api#ReadSession)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Read a session by the session id. In the event it has expired or is not found and error is returned.
+func ReadAsessionByTheSessionId() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.ReadSession(&user.ReadSessionRequest{
+		SessionId: "sds34s34s34-s34s34-s43s43s34-s4s34s",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Create
+
+Create a new user account. The email address and username for the account must be unique.
+
+
+[https://m3o.com/user/api#Create](https://m3o.com/user/api#Create)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Create a new user account. The email address and username for the account must be unique.
+func CreateAnAccount() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.Create(&user.CreateRequest{
+		Email: "joe@example.com",
+Id: "usrid-1",
+Password: "mySecretPass123",
+Username: "usrname-1",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Update
+
+Update the account username or email
+
+
+[https://m3o.com/user/api#Update](https://m3o.com/user/api#Update)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Update the account username or email
+func UpdateAnAccount() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.Update(&user.UpdateRequest{
+		Email: "joeotheremail@example.com",
+Id: "usrid-1",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Login
+
+Login using username or email. The response will return a new session for successful login,
+401 in the case of login failure and 500 for any other error
+
+
+[https://m3o.com/user/api#Login](https://m3o.com/user/api#Login)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/user"
+)
+
+// Login using username or email. The response will return a new session for successful login,
+// 401 in the case of login failure and 500 for any other error
+func LogAuserIn() {
+	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := userService.Login(&user.LoginRequest{
+		Email: "joe@example.com",
+Password: "mySecretPass123",
+
+	})
+	fmt.Println(rsp, err)
+}
+```

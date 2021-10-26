@@ -77,20 +77,22 @@ const curlExampleTemplate = `{{ $service := .service }}curl "https://api.m3o.com
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{{ tsExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }}'`
 
-const goReadmeTemplate = `{{ $service := .service }}# { {{ title $service.Name }}
+const goReadmeTopTemplate = `{{ $service := .service }}# {{ title $service.Name }}
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/{{ title $service.Name }}/api](https://m3o.com/{{ title $service.Name }}/api).
 
 Endpoints:
 
-{{ range $key, $req := $service.Spec.Components.RequestBodies }}{{ $endpointName := requestTypeToEndpointName $key}}#{{ untitle $endpointName}}
+`
 
-{{ endpointComment $endpointName $service.Spec.Components.Schemas }}
+const goReadmeBottomTemplate = `{{ $service := .service }}## {{ title .endpoint }}
 
-[https://m3o.com/{{ $service.Name }}/api#{{ untitle $endpointName}}](https://m3o.com/{{ $service.Name }}/api#{{ untitle $endpointName}})
+{{ endpointDescription .endpoint $service.Spec.Components.Schemas }}
+
+[https://m3o.com/{{ $service.Name }}/api#{{ title .endpoint}}](https://m3o.com/{{ $service.Name }}/api#{{ title .endpoint}})
 
 ` + "```" + `go
-{{ $service := .service }}package example
+package example
 
 import(
 	"fmt"
@@ -107,4 +109,4 @@ import(
 	fmt.Println(rsp, err)
 }
 ` + "```" + `
-{{ end }}`
+`

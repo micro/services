@@ -1,107 +1,101 @@
-package location
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewLocationService(token string) *LocationService {
-	return &LocationService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type LocationService struct {
-	client *client.Client
-}
-
-
-// Read an entity by its ID
-func (t *LocationService) Read(request *ReadRequest) (*ReadResponse, error) {
-	rsp := &ReadResponse{}
-	return rsp, t.client.Call("location", "Read", request, rsp)
-}
-
-// Save an entity's current position
-func (t *LocationService) Save(request *SaveRequest) (*SaveResponse, error) {
-	rsp := &SaveResponse{}
-	return rsp, t.client.Call("location", "Save", request, rsp)
-}
-
-// Search for entities in a given radius
-func (t *LocationService) Search(request *SearchRequest) (*SearchResponse, error) {
-	rsp := &SearchResponse{}
-	return rsp, t.client.Call("location", "Search", request, rsp)
-}
-
-
-
-
-type Entity struct {
-  Id string `json:"id"`
-  Location *Point `json:"location"`
-  Type string `json:"type"`
-}
-
-type Point struct {
-  Latitude float64 `json:"latitude"`
-  Longitude float64 `json:"longitude"`
-  Timestamp int64 `json:"timestamp,string"`
-}
-
-type ReadRequest struct {
-  // the entity id
-  Id string `json:"id"`
-}
-
-type ReadResponse struct {
-  Entity *Entity `json:"entity"`
-}
-
-type SaveRequest struct {
-  Entity *Entity `json:"entity"`
-}
-
-type SaveResponse struct {
-}
-
-type SearchRequest struct {
-  // Central position to search from
-  Center *Point `json:"center"`
-  // Maximum number of entities to return
-  NumEntities int64 `json:"numEntities,string"`
-  // radius in meters
-  Radius float64 `json:"radius"`
-  // type of entities to filter
-  Type string `json:"type"`
-}
-
-type SearchResponse struct {
-  Entities []Entity `json:"entities"`
-}
-
-# { Location
+# Location
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Location/api](https://m3o.com/Location/api).
 
 Endpoints:
 
-#read
+## Search
 
-// Read an entity by its ID
-
-
-[https://m3o.com/location/api#read](https://m3o.com/location/api#read)
-#save
-
-// Save an entity's current position
+Search for entities in a given radius
 
 
-[https://m3o.com/location/api#save](https://m3o.com/location/api#save)
-#search
+[https://m3o.com/location/api#Search](https://m3o.com/location/api#Search)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/location"
+)
 
 // Search for entities in a given radius
+func SearchForLocations() {
+	locationService := location.NewLocationService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := locationService.Search(&location.SearchRequest{
+		Center: &location.Point{
+	Latitude: 51.511061,
+	Longitude: -0.120022,
+	},
+NumEntities: 10,
+Radius: 100,
+Type: "bike",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Save
+
+Save an entity's current position
 
 
-[https://m3o.com/location/api#search](https://m3o.com/location/api#search)
+[https://m3o.com/location/api#Save](https://m3o.com/location/api#Save)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/location"
+)
+
+// Save an entity's current position
+func SaveAnEntity() {
+	locationService := location.NewLocationService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := locationService.Save(&location.SaveRequest{
+		Entity: &location.Entity{
+	Id: "1",
+	Location: &location.Point{
+		Latitude: 51.511061,
+		Longitude: -0.120022,
+		Timestamp: 1622802761,
+},
+	Type: "bike",
+},
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Read
+
+Read an entity by its ID
+
+
+[https://m3o.com/location/api#Read](https://m3o.com/location/api#Read)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/location"
+)
+
+// Read an entity by its ID
+func GetLocationById() {
+	locationService := location.NewLocationService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := locationService.Read(&location.ReadRequest{
+		Id: "1",
+
+	})
+	fmt.Println(rsp, err)
+}
+```

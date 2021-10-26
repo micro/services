@@ -1,138 +1,144 @@
-package currency
-
-import(
-	"github.com/m3o/m3o-go/client"
-)
-
-func NewCurrencyService(token string) *CurrencyService {
-	return &CurrencyService{
-		client: client.NewClient(&client.Options{
-			Token: token,
-		}),
-	}
-}
-
-type CurrencyService struct {
-	client *client.Client
-}
-
-
-// Codes returns the supported currency codes for the API
-func (t *CurrencyService) Codes(request *CodesRequest) (*CodesResponse, error) {
-	rsp := &CodesResponse{}
-	return rsp, t.client.Call("currency", "Codes", request, rsp)
-}
-
-// Convert returns the currency conversion rate between two pairs e.g USD/GBP
-func (t *CurrencyService) Convert(request *ConvertRequest) (*ConvertResponse, error) {
-	rsp := &ConvertResponse{}
-	return rsp, t.client.Call("currency", "Convert", request, rsp)
-}
-
-// Returns the historic rates for a currency on a given date
-func (t *CurrencyService) History(request *HistoryRequest) (*HistoryResponse, error) {
-	rsp := &HistoryResponse{}
-	return rsp, t.client.Call("currency", "History", request, rsp)
-}
-
-// Rates returns the currency rates for a given code e.g USD
-func (t *CurrencyService) Rates(request *RatesRequest) (*RatesResponse, error) {
-	rsp := &RatesResponse{}
-	return rsp, t.client.Call("currency", "Rates", request, rsp)
-}
-
-
-
-
-type Code struct {
-  // e.g United States Dollar
-  Currency string `json:"currency"`
-  // e.g USD
-  Name string `json:"name"`
-}
-
-type CodesRequest struct {
-}
-
-type CodesResponse struct {
-  Codes []Code `json:"codes"`
-}
-
-type ConvertRequest struct {
-  // optional amount to convert e.g 10.0
-  Amount float64 `json:"amount"`
-  // base code to convert from e.g USD
-  From string `json:"from"`
-  // target code to convert to e.g GBP
-  To string `json:"to"`
-}
-
-type ConvertResponse struct {
-  // converted amount e.g 7.10
-  Amount float64 `json:"amount"`
-  // the base code e.g USD
-  From string `json:"from"`
-  // conversion rate e.g 0.71
-  Rate float64 `json:"rate"`
-  // the target code e.g GBP
-  To string `json:"to"`
-}
-
-type HistoryRequest struct {
-  // currency code e.g USD
-  Code string `json:"code"`
-  // date formatted as YYYY-MM-DD
-  Date string `json:"date"`
-}
-
-type HistoryResponse struct {
-  // The code of the request
-  Code string `json:"code"`
-  // The date requested
-  Date string `json:"date"`
-  // The rate for the day as code:rate
-  Rates map[string]float64 `json:"rates"`
-}
-
-type RatesRequest struct {
-  // The currency code to get rates for e.g USD
-  Code string `json:"code"`
-}
-
-type RatesResponse struct {
-  // The code requested e.g USD
-  Code string `json:"code"`
-  // The rates for the given code as key-value pairs code:rate
-  Rates map[string]float64 `json:"rates"`
-}
-
-# { Currency
+# Currency
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Currency/api](https://m3o.com/Currency/api).
 
 Endpoints:
 
-#codes
+## Convert
 
-// Codes returns the supported currency codes for the API
+Convert returns the currency conversion rate between two pairs e.g USD/GBP
 
 
-[https://m3o.com/currency/api#codes](https://m3o.com/currency/api#codes)
-#convert
+[https://m3o.com/currency/api#Convert](https://m3o.com/currency/api#Convert)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/currency"
+)
 
 // Convert returns the currency conversion rate between two pairs e.g USD/GBP
+func ConvertUsdToGbp() {
+	currencyService := currency.NewCurrencyService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := currencyService.Convert(&currency.ConvertRequest{
+		From: "USD",
+To: "GBP",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Convert
+
+Convert returns the currency conversion rate between two pairs e.g USD/GBP
 
 
-[https://m3o.com/currency/api#convert](https://m3o.com/currency/api#convert)
-#history
+[https://m3o.com/currency/api#Convert](https://m3o.com/currency/api#Convert)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/currency"
+)
+
+// Convert returns the currency conversion rate between two pairs e.g USD/GBP
+func Convert10usdToGbp() {
+	currencyService := currency.NewCurrencyService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := currencyService.Convert(&currency.ConvertRequest{
+		Amount: 10,
+From: "USD",
+To: "GBP",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## History
+
+Returns the historic rates for a currency on a given date
+
+
+[https://m3o.com/currency/api#History](https://m3o.com/currency/api#History)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/currency"
+)
 
 // Returns the historic rates for a currency on a given date
+func HistoricRatesForAcurrency() {
+	currencyService := currency.NewCurrencyService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := currencyService.History(&currency.HistoryRequest{
+		Code: "USD",
+Date: "2021-05-30",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Codes
+
+Codes returns the supported currency codes for the API
 
 
-[https://m3o.com/currency/api#history](https://m3o.com/currency/api#history)
-#rates
+[https://m3o.com/currency/api#Codes](https://m3o.com/currency/api#Codes)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/currency"
+)
+
+// Codes returns the supported currency codes for the API
+func GetSupportedCodes() {
+	currencyService := currency.NewCurrencyService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := currencyService.Codes(&currency.CodesRequest{
+		
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Rates
+
+Rates returns the currency rates for a given code e.g USD
+
+
+[https://m3o.com/currency/api#Rates](https://m3o.com/currency/api#Rates)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/currency"
+)
 
 // Rates returns the currency rates for a given code e.g USD
+func GetRatesForUsd() {
+	currencyService := currency.NewCurrencyService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := currencyService.Rates(&currency.RatesRequest{
+		Code: "USD",
 
-
-[https://m3o.com/currency/api#rates](https://m3o.com/currency/api#rates)
+	})
+	fmt.Println(rsp, err)
+}
+```

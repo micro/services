@@ -45,20 +45,22 @@ const tsExampleTemplate = `{{ $service := .service }}const { {{ title $service.N
 
 {{ untitle .funcName }}()`
 
-const tsReadmeTemplate = `{{ $service := .service }}# { {{ title $service.Name }}
+const tsReadmeTopTemplate = `{{ $service := .service }}# {{ title $service.Name }}
 
 An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/{{ title $service.Name }}/api](https://m3o.com/{{ title $service.Name }}/api).
 
 Endpoints:
 
-{{ range $key, $req := $service.Spec.Components.RequestBodies }}{{ $endpointName := requestTypeToEndpointName $key}}#{{ untitle $endpointName}}
+`
 
-{{ endpointComment $endpointName $service.Spec.Components.Schemas }}
+const tsReadmeBottomTemplate = `{{ $service := .service }}## {{ title .endpoint}}
 
-[https://m3o.com/{{ $service.Name }}/api#{{ untitle $endpointName}}](https://m3o.com/{{ $service.Name }}/api#{{ untitle $endpointName}})
+{{ endpointDescription .endpoint $service.Spec.Components.Schemas }}
+
+[https://m3o.com/{{ $service.Name }}/api#{{ title .endpoint}}](https://m3o.com/{{ $service.Name }}/api#{{ title .endpoint}})
 
 ` + "```" + `js
-{{ $service := .service }}const { {{ title $service.Name }}Service } = require('m3o/{{ $service.Name }}');
+const { {{ title $service.Name }}Service } = require('m3o/{{ $service.Name }}');
 
 {{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}async function {{ untitle .funcName }}() {
 	let {{ $service.Name }}Service = new {{ title $service.Name }}Service(process.env.MICRO_API_TOKEN)
@@ -68,4 +70,4 @@ Endpoints:
 
 {{ untitle .funcName }}()
 ` + "```" + `
-{{ end }}`
+`

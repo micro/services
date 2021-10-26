@@ -94,6 +94,22 @@ func main() {
 			}
 			return ret
 		},
+		// @todo same function as above
+		"endpointDescription": func(endpoint string, schemas map[string]*openapi3.SchemaRef) string {
+			v := schemas[strings.Title(endpoint)+"Request"]
+			if v == nil {
+				panic("can't find " + strings.Title(endpoint) + "Request")
+			}
+			if v.Value == nil {
+				return ""
+			}
+			comm := v.Value.Description
+			ret := ""
+			for _, line := range strings.Split(comm, "\n") {
+				ret += strings.TrimSpace(line) + "\n"
+			}
+			return ret
+		},
 		"requestTypeToEndpointPath": func(requestType string) string {
 			parts := camelcase.Split(requestType)
 			return strings.Title(strings.Join(parts[1:len(parts)-1], ""))
@@ -206,11 +222,12 @@ func main() {
 			}
 
 			// node client service readmes
-			templ, err = template.New("tsReadme" + serviceName).Funcs(funcs).Parse(tsReadmeTemplate)
+			templ, err = template.New("tsTopReadme" + serviceName).Funcs(funcs).Parse(tsReadmeTopTemplate)
 			if err != nil {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
+			b = bytes.Buffer{}
 			buf = bufio.NewWriter(&b)
 			err = templ.Execute(buf, map[string]interface{}{
 				"service": service,
@@ -223,7 +240,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			f, err = os.OpenFile(filepath.Join(tsPath, "src", serviceName, "README.md"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+			f, err = os.OpenFile(filepath.Join(examplesPath, "js", serviceName, "README.md"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
 				os.Exit(1)
@@ -277,11 +294,12 @@ func main() {
 			}
 
 			// node client service readmes
-			templ, err = template.New("goReadme" + serviceName).Funcs(funcs).Parse(goReadmeTemplate)
+			templ, err = template.New("goTopReadme" + serviceName).Funcs(funcs).Parse(goReadmeTopTemplate)
 			if err != nil {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
 			}
+			b = bytes.Buffer{}
 			buf = bufio.NewWriter(&b)
 			err = templ.Execute(buf, map[string]interface{}{
 				"service": service,
@@ -294,7 +312,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			f, err = os.OpenFile(filepath.Join(goPath, serviceName, "README.md"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+			f, err = os.OpenFile(filepath.Join(examplesPath, "go", serviceName, "README.md"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
 				os.Exit(1)
@@ -358,12 +376,12 @@ func main() {
 						}
 
 						// create go examples directory
-						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "go"), 0777)
+						err = os.MkdirAll(filepath.Join(examplesPath, "go", serviceName, endpoint), 0777)
 						if err != nil {
 							fmt.Println(err)
 							os.Exit(1)
 						}
-						goExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "go", title+".go")
+						goExampleFile := filepath.Join(examplesPath, "go", serviceName, endpoint, title+".go")
 						f, err = os.OpenFile(goExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -377,8 +395,42 @@ func main() {
 							os.Exit(1)
 						}
 
+						// per endpoint go readme examples
+						templ, err = template.New("goReadmebottom" + serviceName + endpoint).Funcs(funcs).Parse(goReadmeBottomTemplate)
+						if err != nil {
+							fmt.Println("Failed to unmarshal", err)
+							os.Exit(1)
+						}
+						b = bytes.Buffer{}
+						buf = bufio.NewWriter(&b)
+						err = templ.Execute(buf, map[string]interface{}{
+							"service":  service,
+							"example":  example,
+							"endpoint": endpoint,
+							"funcName": strcase.UpperCamelCase(title),
+						})
+						if err != nil {
+							fmt.Println(err)
+							os.Exit(1)
+						}
+
+						goReadmeAppend := filepath.Join(examplesPath, "go", serviceName, "README.md")
+						f, err = os.OpenFile(goReadmeAppend, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+						if err != nil {
+							fmt.Println("Failed to open schema file", err)
+							os.Exit(1)
+						}
+
+						buf.Flush()
+						_, err = f.Write(b.Bytes())
+						if err != nil {
+							fmt.Println("Failed to append to schema file", err)
+							os.Exit(1)
+						}
+
+						// gofmt example
 						cmd := exec.Command("gofmt", "-w", title+".go")
-						cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "go")
+						cmd.Dir = filepath.Join(examplesPath, "go", serviceName, endpoint)
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
@@ -400,12 +452,12 @@ func main() {
 							"funcName": strcase.UpperCamelCase(title),
 						})
 
-						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "node"), 0777)
+						err = os.MkdirAll(filepath.Join(examplesPath, "js", serviceName, endpoint), 0777)
 						if err != nil {
 							fmt.Println(err)
 							os.Exit(1)
 						}
-						tsExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "node", title+".js")
+						tsExampleFile := filepath.Join(examplesPath, "js", serviceName, endpoint, title+".js")
 						f, err = os.OpenFile(tsExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -419,8 +471,37 @@ func main() {
 							os.Exit(1)
 						}
 
+						// per endpoint readme examples
+						templ, err = template.New("tsBottomReadme" + serviceName + endpoint).Funcs(funcs).Parse(tsReadmeBottomTemplate)
+						if err != nil {
+							fmt.Println("Failed to unmarshal", err)
+							os.Exit(1)
+						}
+						b = bytes.Buffer{}
+						buf = bufio.NewWriter(&b)
+						err = templ.Execute(buf, map[string]interface{}{
+							"service":  service,
+							"example":  example,
+							"endpoint": endpoint,
+							"funcName": strcase.UpperCamelCase(title),
+						})
+
+						tsReadmeAppend := filepath.Join(examplesPath, "js", serviceName, "README.md")
+						f, err = os.OpenFile(tsReadmeAppend, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0744)
+						if err != nil {
+							fmt.Println("Failed to open schema file", err)
+							os.Exit(1)
+						}
+
+						buf.Flush()
+						_, err = f.Write(b.Bytes())
+						if err != nil {
+							fmt.Println("Failed to append to schema file", err)
+							os.Exit(1)
+						}
+
 						cmd = exec.Command("prettier", "-w", title+".js")
-						cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "node")
+						cmd.Dir = filepath.Join(examplesPath, "js", serviceName, endpoint)
 						outp, err = cmd.CombinedOutput()
 						if err != nil {
 							fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
@@ -442,13 +523,13 @@ func main() {
 							"funcName": strcase.UpperCamelCase(title),
 						})
 
-						err = os.MkdirAll(filepath.Join(examplesPath, serviceName, endpoint, "curl"), 0777)
+						err = os.MkdirAll(filepath.Join(examplesPath, "curl", serviceName, endpoint), 0777)
 						if err != nil {
 							fmt.Println(err)
 							os.Exit(1)
 						}
 
-						curlExampleFile := filepath.Join(examplesPath, serviceName, endpoint, "curl", title+".sh")
+						curlExampleFile := filepath.Join(examplesPath, "curl", serviceName, endpoint, title+".sh")
 						f, err = os.OpenFile(curlExampleFile, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 						if err != nil {
 							fmt.Println("Failed to open schema file", err)
@@ -465,7 +546,7 @@ func main() {
 					// only build after each example is generated as old files from
 					// previous generation might not compile
 					cmd = exec.Command("go", "build", "-o", "/tmp/bin/outputfile")
-					cmd.Dir = filepath.Join(examplesPath, serviceName, endpoint, "go")
+					cmd.Dir = filepath.Join(examplesPath, "go", serviceName, endpoint)
 					outp, err = cmd.CombinedOutput()
 					if err != nil {
 						fmt.Println(fmt.Sprintf("Problem with '%v' example '%v': %v", serviceName, endpoint, string(outp)))
