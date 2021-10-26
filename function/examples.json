@@ -73,7 +73,6 @@
             "status": "ACTIVE"
         },
         "updated_at": "2021-10-08T10:17:34.914Z",
-        "status": "ACTIVE",
         "timeout": "60s"
       }
     }
