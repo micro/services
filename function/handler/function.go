@@ -131,9 +131,25 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 		return fmt.Errorf("missing runtime field, please specify nodejs14, go116 etc")
 	}
 
+	// process the env vars to the required format
+	var envVars []string
+
+	for k, v := range req.EnvVars {
+		envVars = append(envVars, k+"="+v)
+	}
+
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "functions", "deploy", multitenantPrefix+"-"+req.Name, "--region", "europe-west1", "--allow-unauthenticated", "--entry-point", req.Entrypoint, "--trigger-http", "--project", e.project, "--runtime", req.Runtime)
+		cmd := exec.Command("gcloud", "functions", "deploy",
+			multitenantPrefix+"-"+req.Name, "--region", "europe-west1",
+			"--allow-unauthenticated", "--entry-point", req.Entrypoint,
+			"--trigger-http", "--project", e.project, "--runtime", req.Runtime)
+
+		// if env vars exist then set them
+		if len(envVars) > 0 {
+			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
+		}
+
 		cmd.Dir = filepath.Join(gitter.RepoDir(), req.Subfolder)
 		outp, err := cmd.CombinedOutput()
 		if err != nil {
