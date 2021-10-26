@@ -34,7 +34,7 @@ func (t *FunctionService) Deploy(request *DeployRequest) (*DeployResponse, error
 	return rsp, t.client.Call("function", "Deploy", request, rsp)
 }
 
-//
+// Get the info for a deployed function
 func (t *FunctionService) Describe(request *DescribeRequest) (*DescribeResponse, error) {
 	rsp := &DescribeResponse{}
 	return rsp, t.client.Call("function", "Describe", request, rsp)
