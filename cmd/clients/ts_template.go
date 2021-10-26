@@ -44,3 +44,16 @@ const tsExampleTemplate = `{{ $service := .service }}const { {{ title $service.N
 }
 
 {{ untitle .funcName }}()`
+
+const readmeTemplate = `{{ $service := .service }}# { {{ title $service.Name }}
+
+An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/{{ title $service.Name }}/api](https://m3o.com/{{ title $service.Name }}/api).
+
+Endpoints:
+
+{{ range $key, $req := $service.Spec.Components.RequestBodies }}{{ $endpointName := requestTypeToEndpointName $key}}#{{ untitle $endpointName}}
+
+{{ endpointComment $endpointName $service.Spec.Components.Schemas }}
+
+[https://m3o.com/{{ $service.Name }}/api#{{ untitle $endpointName}}](https://m3o.com/{{ $service.Name }}/api#{{ untitle $endpointName}})
+{{ end }}`

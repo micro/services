@@ -192,6 +192,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
+
 			f, err := os.OpenFile(filepath.Join(tsPath, "src", serviceName, "index.ts"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
@@ -203,6 +204,37 @@ func main() {
 				fmt.Println("Failed to append to schema file", err)
 				os.Exit(1)
 			}
+
+			// node client service readmes
+			templ, err = template.New("tsReadme" + serviceName).Funcs(funcs).Parse(readmeTemplate)
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			buf = bufio.NewWriter(&b)
+			err = templ.Execute(buf, map[string]interface{}{
+				"service": service,
+			})
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			f, err = os.OpenFile(filepath.Join(tsPath, "src", serviceName, "README.md"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+			if err != nil {
+				fmt.Println("Failed to open schema file", err)
+				os.Exit(1)
+			}
+			buf.Flush()
+			_, err = f.Write(b.Bytes())
+			if err != nil {
+				fmt.Println("Failed to append to schema file", err)
+				os.Exit(1)
+			}
+
 			cmd = exec.Command("prettier", "-w", "index.ts")
 			cmd.Dir = filepath.Join(tsPath, "src", serviceName)
 			outp, err = cmd.CombinedOutput()
@@ -243,6 +275,37 @@ func main() {
 				fmt.Println("Failed to append to schema file", err)
 				os.Exit(1)
 			}
+
+			// node client service readmes
+			templ, err = template.New("goReadme" + serviceName).Funcs(funcs).Parse(readmeTemplate)
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			buf = bufio.NewWriter(&b)
+			err = templ.Execute(buf, map[string]interface{}{
+				"service": service,
+			})
+			if err != nil {
+				fmt.Println("Failed to unmarshal", err)
+				os.Exit(1)
+			}
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			f, err = os.OpenFile(filepath.Join(goPath, serviceName, "README.md"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
+			if err != nil {
+				fmt.Println("Failed to open schema file", err)
+				os.Exit(1)
+			}
+			buf.Flush()
+			_, err = f.Write(b.Bytes())
+			if err != nil {
+				fmt.Println("Failed to append to schema file", err)
+				os.Exit(1)
+			}
+
 			cmd = exec.Command("gofmt", "-w", serviceName+".go")
 			cmd.Dir = filepath.Join(goPath, serviceName)
 			outp, err = cmd.CombinedOutput()
