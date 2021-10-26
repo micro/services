@@ -119,8 +119,6 @@ message DescribeResponse {
 	Func function = 1;
 	// The time at which the function was updated
 	string updated_at = 2;
-	// The last known status of the function
-	string status = 3;
 	// The timeout for requests to the function
-	string timeout = 4;
+	string timeout = 3;
 }

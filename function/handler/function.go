@@ -367,10 +367,15 @@ func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, 
 			return err
 		}
 		rsp.Function = f
+	} else {
+		rsp.Function = &function.Func{
+			Name: req.Name,
+			Project: req.Project,
+		}
 	}
 
 	// set describe info
-	rsp.Status = m["status"].(string)
+	rsp.Function.Status = m["status"].(string)
 	rsp.Timeout = m["timeout"].(string)
 	rsp.UpdatedAt = m["updateTime"].(string)
 
