@@ -240,6 +240,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
+			os.MkdirAll(filepath.Join(examplesPath, "js", serviceName), 0744)
 			f, err = os.OpenFile(filepath.Join(examplesPath, "js", serviceName, "README.md"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
@@ -312,6 +313,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
+			os.MkdirAll(filepath.Join(examplesPath, "go", serviceName), 0744)
 			f, err = os.OpenFile(filepath.Join(examplesPath, "go", serviceName, "README.md"), os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0744)
 			if err != nil {
 				fmt.Println("Failed to open schema file", err)
