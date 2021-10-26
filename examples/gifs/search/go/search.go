@@ -2,11 +2,12 @@ package example
 
 import (
 	"fmt"
-	"github.com/micro/services/clients/go/gifs"
 	"os"
+
+	"github.com/micro/services/clients/go/gifs"
 )
 
-// Search for a gif
+// Search for a GIF
 func Search() {
 	gifsService := gifs.NewGifsService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := gifsService.Search(&gifs.SearchRequest{
