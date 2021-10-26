@@ -75,7 +75,6 @@ jobs:
       
       - name: Generate beta package
         working-directory: services
-        if: github.ref == 'refs/heads/beta'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           IS_BETA: yup
