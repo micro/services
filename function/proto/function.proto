@@ -49,6 +49,8 @@ message DeployRequest {
 	// go111, go113, go116
 	// python37, python38, python39
 	string runtime = 6;
+	// environment variables to pass in
+	map<string,string> env_vars = 7;
 }
 
 message DeployResponse {
