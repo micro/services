@@ -107,12 +107,10 @@ type DescribeRequest struct {
 type DescribeResponse struct {
 	// The function requested
 	Function *Func `json:"function"`
-	// The last known status of the function
-	Status string `json:"status"`
 	// The timeout for requests to the function
 	Timeout string `json:"timeout"`
 	// The time at which the function was updated
-	UpdateTime string `json:"updateTime"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 type Func struct {
