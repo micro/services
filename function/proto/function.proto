@@ -104,6 +104,7 @@ message DeleteResponse {
 	
 }
 
+// Get the info for a deployed function
 message DescribeRequest {
 	// The name of the function
 	string name = 1;
