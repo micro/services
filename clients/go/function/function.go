@@ -72,7 +72,7 @@ type DeployRequest struct {
 	// entry point, ie. handler name in the source code
 	// if not provided, defaults to the name parameter
 	Entrypoint string `json:"entrypoint"`
-	// environment variables to pass in
+	// environment variables to pass in at runtime
 	EnvVars map[string]string `json:"envVars"`
 	// function name
 	Name string `json:"name"`
