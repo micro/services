@@ -245,3 +245,24 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 
 	return s.domain.SendEmail(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.RedirectUrl, req.FailureRedirectUrl)
 }
+
+func (s *User) Passwordless(ctx context.Context, req *pb.PasswordlessRequest, rsp *pb.PasswordlessResponse) error {
+	// check if the email has the correct format
+	// check if the email exist in the DB
+	// create a token object and save it in config where key=topic, value=token object
+	// token object is a struct that has two fields timestamp and token
+	// create a magic link that contains topic and token
+	// send magic link to email address
+
+	return nil
+}
+
+func (s *User) PasswordlessML(ctx context.Context, req *pb.PasswordlessMLRequest, rsp *pb.PasswordlessMLResponse) error {
+	// save the current timestamp in a variable
+	// extract token and topic
+	// check if the received topic exist and its value equal to stored token
+	// check if the token is still valid (token life time shoud not exceed 1 minute)
+	// publish a message to the received topic which holds the session value.
+
+	return nil
+}

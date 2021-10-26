@@ -15,6 +15,8 @@ service User {
 	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
 	rpc VerifyEmail(VerifyEmailRequest) returns(VerifyEmailResponse) {}
 	rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse) {}
+	rpc Passwordless(PasswordlessRequest) returns (PasswordlessResponse) {}
+	rpc PasswordlessML(PasswordlessMLRequest) returns (PasswordlessMLResponse) {}
 }
 
 message Account {
@@ -183,3 +185,25 @@ message SendVerificationEmailRequest{
 }
 
 message SendVerificationEmailResponse{}
+
+// Passwordless allows you to access your account via MagicLink send to your email
+message PasswordlessRequest {
+	// the email address of the user
+	string email = 1;
+	// the topic which you will subscribe to - M3O Stream API - in ordre to
+	// receive confirmation 
+	string topic = 2;
+	// the message (optional)
+	string message = 3;
+}
+
+message PasswordlessResponse {}
+
+message PasswordlessMLRequest {
+	// 
+	string token = 1;
+	// 
+	string topic = 2;
+}
+
+message PasswordlessMLResponse {}

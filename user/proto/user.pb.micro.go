@@ -52,6 +52,8 @@ type UserService interface {
 	ReadSession(ctx context.Context, in *ReadSessionRequest, opts ...client.CallOption) (*ReadSessionResponse, error)
 	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...client.CallOption) (*VerifyEmailResponse, error)
 	SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, opts ...client.CallOption) (*SendVerificationEmailResponse, error)
+	Passwordless(ctx context.Context, in *PasswordlessRequest, opts ...client.CallOption) (*PasswordlessResponse, error)
+	PasswordlessML(ctx context.Context, in *PasswordlessMLRequest, opts ...client.CallOption) (*PasswordlessMLResponse, error)
 }
 
 type userService struct {
@@ -166,6 +168,26 @@ func (c *userService) SendVerificationEmail(ctx context.Context, in *SendVerific
 	return out, nil
 }
 
+func (c *userService) Passwordless(ctx context.Context, in *PasswordlessRequest, opts ...client.CallOption) (*PasswordlessResponse, error) {
+	req := c.c.NewRequest(c.name, "User.Passwordless", in)
+	out := new(PasswordlessResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) PasswordlessML(ctx context.Context, in *PasswordlessMLRequest, opts ...client.CallOption) (*PasswordlessMLResponse, error) {
+	req := c.c.NewRequest(c.name, "User.PasswordlessML", in)
+	out := new(PasswordlessMLResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for User service
 
 type UserHandler interface {
@@ -179,6 +201,8 @@ type UserHandler interface {
 	ReadSession(context.Context, *ReadSessionRequest, *ReadSessionResponse) error
 	VerifyEmail(context.Context, *VerifyEmailRequest, *VerifyEmailResponse) error
 	SendVerificationEmail(context.Context, *SendVerificationEmailRequest, *SendVerificationEmailResponse) error
+	Passwordless(context.Context, *PasswordlessRequest, *PasswordlessResponse) error
+	PasswordlessML(context.Context, *PasswordlessMLRequest, *PasswordlessMLResponse) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
@@ -193,6 +217,8 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		ReadSession(ctx context.Context, in *ReadSessionRequest, out *ReadSessionResponse) error
 		VerifyEmail(ctx context.Context, in *VerifyEmailRequest, out *VerifyEmailResponse) error
 		SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, out *SendVerificationEmailResponse) error
+		Passwordless(ctx context.Context, in *PasswordlessRequest, out *PasswordlessResponse) error
+		PasswordlessML(ctx context.Context, in *PasswordlessMLRequest, out *PasswordlessMLResponse) error
 	}
 	type User struct {
 		user
@@ -243,4 +269,12 @@ func (h *userHandler) VerifyEmail(ctx context.Context, in *VerifyEmailRequest, o
 
 func (h *userHandler) SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, out *SendVerificationEmailResponse) error {
 	return h.UserHandler.SendVerificationEmail(ctx, in, out)
+}
+
+func (h *userHandler) Passwordless(ctx context.Context, in *PasswordlessRequest, out *PasswordlessResponse) error {
+	return h.UserHandler.Passwordless(ctx, in, out)
+}
+
+func (h *userHandler) PasswordlessML(ctx context.Context, in *PasswordlessMLRequest, out *PasswordlessMLResponse) error {
+	return h.UserHandler.PasswordlessML(ctx, in, out)
 }
