@@ -115,10 +115,12 @@ message DescribeRequest {
 }
 
 message DescribeResponse {
+	// The function requested
+	Func function = 1;
 	// The time at which the function was updated
-	string updateTime = 1;
+	string updateTime = 2;
 	// The last known status of the function
-	string status = 2;
+	string status = 3;
 	// The timeout for requests to the function
-	string timeout = 3;
+	string timeout = 4;
 }
