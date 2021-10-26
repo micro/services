@@ -72,7 +72,7 @@
             "runtime": "nodejs14",
             "status": "ACTIVE"
         },
-        "updateTime": "2021-10-08T10:17:34.914Z",
+        "updated_at": "2021-10-08T10:17:34.914Z",
         "status": "ACTIVE",
         "timeout": "60s"
       }
