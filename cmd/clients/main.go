@@ -206,7 +206,7 @@ func main() {
 			}
 
 			// node client service readmes
-			templ, err = template.New("tsReadme" + serviceName).Funcs(funcs).Parse(readmeTemplate)
+			templ, err = template.New("tsReadme" + serviceName).Funcs(funcs).Parse(tsReadmeTemplate)
 			if err != nil {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)
@@ -277,7 +277,7 @@ func main() {
 			}
 
 			// node client service readmes
-			templ, err = template.New("goReadme" + serviceName).Funcs(funcs).Parse(readmeTemplate)
+			templ, err = template.New("goReadme" + serviceName).Funcs(funcs).Parse(goReadmeTemplate)
 			if err != nil {
 				fmt.Println("Failed to unmarshal", err)
 				os.Exit(1)

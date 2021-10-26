@@ -76,3 +76,35 @@ const curlExampleTemplate = `{{ $service := .service }}curl "https://api.m3o.com
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{{ tsExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }}'`
+
+const goReadmeTemplate = `{{ $service := .service }}# { {{ title $service.Name }}
+
+An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/{{ title $service.Name }}/api](https://m3o.com/{{ title $service.Name }}/api).
+
+Endpoints:
+
+{{ range $key, $req := $service.Spec.Components.RequestBodies }}{{ $endpointName := requestTypeToEndpointName $key}}#{{ untitle $endpointName}}
+
+{{ endpointComment $endpointName $service.Spec.Components.Schemas }}
+
+[https://m3o.com/{{ $service.Name }}/api#{{ untitle $endpointName}}](https://m3o.com/{{ $service.Name }}/api#{{ untitle $endpointName}})
+
+` + "```" + `go
+{{ $service := .service }}package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/{{ $service.Name}}"
+)
+
+{{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}func {{ .funcName }}() {
+	{{ $service.Name }}Service := {{ $service.Name }}.New{{ title $service.Name }}Service(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := {{ $service.Name }}Service.{{ title .endpoint }}(&{{ $service.Name }}.{{ title .endpoint }}Request{
+		{{ goExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }}
+	})
+	fmt.Println(rsp, err)
+}
+` + "```" + `
+{{ end }}`
