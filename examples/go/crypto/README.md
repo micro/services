@@ -4,33 +4,6 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Crypto/api](ht
 
 Endpoints:
 
-## History
-
-Returns the history for the previous close
-
-
-[https://m3o.com/crypto/api#History](https://m3o.com/crypto/api#History)
-
-```go
-package example
-
-import(
-	"fmt"
-	"os"
-
-	"github.com/micro/services/clients/go/crypto"
-)
-
-// Returns the history for the previous close
-func GetPreviousClose() {
-	cryptoService := crypto.NewCryptoService(os.Getenv("MICRO_API_TOKEN"))
-	rsp, err := cryptoService.History(&crypto.HistoryRequest{
-		Symbol: "BTCUSD",
-
-	})
-	fmt.Println(rsp, err)
-}
-```
 ## News
 
 Get news related to a currency
@@ -106,6 +79,33 @@ import(
 func GetAcryptocurrencyQuote() {
 	cryptoService := crypto.NewCryptoService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := cryptoService.Quote(&crypto.QuoteRequest{
+		Symbol: "BTCUSD",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## History
+
+Returns the history for the previous close
+
+
+[https://m3o.com/crypto/api#History](https://m3o.com/crypto/api#History)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/crypto"
+)
+
+// Returns the history for the previous close
+func GetPreviousClose() {
+	cryptoService := crypto.NewCryptoService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := cryptoService.History(&crypto.HistoryRequest{
 		Symbol: "BTCUSD",
 
 	})

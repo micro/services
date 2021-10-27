@@ -4,6 +4,28 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Cache/api](htt
 
 Endpoints:
 
+## Decrement
+
+Decrement a value (if it's a number)
+
+
+[https://m3o.com/cache/api#Decrement](https://m3o.com/cache/api#Decrement)
+
+```js
+const { CacheService } = require('m3o/cache');
+
+// Decrement a value (if it's a number)
+async function decrementAvalue() {
+	let cacheService = new CacheService(process.env.MICRO_API_TOKEN)
+	let rsp = await cacheService.decrement({
+  "key": "counter",
+  "value": 2
+})
+	console.log(rsp)
+}
+
+decrementAvalue()
+```
 ## Set
 
 Set an item in the cache. Overwrites any existing value already set.
@@ -89,26 +111,4 @@ async function incrementAvalue() {
 }
 
 incrementAvalue()
-```
-## Decrement
-
-Decrement a value (if it's a number)
-
-
-[https://m3o.com/cache/api#Decrement](https://m3o.com/cache/api#Decrement)
-
-```js
-const { CacheService } = require('m3o/cache');
-
-// Decrement a value (if it's a number)
-async function decrementAvalue() {
-	let cacheService = new CacheService(process.env.MICRO_API_TOKEN)
-	let rsp = await cacheService.decrement({
-  "key": "counter",
-  "value": 2
-})
-	console.log(rsp)
-}
-
-decrementAvalue()
 ```
