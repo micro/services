@@ -53,13 +53,13 @@ jobs:
           sudo npm install -g prettier
           openapi2postmanv2 -h
 
-      - name: Generate openapi spec and publish the api
-        working-directory: services
-        if: github.ref == 'refs/heads/master'
-        run: |
-          go run cmd/publisher/main.go .
-        env:
-          MICRO_ADMIN_TOKEN: ${{ secrets.MICRO_ADMIN_TOKEN }}
+#      - name: Generate openapi spec and publish the api
+#        working-directory: services
+#        if: github.ref == 'refs/heads/master'
+#        run: |
+#          go run cmd/publisher/main.go .
+#        env:
+#          MICRO_ADMIN_TOKEN: ${{ secrets.MICRO_ADMIN_TOKEN }}
 
       - name: Generate package
         working-directory: services
