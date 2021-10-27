@@ -4,6 +4,32 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Notes/api](htt
 
 Endpoints:
 
+## List
+
+List all the notes
+
+
+[https://m3o.com/notes/api#List](https://m3o.com/notes/api#List)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/notes"
+)
+
+// List all the notes
+func ListAllNotes() {
+	notesService := notes.NewNotesService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := notesService.List(&notes.ListRequest{
+		
+	})
+	fmt.Println(rsp, err)
+}
+```
 ## Update
 
 Update a note
@@ -113,32 +139,6 @@ func ReadAnote() {
 	rsp, err := notesService.Read(&notes.ReadRequest{
 		Id: "63c0cdf8-2121-11ec-a881-0242e36f037a",
 
-	})
-	fmt.Println(rsp, err)
-}
-```
-## List
-
-List all the notes
-
-
-[https://m3o.com/notes/api#List](https://m3o.com/notes/api#List)
-
-```go
-package example
-
-import(
-	"fmt"
-	"os"
-
-	"github.com/micro/services/clients/go/notes"
-)
-
-// List all the notes
-func ListAllNotes() {
-	notesService := notes.NewNotesService(os.Getenv("MICRO_API_TOKEN"))
-	rsp, err := notesService.List(&notes.ListRequest{
-		
 	})
 	fmt.Println(rsp, err)
 }

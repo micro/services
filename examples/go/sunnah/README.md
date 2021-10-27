@@ -4,34 +4,6 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Sunnah/api](ht
 
 Endpoints:
 
-## Collections
-
-Get a list of available collections. A collection is
-a compilation of hadiths collected and written by an author.
-
-
-[https://m3o.com/sunnah/api#Collections](https://m3o.com/sunnah/api#Collections)
-
-```go
-package example
-
-import(
-	"fmt"
-	"os"
-
-	"github.com/micro/services/clients/go/sunnah"
-)
-
-// Get a list of available collections. A collection is
-// a compilation of hadiths collected and written by an author.
-func ListAvailableCollections() {
-	sunnahService := sunnah.NewSunnahService(os.Getenv("MICRO_API_TOKEN"))
-	rsp, err := sunnahService.Collections(&sunnah.CollectionsRequest{
-		
-	})
-	fmt.Println(rsp, err)
-}
-```
 ## Books
 
 Get a list of books from within a collection. A book can contain many chapters
@@ -115,6 +87,34 @@ func ListTheHadithsInAbook() {
 		Book: 1,
 Collection: "bukhari",
 
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Collections
+
+Get a list of available collections. A collection is
+a compilation of hadiths collected and written by an author.
+
+
+[https://m3o.com/sunnah/api#Collections](https://m3o.com/sunnah/api#Collections)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/sunnah"
+)
+
+// Get a list of available collections. A collection is
+// a compilation of hadiths collected and written by an author.
+func ListAvailableCollections() {
+	sunnahService := sunnah.NewSunnahService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := sunnahService.Collections(&sunnah.CollectionsRequest{
+		
 	})
 	fmt.Println(rsp, err)
 }

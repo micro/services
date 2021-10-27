@@ -4,33 +4,6 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Db/api](https:
 
 Endpoints:
 
-## Count
-
-Count records in a table
-
-
-[https://m3o.com/db/api#Count](https://m3o.com/db/api#Count)
-
-```go
-package example
-
-import(
-	"fmt"
-	"os"
-
-	"github.com/micro/services/clients/go/db"
-)
-
-// Count records in a table
-func CountEntriesInAtable() {
-	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
-	rsp, err := dbService.Count(&db.CountRequest{
-		Table: "users",
-
-	})
-	fmt.Println(rsp, err)
-}
-```
 ## Create
 
 Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
@@ -86,8 +59,8 @@ func UpdateArecord() {
 	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := dbService.Update(&db.UpdateRequest{
 		Record: map[string]interface{}{
-	"id": "1",
 	"age": 43,
+	"id": "1",
 },
 Table: "users",
 
@@ -172,6 +145,33 @@ import(
 func TruncateTable() {
 	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := dbService.Truncate(&db.TruncateRequest{
+		Table: "users",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
+## Count
+
+Count records in a table
+
+
+[https://m3o.com/db/api#Count](https://m3o.com/db/api#Count)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/db"
+)
+
+// Count records in a table
+func CountEntriesInAtable() {
+	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := dbService.Count(&db.CountRequest{
 		Table: "users",
 
 	})

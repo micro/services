@@ -4,32 +4,6 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Function/api](
 
 Endpoints:
 
-## List
-
-List all the deployed functions
-
-
-[https://m3o.com/function/api#List](https://m3o.com/function/api#List)
-
-```go
-package example
-
-import(
-	"fmt"
-	"os"
-
-	"github.com/micro/services/clients/go/function"
-)
-
-// List all the deployed functions
-func ListFunctions() {
-	functionService := function.NewFunctionService(os.Getenv("MICRO_API_TOKEN"))
-	rsp, err := functionService.List(&function.ListRequest{
-		
-	})
-	fmt.Println(rsp, err)
-}
-```
 ## Delete
 
 Delete a function by name
@@ -142,6 +116,32 @@ func CallAfunction() {
 Request: map[string]interface{}{
 },
 
+	})
+	fmt.Println(rsp, err)
+}
+```
+## List
+
+List all the deployed functions
+
+
+[https://m3o.com/function/api#List](https://m3o.com/function/api#List)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/function"
+)
+
+// List all the deployed functions
+func ListFunctions() {
+	functionService := function.NewFunctionService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := functionService.List(&function.ListRequest{
+		
 	})
 	fmt.Println(rsp, err)
 }

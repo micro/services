@@ -4,89 +4,68 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/User/api](http
 
 Endpoints:
 
-## Create
+## Read
 
-Create a new user account. The email address and username for the account must be unique.
-
-
-[https://m3o.com/user/api#Create](https://m3o.com/user/api#Create)
-
-```js
-const { UserService } = require('m3o/user');
-
-// Create a new user account. The email address and username for the account must be unique.
-async function createAnAccount() {
-	let userService = new UserService(process.env.MICRO_API_TOKEN)
-	let rsp = await userService.create({
-  "email": "joe@example.com",
-  "id": "usrid-1",
-  "password": "mySecretPass123",
-  "username": "usrname-1"
-})
-	console.log(rsp)
-}
-
-createAnAccount()
-```
-## Update
-
-Update the account username or email
+Read an account by id, username or email. Only one need to be specified.
 
 
-[https://m3o.com/user/api#Update](https://m3o.com/user/api#Update)
+[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
 
 ```js
 const { UserService } = require('m3o/user');
 
-// Update the account username or email
-async function updateAnAccount() {
+// Read an account by id, username or email. Only one need to be specified.
+async function readAnAccountById() {
 	let userService = new UserService(process.env.MICRO_API_TOKEN)
-	let rsp = await userService.update({
-  "email": "joeotheremail@example.com",
+	let rsp = await userService.read({
   "id": "usrid-1"
 })
 	console.log(rsp)
 }
 
-updateAnAccount()
+readAnAccountById()
 ```
-## SendVerificationEmail
+## Read
 
-Send a verification email
-to the user being signed up. Email from will be from 'support@m3o.com',
-but you can provide the title and contents.
-The verification link will be injected in to the email as a template variable, $micro_verification_link.
-Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
-The variable will be replaced with an actual url that will look similar to this:
-'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
+Read an account by id, username or email. Only one need to be specified.
 
 
-[https://m3o.com/user/api#SendVerificationEmail](https://m3o.com/user/api#SendVerificationEmail)
+[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
 
 ```js
 const { UserService } = require('m3o/user');
 
-// Send a verification email
-// to the user being signed up. Email from will be from 'support@m3o.com',
-// but you can provide the title and contents.
-// The verification link will be injected in to the email as a template variable, $micro_verification_link.
-// Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
-// The variable will be replaced with an actual url that will look similar to this:
-// 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
-async function sendVerificationEmail() {
+// Read an account by id, username or email. Only one need to be specified.
+async function readAccountByUsernameOrEmail() {
 	let userService = new UserService(process.env.MICRO_API_TOKEN)
-	let rsp = await userService.sendVerificationEmail({
-  "email": "joe@example.com",
-  "failureRedirectUrl": "https://m3o.com/verification-failed",
-  "fromName": "Awesome Dot Com",
-  "redirectUrl": "https://m3o.com",
-  "subject": "Email verification",
-  "textContent": "Hi there,\n\nPlease verify your email by clicking this link: $micro_verification_link"
+	let rsp = await userService.read({
+  "username": "usrname-1"
 })
 	console.log(rsp)
 }
 
-sendVerificationEmail()
+readAccountByUsernameOrEmail()
+```
+## Read
+
+Read an account by id, username or email. Only one need to be specified.
+
+
+[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
+
+```js
+const { UserService } = require('m3o/user');
+
+// Read an account by id, username or email. Only one need to be specified.
+async function readAccountByEmail() {
+	let userService = new UserService(process.env.MICRO_API_TOKEN)
+	let rsp = await userService.read({
+  "email": "joe@example.com"
+})
+	console.log(rsp)
+}
+
+readAccountByEmail()
 ```
 ## VerifyEmail
 
@@ -175,6 +154,52 @@ async function readAsessionByTheSessionId() {
 
 readAsessionByTheSessionId()
 ```
+## Create
+
+Create a new user account. The email address and username for the account must be unique.
+
+
+[https://m3o.com/user/api#Create](https://m3o.com/user/api#Create)
+
+```js
+const { UserService } = require('m3o/user');
+
+// Create a new user account. The email address and username for the account must be unique.
+async function createAnAccount() {
+	let userService = new UserService(process.env.MICRO_API_TOKEN)
+	let rsp = await userService.create({
+  "email": "joe@example.com",
+  "id": "usrid-1",
+  "password": "mySecretPass123",
+  "username": "usrname-1"
+})
+	console.log(rsp)
+}
+
+createAnAccount()
+```
+## Update
+
+Update the account username or email
+
+
+[https://m3o.com/user/api#Update](https://m3o.com/user/api#Update)
+
+```js
+const { UserService } = require('m3o/user');
+
+// Update the account username or email
+async function updateAnAccount() {
+	let userService = new UserService(process.env.MICRO_API_TOKEN)
+	let rsp = await userService.update({
+  "email": "joeotheremail@example.com",
+  "id": "usrid-1"
+})
+	console.log(rsp)
+}
+
+updateAnAccount()
+```
 ## UpdatePassword
 
 Update the account password
@@ -199,68 +224,43 @@ async function updateTheAccountPassword() {
 
 updateTheAccountPassword()
 ```
-## Read
+## SendVerificationEmail
 
-Read an account by id, username or email. Only one need to be specified.
-
-
-[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
-
-```js
-const { UserService } = require('m3o/user');
-
-// Read an account by id, username or email. Only one need to be specified.
-async function readAnAccountById() {
-	let userService = new UserService(process.env.MICRO_API_TOKEN)
-	let rsp = await userService.read({
-  "id": "usrid-1"
-})
-	console.log(rsp)
-}
-
-readAnAccountById()
-```
-## Read
-
-Read an account by id, username or email. Only one need to be specified.
+Send a verification email
+to the user being signed up. Email from will be from 'support@m3o.com',
+but you can provide the title and contents.
+The verification link will be injected in to the email as a template variable, $micro_verification_link.
+Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
+The variable will be replaced with an actual url that will look similar to this:
+'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
 
 
-[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
+[https://m3o.com/user/api#SendVerificationEmail](https://m3o.com/user/api#SendVerificationEmail)
 
 ```js
 const { UserService } = require('m3o/user');
 
-// Read an account by id, username or email. Only one need to be specified.
-async function readAccountByUsernameOrEmail() {
+// Send a verification email
+// to the user being signed up. Email from will be from 'support@m3o.com',
+// but you can provide the title and contents.
+// The verification link will be injected in to the email as a template variable, $micro_verification_link.
+// Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
+// The variable will be replaced with an actual url that will look similar to this:
+// 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
+async function sendVerificationEmail() {
 	let userService = new UserService(process.env.MICRO_API_TOKEN)
-	let rsp = await userService.read({
-  "username": "usrname-1"
+	let rsp = await userService.sendVerificationEmail({
+  "email": "joe@example.com",
+  "failureRedirectUrl": "https://m3o.com/verification-failed",
+  "fromName": "Awesome Dot Com",
+  "redirectUrl": "https://m3o.com",
+  "subject": "Email verification",
+  "textContent": "Hi there,\n\nPlease verify your email by clicking this link: $micro_verification_link"
 })
 	console.log(rsp)
 }
 
-readAccountByUsernameOrEmail()
-```
-## Read
-
-Read an account by id, username or email. Only one need to be specified.
-
-
-[https://m3o.com/user/api#Read](https://m3o.com/user/api#Read)
-
-```js
-const { UserService } = require('m3o/user');
-
-// Read an account by id, username or email. Only one need to be specified.
-async function readAccountByEmail() {
-	let userService = new UserService(process.env.MICRO_API_TOKEN)
-	let rsp = await userService.read({
-  "email": "joe@example.com"
-})
-	console.log(rsp)
-}
-
-readAccountByEmail()
+sendVerificationEmail()
 ```
 ## Delete
 
