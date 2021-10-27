@@ -1,9 +1,8 @@
-name: Publish APIs & Clients
+name: Generate Clients & Examples
 on: [push]
 
 jobs:
-  docs:
-    name: Generate docs
+  generate:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.13
@@ -53,14 +52,6 @@ jobs:
           sudo npm install -g prettier
           openapi2postmanv2 -h
 
-#      - name: Generate openapi spec and publish the api
-#        working-directory: services
-#        if: github.ref == 'refs/heads/master'
-#        run: |
-#          go run cmd/publisher/main.go .
-#        env:
-#          MICRO_ADMIN_TOKEN: ${{ secrets.MICRO_ADMIN_TOKEN }}
-
       - name: Generate package
         working-directory: services
         if: github.ref == 'refs/heads/master'
@@ -89,23 +80,3 @@ jobs:
       - uses: EndBug/add-and-commit@v7
         with:
           cwd: './services'
-
-#      - name: npm install
-#        working-directory: services
-#        if: github.ref == 'refs/heads/master'
-#        run: |
-#          git status
-#          cd clients/ts;
-#          npm install
-#          npm run build
-#          npm publish --access public
-
-#      - name: npm install beta
-#        working-directory: services
-#        if: github.ref == 'refs/heads/beta'
-#        run: |
-#          git status
-#          cd clients/ts;
-#          npm install
-#          npm run build
-#          npm publish --access public --tag beta
