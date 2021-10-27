@@ -45,31 +45,16 @@ jobs:
         run: |
           go install
 
-      - name: install postman converter
+      - name: install prettier
         working-directory: services
         run: |
-          sudo npm install -g openapi-to-postmanv2
           sudo npm install -g prettier
-          openapi2postmanv2 -h
 
-      - name: Generate package
+      - name: Generate clients
         working-directory: services
         if: github.ref == 'refs/heads/master'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          pwd
-          cd cmd/clients;
-          go install;
-          cd ../..;
-          clients .
-      
-      - name: Generate beta package
-        working-directory: services
-        if: github.ref == 'refs/heads/beta'
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          IS_BETA: yup
         run: |
           pwd
           cd cmd/clients;
