@@ -90,22 +90,22 @@ jobs:
         with:
           cwd: './services'
 
-      - name: npm install
-        working-directory: services
-        if: github.ref == 'refs/heads/master'
-        run: |
-          git status
-          cd clients/ts;
-          npm install
-          npm run build
-          npm publish --access public
+#      - name: npm install
+#        working-directory: services
+#        if: github.ref == 'refs/heads/master'
+#        run: |
+#          git status
+#          cd clients/ts;
+#          npm install
+#          npm run build
+#          npm publish --access public
 
-      - name: npm install beta
-        working-directory: services
-        if: github.ref == 'refs/heads/beta'
-        run: |
-          git status
-          cd clients/ts;
-          npm install
-          npm run build
-          npm publish --access public --tag beta
+#      - name: npm install beta
+#        working-directory: services
+#        if: github.ref == 'refs/heads/beta'
+#        run: |
+#          git status
+#          cd clients/ts;
+#          npm install
+#          npm run build
+#          npm publish --access public --tag beta
