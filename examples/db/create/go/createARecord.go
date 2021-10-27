@@ -12,10 +12,10 @@ func CreateArecord() {
 	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := dbService.Create(&db.CreateRequest{
 		Record: map[string]interface{}{
+			"isActive": true,
 			"id":       "1",
 			"name":     "Jane",
 			"age":      42,
-			"isActive": true,
 		},
 		Table: "users",
 	})
