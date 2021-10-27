@@ -63,8 +63,16 @@
         "name": "my-first-func"
       },
       "response": {
-        "updateTime": "2021-10-08T10:17:34.914Z",
-        "status": "ACTIVE",
+        "function": {
+            "project": "a",
+            "name": "test4",
+            "entrypoint": "helloworld",
+            "repo": "github.com/m3o/nodejs-function-example",
+            "subfolder": "",
+            "runtime": "nodejs14",
+            "status": "ACTIVE"
+        },
+        "updated_at": "2021-10-08T10:17:34.914Z",
         "timeout": "60s"
       }
     }

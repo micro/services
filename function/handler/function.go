@@ -327,11 +327,22 @@ func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, 
 	if !ok {
 		tenantId = "micro"
 	}
+
 	project := req.Project
 	if project == "" {
 		project = "default"
 	}
+
 	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
+	id := fmt.Sprintf("%v-%v-%v", tenantId, project, req.Name)
+
+	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
+		Table: "functions",
+		Id:    id,
+	})
+	if err != nil {
+		return err
+	}
 
 	cmd := exec.Command("gcloud", "functions", "describe", "--region", "europe-west1", "--project", e.project, multitenantPrefix+"-"+req.Name)
 	outp, err := cmd.CombinedOutput()
@@ -339,14 +350,34 @@ func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, 
 		log.Error(fmt.Errorf(string(outp)))
 		return fmt.Errorf("function does not exist")
 	}
+
 	log.Info(string(outp))
 	m := map[string]interface{}{}
 	err = yaml.Unmarshal(outp, m)
 	if err != nil {
 		return err
 	}
-	rsp.Status = m["status"].(string)
+
+	if len(readRsp.Records) > 0 {
+		m := readRsp.Records[0].AsMap()
+		bs, _ := json.Marshal(m)
+		f := &function.Func{}
+		err = json.Unmarshal(bs, f)
+		if err != nil {
+			return err
+		}
+		rsp.Function = f
+	} else {
+		rsp.Function = &function.Func{
+			Name: req.Name,
+			Project: req.Project,
+		}
+	}
+
+	// set describe info
+	rsp.Function.Status = m["status"].(string)
 	rsp.Timeout = m["timeout"].(string)
-	rsp.UpdateTime = m["updateTime"].(string)
+	rsp.UpdatedAt = m["updateTime"].(string)
+
 	return nil
 }

@@ -72,7 +72,7 @@ type DeployRequest struct {
 	// entry point, ie. handler name in the source code
 	// if not provided, defaults to the name parameter
 	Entrypoint string `json:"entrypoint"`
-	// environment variables to pass in
+	// environment variables to pass in at runtime
 	EnvVars map[string]string `json:"envVars"`
 	// function name
 	Name string `json:"name"`
@@ -105,9 +105,12 @@ type DescribeRequest struct {
 }
 
 type DescribeResponse struct {
-	Status     string `json:"status"`
-	Timeout    string `json:"timeout"`
-	UpdateTime string `json:"updateTime"`
+	// The function requested
+	Function *Func `json:"function"`
+	// The timeout for requests to the function
+	Timeout string `json:"timeout"`
+	// The time at which the function was updated
+	UpdatedAt string `json:"updatedAt"`
 }
 
 type Func struct {
