@@ -4,6 +4,52 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Notes/api](htt
 
 Endpoints:
 
+## Update
+
+Update a note
+
+
+[https://m3o.com/notes/api#Update](https://m3o.com/notes/api#Update)
+
+```js
+const { NotesService } = require('m3o/notes');
+
+// Update a note
+async function updateAnote() {
+	let notesService = new NotesService(process.env.MICRO_API_TOKEN)
+	let rsp = await notesService.update({
+  "note": {
+    "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+    "text": "Updated note text",
+    "title": "Update Note"
+  }
+})
+	console.log(rsp)
+}
+
+updateAnote()
+```
+## Delete
+
+Delete a note
+
+
+[https://m3o.com/notes/api#Delete](https://m3o.com/notes/api#Delete)
+
+```js
+const { NotesService } = require('m3o/notes');
+
+// Delete a note
+async function deleteAnote() {
+	let notesService = new NotesService(process.env.MICRO_API_TOKEN)
+	let rsp = await notesService.delete({
+  "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+})
+	console.log(rsp)
+}
+
+deleteAnote()
+```
 ## Create
 
 Create a new note
@@ -65,50 +111,4 @@ async function listAllNotes() {
 }
 
 listAllNotes()
-```
-## Update
-
-Update a note
-
-
-[https://m3o.com/notes/api#Update](https://m3o.com/notes/api#Update)
-
-```js
-const { NotesService } = require('m3o/notes');
-
-// Update a note
-async function updateAnote() {
-	let notesService = new NotesService(process.env.MICRO_API_TOKEN)
-	let rsp = await notesService.update({
-  "note": {
-    "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
-    "text": "Updated note text",
-    "title": "Update Note"
-  }
-})
-	console.log(rsp)
-}
-
-updateAnote()
-```
-## Delete
-
-Delete a note
-
-
-[https://m3o.com/notes/api#Delete](https://m3o.com/notes/api#Delete)
-
-```js
-const { NotesService } = require('m3o/notes');
-
-// Delete a note
-async function deleteAnote() {
-	let notesService = new NotesService(process.env.MICRO_API_TOKEN)
-	let rsp = await notesService.delete({
-  "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
-})
-	console.log(rsp)
-}
-
-deleteAnote()
 ```

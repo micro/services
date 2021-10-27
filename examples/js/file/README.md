@@ -4,6 +4,31 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/File/api](http
 
 Endpoints:
 
+## Save
+
+Save a file
+
+
+[https://m3o.com/file/api#Save](https://m3o.com/file/api#Save)
+
+```js
+const { FileService } = require('m3o/file');
+
+// Save a file
+async function saveFile() {
+	let fileService = new FileService(process.env.MICRO_API_TOKEN)
+	let rsp = await fileService.save({
+  "file": {
+    "content": "file content example",
+    "path": "/document/text-files/file.txt",
+    "project": "examples"
+  }
+})
+	console.log(rsp)
+}
+
+saveFile()
+```
 ## List
 
 List files by their project and optionally a path.
@@ -68,29 +93,4 @@ async function readFile() {
 }
 
 readFile()
-```
-## Save
-
-Save a file
-
-
-[https://m3o.com/file/api#Save](https://m3o.com/file/api#Save)
-
-```js
-const { FileService } = require('m3o/file');
-
-// Save a file
-async function saveFile() {
-	let fileService = new FileService(process.env.MICRO_API_TOKEN)
-	let rsp = await fileService.save({
-  "file": {
-    "content": "file content example",
-    "path": "/document/text-files/file.txt",
-    "project": "examples"
-  }
-})
-	console.log(rsp)
-}
-
-saveFile()
 ```
