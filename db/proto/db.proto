@@ -92,9 +92,11 @@ message TruncateResponse {
 
 // Count records in a table
 message CountRequest {
+	// specify the table name
 	string table = 1;
 }
 
 message CountResponse {
+	// the number of records in the table
 	int32 count = 1;
 }
