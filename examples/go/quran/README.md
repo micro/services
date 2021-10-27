@@ -4,6 +4,33 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Quran/api](htt
 
 Endpoints:
 
+## Search
+
+Search the Quran for any form of query or questions
+
+
+[https://m3o.com/quran/api#Search](https://m3o.com/quran/api#Search)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/quran"
+)
+
+// Search the Quran for any form of query or questions
+func SearchTheQuran() {
+	quranService := quran.NewQuranService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := quranService.Search(&quran.SearchRequest{
+		Query: "messenger",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
 ## Chapters
 
 List the Chapters (surahs) of the Quran
@@ -84,33 +111,6 @@ func GetVersesOfAchapter() {
 	quranService := quran.NewQuranService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := quranService.Verses(&quran.VersesRequest{
 		Chapter: 1,
-
-	})
-	fmt.Println(rsp, err)
-}
-```
-## Search
-
-Search the Quran for any form of query or questions
-
-
-[https://m3o.com/quran/api#Search](https://m3o.com/quran/api#Search)
-
-```go
-package example
-
-import(
-	"fmt"
-	"os"
-
-	"github.com/micro/services/clients/go/quran"
-)
-
-// Search the Quran for any form of query or questions
-func SearchTheQuran() {
-	quranService := quran.NewQuranService(os.Getenv("MICRO_API_TOKEN"))
-	rsp, err := quranService.Search(&quran.SearchRequest{
-		Query: "messenger",
 
 	})
 	fmt.Println(rsp, err)

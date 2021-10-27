@@ -4,46 +4,6 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Rss/api](https
 
 Endpoints:
 
-## Feed
-
-Get an RSS feed by name. If no name is given, all feeds are returned. Default limit is 25 entries.
-
-
-[https://m3o.com/rss/api#Feed](https://m3o.com/rss/api#Feed)
-
-```js
-const { RssService } = require('m3o/rss');
-
-// Get an RSS feed by name. If no name is given, all feeds are returned. Default limit is 25 entries.
-async function readAfeed() {
-	let rssService = new RssService(process.env.MICRO_API_TOKEN)
-	let rsp = await rssService.feed({
-  "name": "bbc"
-})
-	console.log(rsp)
-}
-
-readAfeed()
-```
-## List
-
-List the saved RSS fields
-
-
-[https://m3o.com/rss/api#List](https://m3o.com/rss/api#List)
-
-```js
-const { RssService } = require('m3o/rss');
-
-// List the saved RSS fields
-async function listRssFeeds() {
-	let rssService = new RssService(process.env.MICRO_API_TOKEN)
-	let rsp = await rssService.list({})
-	console.log(rsp)
-}
-
-listRssFeeds()
-```
 ## Remove
 
 Remove an RSS feed by name
@@ -87,4 +47,44 @@ async function addAnewFeed() {
 }
 
 addAnewFeed()
+```
+## Feed
+
+Get an RSS feed by name. If no name is given, all feeds are returned. Default limit is 25 entries.
+
+
+[https://m3o.com/rss/api#Feed](https://m3o.com/rss/api#Feed)
+
+```js
+const { RssService } = require('m3o/rss');
+
+// Get an RSS feed by name. If no name is given, all feeds are returned. Default limit is 25 entries.
+async function readAfeed() {
+	let rssService = new RssService(process.env.MICRO_API_TOKEN)
+	let rsp = await rssService.feed({
+  "name": "bbc"
+})
+	console.log(rsp)
+}
+
+readAfeed()
+```
+## List
+
+List the saved RSS fields
+
+
+[https://m3o.com/rss/api#List](https://m3o.com/rss/api#List)
+
+```js
+const { RssService } = require('m3o/rss');
+
+// List the saved RSS fields
+async function listRssFeeds() {
+	let rssService = new RssService(process.env.MICRO_API_TOKEN)
+	let rsp = await rssService.list({})
+	console.log(rsp)
+}
+
+listRssFeeds()
 ```

@@ -4,6 +4,33 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Forex/api](htt
 
 Endpoints:
 
+## History
+
+Returns the data for the previous close
+
+
+[https://m3o.com/forex/api#History](https://m3o.com/forex/api#History)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/forex"
+)
+
+// Returns the data for the previous close
+func GetPreviousClose() {
+	forexService := forex.NewForexService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := forexService.History(&forex.HistoryRequest{
+		Symbol: "GBPUSD",
+
+	})
+	fmt.Println(rsp, err)
+}
+```
 ## Price
 
 Get the latest price for a given forex ticker
@@ -52,33 +79,6 @@ import(
 func GetAfxQuote() {
 	forexService := forex.NewForexService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := forexService.Quote(&forex.QuoteRequest{
-		Symbol: "GBPUSD",
-
-	})
-	fmt.Println(rsp, err)
-}
-```
-## History
-
-Returns the data for the previous close
-
-
-[https://m3o.com/forex/api#History](https://m3o.com/forex/api#History)
-
-```go
-package example
-
-import(
-	"fmt"
-	"os"
-
-	"github.com/micro/services/clients/go/forex"
-)
-
-// Returns the data for the previous close
-func GetPreviousClose() {
-	forexService := forex.NewForexService(os.Getenv("MICRO_API_TOKEN"))
-	rsp, err := forexService.History(&forex.HistoryRequest{
 		Symbol: "GBPUSD",
 
 	})

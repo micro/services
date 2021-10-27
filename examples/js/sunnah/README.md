@@ -4,6 +4,27 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Sunnah/api](ht
 
 Endpoints:
 
+## Collections
+
+Get a list of available collections. A collection is
+a compilation of hadiths collected and written by an author.
+
+
+[https://m3o.com/sunnah/api#Collections](https://m3o.com/sunnah/api#Collections)
+
+```js
+const { SunnahService } = require('m3o/sunnah');
+
+// Get a list of available collections. A collection is
+// a compilation of hadiths collected and written by an author.
+async function listAvailableCollections() {
+	let sunnahService = new SunnahService(process.env.MICRO_API_TOKEN)
+	let rsp = await sunnahService.collections({})
+	console.log(rsp)
+}
+
+listAvailableCollections()
+```
 ## Books
 
 Get a list of books from within a collection. A book can contain many chapters
@@ -72,25 +93,4 @@ async function listTheHadithsInAbook() {
 }
 
 listTheHadithsInAbook()
-```
-## Collections
-
-Get a list of available collections. A collection is
-a compilation of hadiths collected and written by an author.
-
-
-[https://m3o.com/sunnah/api#Collections](https://m3o.com/sunnah/api#Collections)
-
-```js
-const { SunnahService } = require('m3o/sunnah');
-
-// Get a list of available collections. A collection is
-// a compilation of hadiths collected and written by an author.
-async function listAvailableCollections() {
-	let sunnahService = new SunnahService(process.env.MICRO_API_TOKEN)
-	let rsp = await sunnahService.collections({})
-	console.log(rsp)
-}
-
-listAvailableCollections()
 ```

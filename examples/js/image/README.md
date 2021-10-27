@@ -4,55 +4,6 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Image/api](htt
 
 Endpoints:
 
-## Upload
-
-Upload an image by either sending a base64 encoded image to this endpoint or a URL.
-To resize an image before uploading, see the Resize endpoint.
-
-
-[https://m3o.com/image/api#Upload](https://m3o.com/image/api#Upload)
-
-```js
-const { ImageService } = require('m3o/image');
-
-// Upload an image by either sending a base64 encoded image to this endpoint or a URL.
-// To resize an image before uploading, see the Resize endpoint.
-async function uploadAbase64imageToMicrosCdn() {
-	let imageService = new ImageService(process.env.MICRO_API_TOKEN)
-	let rsp = await imageService.upload({
-  "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAx0lEQVR4nOzaMaoDMQyE4ZHj+x82vVdhwQoTkzKQEcwP5r0ihT7sbjUTeAJ4HCegXQJYfOYefOyjDuBiz3yjwJBoCIl6QZOeUjTC1Ix1IxEJXF9+0KWsf2bD4bn37OO/c/wuQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9Sa/NG94Tf3j4WBdaxudMEkn4IM2rZBA0wBrvo7aOcpj2emXvLeVt0IGm0GVXUj91mvAAAA//+V2CZl+4AKXwAAAABJRU5ErkJggg==",
-  "name": "cat.jpeg",
-  "outputURL": true
-})
-	console.log(rsp)
-}
-
-uploadAbase64imageToMicrosCdn()
-```
-## Upload
-
-Upload an image by either sending a base64 encoded image to this endpoint or a URL.
-To resize an image before uploading, see the Resize endpoint.
-
-
-[https://m3o.com/image/api#Upload](https://m3o.com/image/api#Upload)
-
-```js
-const { ImageService } = require('m3o/image');
-
-// Upload an image by either sending a base64 encoded image to this endpoint or a URL.
-// To resize an image before uploading, see the Resize endpoint.
-async function uploadAnImageFromAurlToMicrosCdn() {
-	let imageService = new ImageService(process.env.MICRO_API_TOKEN)
-	let rsp = await imageService.upload({
-  "name": "cat.jpeg",
-  "url": "somewebsite.com/cat.png"
-})
-	console.log(rsp)
-}
-
-uploadAnImageFromAurlToMicrosCdn()
-```
 ## Resize
 
 Resize an image on the fly without storing it (by sending and receiving a base64 encoded image), or resize and upload depending on parameters.
@@ -164,4 +115,53 @@ async function convertApngImageToAjpegTakenFromAurlAndSavedToAurlOnMicrosCdn() {
 }
 
 convertApngImageToAjpegTakenFromAurlAndSavedToAurlOnMicrosCdn()
+```
+## Upload
+
+Upload an image by either sending a base64 encoded image to this endpoint or a URL.
+To resize an image before uploading, see the Resize endpoint.
+
+
+[https://m3o.com/image/api#Upload](https://m3o.com/image/api#Upload)
+
+```js
+const { ImageService } = require('m3o/image');
+
+// Upload an image by either sending a base64 encoded image to this endpoint or a URL.
+// To resize an image before uploading, see the Resize endpoint.
+async function uploadAbase64imageToMicrosCdn() {
+	let imageService = new ImageService(process.env.MICRO_API_TOKEN)
+	let rsp = await imageService.upload({
+  "base64": "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAx0lEQVR4nOzaMaoDMQyE4ZHj+x82vVdhwQoTkzKQEcwP5r0ihT7sbjUTeAJ4HCegXQJYfOYefOyjDuBiz3yjwJBoCIl6QZOeUjTC1Ix1IxEJXF9+0KWsf2bD4bn37OO/c/wuQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9QyRC1D1DJELUPUMkQtQ9Sa/NG94Tf3j4WBdaxudMEkn4IM2rZBA0wBrvo7aOcpj2emXvLeVt0IGm0GVXUj91mvAAAA//+V2CZl+4AKXwAAAABJRU5ErkJggg==",
+  "name": "cat.jpeg",
+  "outputURL": true
+})
+	console.log(rsp)
+}
+
+uploadAbase64imageToMicrosCdn()
+```
+## Upload
+
+Upload an image by either sending a base64 encoded image to this endpoint or a URL.
+To resize an image before uploading, see the Resize endpoint.
+
+
+[https://m3o.com/image/api#Upload](https://m3o.com/image/api#Upload)
+
+```js
+const { ImageService } = require('m3o/image');
+
+// Upload an image by either sending a base64 encoded image to this endpoint or a URL.
+// To resize an image before uploading, see the Resize endpoint.
+async function uploadAnImageFromAurlToMicrosCdn() {
+	let imageService = new ImageService(process.env.MICRO_API_TOKEN)
+	let rsp = await imageService.upload({
+  "name": "cat.jpeg",
+  "url": "somewebsite.com/cat.png"
+})
+	console.log(rsp)
+}
+
+uploadAnImageFromAurlToMicrosCdn()
 ```

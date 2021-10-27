@@ -4,6 +4,41 @@ An [m3o.com](https://m3o.com) API. For example usage see [m3o.com/Location/api](
 
 Endpoints:
 
+## Save
+
+Save an entity's current position
+
+
+[https://m3o.com/location/api#Save](https://m3o.com/location/api#Save)
+
+```go
+package example
+
+import(
+	"fmt"
+	"os"
+
+	"github.com/micro/services/clients/go/location"
+)
+
+// Save an entity's current position
+func SaveAnEntity() {
+	locationService := location.NewLocationService(os.Getenv("MICRO_API_TOKEN"))
+	rsp, err := locationService.Save(&location.SaveRequest{
+		Entity: &location.Entity{
+	Id: "1",
+	Location: &location.Point{
+		Latitude: 51.511061,
+		Longitude: -0.120022,
+		Timestamp: 1622802761,
+},
+	Type: "bike",
+},
+
+	})
+	fmt.Println(rsp, err)
+}
+```
 ## Read
 
 Read an entity by its ID
@@ -59,41 +94,6 @@ func SearchForLocations() {
 NumEntities: 10,
 Radius: 100,
 Type: "bike",
-
-	})
-	fmt.Println(rsp, err)
-}
-```
-## Save
-
-Save an entity's current position
-
-
-[https://m3o.com/location/api#Save](https://m3o.com/location/api#Save)
-
-```go
-package example
-
-import(
-	"fmt"
-	"os"
-
-	"github.com/micro/services/clients/go/location"
-)
-
-// Save an entity's current position
-func SaveAnEntity() {
-	locationService := location.NewLocationService(os.Getenv("MICRO_API_TOKEN"))
-	rsp, err := locationService.Save(&location.SaveRequest{
-		Entity: &location.Entity{
-	Id: "1",
-	Location: &location.Point{
-		Latitude: 51.511061,
-		Longitude: -0.120022,
-		Timestamp: 1622802761,
-},
-	Type: "bike",
-},
 
 	})
 	fmt.Println(rsp, err)
