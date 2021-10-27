@@ -53,10 +53,12 @@ func (t *DbService) Update(request *UpdateRequest) (*UpdateResponse, error) {
 }
 
 type CountRequest struct {
+	// specify the table name
 	Table string `json:"table"`
 }
 
 type CountResponse struct {
+	// the number of records in the table
 	Count int32 `json:"count"`
 }
 
