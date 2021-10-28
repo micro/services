@@ -1,6 +1,6 @@
 {
   "name": "otp",
   "icon": "🔑",
-  "category": "user",
+  "category": "authentication",
   "display_name": "One Time Password"
 }
