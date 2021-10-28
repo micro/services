@@ -30,7 +30,9 @@ message Account {
 	int64 created = 4;
 	// unix timestamp
 	int64 updated = 5;
+	// if the account is verified
 	bool verified = 6;
+	// date of verification
 	int64 verificationDate = 7;
 	// Store any custom data you want about your users in this fields.
 	map<string,string> profile = 8;
