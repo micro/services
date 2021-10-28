@@ -2,5 +2,8 @@
   "name": "user",
   "icon": "👤",
   "category": "authentication",
-  "display_name": "User"
+  "display_name": "User",
+  "pricing": {
+    "User.SendVerificationEmail": 5000
+  }
 }
