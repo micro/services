@@ -89,5 +89,23 @@
                 "text": "Updated note text"
             }
         }
+    }],
+    "subscribe": [{
+        "title": "Subscribe to events",
+        "description": "Subscribe to note events",
+        "run_check": false,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "event": "deleted",
+            "note": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "title": "Update Note",
+                "text": "Updated note text"
+            }
+        }
     }]
 }
