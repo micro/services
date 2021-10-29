@@ -186,23 +186,28 @@ message SendVerificationEmailRequest{
 
 message SendVerificationEmailResponse{}
 
-// Passwordless allows you to access your account via MagicLink send to your email
+// Login using email only - Passwordless
 message PasswordlessRequest {
 	// the email address of the user
 	string email = 1;
+	string subject = 2;
+	// Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
+	// HTML emails are not available currently.
+	string textContent = 3;
+	// Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
+	string fromName = 4;
 	// the topic which you will subscribe to - M3O Stream API - in ordre to
-	// receive confirmation 
-	string topic = 2;
-	// the message (optional)
-	string message = 3;
+	// receive confirmation. 
+	// Topic must be unique to maintain privacy  
+	string topic = 5;
 }
 
 message PasswordlessResponse {}
 
 message PasswordlessMLRequest {
-	// 
 	string token = 1;
-	// 
+	// the topic which you will subscribe to - M3O Stream API - in ordre to
+	// receive confirmation 
 	string topic = 2;
 }
 

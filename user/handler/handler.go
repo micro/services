@@ -3,14 +3,19 @@ package handler
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"path"
 	"regexp"
 	"strings"
 	"time"
 
+	"github.com/asim/mq/broker"
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
+	"github.com/micro/services/pkg/tenant"
 	"github.com/micro/services/user/domain"
 	pb "github.com/micro/services/user/proto"
 	"golang.org/x/crypto/bcrypt"
@@ -228,7 +233,12 @@ func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp 
 	if err != nil {
 		return err
 	}
+
 	user, err := s.domain.Read(ctx, userId)
+	if err != nil {
+		return err
+	}
+
 	user.Verified = true
 	return s.domain.Update(ctx, user)
 }
@@ -248,21 +258,98 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 
 func (s *User) Passwordless(ctx context.Context, req *pb.PasswordlessRequest, rsp *pb.PasswordlessResponse) error {
 	// check if the email has the correct format
+	if !emailFormat.MatchString(req.Email) {
+		return errors.BadRequest("Passwordless.email-format-check", "email has wrong format")
+	}
+
 	// check if the email exist in the DB
-	// create a token object and save it in config where key=topic, value=token object
-	// token object is a struct that has two fields timestamp and token
-	// create a magic link that contains topic and token
+	users, err := s.domain.Search(ctx, "", req.Email)
+	if err.Error() == "not found" {
+		return errors.BadRequest("Passwordless.email-check", "email doesn't exist")
+	} else if err != nil {
+		return errors.BadRequest("Passwordless.email-check", err.Error())
+	}
+
+	// create a token object
+	token := random(128)
+	timestamp := time.Now().Unix()
+
+	// save token, so we can retrieve it later
+	err = s.domain.Passwordless(ctx, req.Email, token, timestamp)
+	if err != nil {
+		return errors.BadRequest("Passwordless.token", "Oooops something went wrong")
+	}
+
 	// send magic link to email address
+	err = s.domain.PasswordlessSendEmail(req.FromName, req.Email, users[0].Username, req.Subject,
+		req.TextContent, token, req.Topic)
+	if err != nil {
+		return errors.BadRequest("Passwordless.sendEmail", "Oooops something went wrong")
+	}
 
 	return nil
 }
 
 func (s *User) PasswordlessML(ctx context.Context, req *pb.PasswordlessMLRequest, rsp *pb.PasswordlessMLResponse) error {
 	// save the current timestamp in a variable
+	now := time.Now().Unix()
+
 	// extract token and topic
-	// check if the received topic exist and its value equal to stored token
-	// check if the token is still valid (token life time shoud not exceed 1 minute)
+	token := req.Token
+	topic := req.Topic
+
+	// check if topic exist
+	timestamp, email, err := s.domain.PasswordlessReadToken(ctx, token)
+	if err != nil {
+		return errors.BadRequest("PasswordlessML.readToken", err.Error())
+	}
+
+	// check if the token is still valid (token life time shoud not exce 1 minute)
+	if (now - timestamp) > 60 {
+		return errors.BadRequest("PasswordlessML.validToken", "token expired")
+	}
+
+	// save session
+	accounts, err := s.domain.Search(ctx, "", email)
+	if err != nil {
+		return err
+	}
+	if len(accounts) == 0 {
+		return fmt.Errorf("account not found")
+	}
+
+	sess := &pb.Session{
+		Id:      random(128),
+		Created: time.Now().Unix(),
+		Expires: time.Now().Add(time.Hour * 24 * 7).Unix(),
+		UserId:  accounts[0].Id,
+	}
+
+	if err := s.domain.CreateSession(ctx, sess); err != nil {
+		return errors.InternalServerError("PasswordlessML.createSession", err.Error())
+	}
+
 	// publish a message to the received topic which holds the session value.
+	if len(req.Topic) == 0 {
+		return errors.BadRequest("PasswordlessML.publish", "topic is blank")
+	}
+
+	// get the tenant
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "default"
+	}
+
+	// create tenant based topics
+	topic = path.Join("stream", id, topic)
+
+	// marshal the data
+	b, _ := json.Marshal(sess)
+
+	logger.Infof("Tenant %v publishing to %v\n", id, req.Topic)
+
+	// publish the message
+	broker.Publish(topic, b)
 
 	return nil
 }

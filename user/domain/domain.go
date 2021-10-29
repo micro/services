@@ -308,3 +308,71 @@ func (domain *Domain) SaltAndPassword(ctx context.Context, userId string) (strin
 	json.Unmarshal(m, password)
 	return password.Salt, password.Password, nil
 }
+
+func (domain *Domain) Passwordless(ctx context.Context, email string, token string, timestamp int64) error {
+	tokenO := &tokenObject{
+		Email:     email,
+		Token:     token,
+		Timestamp: timestamp,
+	}
+
+	s := _struct.Struct{}
+
+	data, _ := json.Marshal(tokenO)
+	err := s.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	_, err = domain.db.Create(ctx, &db.CreateRequest{
+		Table:  "passwordless",
+		Record: &s,
+	})
+
+	return err
+}
+
+func (domain *Domain) PasswordlessSendEmail(fromName, toAddress, toUsername, subject, textContent, token, topic string) error {
+	if domain.sengridKey == "" {
+		return fmt.Errorf("empty email api key")
+	}
+	from := mail.NewEmail(fromName, "support@m3o.com")
+	to := mail.NewEmail(toUsername, toAddress)
+	textContent = strings.Replace(textContent, "$micro_verification_link", "https://api.m3o.com/v1/user/PasswordlessML?token="+token+"&topic="+topic, -1)
+	message := mail.NewSingleEmail(from, subject, to, textContent, "")
+	client := sendgrid.NewSendClient(domain.sengridKey)
+	response, err := client.Send(message)
+	logger.Info(response)
+
+	return err
+}
+
+func (domain *Domain) PasswordlessReadToken(ctx context.Context, token string) (int64, string, error) {
+	if token == "" {
+		return 0, "", errors.New("token empty")
+	}
+
+	tokenO := &tokenObject{}
+
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table: "passwordless",
+		Query: fmt.Sprintf("token == '%v'", token),
+	})
+	if err != nil {
+		return 0, "", err
+	}
+	if len(rsp.Records) == 0 {
+		return 0, "", errors.New("token not found")
+	}
+
+	m, _ := rsp.Records[0].MarshalJSON()
+	json.Unmarshal(m, tokenO)
+
+	return tokenO.Timestamp, tokenO.Email, nil
+}
+
+type tokenObject struct {
+	Email     string
+	Token     string
+	Timestamp int64
+}
