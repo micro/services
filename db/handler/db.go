@@ -321,17 +321,13 @@ func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.Trun
 }
 
 func (e *Db) Count(ctx context.Context, req *db.CountRequest, rsp *db.CountResponse) error {
-	tenantId, ok := tenant.FromContext(ctx)
-	if !ok {
-		tenantId = "micro"
-	}
 	if req.Table == "" {
 		req.Table = "default"
 	}
-	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
-	tableName := tenantId + "_" + req.Table
-	if !re.Match([]byte(tableName)) {
-		return errors.BadRequest("db.count", fmt.Sprintf("table name %v is invalid", req.Table))
+
+	tableName, err := e.tableName(ctx, req.Table)
+	if err != nil {
+		return err
 	}
 
 	db, err := e.GetDBConn(ctx)
