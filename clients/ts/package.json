@@ -68,7 +68,7 @@
  "name": "m3o",
  "repository": {
   "type": "git",
-  "url": "https://github.com/micro/services"
+  "url": "https://github.com/m3o/m3o-js"
  },
  "scripts": {
   "build": "npm run clean \u0026\u0026 tsc \u0026\u0026 tsc --p tsconfig.es.json \u0026\u0026 node build.js",
@@ -76,5 +76,5 @@
   "prepare": "npm run build"
  },
  "types": "index.d.ts",
- "version": "1.0.592"
+ "version": "1.0.594"
 }
