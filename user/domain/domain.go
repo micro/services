@@ -12,8 +12,10 @@ import (
 	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/config"
+	microerr "github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
+	"github.com/micro/services/pkg/cache"
 	user "github.com/micro/services/user/proto"
 
 	"github.com/sendgrid/sendgrid-go"
@@ -309,36 +311,26 @@ func (domain *Domain) SaltAndPassword(ctx context.Context, userId string) (strin
 	return password.Salt, password.Password, nil
 }
 
-func (domain *Domain) Passwordless(ctx context.Context, email string, token string, timestamp int64) error {
-	tokenO := &tokenObject{
-		Email:     email,
-		Token:     token,
-		Timestamp: timestamp,
+func (domain *Domain) CacheToken(ctx context.Context, token, id, email string, ttl int) error {
+	obj := &tokenObject{
+		Id:    id,
+		Email: email,
 	}
 
-	s := _struct.Struct{}
+	expires := time.Now().Add(time.Duration(ttl) * time.Second)
 
-	data, _ := json.Marshal(tokenO)
-	err := s.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	_, err = domain.db.Create(ctx, &db.CreateRequest{
-		Table:  "passwordless",
-		Record: &s,
-	})
+	err := cache.Context(ctx).Set(token, obj, expires)
 
 	return err
 }
 
-func (domain *Domain) PasswordlessSendEmail(fromName, toAddress, toUsername, subject, textContent, token, topic string) error {
+func (domain *Domain) SendMLE(fromName, toAddress, toUsername, subject, textContent, token string) error {
 	if domain.sengridKey == "" {
 		return fmt.Errorf("empty email api key")
 	}
 	from := mail.NewEmail(fromName, "support@m3o.com")
 	to := mail.NewEmail(toUsername, toAddress)
-	textContent = strings.Replace(textContent, "$micro_verification_link", "https://api.m3o.com/v1/user/PasswordlessML?token="+token+"&topic="+topic, -1)
+	textContent = strings.Replace(textContent, "$micro_verification_link", "https://api.m3o.com/v1/user/VerifyToken?token="+token, -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
 	client := sendgrid.NewSendClient(domain.sengridKey)
 	response, err := client.Send(message)
@@ -347,32 +339,24 @@ func (domain *Domain) PasswordlessSendEmail(fromName, toAddress, toUsername, sub
 	return err
 }
 
-func (domain *Domain) PasswordlessReadToken(ctx context.Context, token string) (int64, string, error) {
+func (domain *Domain) CacheReadToken(ctx context.Context, token string) (string, string, error) {
 	if token == "" {
-		return 0, "", errors.New("token empty")
+		return "", "", errors.New("token empty")
 	}
 
-	tokenO := &tokenObject{}
+	var obj tokenObject
 
-	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "passwordless",
-		Query: fmt.Sprintf("token == '%v'", token),
-	})
-	if err != nil {
-		return 0, "", err
-	}
-	if len(rsp.Records) == 0 {
-		return 0, "", errors.New("token not found")
+	err := cache.Context(ctx).Get(token, obj)
+	if err == cache.ErrNotFound {
+		return "", "", errors.New("token not found")
+	} else if err != nil {
+		return "", "", microerr.InternalServerError("CacheReadToken", err.Error())
 	}
 
-	m, _ := rsp.Records[0].MarshalJSON()
-	json.Unmarshal(m, tokenO)
-
-	return tokenO.Timestamp, tokenO.Email, nil
+	return obj.Id, obj.Email, nil
 }
 
 type tokenObject struct {
-	Email     string
-	Token     string
-	Timestamp int64
+	Id    string
+	Email string
 }

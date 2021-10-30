@@ -52,8 +52,8 @@ type UserService interface {
 	ReadSession(ctx context.Context, in *ReadSessionRequest, opts ...client.CallOption) (*ReadSessionResponse, error)
 	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...client.CallOption) (*VerifyEmailResponse, error)
 	SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, opts ...client.CallOption) (*SendVerificationEmailResponse, error)
-	Passwordless(ctx context.Context, in *PasswordlessRequest, opts ...client.CallOption) (*PasswordlessResponse, error)
-	PasswordlessML(ctx context.Context, in *PasswordlessMLRequest, opts ...client.CallOption) (*PasswordlessMLResponse, error)
+	SendMagicLink(ctx context.Context, in *SendMagicLinkRequest, opts ...client.CallOption) (User_SendMagicLinkService, error)
+	VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...client.CallOption) (*VerifyTokenResponse, error)
 }
 
 type userService struct {
@@ -168,19 +168,58 @@ func (c *userService) SendVerificationEmail(ctx context.Context, in *SendVerific
 	return out, nil
 }
 
-func (c *userService) Passwordless(ctx context.Context, in *PasswordlessRequest, opts ...client.CallOption) (*PasswordlessResponse, error) {
-	req := c.c.NewRequest(c.name, "User.Passwordless", in)
-	out := new(PasswordlessResponse)
-	err := c.c.Call(ctx, req, out, opts...)
+func (c *userService) SendMagicLink(ctx context.Context, in *SendMagicLinkRequest, opts ...client.CallOption) (User_SendMagicLinkService, error) {
+	req := c.c.NewRequest(c.name, "User.SendMagicLink", &SendMagicLinkRequest{})
+	stream, err := c.c.Stream(ctx, req, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	if err := stream.Send(in); err != nil {
+		return nil, err
+	}
+	return &userServiceSendMagicLink{stream}, nil
 }
 
-func (c *userService) PasswordlessML(ctx context.Context, in *PasswordlessMLRequest, opts ...client.CallOption) (*PasswordlessMLResponse, error) {
-	req := c.c.NewRequest(c.name, "User.PasswordlessML", in)
-	out := new(PasswordlessMLResponse)
+type User_SendMagicLinkService interface {
+	Context() context.Context
+	SendMsg(interface{}) error
+	RecvMsg(interface{}) error
+	Close() error
+	Recv() (*SendMagicLinkResponse, error)
+}
+
+type userServiceSendMagicLink struct {
+	stream client.Stream
+}
+
+func (x *userServiceSendMagicLink) Close() error {
+	return x.stream.Close()
+}
+
+func (x *userServiceSendMagicLink) Context() context.Context {
+	return x.stream.Context()
+}
+
+func (x *userServiceSendMagicLink) SendMsg(m interface{}) error {
+	return x.stream.Send(m)
+}
+
+func (x *userServiceSendMagicLink) RecvMsg(m interface{}) error {
+	return x.stream.Recv(m)
+}
+
+func (x *userServiceSendMagicLink) Recv() (*SendMagicLinkResponse, error) {
+	m := new(SendMagicLinkResponse)
+	err := x.stream.Recv(m)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *userService) VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...client.CallOption) (*VerifyTokenResponse, error) {
+	req := c.c.NewRequest(c.name, "User.VerifyToken", in)
+	out := new(VerifyTokenResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -201,8 +240,8 @@ type UserHandler interface {
 	ReadSession(context.Context, *ReadSessionRequest, *ReadSessionResponse) error
 	VerifyEmail(context.Context, *VerifyEmailRequest, *VerifyEmailResponse) error
 	SendVerificationEmail(context.Context, *SendVerificationEmailRequest, *SendVerificationEmailResponse) error
-	Passwordless(context.Context, *PasswordlessRequest, *PasswordlessResponse) error
-	PasswordlessML(context.Context, *PasswordlessMLRequest, *PasswordlessMLResponse) error
+	SendMagicLink(context.Context, *SendMagicLinkRequest, User_SendMagicLinkStream) error
+	VerifyToken(context.Context, *VerifyTokenRequest, *VerifyTokenResponse) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
@@ -217,8 +256,8 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		ReadSession(ctx context.Context, in *ReadSessionRequest, out *ReadSessionResponse) error
 		VerifyEmail(ctx context.Context, in *VerifyEmailRequest, out *VerifyEmailResponse) error
 		SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, out *SendVerificationEmailResponse) error
-		Passwordless(ctx context.Context, in *PasswordlessRequest, out *PasswordlessResponse) error
-		PasswordlessML(ctx context.Context, in *PasswordlessMLRequest, out *PasswordlessMLResponse) error
+		SendMagicLink(ctx context.Context, stream server.Stream) error
+		VerifyToken(ctx context.Context, in *VerifyTokenRequest, out *VerifyTokenResponse) error
 	}
 	type User struct {
 		user
@@ -271,10 +310,46 @@ func (h *userHandler) SendVerificationEmail(ctx context.Context, in *SendVerific
 	return h.UserHandler.SendVerificationEmail(ctx, in, out)
 }
 
-func (h *userHandler) Passwordless(ctx context.Context, in *PasswordlessRequest, out *PasswordlessResponse) error {
-	return h.UserHandler.Passwordless(ctx, in, out)
+func (h *userHandler) SendMagicLink(ctx context.Context, stream server.Stream) error {
+	m := new(SendMagicLinkRequest)
+	if err := stream.Recv(m); err != nil {
+		return err
+	}
+	return h.UserHandler.SendMagicLink(ctx, m, &userSendMagicLinkStream{stream})
 }
 
-func (h *userHandler) PasswordlessML(ctx context.Context, in *PasswordlessMLRequest, out *PasswordlessMLResponse) error {
-	return h.UserHandler.PasswordlessML(ctx, in, out)
+type User_SendMagicLinkStream interface {
+	Context() context.Context
+	SendMsg(interface{}) error
+	RecvMsg(interface{}) error
+	Close() error
+	Send(*SendMagicLinkResponse) error
+}
+
+type userSendMagicLinkStream struct {
+	stream server.Stream
+}
+
+func (x *userSendMagicLinkStream) Close() error {
+	return x.stream.Close()
+}
+
+func (x *userSendMagicLinkStream) Context() context.Context {
+	return x.stream.Context()
+}
+
+func (x *userSendMagicLinkStream) SendMsg(m interface{}) error {
+	return x.stream.Send(m)
+}
+
+func (x *userSendMagicLinkStream) RecvMsg(m interface{}) error {
+	return x.stream.Recv(m)
+}
+
+func (x *userSendMagicLinkStream) Send(m *SendMagicLinkResponse) error {
+	return x.stream.Send(m)
+}
+
+func (h *userHandler) VerifyToken(ctx context.Context, in *VerifyTokenRequest, out *VerifyTokenResponse) error {
+	return h.UserHandler.VerifyToken(ctx, in, out)
 }

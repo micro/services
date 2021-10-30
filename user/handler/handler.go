@@ -256,57 +256,85 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 	return s.domain.SendEmail(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.RedirectUrl, req.FailureRedirectUrl)
 }
 
-func (s *User) Passwordless(ctx context.Context, req *pb.PasswordlessRequest, rsp *pb.PasswordlessResponse) error {
+func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, stream pb.User_SendMagicLinkStream) error {
 	// check if the email has the correct format
 	if !emailFormat.MatchString(req.Email) {
-		return errors.BadRequest("Passwordless.email-format-check", "email has wrong format")
+		return errors.BadRequest("SendMagicLink.email-format-check", "email has wrong format")
 	}
 
 	// check if the email exist in the DB
 	users, err := s.domain.Search(ctx, "", req.Email)
 	if err.Error() == "not found" {
-		return errors.BadRequest("Passwordless.email-check", "email doesn't exist")
+		return errors.BadRequest("SendMagicLink.email-check", "email doesn't exist")
 	} else if err != nil {
-		return errors.BadRequest("Passwordless.email-check", err.Error())
+		return errors.BadRequest("SendMagicLink.email-check", err.Error())
 	}
 
 	// create a token object
 	token := random(128)
-	timestamp := time.Now().Unix()
+
+	// set ttl to 60 seconds
+	ttl := 60
+
+	// uuid part of the topic
+	topic := uuid.New().String()
 
 	// save token, so we can retrieve it later
-	err = s.domain.Passwordless(ctx, req.Email, token, timestamp)
+	err = s.domain.CacheToken(ctx, token, topic, req.Email, ttl)
 	if err != nil {
-		return errors.BadRequest("Passwordless.token", "Oooops something went wrong")
+		return errors.BadRequest("SendMagicLink.cacheToken", "Oooops something went wrong")
 	}
 
 	// send magic link to email address
-	err = s.domain.PasswordlessSendEmail(req.FromName, req.Email, users[0].Username, req.Subject,
-		req.TextContent, token, req.Topic)
+	err = s.domain.SendMLE(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token)
 	if err != nil {
-		return errors.BadRequest("Passwordless.sendEmail", "Oooops something went wrong")
+		return errors.BadRequest("SendMagicLink.sendEmail", "Oooops something went wrong")
+	}
+
+	// subscribe to the topic
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "default"
+	}
+
+	// create tenant based topics
+	topic = path.Join("stream", id, topic)
+
+	logger.Infof("Tenant %v subscribing to %v\n", id, topic)
+
+	sub, err := broker.Subscribe(topic)
+	if err != nil {
+		return errors.InternalServerError("SendMagicLink.subscribe", "failed to subscribe to topic")
+	}
+	defer broker.Unsubscribe(topic, sub)
+
+	// range over the messages until the subscriber is closed
+	for msg := range sub {
+		// unmarshal the message into a struct
+		d := &pb.Session{}
+		err = json.Unmarshal(msg, d)
+		if err != nil {
+			return errors.InternalServerError("SendMgicLink.unmarshal", "faild to unmarshal the message")
+		}
+
+		if err := stream.Send(&pb.SendMagicLinkResponse{
+			Session: d.Id, // TODO: do we need to send all data or just the session
+		}); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (s *User) PasswordlessML(ctx context.Context, req *pb.PasswordlessMLRequest, rsp *pb.PasswordlessMLResponse) error {
-	// save the current timestamp in a variable
-	now := time.Now().Unix()
-
-	// extract token and topic
+func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp *pb.VerifyTokenResponse) error {
+	// extract token
 	token := req.Token
-	topic := req.Topic
 
-	// check if topic exist
-	timestamp, email, err := s.domain.PasswordlessReadToken(ctx, token)
+	// check if token is valid
+	topic, email, err := s.domain.CacheReadToken(ctx, token)
 	if err != nil {
-		return errors.BadRequest("PasswordlessML.readToken", err.Error())
-	}
-
-	// check if the token is still valid (token life time shoud not exce 1 minute)
-	if (now - timestamp) > 60 {
-		return errors.BadRequest("PasswordlessML.validToken", "token expired")
+		return errors.BadRequest("VerifyToken.CacheReadToken", err.Error())
 	}
 
 	// save session
@@ -326,14 +354,10 @@ func (s *User) PasswordlessML(ctx context.Context, req *pb.PasswordlessMLRequest
 	}
 
 	if err := s.domain.CreateSession(ctx, sess); err != nil {
-		return errors.InternalServerError("PasswordlessML.createSession", err.Error())
+		return errors.InternalServerError("VerifyToken.createSession", err.Error())
 	}
 
-	// publish a message to the received topic which holds the session value.
-	if len(req.Topic) == 0 {
-		return errors.BadRequest("PasswordlessML.publish", "topic is blank")
-	}
-
+	// publish a message which holds the session value.
 	// get the tenant
 	id, ok := tenant.FromContext(ctx)
 	if !ok {
@@ -346,7 +370,7 @@ func (s *User) PasswordlessML(ctx context.Context, req *pb.PasswordlessMLRequest
 	// marshal the data
 	b, _ := json.Marshal(sess)
 
-	logger.Infof("Tenant %v publishing to %v\n", id, req.Topic)
+	logger.Infof("Tenant %v publishing to %v\n", id, topic)
 
 	// publish the message
 	broker.Publish(topic, b)
