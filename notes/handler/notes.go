@@ -192,15 +192,18 @@ func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream 
 			return nil
 		}
 
-		ev := msg.Message.AsMap()
-		if ev == nil {
+		v, err := msg.Message.MarshalJSON()
+		if err != nil {
 			continue
 		}
 
-		note, ok := ev["note"].(*pb.Note)
-		if !ok {
+		rsp := new(pb.SubscribeResponse)
+
+		if err := json.Unmarshal(v, rsp); err != nil {
 			continue
 		}
+
+		note := rsp.Note
 
 		// filter if necessary by id
 		if len(req.Id) > 0 && note.Id != req.Id {
@@ -208,10 +211,7 @@ func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream 
 		}
 
 		// send back the event to the client
-		if err := stream.Send(&pb.SubscribeResponse{
-			Event: ev["type"].(string),
-			Note: note,
-		}); err != nil {
+		if err := stream.Send(rsp); err != nil {
 			return nil
 		}
 	}
