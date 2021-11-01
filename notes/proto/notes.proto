@@ -84,7 +84,7 @@ message SubscribeRequest {
 }
 
 message SubscribeResponse {
-	// the event which occured; created, deleted, updated
+	// the event which occured; create, delete, update
 	string event = 1;
 	// the note which the operation occured on
 	Note note = 2;
