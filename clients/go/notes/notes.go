@@ -110,7 +110,7 @@ type SubscribeRequest struct {
 }
 
 type SubscribeResponse struct {
-	// the event which occured; created, deleted, updated
+	// the event which occured; create, delete, update
 	Event string `json:"event"`
 	// the note which the operation occured on
 	Note *Note `json:"note"`
