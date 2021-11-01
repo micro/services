@@ -75,7 +75,7 @@ func (h *Notes) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
-			"type": "create",
+			"event": "create",
 			"note": note,
 		}),
 	})
@@ -161,7 +161,7 @@ func (h *Notes) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
-			"type": "update",
+			"event": "update",
 			"note": note,
 		}),
 	})
@@ -255,7 +255,7 @@ func (h *Notes) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delet
 	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
-			"type": "delete",
+			"event": "delete",
 			"note": note,
 		}),
 	})
