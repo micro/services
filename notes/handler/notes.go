@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -28,8 +29,10 @@ type Notes struct {
 }
 
 func newMessage(ev map[string]interface{}) *structpb.Struct {
-	v, _ := structpb.NewStruct(ev)
-	return v
+	st := new(structpb.Struct)
+	b, _ := json.Marshal(ev)
+	json.Unmarshal(b, st)
+	return st
 }
 
 // Create inserts a new note in the store
@@ -190,7 +193,14 @@ func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream 
 		}
 
 		ev := msg.Message.AsMap()
-		note := ev["note"].(*pb.Note)
+		if ev == nil {
+			continue
+		}
+
+		note, ok := ev["note"].(*pb.Note)
+		if !ok {
+			continue
+		}
 
 		// filter if necessary by id
 		if len(req.Id) > 0 && note.Id != req.Id {
