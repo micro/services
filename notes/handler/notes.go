@@ -69,7 +69,7 @@ func (h *Notes) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 	// return the note in the response
 	rsp.Note = note
 
-	go h.Stream.Publish(ctx, &streamPb.PublishRequest{
+	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
 			"type": "create",
@@ -155,7 +155,7 @@ func (h *Notes) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 		return errors.InternalServerError("notes.update", "Error writing to store: %v", err.Error())
 	}
 
-	go h.Stream.Publish(ctx, &streamPb.PublishRequest{
+	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
 			"type": "update",
@@ -242,7 +242,7 @@ func (h *Notes) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delet
 		return errors.InternalServerError("notes.delete", "Failed to delete note")
 	}
 
-	go h.Stream.Publish(ctx, &streamPb.PublishRequest{
+	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
 			"type": "delete",
