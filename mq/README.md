@@ -1,4 +1,4 @@
-Simple message broker
+Simple in-memory message broker
 
 # MQ Service
 
