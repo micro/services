@@ -28,6 +28,12 @@ func (t *NotesService) Delete(request *DeleteRequest) (*DeleteResponse, error) {
 	return rsp, t.client.Call("notes", "Delete", request, rsp)
 }
 
+// Specify the note to events
+func (t *NotesService) Events(request *EventsRequest) (*EventsResponse, error) {
+	rsp := &EventsResponse{}
+	return rsp, t.client.Call("notes", "Events", request, rsp)
+}
+
 // List all the notes
 func (t *NotesService) List(request *ListRequest) (*ListResponse, error) {
 	rsp := &ListResponse{}
@@ -38,12 +44,6 @@ func (t *NotesService) List(request *ListRequest) (*ListResponse, error) {
 func (t *NotesService) Read(request *ReadRequest) (*ReadResponse, error) {
 	rsp := &ReadResponse{}
 	return rsp, t.client.Call("notes", "Read", request, rsp)
-}
-
-// Specify the note to events
-func (t *NotesService) Subscribe(request *SubscribeRequest) (*SubscribeResponse, error) {
-	rsp := &SubscribeResponse{}
-	return rsp, t.client.Call("notes", "Subscribe", request, rsp)
 }
 
 // Update a note
@@ -70,6 +70,18 @@ type DeleteRequest struct {
 }
 
 type DeleteResponse struct {
+	Note *Note `json:"note"`
+}
+
+type EventsRequest struct {
+	// optionally specify a note id
+	Id string `json:"id"`
+}
+
+type EventsResponse struct {
+	// the event which occured; create, delete, update
+	Event string `json:"event"`
+	// the note which the operation occured on
 	Note *Note `json:"note"`
 }
 
@@ -101,18 +113,6 @@ type ReadRequest struct {
 
 type ReadResponse struct {
 	// The note
-	Note *Note `json:"note"`
-}
-
-type SubscribeRequest struct {
-	// optionally specify a note id
-	Id string `json:"id"`
-}
-
-type SubscribeResponse struct {
-	// the event which occured; create, delete, update
-	Event string `json:"event"`
-	// the note which the operation occured on
 	Note *Note `json:"note"`
 }
 
