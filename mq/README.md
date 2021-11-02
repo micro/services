@@ -1,6 +1,7 @@
-Publish and subscribe to messages
+Simple message queue
 
-# Stream Service
+# MQ Service
 
-Send messages to a stream and broadcast to multiple subscribers. Group by topic 
-and rapidly blast fire-and-forget messages to anyone listening.
+A simple message queue which lets you publish and subscribe to messages with no 
+overhead. Use fire-and-forget semantics, if the subscriber is available the message 
+is received.
