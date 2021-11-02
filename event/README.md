@@ -1,4 +1,4 @@
-An event stream
+Send events and notifications
 
 # Event Service
 
