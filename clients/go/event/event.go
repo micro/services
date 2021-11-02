@@ -16,7 +16,13 @@ type EventService struct {
 	client *client.Client
 }
 
-// Publish a message to the event stream.
+// Consume events from a given topic.
+func (t *EventService) Consume(request *ConsumeRequest) (*ConsumeResponse, error) {
+	rsp := &ConsumeResponse{}
+	return rsp, t.client.Call("event", "Consume", request, rsp)
+}
+
+// Publish a event to the event stream.
 func (t *EventService) Publish(request *PublishRequest) (*PublishResponse, error) {
 	rsp := &PublishResponse{}
 	return rsp, t.client.Call("event", "Publish", request, rsp)
@@ -28,10 +34,24 @@ func (t *EventService) Read(request *ReadRequest) (*ReadResponse, error) {
 	return rsp, t.client.Call("event", "Read", request, rsp)
 }
 
-// Subscribe to messages for a given topic.
-func (t *EventService) Subscribe(request *SubscribeRequest) (*SubscribeResponse, error) {
-	rsp := &SubscribeResponse{}
-	return rsp, t.client.Call("event", "Subscribe", request, rsp)
+type ConsumeRequest struct {
+	// Optional group for the subscription
+	Group string `json:"group"`
+	// Optional offset to read from e.g "2006-01-02T15:04:05.999Z07:00"
+	Offset string `json:"offset"`
+	// The topic to subscribe to
+	Topic string `json:"topic"`
+}
+
+type ConsumeResponse struct {
+	// Unique message id
+	Id string `json:"id"`
+	// The next json message on the topic
+	Message map[string]interface{} `json:"message"`
+	// Timestamp of publishing
+	Timestamp string `json:"timestamp"`
+	// The topic subscribed to
+	Topic string `json:"topic"`
 }
 
 type Ev struct {
@@ -65,24 +85,4 @@ type ReadRequest struct {
 type ReadResponse struct {
 	// the events
 	Events []Ev `json:"events"`
-}
-
-type SubscribeRequest struct {
-	// Optional group for the subscription
-	Group string `json:"group"`
-	// Optional offset to read from e.g "2006-01-02T15:04:05.999Z07:00"
-	Offset string `json:"offset"`
-	// The topic to subscribe to
-	Topic string `json:"topic"`
-}
-
-type SubscribeResponse struct {
-	// Unique message id
-	Id string `json:"id"`
-	// The next json message on the topic
-	Message map[string]interface{} `json:"message"`
-	// Timestamp of publishing
-	Timestamp string `json:"timestamp"`
-	// The topic subscribed to
-	Topic string `json:"topic"`
 }

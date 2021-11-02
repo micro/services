@@ -12,9 +12,9 @@ func PublishAmessage() {
 	mqService := mq.NewMqService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := mqService.Publish(&mq.PublishRequest{
 		Message: map[string]interface{}{
-			"id":   "1",
 			"type": "signup",
 			"user": "john",
+			"id":   "1",
 		},
 		Topic: "events",
 	})
