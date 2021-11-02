@@ -10,8 +10,8 @@ service Mq {
 	rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
 }
 
-// Publish a message to the mq. Specify a topic to group messages for a specific topic.
-message PublishRequest {
+// Publish a message. Specify a topic to group messages for a specific topic.
+message PublishReque	st {
 	// The topic to publish to
 	string topic = 1;
 	// The json message to publish
@@ -26,7 +26,6 @@ message SubscribeRequest {
 	string topic = 1;
 }
 
-// A blocking mq will be returned in response.
 message SubscribeResponse {
 	// The topic subscribed to
 	string topic = 1;
