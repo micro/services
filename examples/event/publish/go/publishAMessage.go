@@ -7,7 +7,7 @@ import (
 	"github.com/micro/services/clients/go/event"
 )
 
-// Publish a message to the event. Specify a topic to group messages for a specific topic.
+// Publish a message to the event stream.
 func PublishAmessage() {
 	eventService := event.NewEventService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := eventService.Publish(&event.PublishRequest{

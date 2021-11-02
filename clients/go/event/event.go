@@ -16,7 +16,7 @@ type EventService struct {
 	client *client.Client
 }
 
-// Publish a message to the event. Specify a topic to group messages for a specific topic.
+// Publish a message to the event stream.
 func (t *EventService) Publish(request *PublishRequest) (*PublishResponse, error) {
 	rsp := &PublishResponse{}
 	return rsp, t.client.Call("event", "Publish", request, rsp)

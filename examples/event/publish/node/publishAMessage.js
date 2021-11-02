@@ -1,6 +1,6 @@
 const { EventService } = require("m3o/event");
 
-// Publish a message to the event. Specify a topic to group messages for a specific topic.
+// Publish a message to the event stream.
 async function publishAmessage() {
   let eventService = new EventService(process.env.MICRO_API_TOKEN);
   let rsp = await eventService.publish({
