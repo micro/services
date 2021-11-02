@@ -35,6 +35,7 @@ import (
 	"github.com/micro/services/clients/go/sentiment"
 	"github.com/micro/services/clients/go/sms"
 	"github.com/micro/services/clients/go/stock"
+	"github.com/micro/services/clients/go/stream"
 	"github.com/micro/services/clients/go/sunnah"
 	"github.com/micro/services/clients/go/thumbnail"
 	"github.com/micro/services/clients/go/time"
@@ -84,6 +85,7 @@ func NewClient(token string) *Client {
 		SentimentService:  sentiment.NewSentimentService(token),
 		SmsService:        sms.NewSmsService(token),
 		StockService:      stock.NewStockService(token),
+		StreamService:     stream.NewStreamService(token),
 		SunnahService:     sunnah.NewSunnahService(token),
 		ThumbnailService:  thumbnail.NewThumbnailService(token),
 		TimeService:       time.NewTimeService(token),
@@ -133,6 +135,7 @@ type Client struct {
 	SentimentService  *sentiment.SentimentService
 	SmsService        *sms.SmsService
 	StockService      *stock.StockService
+	StreamService     *stream.StreamService
 	SunnahService     *sunnah.SunnahService
 	ThumbnailService  *thumbnail.ThumbnailService
 	TimeService       *time.TimeService
