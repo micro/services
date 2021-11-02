@@ -1,0 +1,25 @@
+
+{
+    "publish": [{
+        "title": "Publish a message",
+        "description": "Publish a message to a topic on the stream",
+        "run_check": true,
+        "request": {
+            "topic": "events",
+            "message": {"id": "1", "type": "signup", "user": "john"}
+        },
+        "response": {}
+    }],
+    "subscribe": [{
+        "title": "Subscribe to a topic",
+        "description": "Subscribe to messages on a given topic from the stream",
+        "run_check": false,
+        "request": {
+            "topic": "events"
+        },
+        "response": {
+            "topic": "events",
+            "message": {"id": "1", "type": "signup", "user": "john"}
+        }
+    }]
+}
