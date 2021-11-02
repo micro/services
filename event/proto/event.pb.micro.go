@@ -45,6 +45,7 @@ func NewEventEndpoints() []*api.Endpoint {
 type EventService interface {
 	Publish(ctx context.Context, in *PublishRequest, opts ...client.CallOption) (*PublishResponse, error)
 	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Event_SubscribeService, error)
+	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 }
 
 type eventService struct {
@@ -118,17 +119,29 @@ func (x *eventServiceSubscribe) Recv() (*SubscribeResponse, error) {
 	return m, nil
 }
 
+func (c *eventService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
+	req := c.c.NewRequest(c.name, "Event.Read", in)
+	out := new(ReadResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Event service
 
 type EventHandler interface {
 	Publish(context.Context, *PublishRequest, *PublishResponse) error
 	Subscribe(context.Context, *SubscribeRequest, Event_SubscribeStream) error
+	Read(context.Context, *ReadRequest, *ReadResponse) error
 }
 
 func RegisterEventHandler(s server.Server, hdlr EventHandler, opts ...server.HandlerOption) error {
 	type event interface {
 		Publish(ctx context.Context, in *PublishRequest, out *PublishResponse) error
 		Subscribe(ctx context.Context, stream server.Stream) error
+		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
 	}
 	type Event struct {
 		event
@@ -183,4 +196,8 @@ func (x *eventSubscribeStream) RecvMsg(m interface{}) error {
 
 func (x *eventSubscribeStream) Send(m *SubscribeResponse) error {
 	return x.stream.Send(m)
+}
+
+func (h *eventHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
+	return h.EventHandler.Read(ctx, in, out)
 }
