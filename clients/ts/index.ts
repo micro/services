@@ -7,6 +7,7 @@ import * as db from "./db";
 import * as email from "./email";
 import * as emoji from "./emoji";
 import * as evchargers from "./evchargers";
+import * as event from "./event";
 import * as file from "./file";
 import * as forex from "./forex";
 import * as fx from "./function";
@@ -52,6 +53,7 @@ export class Client {
     this.emailService = new email.EmailService(token);
     this.emojiService = new emoji.EmojiService(token);
     this.evchargersService = new evchargers.EvchargersService(token);
+    this.eventService = new event.EventService(token);
     this.fileService = new file.FileService(token);
     this.forexService = new forex.ForexService(token);
     this.functionService = new fx.FunctionService(token);
@@ -96,6 +98,7 @@ export class Client {
   emailService: email.EmailService;
   emojiService: emoji.EmojiService;
   evchargersService: evchargers.EvchargersService;
+  eventService: event.EventService;
   fileService: file.FileService;
   forexService: forex.ForexService;
   functionService: fx.FunctionService;

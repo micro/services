@@ -28,7 +28,7 @@ func (t *NotesService) Delete(request *DeleteRequest) (*DeleteResponse, error) {
 	return rsp, t.client.Call("notes", "Delete", request, rsp)
 }
 
-// Specify the note to events
+// Subscribe to notes events
 func (t *NotesService) Events(request *EventsRequest) (*EventsResponse, error) {
 	rsp := &EventsResponse{}
 	return rsp, t.client.Call("notes", "Events", request, rsp)
