@@ -47,7 +47,7 @@ type NotesService interface {
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
-	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Notes_SubscribeService, error)
+	Events(ctx context.Context, in *EventsRequest, opts ...client.CallOption) (Notes_EventsService, error)
 }
 
 type notesService struct {
@@ -112,8 +112,8 @@ func (c *notesService) Update(ctx context.Context, in *UpdateRequest, opts ...cl
 	return out, nil
 }
 
-func (c *notesService) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Notes_SubscribeService, error) {
-	req := c.c.NewRequest(c.name, "Notes.Subscribe", &SubscribeRequest{})
+func (c *notesService) Events(ctx context.Context, in *EventsRequest, opts ...client.CallOption) (Notes_EventsService, error) {
+	req := c.c.NewRequest(c.name, "Notes.Events", &EventsRequest{})
 	stream, err := c.c.Stream(ctx, req, opts...)
 	if err != nil {
 		return nil, err
@@ -121,39 +121,39 @@ func (c *notesService) Subscribe(ctx context.Context, in *SubscribeRequest, opts
 	if err := stream.Send(in); err != nil {
 		return nil, err
 	}
-	return &notesServiceSubscribe{stream}, nil
+	return &notesServiceEvents{stream}, nil
 }
 
-type Notes_SubscribeService interface {
+type Notes_EventsService interface {
 	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
-	Recv() (*SubscribeResponse, error)
+	Recv() (*EventsResponse, error)
 }
 
-type notesServiceSubscribe struct {
+type notesServiceEvents struct {
 	stream client.Stream
 }
 
-func (x *notesServiceSubscribe) Close() error {
+func (x *notesServiceEvents) Close() error {
 	return x.stream.Close()
 }
 
-func (x *notesServiceSubscribe) Context() context.Context {
+func (x *notesServiceEvents) Context() context.Context {
 	return x.stream.Context()
 }
 
-func (x *notesServiceSubscribe) SendMsg(m interface{}) error {
+func (x *notesServiceEvents) SendMsg(m interface{}) error {
 	return x.stream.Send(m)
 }
 
-func (x *notesServiceSubscribe) RecvMsg(m interface{}) error {
+func (x *notesServiceEvents) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *notesServiceSubscribe) Recv() (*SubscribeResponse, error) {
-	m := new(SubscribeResponse)
+func (x *notesServiceEvents) Recv() (*EventsResponse, error) {
+	m := new(EventsResponse)
 	err := x.stream.Recv(m)
 	if err != nil {
 		return nil, err
@@ -169,7 +169,7 @@ type NotesHandler interface {
 	Read(context.Context, *ReadRequest, *ReadResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
-	Subscribe(context.Context, *SubscribeRequest, Notes_SubscribeStream) error
+	Events(context.Context, *EventsRequest, Notes_EventsStream) error
 }
 
 func RegisterNotesHandler(s server.Server, hdlr NotesHandler, opts ...server.HandlerOption) error {
@@ -179,7 +179,7 @@ func RegisterNotesHandler(s server.Server, hdlr NotesHandler, opts ...server.Han
 		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
-		Subscribe(ctx context.Context, stream server.Stream) error
+		Events(ctx context.Context, stream server.Stream) error
 	}
 	type Notes struct {
 		notes
@@ -212,42 +212,42 @@ func (h *notesHandler) Update(ctx context.Context, in *UpdateRequest, out *Updat
 	return h.NotesHandler.Update(ctx, in, out)
 }
 
-func (h *notesHandler) Subscribe(ctx context.Context, stream server.Stream) error {
-	m := new(SubscribeRequest)
+func (h *notesHandler) Events(ctx context.Context, stream server.Stream) error {
+	m := new(EventsRequest)
 	if err := stream.Recv(m); err != nil {
 		return err
 	}
-	return h.NotesHandler.Subscribe(ctx, m, &notesSubscribeStream{stream})
+	return h.NotesHandler.Events(ctx, m, &notesEventsStream{stream})
 }
 
-type Notes_SubscribeStream interface {
+type Notes_EventsStream interface {
 	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
-	Send(*SubscribeResponse) error
+	Send(*EventsResponse) error
 }
 
-type notesSubscribeStream struct {
+type notesEventsStream struct {
 	stream server.Stream
 }
 
-func (x *notesSubscribeStream) Close() error {
+func (x *notesEventsStream) Close() error {
 	return x.stream.Close()
 }
 
-func (x *notesSubscribeStream) Context() context.Context {
+func (x *notesEventsStream) Context() context.Context {
 	return x.stream.Context()
 }
 
-func (x *notesSubscribeStream) SendMsg(m interface{}) error {
+func (x *notesEventsStream) SendMsg(m interface{}) error {
 	return x.stream.Send(m)
 }
 
-func (x *notesSubscribeStream) RecvMsg(m interface{}) error {
+func (x *notesEventsStream) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *notesSubscribeStream) Send(m *SubscribeResponse) error {
+func (x *notesEventsStream) Send(m *EventsResponse) error {
 	return x.stream.Send(m)
 }

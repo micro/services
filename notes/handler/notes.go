@@ -76,7 +76,7 @@ func (h *Notes) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
 			"event": "create",
-			"note": note,
+			"note":  note,
 		}),
 	})
 
@@ -162,7 +162,7 @@ func (h *Notes) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
 			"event": "update",
-			"note": note,
+			"note":  note,
 		}),
 	})
 
@@ -171,7 +171,7 @@ func (h *Notes) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 	return nil
 }
 
-func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Notes_SubscribeStream) error {
+func (h *Notes) Events(ctx context.Context, req *pb.EventsRequest, stream pb.Notes_EventsStream) error {
 	backendStream, err := h.Stream.Subscribe(ctx, &streamPb.SubscribeRequest{
 		Topic: "notes",
 	})
@@ -197,7 +197,7 @@ func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream 
 			continue
 		}
 
-		rsp := new(pb.SubscribeResponse)
+		rsp := new(pb.EventsResponse)
 
 		if err := json.Unmarshal(v, rsp); err != nil {
 			continue
@@ -256,7 +256,7 @@ func (h *Notes) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delet
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
 			"event": "delete",
-			"note": note,
+			"note":  note,
 		}),
 	})
 

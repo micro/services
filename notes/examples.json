@@ -90,7 +90,7 @@
             }
         }
     }],
-    "subscribe": [{
+    "events": [{
         "title": "Subscribe to events",
         "description": "Subscribe to note change events",
         "run_check": false,
