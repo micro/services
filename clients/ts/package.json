@@ -39,6 +39,7 @@
   "image",
   "ip",
   "location",
+  "mq",
   "notes",
   "otp",
   "pkg",
@@ -77,5 +78,5 @@
   "prepare": "npm run build"
  },
  "types": "index.d.ts",
- "version": "1.0.600"
+ "version": "1.0.601"
 }
