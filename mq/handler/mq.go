@@ -41,7 +41,7 @@ func (mq *MQ) Publish(ctx context.Context, req *pb.PublishRequest, rsp *pb.Publi
 	return nil
 }
 
-func (mq *MQ) Subscribe(ctx context.Context, req *pb.SubscribeRequest, mq pb.MQ_SubscribeStream) error {
+func (mq *MQ) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.MQ_SubscribeStream) error {
 	if len(req.Topic) == 0 {
 		return errors.BadRequest("mq.publish", "topic is blank")
 	}
@@ -69,7 +69,7 @@ func (mq *MQ) Subscribe(ctx context.Context, req *pb.SubscribeRequest, mq pb.MQ_
 		d := &structpb.Struct{}
 		d.UnmarshalJSON(msg)
 
-		if err := mq.Send(&pb.SubscribeResponse{
+		if err := stream.Send(&pb.SubscribeResponse{
 			Topic:   req.Topic,
 			Message: d,
 		}); err != nil {
