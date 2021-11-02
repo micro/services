@@ -1,4 +1,4 @@
-Send and receive realtime events
+Send and receive real time events
 
 # Event Service
 
