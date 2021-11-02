@@ -7,7 +7,7 @@ import "google/protobuf/struct.proto";
 
 service Event {
 	rpc Publish(PublishRequest) returns (PublishResponse) {}
-	rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
+	rpc Consume(ConsumeRequest) returns (stream ConsumeResponse) {}
 	rpc Read(ReadRequest) returns (ReadResponse) {}
 }
 
@@ -20,7 +20,7 @@ message Ev {
 	google.protobuf.Struct message = 3;
 }
 
-// Publish a message to the event stream.
+// Publish a event to the event stream.
 message PublishRequest {
 	// The topic to publish to
 	string topic = 1;
@@ -30,8 +30,8 @@ message PublishRequest {
 
 message PublishResponse {}
 
-// Subscribe to messages for a given topic.
-message SubscribeRequest {
+// Consume events from a given topic.
+message ConsumeRequest {
 	// The topic to subscribe to
 	string topic = 1;
 	// Optional group for the subscription
@@ -41,7 +41,7 @@ message SubscribeRequest {
 }
 
 // A blocking event will be returned in response.
-message SubscribeResponse {
+message ConsumeResponse {
 	// The topic subscribed to
 	string topic = 1;
 	// Unique message id

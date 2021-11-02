@@ -1,8 +1,8 @@
 
 {
     "publish": [{
-        "title": "Publish a message",
-        "description": "Publish a message to a topic",
+        "title": "Publish an event",
+        "description": "Publish an event to a topic",
         "run_check": true,
         "request": {
             "topic": "user",
@@ -10,9 +10,9 @@
         },
         "response": {}
     }],
-    "subscribe": [{
-        "title": "Subscribe to a topic",
-        "description": "Subscribe to messages on a given topic",
+    "consume": [{
+        "title": "Consume from a topic",
+        "description": "Consume events from a given topic",
         "run_check": false,
         "request": {
             "topic": "user"

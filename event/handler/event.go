@@ -36,7 +36,7 @@ func (s *Event) Publish(ctx context.Context, req *pb.PublishRequest, rsp *pb.Pub
 	return events.Publish(topic, req.Message.AsMap())
 }
 
-func (s *Event) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Event_SubscribeStream) error {
+func (s *Event) Consume(ctx context.Context, req *pb.ConsumeRequest, stream pb.Event_ConsumeStream) error {
 	if len(req.Topic) == 0 {
 		return errors.BadRequest("event.publish", "topic is blank")
 	}
@@ -77,7 +77,7 @@ func (s *Event) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream 
 		d := &structpb.Struct{}
 		d.UnmarshalJSON(msg.Payload)
 
-		if err := stream.Send(&pb.SubscribeResponse{
+		if err := stream.Send(&pb.ConsumeResponse{
 			Topic:     req.Topic,
 			Id:        msg.ID,
 			Timestamp: msg.Timestamp.Format(time.RFC3339Nano),
