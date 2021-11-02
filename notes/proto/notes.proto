@@ -77,7 +77,7 @@ message ListResponse {
 	repeated Note notes = 1;
 }
 
-// Specify the note to events
+// Subscribe to notes events
 message EventsRequest {
 	// optionally specify a note id
 	string id = 1;
