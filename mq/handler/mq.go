@@ -14,9 +14,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type MQ struct{}
+type Mq struct{}
 
-func (mq *MQ) Publish(ctx context.Context, req *pb.PublishRequest, rsp *pb.PublishResponse) error {
+func (mq *Mq) Publish(ctx context.Context, req *pb.PublishRequest, rsp *pb.PublishResponse) error {
 	if len(req.Topic) == 0 {
 		return errors.BadRequest("mq.publish", "topic is blank")
 	}
@@ -41,7 +41,7 @@ func (mq *MQ) Publish(ctx context.Context, req *pb.PublishRequest, rsp *pb.Publi
 	return nil
 }
 
-func (mq *MQ) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.MQ_SubscribeStream) error {
+func (mq *Mq) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Mq_SubscribeStream) error {
 	if len(req.Topic) == 0 {
 		return errors.BadRequest("mq.publish", "topic is blank")
 	}

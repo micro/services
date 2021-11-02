@@ -34,33 +34,33 @@ var _ context.Context
 var _ client.Option
 var _ server.Option
 
-// Api Endpoints for MQ service
+// Api Endpoints for Mq service
 
-func NewMQEndpoints() []*api.Endpoint {
+func NewMqEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
-// Client API for MQ service
+// Client API for Mq service
 
-type MQService interface {
+type MqService interface {
 	Publish(ctx context.Context, in *PublishRequest, opts ...client.CallOption) (*PublishResponse, error)
-	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (MQ_SubscribeService, error)
+	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Mq_SubscribeService, error)
 }
 
-type mQService struct {
+type mqService struct {
 	c    client.Client
 	name string
 }
 
-func NewMQService(name string, c client.Client) MQService {
-	return &mQService{
+func NewMqService(name string, c client.Client) MqService {
+	return &mqService{
 		c:    c,
 		name: name,
 	}
 }
 
-func (c *mQService) Publish(ctx context.Context, in *PublishRequest, opts ...client.CallOption) (*PublishResponse, error) {
-	req := c.c.NewRequest(c.name, "MQ.Publish", in)
+func (c *mqService) Publish(ctx context.Context, in *PublishRequest, opts ...client.CallOption) (*PublishResponse, error) {
+	req := c.c.NewRequest(c.name, "Mq.Publish", in)
 	out := new(PublishResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -69,8 +69,8 @@ func (c *mQService) Publish(ctx context.Context, in *PublishRequest, opts ...cli
 	return out, nil
 }
 
-func (c *mQService) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (MQ_SubscribeService, error) {
-	req := c.c.NewRequest(c.name, "MQ.Subscribe", &SubscribeRequest{})
+func (c *mqService) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Mq_SubscribeService, error) {
+	req := c.c.NewRequest(c.name, "Mq.Subscribe", &SubscribeRequest{})
 	stream, err := c.c.Stream(ctx, req, opts...)
 	if err != nil {
 		return nil, err
@@ -78,10 +78,10 @@ func (c *mQService) Subscribe(ctx context.Context, in *SubscribeRequest, opts ..
 	if err := stream.Send(in); err != nil {
 		return nil, err
 	}
-	return &mQServiceSubscribe{stream}, nil
+	return &mqServiceSubscribe{stream}, nil
 }
 
-type MQ_SubscribeService interface {
+type Mq_SubscribeService interface {
 	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
@@ -89,27 +89,27 @@ type MQ_SubscribeService interface {
 	Recv() (*SubscribeResponse, error)
 }
 
-type mQServiceSubscribe struct {
+type mqServiceSubscribe struct {
 	stream client.Stream
 }
 
-func (x *mQServiceSubscribe) Close() error {
+func (x *mqServiceSubscribe) Close() error {
 	return x.stream.Close()
 }
 
-func (x *mQServiceSubscribe) Context() context.Context {
+func (x *mqServiceSubscribe) Context() context.Context {
 	return x.stream.Context()
 }
 
-func (x *mQServiceSubscribe) SendMsg(m interface{}) error {
+func (x *mqServiceSubscribe) SendMsg(m interface{}) error {
 	return x.stream.Send(m)
 }
 
-func (x *mQServiceSubscribe) RecvMsg(m interface{}) error {
+func (x *mqServiceSubscribe) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *mQServiceSubscribe) Recv() (*SubscribeResponse, error) {
+func (x *mqServiceSubscribe) Recv() (*SubscribeResponse, error) {
 	m := new(SubscribeResponse)
 	err := x.stream.Recv(m)
 	if err != nil {
@@ -118,42 +118,42 @@ func (x *mQServiceSubscribe) Recv() (*SubscribeResponse, error) {
 	return m, nil
 }
 
-// Server API for MQ service
+// Server API for Mq service
 
-type MQHandler interface {
+type MqHandler interface {
 	Publish(context.Context, *PublishRequest, *PublishResponse) error
-	Subscribe(context.Context, *SubscribeRequest, MQ_SubscribeStream) error
+	Subscribe(context.Context, *SubscribeRequest, Mq_SubscribeStream) error
 }
 
-func RegisterMQHandler(s server.Server, hdlr MQHandler, opts ...server.HandlerOption) error {
-	type mQ interface {
+func RegisterMqHandler(s server.Server, hdlr MqHandler, opts ...server.HandlerOption) error {
+	type mq interface {
 		Publish(ctx context.Context, in *PublishRequest, out *PublishResponse) error
 		Subscribe(ctx context.Context, stream server.Stream) error
 	}
-	type MQ struct {
-		mQ
+	type Mq struct {
+		mq
 	}
-	h := &mQHandler{hdlr}
-	return s.Handle(s.NewHandler(&MQ{h}, opts...))
+	h := &mqHandler{hdlr}
+	return s.Handle(s.NewHandler(&Mq{h}, opts...))
 }
 
-type mQHandler struct {
-	MQHandler
+type mqHandler struct {
+	MqHandler
 }
 
-func (h *mQHandler) Publish(ctx context.Context, in *PublishRequest, out *PublishResponse) error {
-	return h.MQHandler.Publish(ctx, in, out)
+func (h *mqHandler) Publish(ctx context.Context, in *PublishRequest, out *PublishResponse) error {
+	return h.MqHandler.Publish(ctx, in, out)
 }
 
-func (h *mQHandler) Subscribe(ctx context.Context, stream server.Stream) error {
+func (h *mqHandler) Subscribe(ctx context.Context, stream server.Stream) error {
 	m := new(SubscribeRequest)
 	if err := stream.Recv(m); err != nil {
 		return err
 	}
-	return h.MQHandler.Subscribe(ctx, m, &mQSubscribeStream{stream})
+	return h.MqHandler.Subscribe(ctx, m, &mqSubscribeStream{stream})
 }
 
-type MQ_SubscribeStream interface {
+type Mq_SubscribeStream interface {
 	Context() context.Context
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
@@ -161,26 +161,26 @@ type MQ_SubscribeStream interface {
 	Send(*SubscribeResponse) error
 }
 
-type mQSubscribeStream struct {
+type mqSubscribeStream struct {
 	stream server.Stream
 }
 
-func (x *mQSubscribeStream) Close() error {
+func (x *mqSubscribeStream) Close() error {
 	return x.stream.Close()
 }
 
-func (x *mQSubscribeStream) Context() context.Context {
+func (x *mqSubscribeStream) Context() context.Context {
 	return x.stream.Context()
 }
 
-func (x *mQSubscribeStream) SendMsg(m interface{}) error {
+func (x *mqSubscribeStream) SendMsg(m interface{}) error {
 	return x.stream.Send(m)
 }
 
-func (x *mQSubscribeStream) RecvMsg(m interface{}) error {
+func (x *mqSubscribeStream) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *mQSubscribeStream) Send(m *SubscribeResponse) error {
+func (x *mqSubscribeStream) Send(m *SubscribeResponse) error {
 	return x.stream.Send(m)
 }

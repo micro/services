@@ -5,7 +5,7 @@ package mq;
 option go_package = "./proto;mq";
 import "google/protobuf/struct.proto";
 
-service MQ {
+service Mq {
 	rpc Publish(PublishRequest) returns (PublishResponse) {}
 	rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
 }

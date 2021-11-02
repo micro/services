@@ -15,7 +15,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterMQHandler(srv.Server(), new(handler.MQ))
+	pb.RegisterMqHandler(srv.Server(), new(handler.Mq))
 
 	// Run service
 	if err := srv.Run(); err != nil {
