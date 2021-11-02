@@ -21,7 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Publish a message to the mq. Specify a topic to group messages for a specific topic.
+// Publish a message. Specify a topic to group messages for a specific topic.
 type PublishRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -166,7 +166,6 @@ func (x *SubscribeRequest) GetTopic() string {
 	return ""
 }
 
-// A blocking mq will be returned in response.
 type SubscribeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
