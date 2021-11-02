@@ -7,7 +7,7 @@ import (
 	"github.com/micro/services/clients/go/mq"
 )
 
-// Publish a message to the mq. Specify a topic to group messages for a specific topic.
+// Publish a message. Specify a topic to group messages for a specific topic.
 func PublishAmessage() {
 	mqService := mq.NewMqService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := mqService.Publish(&mq.PublishRequest{

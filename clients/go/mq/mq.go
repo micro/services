@@ -16,7 +16,7 @@ type MqService struct {
 	client *client.Client
 }
 
-// Publish a message to the mq. Specify a topic to group messages for a specific topic.
+// Publish a message. Specify a topic to group messages for a specific topic.
 func (t *MqService) Publish(request *PublishRequest) (*PublishResponse, error) {
 	rsp := &PublishResponse{}
 	return rsp, t.client.Call("mq", "Publish", request, rsp)

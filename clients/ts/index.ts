@@ -32,7 +32,6 @@ import * as rss from "./rss";
 import * as sentiment from "./sentiment";
 import * as sms from "./sms";
 import * as stock from "./stock";
-import * as stream from "./stream";
 import * as sunnah from "./sunnah";
 import * as thumbnail from "./thumbnail";
 import * as time from "./time";
@@ -79,7 +78,6 @@ export class Client {
     this.sentimentService = new sentiment.SentimentService(token);
     this.smsService = new sms.SmsService(token);
     this.stockService = new stock.StockService(token);
-    this.streamService = new stream.StreamService(token);
     this.sunnahService = new sunnah.SunnahService(token);
     this.thumbnailService = new thumbnail.ThumbnailService(token);
     this.timeService = new time.TimeService(token);
@@ -125,7 +123,6 @@ export class Client {
   sentimentService: sentiment.SentimentService;
   smsService: sms.SmsService;
   stockService: stock.StockService;
-  streamService: stream.StreamService;
   sunnahService: sunnah.SunnahService;
   thumbnailService: thumbnail.ThumbnailService;
   timeService: time.TimeService;
