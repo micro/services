@@ -7,7 +7,7 @@ import (
 	"github.com/micro/services/clients/go/cache"
 )
 
-// Decrement a value (if it's a number)
+// Decrement a value (if it's a number). If key not found it is equivalent to set.
 func DecrementAvalue() {
 	cacheService := cache.NewCacheService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := cacheService.Decrement(&cache.DecrementRequest{
