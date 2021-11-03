@@ -6,7 +6,6 @@ package stream
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/structpb"
 	math "math"
 )
 
@@ -43,8 +42,9 @@ func NewStreamEndpoints() []*api.Endpoint {
 // Client API for Stream service
 
 type StreamService interface {
-	Publish(ctx context.Context, in *PublishRequest, opts ...client.CallOption) (*PublishResponse, error)
-	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Stream_SubscribeService, error)
+	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...client.CallOption) (*SendMessageResponse, error)
+	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...client.CallOption) (*ListMessagesResponse, error)
+	ListChannels(ctx context.Context, in *ListChannelsRequest, opts ...client.CallOption) (*ListChannelsResponse, error)
 }
 
 type streamService struct {
@@ -59,9 +59,9 @@ func NewStreamService(name string, c client.Client) StreamService {
 	}
 }
 
-func (c *streamService) Publish(ctx context.Context, in *PublishRequest, opts ...client.CallOption) (*PublishResponse, error) {
-	req := c.c.NewRequest(c.name, "Stream.Publish", in)
-	out := new(PublishResponse)
+func (c *streamService) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...client.CallOption) (*SendMessageResponse, error) {
+	req := c.c.NewRequest(c.name, "Stream.SendMessage", in)
+	out := new(SendMessageResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -69,66 +69,39 @@ func (c *streamService) Publish(ctx context.Context, in *PublishRequest, opts ..
 	return out, nil
 }
 
-func (c *streamService) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...client.CallOption) (Stream_SubscribeService, error) {
-	req := c.c.NewRequest(c.name, "Stream.Subscribe", &SubscribeRequest{})
-	stream, err := c.c.Stream(ctx, req, opts...)
+func (c *streamService) ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...client.CallOption) (*ListMessagesResponse, error) {
+	req := c.c.NewRequest(c.name, "Stream.ListMessages", in)
+	out := new(ListMessagesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	if err := stream.Send(in); err != nil {
-		return nil, err
-	}
-	return &streamServiceSubscribe{stream}, nil
+	return out, nil
 }
 
-type Stream_SubscribeService interface {
-	Context() context.Context
-	SendMsg(interface{}) error
-	RecvMsg(interface{}) error
-	Close() error
-	Recv() (*SubscribeResponse, error)
-}
-
-type streamServiceSubscribe struct {
-	stream client.Stream
-}
-
-func (x *streamServiceSubscribe) Close() error {
-	return x.stream.Close()
-}
-
-func (x *streamServiceSubscribe) Context() context.Context {
-	return x.stream.Context()
-}
-
-func (x *streamServiceSubscribe) SendMsg(m interface{}) error {
-	return x.stream.Send(m)
-}
-
-func (x *streamServiceSubscribe) RecvMsg(m interface{}) error {
-	return x.stream.Recv(m)
-}
-
-func (x *streamServiceSubscribe) Recv() (*SubscribeResponse, error) {
-	m := new(SubscribeResponse)
-	err := x.stream.Recv(m)
+func (c *streamService) ListChannels(ctx context.Context, in *ListChannelsRequest, opts ...client.CallOption) (*ListChannelsResponse, error) {
+	req := c.c.NewRequest(c.name, "Stream.ListChannels", in)
+	out := new(ListChannelsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return m, nil
+	return out, nil
 }
 
 // Server API for Stream service
 
 type StreamHandler interface {
-	Publish(context.Context, *PublishRequest, *PublishResponse) error
-	Subscribe(context.Context, *SubscribeRequest, Stream_SubscribeStream) error
+	SendMessage(context.Context, *SendMessageRequest, *SendMessageResponse) error
+	ListMessages(context.Context, *ListMessagesRequest, *ListMessagesResponse) error
+	ListChannels(context.Context, *ListChannelsRequest, *ListChannelsResponse) error
 }
 
 func RegisterStreamHandler(s server.Server, hdlr StreamHandler, opts ...server.HandlerOption) error {
 	type stream interface {
-		Publish(ctx context.Context, in *PublishRequest, out *PublishResponse) error
-		Subscribe(ctx context.Context, stream server.Stream) error
+		SendMessage(ctx context.Context, in *SendMessageRequest, out *SendMessageResponse) error
+		ListMessages(ctx context.Context, in *ListMessagesRequest, out *ListMessagesResponse) error
+		ListChannels(ctx context.Context, in *ListChannelsRequest, out *ListChannelsResponse) error
 	}
 	type Stream struct {
 		stream
@@ -141,46 +114,14 @@ type streamHandler struct {
 	StreamHandler
 }
 
-func (h *streamHandler) Publish(ctx context.Context, in *PublishRequest, out *PublishResponse) error {
-	return h.StreamHandler.Publish(ctx, in, out)
+func (h *streamHandler) SendMessage(ctx context.Context, in *SendMessageRequest, out *SendMessageResponse) error {
+	return h.StreamHandler.SendMessage(ctx, in, out)
 }
 
-func (h *streamHandler) Subscribe(ctx context.Context, stream server.Stream) error {
-	m := new(SubscribeRequest)
-	if err := stream.Recv(m); err != nil {
-		return err
-	}
-	return h.StreamHandler.Subscribe(ctx, m, &streamSubscribeStream{stream})
+func (h *streamHandler) ListMessages(ctx context.Context, in *ListMessagesRequest, out *ListMessagesResponse) error {
+	return h.StreamHandler.ListMessages(ctx, in, out)
 }
 
-type Stream_SubscribeStream interface {
-	Context() context.Context
-	SendMsg(interface{}) error
-	RecvMsg(interface{}) error
-	Close() error
-	Send(*SubscribeResponse) error
-}
-
-type streamSubscribeStream struct {
-	stream server.Stream
-}
-
-func (x *streamSubscribeStream) Close() error {
-	return x.stream.Close()
-}
-
-func (x *streamSubscribeStream) Context() context.Context {
-	return x.stream.Context()
-}
-
-func (x *streamSubscribeStream) SendMsg(m interface{}) error {
-	return x.stream.Send(m)
-}
-
-func (x *streamSubscribeStream) RecvMsg(m interface{}) error {
-	return x.stream.Recv(m)
-}
-
-func (x *streamSubscribeStream) Send(m *SubscribeResponse) error {
-	return x.stream.Send(m)
+func (h *streamHandler) ListChannels(ctx context.Context, in *ListChannelsRequest, out *ListChannelsResponse) error {
+	return h.StreamHandler.ListChannels(ctx, in, out)
 }

@@ -2,23 +2,29 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"path"
+	"strings"
+	"time"
 
-	"github.com/asim/mq/broker"
 	"github.com/micro/micro/v3/service/errors"
-	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/pkg/tenant"
+	"github.com/micro/services/stream/domain"
 	pb "github.com/micro/services/stream/proto"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type Stream struct{}
 
-func (s *Stream) Publish(ctx context.Context, req *pb.PublishRequest, rsp *pb.PublishResponse) error {
-	if len(req.Topic) == 0 {
-		return errors.BadRequest("stream.publish", "topic is blank")
+func New() *Stream {
+	domain.Setup()
+	return &Stream{}
+}
+
+func (s *Stream) SendMessage(ctx context.Context, req *pb.SendMessageRequest, rsp *pb.SendMessageResponse) error {
+	if len(req.Channel) == 0 {
+		return errors.BadRequest("stream.sendmessage", "channel is blank")
+	}
+	if len(req.Text) == 0 {
+		return errors.BadRequest("stream.sendmessage", "message is blank")
 	}
 
 	// get the tenant
@@ -27,23 +33,23 @@ func (s *Stream) Publish(ctx context.Context, req *pb.PublishRequest, rsp *pb.Pu
 		id = "default"
 	}
 
-	// create tenant based topics
-	topic := path.Join("stream", id, req.Topic)
+	// create tenant based channels
+	channel := path.Join(id, req.Channel)
 
-	// marshal the data
-	b, _ := json.Marshal(req.Message.AsMap())
-
-	log.Infof("Tenant %v publishing to %v\n", id, req.Topic)
-
-	// publish the message
-	broker.Publish(topic, b)
+	// sendmessage the message
+	if err := domain.SendMessage(channel, req.Text); err != nil {
+		return errors.InternalServerError("stream.sendmessage", err.Error())
+	}
 
 	return nil
 }
 
-func (s *Stream) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Stream_SubscribeStream) error {
-	if len(req.Topic) == 0 {
-		return errors.BadRequest("stream.publish", "topic is blank")
+func (s *Stream) ListMessages(ctx context.Context, req *pb.ListMessagesRequest, rsp *pb.ListMessagesResponse) error {
+	if len(req.Channel) == 0 {
+		return errors.BadRequest("stream.sendmessage", "channel is blank")
+	}
+	if req.Limit <= 0 {
+		req.Limit = 25
 	}
 
 	id, ok := tenant.FromContext(ctx)
@@ -51,30 +57,53 @@ func (s *Stream) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream
 		id = "default"
 	}
 
-	// create tenant based topics
-	topic := path.Join("stream", id, req.Topic)
+	// create tenant based channels
+	channel := path.Join(id, req.Channel)
+	rsp.Channel = req.Channel
 
-	log.Infof("Tenant %v subscribing to %v\n", id, req.Topic)
+	for _, message := range domain.ListMessages(channel, int64(req.Limit)) {
+		metadata := map[string]string{}
 
-	sub, err := broker.Subscribe(topic)
-	if err != nil {
-		return errors.InternalServerError("stream.subscribe", "failed to subscribe to stream")
-	}
-	defer broker.Unsubscribe(req.Topic, sub)
-
-	// range over the messages until the subscriber is closed
-	for msg := range sub {
-		fmt.Println("got message, sending")
-		// unmarshal the message into a struct
-		d := &structpb.Struct{}
-		d.UnmarshalJSON(msg)
-
-		if err := stream.Send(&pb.SubscribeResponse{
-			Topic:   req.Topic,
-			Message: d,
-		}); err != nil {
-			return err
+		if message.Metadata != nil {
+			metadata["created"] = time.Unix(0, message.Metadata.Created).Format(time.RFC3339Nano)
+			metadata["title"] = message.Metadata.Title
+			metadata["description"] = message.Metadata.Description
+			metadata["type"] = message.Metadata.Type
+			metadata["image"] = message.Metadata.Image
+			metadata["url"] = message.Metadata.Url
+			metadata["site"] = message.Metadata.Site
 		}
+
+		rsp.Messages = append(rsp.Messages, &pb.Message{
+			Id:        message.Id,
+			Text:      message.Text,
+			Timestamp: time.Unix(0, message.Created).Format(time.RFC3339Nano),
+			Channel:   req.Channel,
+			Metadata:  metadata,
+		})
+	}
+
+	return nil
+}
+
+func (s *Stream) ListChannels(ctx context.Context, req *pb.ListChannelsRequest, rsp *pb.ListChannelsResponse) error {
+	// get the tenant
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "default"
+	}
+
+	for channel, active := range domain.ListChannels() {
+		if !strings.HasPrefix(channel, id+"/") {
+			continue
+		}
+
+		channel = strings.TrimPrefix(channel, id+"/")
+
+		rsp.Channels = append(rsp.Channels, &pb.Channel{
+			Name:       channel,
+			LastActive: time.Unix(0, active).Format(time.RFC3339Nano),
+		})
 	}
 
 	return nil
