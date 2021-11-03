@@ -30,7 +30,7 @@ message Channel {
 	string last_active = 2;
 }
 
-// SendMessage a message to the stream.
+// Send a message to the stream.
 message SendMessageRequest {
 	// The channel to send to
 	string channel = 1;
