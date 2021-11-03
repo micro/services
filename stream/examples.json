@@ -1,7 +1,7 @@
 
 {
     "sendMessage": [{
-        "title": "Send a message",
+        "title": "Send message",
         "description": "Send a message to a channel",
         "run_check": true,
         "request": {
