@@ -15,7 +15,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterStreamHandler(srv.Server(), new(handler.Stream))
+	pb.RegisterStreamHandler(srv.Server(), handler.New())
 
 	// Run service
 	if err := srv.Run(); err != nil {
