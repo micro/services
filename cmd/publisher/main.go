@@ -28,6 +28,7 @@ type PublicAPI struct {
 	ExamplesJson string           `json:"examples_json,omitempty"`
 	PostmanJson  string           `json:"postman_json,omitempty"`
 	DisplayName  string           `json:"display_name,omitempty"`
+	Quotas       map[string]int64 `json:"quotas,omitempty"`
 }
 
 const (
