@@ -19,6 +19,22 @@ func New() *Stream {
 	return &Stream{}
 }
 
+func (s *Stream) CreateChannel(ctx context.Context, req *pb.CreateChannelRequest, rsp *pb.CreateChannelResponse) error {
+	// get the tenant
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "default"
+	}
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest("stream.createchannel", "name is blank")
+	}
+
+	domain.CreateChannel(path.Join(id, req.Name), req.Description)
+
+	return nil
+}
+
 func (s *Stream) SendMessage(ctx context.Context, req *pb.SendMessageRequest, rsp *pb.SendMessageResponse) error {
 	if len(req.Channel) == 0 {
 		return errors.BadRequest("stream.sendmessage", "channel is blank")
@@ -93,16 +109,17 @@ func (s *Stream) ListChannels(ctx context.Context, req *pb.ListChannelsRequest, 
 		id = "default"
 	}
 
-	for channel, active := range domain.ListChannels() {
-		if !strings.HasPrefix(channel, id+"/") {
+	for _, channel := range domain.ListChannels() {
+		if !strings.HasPrefix(channel.Id, id+"/") {
 			continue
 		}
 
-		channel = strings.TrimPrefix(channel, id+"/")
+		name := strings.TrimPrefix(channel.Id, id+"/")
 
 		rsp.Channels = append(rsp.Channels, &pb.Channel{
-			Name:       channel,
-			LastActive: time.Unix(0, active).Format(time.RFC3339Nano),
+			Name:       name,
+			Description: channel.Description,
+			LastActive: time.Unix(0, channel.Updated).Format(time.RFC3339Nano),
 		})
 	}
 
