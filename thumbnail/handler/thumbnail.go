@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -36,7 +37,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	pid := 0
 	defer func() {
 		if err := os.Remove(imagePath); err != nil {
-			logger.Errorf("Error removing file")
+			logger.Errorf("Error removing file %s", err)
 		}
 		if pid != 0 {
 			// using -ve PID kills the process group
@@ -54,11 +55,15 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 		height = fmt.Sprintf("%v", req.Height)
 	}
 	cmd := exec.Command("/usr/bin/chromium-browser", "--headless", "--window-size="+width+","+height, "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", req.Url)
-	outp, err := cmd.CombinedOutput()
+	var b bytes.Buffer
+	cmd.Stdout = &b
+	cmd.Stderr = &b
+	cmd.Start()
 	pid = cmd.Process.Pid
-	logger.Info(string(outp))
+	err := cmd.Wait()
+	logger.Info(b.String())
 	if err != nil {
-		logger.Error(string(outp) + err.Error())
+		logger.Error(string(b.String()) + err.Error())
 		return err
 	}
 	file, err := ioutil.ReadFile(imagePath)
