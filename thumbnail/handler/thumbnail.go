@@ -41,7 +41,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 		}
 		if pid != 0 {
 			// using -ve PID kills the process group
-			if err := syscall.Kill(-pid, syscall.SIGTERM); err != nil {
+			if err := syscall.Kill(-pid, syscall.SIGKILL); err != nil {
 				logger.Errorf("Error killing process %s", err)
 			}
 		}
