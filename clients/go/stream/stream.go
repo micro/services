@@ -28,7 +28,7 @@ func (t *StreamService) ListMessages(request *ListMessagesRequest) (*ListMessage
 	return rsp, t.client.Call("stream", "ListMessages", request, rsp)
 }
 
-// SendMessage a message to the stream.
+// Send a message to the stream.
 func (t *StreamService) SendMessage(request *SendMessageRequest) (*SendMessageResponse, error) {
 	rsp := &SendMessageResponse{}
 	return rsp, t.client.Call("stream", "SendMessage", request, rsp)

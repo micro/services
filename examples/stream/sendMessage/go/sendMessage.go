@@ -7,7 +7,7 @@ import (
 	"github.com/micro/services/clients/go/stream"
 )
 
-// SendMessage a message to the stream.
+// Send a message to the stream.
 func SendMessage() {
 	streamService := stream.NewStreamService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := streamService.SendMessage(&stream.SendMessageRequest{
