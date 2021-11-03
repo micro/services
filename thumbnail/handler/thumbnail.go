@@ -5,8 +5,10 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"github.com/google/uuid"
@@ -31,6 +33,18 @@ func NewThumbnail(imageService iproto.ImageService) *Thumbnail {
 func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotRequest, rsp *thumbnail.ScreenshotResponse) error {
 	imageName := uuid.New().String() + ".png"
 	imagePath := filepath.Join(screenshotPath, imageName)
+	pid := 0
+	defer func() {
+		if err := os.Remove(imagePath); err != nil {
+			logger.Errorf("Error removing file")
+		}
+		if pid != 0 {
+			// using -ve PID kills the process group
+			if err := syscall.Kill(-pid, syscall.SIGTERM); err != nil {
+				logger.Errorf("Error killing process %s", err)
+			}
+		}
+	}()
 	width := "800"
 	height := "600"
 	if req.Width != 0 {
@@ -39,8 +53,9 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	if req.Height != 0 {
 		height = fmt.Sprintf("%v", req.Height)
 	}
-
-	outp, err := exec.Command("/usr/bin/chromium-browser", "--headless", "--window-size="+width+","+height, "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", req.Url).CombinedOutput()
+	cmd := exec.Command("/usr/bin/chromium-browser", "--headless", "--window-size="+width+","+height, "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", req.Url)
+	outp, err := cmd.CombinedOutput()
+	pid = cmd.Process.Pid
 	logger.Info(string(outp))
 	if err != nil {
 		logger.Error(string(outp) + err.Error())
