@@ -1,6 +1,6 @@
 package main
 
-const goIndexTemplate = `package m3o
+const goIndexTemplate = `package services
 
 import(
 	{{ range $service := .services }}"github.com/micro/services/clients/go/{{ $service.Name}}"
@@ -25,7 +25,7 @@ type Client struct {
 const goServiceTemplate = `{{ $service := .service }}package {{ $service.Name }}
 
 import(
-	"github.com/m3o/m3o-go/client"
+	"github.com/micro/micro-go/client"
 )
 
 func New{{ title $service.Name }}Service(token string) *{{ title $service.Name }}Service {
@@ -72,7 +72,7 @@ import(
 }
 `
 
-const curlExampleTemplate = `{{ $service := .service }}curl "https://api.m3o.com/v1/{{ $service.Name }}/{{ title .endpoint }}" \
+const curlExampleTemplate = `{{ $service := .service }}curl "http://localhost:8080/{{ $service.Name }}/{{ title .endpoint }}" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{{ tsExampleRequest $service.Name .endpoint $service.Spec.Components.Schemas .example.Request }}'`
