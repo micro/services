@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -39,6 +38,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 		if err := os.Remove(imagePath); err != nil {
 			logger.Errorf("Error removing file %s", err)
 		}
+		logger.Infof("Killing pid %d", pid)
 		if pid != 0 {
 			// using -ve PID kills the process group
 			if err := syscall.Kill(-pid, syscall.SIGKILL); err != nil {
@@ -56,18 +56,19 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	}
 	cmd := exec.Command("/usr/bin/chromium-browser", "--headless", "--window-size="+width+","+height, "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", req.Url)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-	var b bytes.Buffer
-	cmd.Stdout = &b
-	cmd.Stderr = &b
-	if err := cmd.Start(); err != nil {
-		logger.Errorf("Error starting %s", err)
-		return err
-	}
+	outp, err := cmd.CombinedOutput()
+	//var b bytes.Buffer
+	//cmd.Stdout = &b
+	//cmd.Stderr = &b
+	//if err := cmd.Start(); err != nil {
+	//	logger.Errorf("Error starting %s", err)
+	//	return err
+	//}
 	pid = cmd.Process.Pid
-	err := cmd.Wait()
-	logger.Info(b.String())
+	//err := cmd.Wait()
+	logger.Info(string(outp))
 	if err != nil {
-		logger.Error(string(b.String()) + err.Error())
+		logger.Error(string(outp) + err.Error())
 		return err
 	}
 	file, err := ioutil.ReadFile(imagePath)
