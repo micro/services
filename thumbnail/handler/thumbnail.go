@@ -58,7 +58,10 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	var b bytes.Buffer
 	cmd.Stdout = &b
 	cmd.Stderr = &b
-	cmd.Start()
+	if err := cmd.Start(); err != nil {
+		logger.Errorf("Error starting %s", err)
+		return err
+	}
 	pid = cmd.Process.Pid
 	err := cmd.Wait()
 	logger.Info(b.String())
