@@ -10,7 +10,7 @@ service Notes {
 	rpc Read(ReadRequest) returns (ReadResponse);
 	rpc Delete(DeleteRequest) returns (DeleteResponse);
 	rpc Update(UpdateRequest) returns (UpdateResponse);
-	rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse);
+	rpc Events(EventsRequest) returns (stream EventsResponse);
 }
 
 message Note {
@@ -77,14 +77,14 @@ message ListResponse {
 	repeated Note notes = 1;
 }
 
-// Specify the note to events
-message SubscribeRequest {
+// Subscribe to notes events
+message EventsRequest {
 	// optionally specify a note id
 	string id = 1;
 }
 
-message SubscribeResponse {
-	// the event which occured; created, deleted, updated
+message EventsResponse {
+	// the event which occured; create, delete, update
 	string event = 1;
 	// the note which the operation occured on
 	Note note = 2;

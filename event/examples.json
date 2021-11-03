@@ -1,0 +1,38 @@
+
+{
+    "publish": [{
+        "title": "Publish an event",
+        "description": "Publish an event to a topic",
+        "run_check": true,
+        "request": {
+            "topic": "user",
+            "message": {"id": "1", "type": "signup", "user": "john"}
+        },
+        "response": {}
+    }],
+    "consume": [{
+        "title": "Consume from a topic",
+        "description": "Consume events from a given topic",
+        "run_check": false,
+        "request": {
+            "topic": "user"
+        },
+        "response": {
+            "topic": "events",
+            "message": {"id": "1", "type": "signup", "user": "john"}
+        }
+    }],
+    "read": [{
+        "title": "Read events on a topic",
+        "description": "Read historic events sent to a topic",
+        "run_check": false,
+        "request": {
+            "topic": "user"
+        },
+        "response": {
+            "events": [
+               {"id": "123e4567-e89b-12d3-a456-426652340000", "message": {"id": "1", "type": "signup", "user": "john"}}
+            ]
+        }
+    }]
+}

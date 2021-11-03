@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package event;
+
+option go_package = "./proto;event";
+import "google/protobuf/struct.proto";
+
+service Event {
+	rpc Publish(PublishRequest) returns (PublishResponse) {}
+	rpc Consume(ConsumeRequest) returns (stream ConsumeResponse) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
+}
+
+message Ev {
+	// event id
+	string id = 1;
+	// event timestamp
+	string timestamp = 2;
+	// event message
+	google.protobuf.Struct message = 3;
+}
+
+// Publish a event to the event stream.
+message PublishRequest {
+	// The topic to publish to
+	string topic = 1;
+	// The json message to publish
+	google.protobuf.Struct message = 4;
+}
+
+message PublishResponse {}
+
+// Consume events from a given topic.
+message ConsumeRequest {
+	// The topic to subscribe to
+	string topic = 1;
+	// Optional group for the subscription
+	string group = 2;
+	// Optional offset to read from e.g "2006-01-02T15:04:05.999Z07:00"
+	string offset = 3;
+}
+
+// A blocking event will be returned in response.
+message ConsumeResponse {
+	// The topic subscribed to
+	string topic = 1;
+	// Unique message id
+	string id = 2;
+	// Timestamp of publishing
+	string timestamp = 3;
+	// The next json message on the topic
+	google.protobuf.Struct message = 4;
+}
+
+// Read stored events
+message ReadRequest {
+	// topic to read from
+	string topic = 1;
+	// number of events to read; default 25
+	int32 limit = 2;
+	// offset for the events; default 0
+	int32 offset = 3;
+}
+
+message ReadResponse {
+	// the events
+	repeated Ev events = 1;
+}

@@ -10,6 +10,7 @@ import (
 	"github.com/micro/services/clients/go/email"
 	"github.com/micro/services/clients/go/emoji"
 	"github.com/micro/services/clients/go/evchargers"
+	"github.com/micro/services/clients/go/event"
 	"github.com/micro/services/clients/go/file"
 	"github.com/micro/services/clients/go/forex"
 	"github.com/micro/services/clients/go/function"
@@ -22,6 +23,7 @@ import (
 	"github.com/micro/services/clients/go/image"
 	"github.com/micro/services/clients/go/ip"
 	"github.com/micro/services/clients/go/location"
+	"github.com/micro/services/clients/go/mq"
 	"github.com/micro/services/clients/go/notes"
 	"github.com/micro/services/clients/go/otp"
 	"github.com/micro/services/clients/go/postcode"
@@ -58,6 +60,7 @@ func NewClient(token string) *Client {
 		EmailService:      email.NewEmailService(token),
 		EmojiService:      emoji.NewEmojiService(token),
 		EvchargersService: evchargers.NewEvchargersService(token),
+		EventService:      event.NewEventService(token),
 		FileService:       file.NewFileService(token),
 		ForexService:      forex.NewForexService(token),
 		FunctionService:   function.NewFunctionService(token),
@@ -70,6 +73,7 @@ func NewClient(token string) *Client {
 		ImageService:      image.NewImageService(token),
 		IpService:         ip.NewIpService(token),
 		LocationService:   location.NewLocationService(token),
+		MqService:         mq.NewMqService(token),
 		NotesService:      notes.NewNotesService(token),
 		OtpService:        otp.NewOtpService(token),
 		PostcodeService:   postcode.NewPostcodeService(token),
@@ -106,6 +110,7 @@ type Client struct {
 	EmailService      *email.EmailService
 	EmojiService      *emoji.EmojiService
 	EvchargersService *evchargers.EvchargersService
+	EventService      *event.EventService
 	FileService       *file.FileService
 	ForexService      *forex.ForexService
 	FunctionService   *function.FunctionService
@@ -118,6 +123,7 @@ type Client struct {
 	ImageService      *image.ImageService
 	IpService         *ip.IpService
 	LocationService   *location.LocationService
+	MqService         *mq.MqService
 	NotesService      *notes.NotesService
 	OtpService        *otp.OtpService
 	PostcodeService   *postcode.PostcodeService

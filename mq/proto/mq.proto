@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package mq;
+
+option go_package = "./proto;mq";
+import "google/protobuf/struct.proto";
+
+service Mq {
+	rpc Publish(PublishRequest) returns (PublishResponse) {}
+	rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
+}
+
+// Publish a message. Specify a topic to group messages for a specific topic.
+message PublishRequest {
+	// The topic to publish to
+	string topic = 1;
+	// The json message to publish
+	google.protobuf.Struct message = 2;
+}
+
+message PublishResponse {}
+
+// Subscribe to messages for a given topic.
+message SubscribeRequest {
+	// The topic to subscribe to
+	string topic = 1;
+}
+
+message SubscribeResponse {
+	// The topic subscribed to
+	string topic = 1;
+	// The next json message on the topic
+	google.protobuf.Struct message = 2;
+}

@@ -7,6 +7,7 @@ import * as db from "./db";
 import * as email from "./email";
 import * as emoji from "./emoji";
 import * as evchargers from "./evchargers";
+import * as event from "./event";
 import * as file from "./file";
 import * as forex from "./forex";
 import * as fx from "./function";
@@ -19,6 +20,7 @@ import * as id from "./id";
 import * as image from "./image";
 import * as ip from "./ip";
 import * as location from "./location";
+import * as mq from "./mq";
 import * as notes from "./notes";
 import * as otp from "./otp";
 import * as postcode from "./postcode";
@@ -52,6 +54,7 @@ export class Client {
     this.emailService = new email.EmailService(token);
     this.emojiService = new emoji.EmojiService(token);
     this.evchargersService = new evchargers.EvchargersService(token);
+    this.eventService = new event.EventService(token);
     this.fileService = new file.FileService(token);
     this.forexService = new forex.ForexService(token);
     this.functionService = new fx.FunctionService(token);
@@ -64,6 +67,7 @@ export class Client {
     this.imageService = new image.ImageService(token);
     this.ipService = new ip.IpService(token);
     this.locationService = new location.LocationService(token);
+    this.mqService = new mq.MqService(token);
     this.notesService = new notes.NotesService(token);
     this.otpService = new otp.OtpService(token);
     this.postcodeService = new postcode.PostcodeService(token);
@@ -96,6 +100,7 @@ export class Client {
   emailService: email.EmailService;
   emojiService: emoji.EmojiService;
   evchargersService: evchargers.EvchargersService;
+  eventService: event.EventService;
   fileService: file.FileService;
   forexService: forex.ForexService;
   functionService: fx.FunctionService;
@@ -108,6 +113,7 @@ export class Client {
   imageService: image.ImageService;
   ipService: ip.IpService;
   locationService: location.LocationService;
+  mqService: mq.MqService;
   notesService: notes.NotesService;
   otpService: otp.OtpService;
   postcodeService: postcode.PostcodeService;

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -28,8 +29,10 @@ type Notes struct {
 }
 
 func newMessage(ev map[string]interface{}) *structpb.Struct {
-	v, _ := structpb.NewStruct(ev)
-	return v
+	st := new(structpb.Struct)
+	b, _ := json.Marshal(ev)
+	json.Unmarshal(b, st)
+	return st
 }
 
 // Create inserts a new note in the store
@@ -69,11 +72,11 @@ func (h *Notes) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 	// return the note in the response
 	rsp.Note = note
 
-	go h.Stream.Publish(ctx, &streamPb.PublishRequest{
+	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
-			"type": "create",
-			"note": note,
+			"event": "create",
+			"note":  note,
 		}),
 	})
 
@@ -155,11 +158,11 @@ func (h *Notes) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 		return errors.InternalServerError("notes.update", "Error writing to store: %v", err.Error())
 	}
 
-	go h.Stream.Publish(ctx, &streamPb.PublishRequest{
+	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
-			"type": "update",
-			"note": note,
+			"event": "update",
+			"note":  note,
 		}),
 	})
 
@@ -168,7 +171,7 @@ func (h *Notes) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 	return nil
 }
 
-func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream pb.Notes_SubscribeStream) error {
+func (h *Notes) Events(ctx context.Context, req *pb.EventsRequest, stream pb.Notes_EventsStream) error {
 	backendStream, err := h.Stream.Subscribe(ctx, &streamPb.SubscribeRequest{
 		Topic: "notes",
 	})
@@ -189,8 +192,18 @@ func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream 
 			return nil
 		}
 
-		ev := msg.Message.AsMap()
-		note := ev["note"].(*pb.Note)
+		v, err := msg.Message.MarshalJSON()
+		if err != nil {
+			continue
+		}
+
+		rsp := new(pb.EventsResponse)
+
+		if err := json.Unmarshal(v, rsp); err != nil {
+			continue
+		}
+
+		note := rsp.Note
 
 		// filter if necessary by id
 		if len(req.Id) > 0 && note.Id != req.Id {
@@ -198,10 +211,7 @@ func (h *Notes) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream 
 		}
 
 		// send back the event to the client
-		if err := stream.Send(&pb.SubscribeResponse{
-			Event: ev["type"].(string),
-			Note: note,
-		}); err != nil {
+		if err := stream.Send(rsp); err != nil {
 			return nil
 		}
 	}
@@ -242,11 +252,11 @@ func (h *Notes) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delet
 		return errors.InternalServerError("notes.delete", "Failed to delete note")
 	}
 
-	go h.Stream.Publish(ctx, &streamPb.PublishRequest{
+	h.Stream.Publish(ctx, &streamPb.PublishRequest{
 		Topic: "notes",
 		Message: newMessage(map[string]interface{}{
-			"type": "delete",
-			"note": note,
+			"event": "delete",
+			"note":  note,
 		}),
 	})
 
