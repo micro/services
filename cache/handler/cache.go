@@ -3,9 +3,11 @@ package handler
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
+	log "github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/cache/proto"
 	"github.com/micro/services/pkg/cache"
 )
@@ -19,8 +21,9 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 
 	var value interface{}
 
-	if err := cache.Context(ctx).Get(req.Key, &value); err != nil {
-		return errors.InternalServerError("cache.get", err.Error())
+	if err := cache.Context(ctx).Get(req.Key, &value); err != nil && !strings.Contains(err.Error(), "not found") {
+		log.Errorf("Error querying cache %s", err)
+		return errors.InternalServerError("cache.get", "Error querying cache")
 	}
 
 	rsp.Key = req.Key
@@ -47,7 +50,8 @@ func (c *Cache) Set(ctx context.Context, req *pb.SetRequest, rsp *pb.SetResponse
 	}
 
 	if err := cache.Context(ctx).Set(req.Key, req.Value, ttl); err != nil {
-		return errors.InternalServerError("cache.set", err.Error())
+		log.Errorf("Error writing to cache %s", err)
+		return errors.InternalServerError("cache.set", "Error writing to cache")
 	}
 
 	rsp.Status = "ok"
@@ -60,7 +64,8 @@ func (c *Cache) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delet
 		return errors.BadRequest("cache.delete", "missing key")
 	}
 	if err := cache.Context(ctx).Delete(req.Key); err != nil {
-		return errors.InternalServerError("cache.delete", err.Error())
+		log.Errorf("Error deleting from cache %s", err)
+		return errors.InternalServerError("cache.delete", "Error deleting from cache")
 	}
 
 	rsp.Status = "ok"
@@ -76,7 +81,8 @@ func (c *Cache) Increment(ctx context.Context, req *pb.IncrementRequest, rsp *pb
 	// increment the value
 	v, err := cache.Context(ctx).Increment(req.Key, req.Value)
 	if err != nil {
-		return errors.InternalServerError("cache.increment", err.Error())
+		log.Errorf("Error incrementing cache %s", err)
+		return errors.InternalServerError("cache.increment", "Error incrementing cache")
 	}
 
 	// set the response value
@@ -93,7 +99,8 @@ func (c *Cache) Decrement(ctx context.Context, req *pb.DecrementRequest, rsp *pb
 
 	v, err := cache.Context(ctx).Decrement(req.Key, req.Value)
 	if err != nil {
-		return errors.InternalServerError("cache.decrement", err.Error())
+		log.Errorf("Error decrementing cache %s", err)
+		return errors.InternalServerError("cache.decrement", "Error decrementing cache")
 	}
 
 	// set the response value
