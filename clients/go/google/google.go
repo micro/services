@@ -1,7 +1,7 @@
 package google
 
 import (
-	"github.com/m3o/m3o-go/client"
+	"github.com/micro/micro-go/client"
 )
 
 func NewGoogleService(token string) *GoogleService {

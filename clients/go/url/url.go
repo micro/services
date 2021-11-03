@@ -1,7 +1,7 @@
 package url
 
 import (
-	"github.com/m3o/m3o-go/client"
+	"github.com/micro/micro-go/client"
 )
 
 func NewUrlService(token string) *UrlService {

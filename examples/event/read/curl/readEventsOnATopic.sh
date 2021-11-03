@@ -1,4 +1,4 @@
-curl "https://api.m3o.com/v1/event/Read" \
+curl "http://localhost:8080/event/Read" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{

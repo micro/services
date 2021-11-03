@@ -1,4 +1,4 @@
-curl "https://api.m3o.com/v1/twitter/Trends" \
+curl "http://localhost:8080/twitter/Trends" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{}'

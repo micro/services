@@ -1,4 +1,4 @@
-curl "https://api.m3o.com/v1/stream/SendMessage" \
+curl "http://localhost:8080/stream/SendMessage" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{

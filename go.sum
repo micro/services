@@ -488,6 +488,8 @@ github.com/mattn/go-sqlite3 v1.14.5 h1:1IdxlwTNazvbKJQSxoJ5/9ECbEeaTTyeU7sEAZ5KK
 github.com/mattn/go-sqlite3 v1.14.5/go.mod h1:WVKg1VTActs4Qso6iwGbiFih2UIHo0ENGwNd0Lj+XmI=
 github.com/mattn/go-tty v0.0.0-20180219170247-931426f7535a/go.mod h1:XPvLUNfbS4fJH25nqRHfWLMa1ONC8Amw+mIA639KxkE=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
+github.com/micro/micro-go v0.0.0-20211101221015-79ab982f8163 h1:kNngAyoUre7ahqYWjlBVpT4GGDYM7r9BYUzpcOveaPs=
+github.com/micro/micro-go v0.0.0-20211101221015-79ab982f8163/go.mod h1:o4fTExNn5LlnQRB/WiW3RChsohPwQTJ1AKdNCz2YEYA=
 github.com/micro/micro/v3 v3.4.1-0.20210910132548-f8bfb12823c0 h1:TNsE0OkoYpb3DTDBsTm7vUvKoyp8zkUuUprxhIpMjoM=
 github.com/micro/micro/v3 v3.4.1-0.20210910132548-f8bfb12823c0/go.mod h1:bkhxUsib0oX41JNr5qlxTt2LYzzGXJWet4d/Vwvb6Wg=
 github.com/miekg/dns v1.1.15/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=

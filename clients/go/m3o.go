@@ -1,4 +1,4 @@
-package m3o
+package services
 
 import (
 	"github.com/micro/services/clients/go/address"

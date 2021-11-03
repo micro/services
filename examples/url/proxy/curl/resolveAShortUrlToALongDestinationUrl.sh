@@ -1,4 +1,4 @@
-curl "https://api.m3o.com/v1/url/Proxy" \
+curl "http://localhost:8080/url/Proxy" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{
