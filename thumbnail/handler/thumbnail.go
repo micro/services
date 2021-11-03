@@ -55,6 +55,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 		height = fmt.Sprintf("%v", req.Height)
 	}
 	cmd := exec.Command("/usr/bin/chromium-browser", "--headless", "--window-size="+width+","+height, "--no-sandbox", "--screenshot="+imagePath, "--hide-scrollbars", req.Url)
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	var b bytes.Buffer
 	cmd.Stdout = &b
 	cmd.Stderr = &b
