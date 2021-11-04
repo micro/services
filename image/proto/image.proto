@@ -91,7 +91,9 @@ message ConvertResponse {
 	string url = 2;
 }
 
+// Delete an image previously uploaded.
 message DeleteRequest {
+	// url of the image to delete e.g. https://cdn.m3ocontent.com/micro/images/micro/41e23b39-48dd-42b6-9738-79a313414bb8/cat.jpeg
 	string url = 1;
 }
 
