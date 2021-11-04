@@ -8,6 +8,7 @@ service Image {
 	rpc Upload(UploadRequest) returns (UploadResponse) {}
 	rpc Resize(ResizeRequest) returns (ResizeResponse) {}
 	rpc Convert(ConvertRequest) returns (ConvertResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 }
 
 // Upload an image by either sending a base64 encoded image to this endpoint or a URL.
@@ -88,4 +89,13 @@ message ConvertRequest {
 message ConvertResponse {
 	string base64 = 1;
 	string url = 2;
+}
+
+// Delete an image previously uploaded.
+message DeleteRequest {
+	// url of the image to delete e.g. https://cdn.m3ocontent.com/micro/images/micro/41e23b39-48dd-42b6-9738-79a313414bb8/cat.jpeg
+	string url = 1;
+}
+
+message DeleteResponse {
 }
