@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/client"
+	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	iproto "github.com/micro/services/image/proto"
 	thumbnail "github.com/micro/services/thumbnail/proto"
@@ -50,11 +51,12 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	logger.Info(string(outp))
 	if err != nil {
 		logger.Error(string(outp) + err.Error())
-		return err
+		return errors.InternalServerError("thumbnail.Screenshot", "Error taking screenshot")
 	}
 	file, err := ioutil.ReadFile(imagePath)
 	if err != nil {
-		return err
+		logger.Errorf("Error reading file %s", err)
+		return errors.InternalServerError("thumbnail.Screenshot", "Error taking screenshot")
 	}
 	base := base64.StdEncoding.EncodeToString(file)
 	resp, err := e.imageService.Upload(ctx, &iproto.UploadRequest{
@@ -62,7 +64,8 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 		Name:   imageName,
 	}, client.WithDialTimeout(20*time.Second), client.WithRequestTimeout(20*time.Second))
 	if err != nil {
-		return err
+		logger.Errorf("Error uploading screenshot %s", err)
+		return errors.InternalServerError("thumbnail.Screenshot", "Error taking screenshot")
 	}
 	rsp.ImageURL = resp.Url
 	return nil
