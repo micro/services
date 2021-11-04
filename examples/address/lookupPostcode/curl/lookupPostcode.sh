@@ -1,4 +1,4 @@
-curl "https://api.m3o.com/v1/address/LookupPostcode" \
+curl "http://localhost:8080/address/LookupPostcode" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{

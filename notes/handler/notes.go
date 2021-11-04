@@ -10,22 +10,22 @@ import (
 	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/store"
+	streamPb "github.com/micro/services/mq/proto"
 	pb "github.com/micro/services/notes/proto"
 	"github.com/micro/services/pkg/tenant"
-	streamPb "github.com/micro/services/stream/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // New returns an initialized Notes
 func New(c client.Client) *Notes {
 	return &Notes{
-		Stream: streamPb.NewStreamService("stream", c),
+		Stream: streamPb.NewMqService("mq", c),
 	}
 }
 
 // Notes implements the notes proto definition
 type Notes struct {
-	Stream streamPb.StreamService
+	Stream streamPb.MqService
 }
 
 func newMessage(ev map[string]interface{}) *structpb.Struct {

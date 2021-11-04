@@ -1,5 +1,15 @@
 
 {
+    "createChannel": [{
+        "title": "Create Channel",
+        "description": "Create a channel with name and description",
+        "run_check": true,
+        "request": {
+            "name": "general",
+            "description": "The channel for all things"
+        },
+        "response": {}
+    }],
     "sendMessage": [{
         "title": "Send message",
         "description": "Send a message to a channel",
@@ -38,6 +48,7 @@
             "channels": [
                 {
                         "name": "general",
+            		"description": "The channel for all things",
                         "last_active": "2021-11-03T14:35:07.594972213Z"
                 }
             ]

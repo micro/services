@@ -33,6 +33,7 @@ require (
 	github.com/m3o/m3o-go/client v0.0.0-20210421144725-8bfd7992ada3
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
+	github.com/micro/micro-go v0.0.0-20211101221015-79ab982f8163
 	github.com/micro/micro/v3 v3.4.1-0.20210910132548-f8bfb12823c0
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
@@ -54,6 +55,7 @@ require (
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 	google.golang.org/api v0.59.0
+	google.golang.org/grpc/examples v0.0.0-20211103202053-3b94303f3754 // indirect
 	google.golang.org/protobuf v1.27.1
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/yaml.v2 v2.3.0

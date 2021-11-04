@@ -1,6 +1,6 @@
-curl "https://api.m3o.com/v1/stream/Subscribe" \
+curl "http://localhost:8080/helloworld/Stream" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{
-  "topic": "events"
+  "name": "John"
 }'

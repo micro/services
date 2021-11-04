@@ -1,4 +1,4 @@
-curl "https://api.m3o.com/v1/location/Save" \
+curl "http://localhost:8080/location/Save" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{

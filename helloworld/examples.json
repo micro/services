@@ -12,13 +12,13 @@
         }
     }],
     "stream": [{
-        "title": "Streams are currently temporarily not supported in clients",
+        "title": "Streams responses from the server using websockets",
         "run_check": true,
         "request": {
-            "name": "not supported"
+            "name": "John"
         },
         "response": {
-            "message": "not supported"
+            "message": "Hello John"
         }
     }]
 }

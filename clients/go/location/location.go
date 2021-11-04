@@ -1,7 +1,7 @@
 package location
 
 import (
-	"github.com/m3o/m3o-go/client"
+	"github.com/micro/micro-go/client"
 )
 
 func NewLocationService(token string) *LocationService {

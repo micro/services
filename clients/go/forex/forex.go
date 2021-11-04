@@ -1,7 +1,7 @@
 package forex
 
 import (
-	"github.com/m3o/m3o-go/client"
+	"github.com/micro/micro-go/client"
 )
 
 func NewForexService(token string) *ForexService {

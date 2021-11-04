@@ -5,6 +5,7 @@ package stream;
 option go_package = "./proto;stream";
 
 service Stream {
+	rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {}
 	rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
 	rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {}
 	rpc ListChannels(ListChannelsRequest) returns (ListChannelsResponse) {}
@@ -26,9 +27,22 @@ message Message {
 message Channel {
 	// name of the channel
 	string name = 1;
+	// description for the channel
+	string description = 2;
 	// last activity time
-	string last_active = 2;
+	string last_active = 3;
 }
+
+// Create a channel with a given name and description. Channels are created automatically but 
+// this allows you to specify a description that's persisted for the lifetime of the channel.
+message CreateChannelRequest {
+	// name of the channel
+	string name = 1;
+	// description for the channel
+	string description = 2;
+}
+
+message CreateChannelResponse {}
 
 // Send a message to the stream.
 message SendMessageRequest {

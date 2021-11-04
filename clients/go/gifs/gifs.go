@@ -1,7 +1,7 @@
 package gifs
 
 import (
-	"github.com/m3o/m3o-go/client"
+	"github.com/micro/micro-go/client"
 )
 
 func NewGifsService(token string) *GifsService {

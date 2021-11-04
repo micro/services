@@ -1,4 +1,4 @@
-curl "https://api.m3o.com/v1/sentiment/Analyze" \
+curl "http://localhost:8080/sentiment/Analyze" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{

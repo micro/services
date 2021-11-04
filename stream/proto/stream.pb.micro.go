@@ -42,6 +42,7 @@ func NewStreamEndpoints() []*api.Endpoint {
 // Client API for Stream service
 
 type StreamService interface {
+	CreateChannel(ctx context.Context, in *CreateChannelRequest, opts ...client.CallOption) (*CreateChannelResponse, error)
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...client.CallOption) (*SendMessageResponse, error)
 	ListMessages(ctx context.Context, in *ListMessagesRequest, opts ...client.CallOption) (*ListMessagesResponse, error)
 	ListChannels(ctx context.Context, in *ListChannelsRequest, opts ...client.CallOption) (*ListChannelsResponse, error)
@@ -57,6 +58,16 @@ func NewStreamService(name string, c client.Client) StreamService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *streamService) CreateChannel(ctx context.Context, in *CreateChannelRequest, opts ...client.CallOption) (*CreateChannelResponse, error) {
+	req := c.c.NewRequest(c.name, "Stream.CreateChannel", in)
+	out := new(CreateChannelResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *streamService) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...client.CallOption) (*SendMessageResponse, error) {
@@ -92,6 +103,7 @@ func (c *streamService) ListChannels(ctx context.Context, in *ListChannelsReques
 // Server API for Stream service
 
 type StreamHandler interface {
+	CreateChannel(context.Context, *CreateChannelRequest, *CreateChannelResponse) error
 	SendMessage(context.Context, *SendMessageRequest, *SendMessageResponse) error
 	ListMessages(context.Context, *ListMessagesRequest, *ListMessagesResponse) error
 	ListChannels(context.Context, *ListChannelsRequest, *ListChannelsResponse) error
@@ -99,6 +111,7 @@ type StreamHandler interface {
 
 func RegisterStreamHandler(s server.Server, hdlr StreamHandler, opts ...server.HandlerOption) error {
 	type stream interface {
+		CreateChannel(ctx context.Context, in *CreateChannelRequest, out *CreateChannelResponse) error
 		SendMessage(ctx context.Context, in *SendMessageRequest, out *SendMessageResponse) error
 		ListMessages(ctx context.Context, in *ListMessagesRequest, out *ListMessagesResponse) error
 		ListChannels(ctx context.Context, in *ListChannelsRequest, out *ListChannelsResponse) error
@@ -112,6 +125,10 @@ func RegisterStreamHandler(s server.Server, hdlr StreamHandler, opts ...server.H
 
 type streamHandler struct {
 	StreamHandler
+}
+
+func (h *streamHandler) CreateChannel(ctx context.Context, in *CreateChannelRequest, out *CreateChannelResponse) error {
+	return h.StreamHandler.CreateChannel(ctx, in, out)
 }
 
 func (h *streamHandler) SendMessage(ctx context.Context, in *SendMessageRequest, out *SendMessageResponse) error {
