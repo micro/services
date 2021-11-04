@@ -35,15 +35,10 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	imagePath := filepath.Join(screenshotPath, imageName)
 	pid := 0
 	defer func() {
-		if err := os.Remove(imagePath); err != nil {
-			logger.Errorf("Error removing file %s", err)
-		}
-		logger.Infof("Killing pid %d", pid)
+		os.Remove(imagePath)
 		if pid != 0 {
 			// using -ve PID kills the process group
-			if err := syscall.Kill(-pid, syscall.SIGKILL); err != nil {
-				logger.Errorf("Error killing process %s", err)
-			}
+			syscall.Kill(-pid, syscall.SIGKILL)
 		}
 	}()
 	width := "800"
@@ -59,15 +54,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 		"--hide-scrollbars", "--disable-setuid-sandbox", "--single-process", "--no-zygote", req.Url)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	outp, err := cmd.CombinedOutput()
-	//var b bytes.Buffer
-	//cmd.Stdout = &b
-	//cmd.Stderr = &b
-	//if err := cmd.Start(); err != nil {
-	//	logger.Errorf("Error starting %s", err)
-	//	return err
-	//}
 	pid = cmd.Process.Pid
-	//err := cmd.Wait()
 	logger.Info(string(outp))
 	if err != nil {
 		logger.Error(string(outp) + err.Error())
