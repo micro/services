@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"syscall"
 	"time"
 
 	"github.com/google/uuid"
@@ -33,13 +32,8 @@ func NewThumbnail(imageService iproto.ImageService) *Thumbnail {
 func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotRequest, rsp *thumbnail.ScreenshotResponse) error {
 	imageName := uuid.New().String() + ".png"
 	imagePath := filepath.Join(screenshotPath, imageName)
-	pid := 0
 	defer func() {
 		os.Remove(imagePath)
-		if pid != 0 {
-			// using -ve PID kills the process group
-			syscall.Kill(-pid, syscall.SIGKILL)
-		}
 	}()
 	width := "800"
 	height := "600"
@@ -52,9 +46,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	cmd := exec.Command("/usr/bin/chromium-browser",
 		"--headless", "--window-size="+width+","+height, "--no-sandbox", "--screenshot="+imagePath,
 		"--hide-scrollbars", "--disable-setuid-sandbox", "--single-process", "--no-zygote", req.Url)
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	outp, err := cmd.CombinedOutput()
-	pid = cmd.Process.Pid
 	logger.Info(string(outp))
 	if err != nil {
 		logger.Error(string(outp) + err.Error())
