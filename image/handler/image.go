@@ -11,11 +11,13 @@ import (
 	"image/png"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/disintegration/imaging"
 	"github.com/micro/micro/v3/service/config"
 	merrors "github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	img "github.com/micro/services/image/proto"
 	"github.com/micro/services/pkg/tenant"
@@ -45,7 +47,7 @@ func NewImage() *Image {
 func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.UploadResponse) error {
 	tenantID, ok := tenant.FromContext(ctx)
 	if !ok {
-		return errors.New("Not authorized")
+		return merrors.Unauthorized("image.Upload", "Not authorized")
 	}
 	var srcImage image.Image
 	var err error
@@ -134,7 +136,7 @@ func base64ToImage(b64 string) (image.Image, string, error) {
 func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.ResizeResponse) error {
 	tenantID, ok := tenant.FromContext(ctx)
 	if !ok {
-		return errors.New("Not authorized")
+		return merrors.Unauthorized("image.Resize", "Not authorized")
 	}
 	var srcImage image.Image
 	var err error
@@ -225,7 +227,7 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.ConvertResponse) error {
 	tenantID, ok := tenant.FromContext(ctx)
 	if !ok {
-		return errors.New("Not authorized")
+		return merrors.Unauthorized("image.Convert", "Not authorized")
 	}
 	var srcImage image.Image
 	var err error
@@ -282,6 +284,33 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 
 		rsp.Base64 = string(dst)
 		return nil
+	}
+	return nil
+}
+
+func (e *Image) Delete(ctx context.Context, request *img.DeleteRequest, response *img.DeleteResponse) error {
+	tenantID, ok := tenant.FromContext(ctx)
+	if !ok {
+		return merrors.Unauthorized("image.Delete", "Not authorized")
+	}
+	if len(request.Url) == 0 {
+		return merrors.BadRequest("image.Delete", "Missing URL parameter")
+	}
+	// parse the url <hostprefix>/micro/images/<tenantid>/<name>
+	match, err := regexp.MatchString(fmt.Sprintf("^%s/micro/images/%s/.*", e.hostPrefix, tenantID), request.Url)
+	if err != nil {
+		logger.Errorf("Error matching req url %s", err)
+		return merrors.InternalServerError("image.Delete", "Error processing delete")
+	}
+	if !match {
+		logger.Infof("No match %s", request.Url, tenantID)
+		return merrors.BadRequest("image.Delete", "URL not recognised for user")
+	}
+	tenantAndName := strings.TrimPrefix(request.Url, fmt.Sprintf("%s/micro/images/", e.hostPrefix))
+	blobKey := fmt.Sprintf("%s/%s", pathPrefix, tenantAndName)
+	if err := store.DefaultBlobStore.Delete(blobKey); err != nil {
+		logger.Errorf("Error deleting key %s", err)
+		return merrors.InternalServerError("image.Delete", "Error processing delete")
 	}
 	return nil
 }

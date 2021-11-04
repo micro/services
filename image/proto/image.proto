@@ -8,6 +8,7 @@ service Image {
 	rpc Upload(UploadRequest) returns (UploadResponse) {}
 	rpc Resize(ResizeRequest) returns (ResizeResponse) {}
 	rpc Convert(ConvertRequest) returns (ConvertResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 }
 
 // Upload an image by either sending a base64 encoded image to this endpoint or a URL.
@@ -88,4 +89,11 @@ message ConvertRequest {
 message ConvertResponse {
 	string base64 = 1;
 	string url = 2;
+}
+
+message DeleteRequest {
+	string url = 1;
+}
+
+message DeleteResponse {
 }
