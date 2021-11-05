@@ -67,6 +67,7 @@ message ResizeRequest {
 	// if provided, after resize, the image
 	// will be cropped
 	CropOptions cropOptions = 7;
+	bytes file = 8;
 }
 
 message ResizeResponse {
@@ -85,6 +86,7 @@ message ConvertRequest {
 	string name = 3;
 	// make output a URL and not a base64 response
 	bool outputURL = 4;
+	bytes file = 5;
 }
 
 message ConvertResponse {
