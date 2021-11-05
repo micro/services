@@ -20,6 +20,7 @@ message UploadRequest {
 	string url = 2;
 	// Output name of the image including extension, ie. "cat.png"
 	string name = 3;
+	bytes file = 4;
 }
 
 message UploadResponse {

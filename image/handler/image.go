@@ -53,7 +53,18 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	var err error
 	var ext string
 
-	if len(req.Base64) > 0 {
+	if len(req.File) > 0 {
+		ext = "png"
+		srcImage, err = png.Decode(bytes.NewReader(req.File))
+		if err != nil {
+			ext = "jpg"
+			srcImage, err = jpeg.Decode(bytes.NewReader(req.File))
+			if err != nil {
+				logger.Errorf("Error decoding %s %s", err)
+				return merrors.BadRequest("image.Upload", "Failed to parse image")
+			}
+		}
+	} else if len(req.Base64) > 0 {
 		srcImage, ext, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
