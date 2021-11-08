@@ -141,7 +141,7 @@ func (s *User) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest
 		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
 	if req.NewPassword != req.ConfirmPassword {
-		return errors.InternalServerError("user.updatepassword", "Passwords don't math")
+		return errors.InternalServerError("user.updatepassword", "Passwords don't match")
 	}
 
 	salt, hashed, err := s.domain.SaltAndPassword(ctx, usr.Id)
