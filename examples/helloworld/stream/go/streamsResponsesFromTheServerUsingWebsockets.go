@@ -11,7 +11,8 @@ import (
 func StreamsResponsesFromTheServerUsingWebsockets() {
 	helloworldService := helloworld.NewHelloworldService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := helloworldService.Stream(&helloworld.StreamRequest{
-		Name: "John",
+		Messages: 10,
+		Name:     "John",
 	})
 	fmt.Println(rsp, err)
 }
