@@ -3,6 +3,7 @@
         "title": "Ask a question",
         "description": "Ask a question and get an instant answer",
         "run_check": true,
+        "idempotent": true,
         "request": {
           "query": "microsoft"
         },

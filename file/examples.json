@@ -15,6 +15,7 @@
     "list": [{
         "title": "List files",
         "run_check": true,
+        "idempotent": true,
         "request": {
             "project": "examples"
         },

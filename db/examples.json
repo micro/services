@@ -35,6 +35,7 @@
     {
       "title": "Read records",
       "run_check": true,
+      "idempotent": true,
       "request": {
         "table": "users",
         "query": "age == 43"
