@@ -4,6 +4,7 @@
         "title": "Call the helloworld service",
         "description": "Helloworld is a simple example that takes a name and returns a personalised message",
         "run_check": true,
+        "idempotent": true,
         "request": {
             "name": "John"
         },
@@ -14,8 +15,10 @@
     "stream": [{
         "title": "Streams responses from the server using websockets",
         "run_check": true,
+        "idempotent": true,
         "request": {
-            "name": "John"
+            "name": "John",
+            "messages": 10
         },
         "response": {
             "message": "Hello John"
