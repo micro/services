@@ -13,6 +13,8 @@ service Image {
 
 // Upload an image by either sending a base64 encoded image to this endpoint or a URL.
 // To resize an image before uploading, see the Resize endpoint.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 message UploadRequest {
 	// Base64 encoded image to upload,
 	string base64 = 1;
@@ -20,6 +22,7 @@ message UploadRequest {
 	string url = 2;
 	// Output name of the image including extension, ie. "cat.png"
 	string name = 3;
+	// The image file to upload
 	bytes file = 4;
 }
 
@@ -52,6 +55,8 @@ message CropOptions {
 // Resize an image on the fly without storing it (by sending and receiving a base64 encoded image), or resize and upload depending on parameters.
 // If one of width or height is 0, the image aspect ratio is preserved.
 // Optional cropping.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 message ResizeRequest {
 	// base64 encoded image to resize,
 	string base64 = 1;
@@ -67,6 +72,7 @@ message ResizeRequest {
 	// if provided, after resize, the image
 	// will be cropped
 	CropOptions cropOptions = 7;
+	// The image file to resize
 	bytes file = 8;
 }
 
@@ -77,6 +83,8 @@ message ResizeResponse {
 
 // Convert an image from one format (jpeg, png etc.) to an other either on the fly (from base64 to base64),
 // or by uploading the conversion result.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 message ConvertRequest {
 	// base64 encoded image to resize,
 	string base64 = 1;
@@ -86,6 +94,7 @@ message ConvertRequest {
 	string name = 3;
 	// make output a URL and not a base64 response
 	bool outputURL = 4;
+	// The image file to convert
 	bytes file = 5;
 }
 

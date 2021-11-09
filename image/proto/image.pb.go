@@ -22,6 +22,8 @@ const (
 
 // Upload an image by either sending a base64 encoded image to this endpoint or a URL.
 // To resize an image before uploading, see the Resize endpoint.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 type UploadRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -33,6 +35,7 @@ type UploadRequest struct {
 	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	// Output name of the image including extension, ie. "cat.png"
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// The image file to upload
 	File []byte `protobuf:"bytes,4,opt,name=file,proto3" json:"file,omitempty"`
 }
 
@@ -325,6 +328,8 @@ func (x *CropOptions) GetAnchor() string {
 // Resize an image on the fly without storing it (by sending and receiving a base64 encoded image), or resize and upload depending on parameters.
 // If one of width or height is 0, the image aspect ratio is preserved.
 // Optional cropping.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 type ResizeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -344,7 +349,8 @@ type ResizeRequest struct {
 	// if provided, after resize, the image
 	// will be cropped
 	CropOptions *CropOptions `protobuf:"bytes,7,opt,name=cropOptions,proto3" json:"cropOptions,omitempty"`
-	File        []byte       `protobuf:"bytes,8,opt,name=file,proto3" json:"file,omitempty"`
+	// The image file to resize
+	File []byte `protobuf:"bytes,8,opt,name=file,proto3" json:"file,omitempty"`
 }
 
 func (x *ResizeRequest) Reset() {
@@ -492,6 +498,8 @@ func (x *ResizeResponse) GetUrl() string {
 
 // Convert an image from one format (jpeg, png etc.) to an other either on the fly (from base64 to base64),
 // or by uploading the conversion result.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 type ConvertRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -504,8 +512,9 @@ type ConvertRequest struct {
 	// output name of the image including extension, ie. "cat.png"
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	// make output a URL and not a base64 response
-	OutputURL bool   `protobuf:"varint,4,opt,name=outputURL,proto3" json:"outputURL,omitempty"`
-	File      []byte `protobuf:"bytes,5,opt,name=file,proto3" json:"file,omitempty"`
+	OutputURL bool `protobuf:"varint,4,opt,name=outputURL,proto3" json:"outputURL,omitempty"`
+	// The image file to convert
+	File []byte `protobuf:"bytes,5,opt,name=file,proto3" json:"file,omitempty"`
 }
 
 func (x *ConvertRequest) Reset() {
