@@ -71,6 +71,48 @@ func TestBasic(t *testing.T) {
 		}
 	})
 
+	t.Run("number <", func(t *testing.T) {
+		readRsp := &db.ReadResponse{}
+		err := h.Read(ctx, &db.ReadRequest{
+			Table: "users",
+			Query: "age < 100",
+		}, readRsp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(readRsp.Records) != 1 || readRsp.Records[0].AsMap()["id"].(string) != "1" {
+			t.Fatal(readRsp)
+		}
+	})
+
+	t.Run("number >", func(t *testing.T) {
+		readRsp := &db.ReadResponse{}
+		err := h.Read(ctx, &db.ReadRequest{
+			Table: "users",
+			Query: "age > 100",
+		}, readRsp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(readRsp.Records) != 1 || readRsp.Records[0].AsMap()["id"].(string) != "2" {
+			t.Fatal(readRsp)
+		}
+	})
+
+	t.Run("number !=", func(t *testing.T) {
+		readRsp := &db.ReadResponse{}
+		err := h.Read(ctx, &db.ReadRequest{
+			Table: "users",
+			Query: "age != 42",
+		}, readRsp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(readRsp.Records) != 1 || readRsp.Records[0].AsMap()["id"].(string) != "2" {
+			t.Fatal(readRsp)
+		}
+	})
+
 	t.Run("bool ==", func(t *testing.T) {
 		readRsp := &db.ReadResponse{}
 		err := h.Read(ctx, &db.ReadRequest{
@@ -85,6 +127,20 @@ func TestBasic(t *testing.T) {
 		}
 	})
 
+	t.Run("bool !=", func(t *testing.T) {
+		readRsp := &db.ReadResponse{}
+		err := h.Read(ctx, &db.ReadRequest{
+			Table: "users",
+			Query: "isActive != false",
+		}, readRsp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(readRsp.Records) != 1 || readRsp.Records[0].AsMap()["id"].(string) != "1" {
+			t.Fatal(readRsp)
+		}
+	})
+
 	t.Run("string ==", func(t *testing.T) {
 		readRsp := &db.ReadResponse{}
 		err := h.Read(ctx, &db.ReadRequest{
@@ -95,6 +151,20 @@ func TestBasic(t *testing.T) {
 			t.Fatal(err)
 		}
 		if len(readRsp.Records) != 1 || readRsp.Records[0].AsMap()["id"].(string) != "1" {
+			t.Fatal(readRsp)
+		}
+	})
+
+	t.Run("string !=", func(t *testing.T) {
+		readRsp := &db.ReadResponse{}
+		err := h.Read(ctx, &db.ReadRequest{
+			Table: "users",
+			Query: "name != 'Jane'",
+		}, readRsp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(readRsp.Records) != 1 || readRsp.Records[0].AsMap()["id"].(string) != "2" {
 			t.Fatal(readRsp)
 		}
 	})
