@@ -9,6 +9,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -49,17 +50,20 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	if !ok {
 		return merrors.Unauthorized("image.Upload", "Not authorized")
 	}
-	var srcImage image.Image
+	var imageBytes *bytes.Buffer
 	var err error
-	var ext string
 
-	if len(req.Base64) > 0 {
-		srcImage, ext, err = base64ToImage(req.Base64)
+	if len(req.File) > 0 {
+		imageBytes = bytes.NewBuffer(req.File)
+
+	} else if len(req.Base64) > 0 {
+		b, _, err := base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
+		imageBytes = bytes.NewBuffer(b)
 	} else if len(req.Url) > 0 {
-		ur, err := url.Parse(req.Url)
+		_, err := url.Parse(req.Url)
 		if err != nil {
 			return err
 		}
@@ -68,36 +72,16 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 			return err
 		}
 		defer response.Body.Close()
-		switch {
-		case strings.HasSuffix(ur.Path, ".png"):
-			srcImage, err = png.Decode(response.Body)
-		case strings.HasSuffix(ur.Path, ".jpg") || strings.HasSuffix(ur.Path, ".jpeg"):
-			srcImage, err = jpeg.Decode(response.Body)
-		}
+		b, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			return err
 		}
-
+		imageBytes = bytes.NewBuffer(b)
 	} else {
-		return errors.New("base64 or url param is required")
+		return merrors.BadRequest("image.Upload", "file, base64 or url param is required")
 	}
 
-	buf := new(bytes.Buffer)
-
-	switch {
-	case strings.HasSuffix(req.Name, ".png") || ext == "png":
-		err = png.Encode(buf, srcImage)
-	case strings.HasSuffix(req.Name, ".jpg") || strings.HasSuffix(req.Url, ".jpeg") || ext == "jpg":
-		err = jpeg.Encode(buf, srcImage, nil)
-	default:
-		return errors.New("could not determine extension")
-	}
-
-	if err != nil {
-		return err
-	}
-
-	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.Name), buf, store.BlobPublic(true))
+	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.Name), imageBytes, store.BlobPublic(true))
 	if err != nil {
 		return err
 	}
@@ -105,32 +89,25 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	return nil
 }
 
-func base64ToImage(b64 string) (image.Image, string, error) {
-	var srcImage image.Image
+func base64ToImage(b64 string) ([]byte, string, error) {
 	ext := ""
-
 	parts := strings.Split(b64, ",")
 	if len(parts) != 2 {
-		return srcImage, "", merrors.BadRequest("image", "Incorrect format for base64 image, expected <encoding prefix>,<image data>")
+		return nil, "", merrors.BadRequest("image", "Incorrect format for base64 image, expected <encoding prefix>,<image data>")
 	}
 	prefix := parts[0]
 	b64 = strings.TrimSpace(parts[1])
-	res, err := base64.StdEncoding.DecodeString(b64)
-	if err != nil {
-		return srcImage, ext, err
-	}
 
 	switch prefix {
 	case "data:image/png;base64":
-		srcImage, err = png.Decode(bytes.NewReader(res))
 		ext = "png"
 	case "data:image/jpg;base64", "data:image/jpeg;base64":
-		srcImage, err = jpeg.Decode(bytes.NewReader(res))
 		ext = "jpg"
 	default:
-		return srcImage, ext, errors.New("unrecognized base64 prefix: " + prefix)
+		return nil, ext, errors.New("unrecognized base64 prefix: " + prefix)
 	}
-	return srcImage, ext, err
+	b, err := base64.StdEncoding.DecodeString(b64)
+	return b, ext, err
 }
 
 func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.ResizeResponse) error {
@@ -138,12 +115,14 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 	if !ok {
 		return merrors.Unauthorized("image.Resize", "Not authorized")
 	}
-	var srcImage image.Image
+	var imageBytes []byte
 	var err error
 	var ext string
 
-	if len(req.Base64) > 0 {
-		srcImage, ext, err = base64ToImage(req.Base64)
+	if len(req.File) > 0 {
+		imageBytes = req.File
+	} else if len(req.Base64) > 0 {
+		imageBytes, ext, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
@@ -157,18 +136,23 @@ func (e *Image) Resize(ctx context.Context, req *img.ResizeRequest, rsp *img.Res
 			return err
 		}
 		defer response.Body.Close()
-		switch {
-		case strings.HasSuffix(ur.Path, ".png"):
-			srcImage, err = png.Decode(response.Body)
-		case strings.HasSuffix(ur.Path, ".jpg") || strings.HasSuffix(ur.Path, ".jpeg"):
-			srcImage, err = jpeg.Decode(response.Body)
-		}
+		imageBytes, err = ioutil.ReadAll(response.Body)
 		if err != nil {
 			return err
 		}
-
+		switch {
+		case strings.HasSuffix(ur.Path, ".png"):
+			ext = "png"
+		case strings.HasSuffix(ur.Path, ".jpg") || strings.HasSuffix(ur.Path, ".jpeg"):
+			ext = "jpg"
+		}
 	} else {
 		return errors.New("base64 or url param is required")
+	}
+
+	srcImage, _, err := image.Decode(bytes.NewReader(imageBytes))
+	if err != nil {
+		return err
 	}
 
 	resultImage := imaging.Resize(srcImage, int(req.Width), int(req.Height), imaging.Lanczos)
@@ -230,14 +214,17 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		return merrors.Unauthorized("image.Convert", "Not authorized")
 	}
 	var srcImage image.Image
+	var imageBytes []byte
 	var err error
-	if len(req.Base64) > 0 {
-		srcImage, _, err = base64ToImage(req.Base64)
+	if len(req.File) > 0 {
+		imageBytes = req.File
+	} else if len(req.Base64) > 0 {
+		imageBytes, _, err = base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
-	} else {
-		ur, err := url.Parse(req.Url)
+	} else if len(req.Url) > 0 {
+		_, err := url.Parse(req.Url)
 		if err != nil {
 			return err
 		}
@@ -247,16 +234,17 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 			return err
 		}
 		defer response.Body.Close()
-		switch {
-		case strings.HasSuffix(ur.Path, ".png"):
-			srcImage, err = png.Decode(response.Body)
-		case strings.HasSuffix(ur.Path, ".jpg") || strings.HasSuffix(ur.Path, ".jpeg"):
-			srcImage, err = jpeg.Decode(response.Body)
-		}
+		imageBytes, err = ioutil.ReadAll(response.Body)
 		if err != nil {
 			return err
 		}
+	} else {
+		return merrors.BadRequest("image.Convert", "Must pass either base64, url, or file param")
+	}
 
+	srcImage, _, err = image.Decode(bytes.NewReader(imageBytes))
+	if err != nil {
+		return err
 	}
 
 	buf := new(bytes.Buffer)
