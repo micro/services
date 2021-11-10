@@ -220,6 +220,8 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 				typ = "int"
 			case bool:
 				typ = "boolean"
+			case string:
+				query.Value = fmt.Sprintf("'%v'", query.Value)
 			}
 			op := ""
 			switch query.Op {
