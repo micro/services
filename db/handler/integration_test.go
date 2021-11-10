@@ -7,6 +7,7 @@ import (
 
 	"database/sql"
 
+	"github.com/micro/micro/v3/service/auth"
 	db "github.com/micro/services/db/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -32,11 +33,12 @@ func TestCreate(t *testing.T) {
 		"id":       "1",
 	})
 	rec := &structpb.Struct{}
+	ctx := auth.ContextWithAccount(context.Background(), &auth.Account{Issuer: "test", ID: "test"})
 	err := rec.UnmarshalJSON(record)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = h.Create(context.TODO(), &db.CreateRequest{
+	err = h.Create(ctx, &db.CreateRequest{
 		Table:  "users",
 		Record: rec,
 	}, &db.CreateResponse{})

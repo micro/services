@@ -43,12 +43,12 @@ func getTenancyKey(acc *auth.Account) string {
 }
 
 func (h *Helper) GetDBConn(ctx context.Context) (*gorm.DB, error) {
-	tenancyKey := "test_test"
 	acc, ok := auth.AccountFromContext(ctx)
-	if ok {
-		tenancyKey = getTenancyKey(acc)
+	if !ok {
+		return nil, fmt.Errorf("missing account from context")
 	}
 	h.RLock()
+	tenancyKey := getTenancyKey(acc)
 	if conn, ok := h.gormConns[tenancyKey]; ok {
 		h.RUnlock()
 		return conn, nil
