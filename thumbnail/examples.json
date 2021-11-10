@@ -5,7 +5,7 @@
       "run_check": true,
       "request": {
         "height": 600,
-        "url": "https://m3o.com",
+        "url": "https://google.com",
         "width": 600
       },
       "response": {
