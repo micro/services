@@ -497,8 +497,6 @@ github.com/mattn/go-tty v0.0.0-20180219170247-931426f7535a/go.mod h1:XPvLUNfbS4f
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/micro/micro-go v0.0.0-20211101221015-79ab982f8163 h1:kNngAyoUre7ahqYWjlBVpT4GGDYM7r9BYUzpcOveaPs=
 github.com/micro/micro-go v0.0.0-20211101221015-79ab982f8163/go.mod h1:o4fTExNn5LlnQRB/WiW3RChsohPwQTJ1AKdNCz2YEYA=
-github.com/micro/micro/v3 v3.6.1-0.20211109113157-0b9ea62abb19 h1:gMbXjyo+Z3Vqnkjfv2wk4LI8CbmE79NmKSnF2KwzZ14=
-github.com/micro/micro/v3 v3.6.1-0.20211109113157-0b9ea62abb19/go.mod h1:NqYnFOGrnc0Apk912w49oX9qIk1YDJcCaO+y+CLaAXA=
 github.com/micro/micro/v3 v3.6.1-0.20211110104311-614fde05be0c h1:9+w31dXDHVUD11x1St5LiXiBQLNSUxgeH9GI9+sKv0M=
 github.com/micro/micro/v3 v3.6.1-0.20211110104311-614fde05be0c/go.mod h1:NqYnFOGrnc0Apk912w49oX9qIk1YDJcCaO+y+CLaAXA=
 github.com/miekg/dns v1.1.15/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
