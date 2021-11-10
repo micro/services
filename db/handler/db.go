@@ -40,18 +40,27 @@ type Db struct {
 	gorm2.Helper
 }
 
-func correctFieldName(s string) string {
+func correctFieldName(s string, isText bool) string {
+	operator := "->"
+	if isText {
+		// https: //stackoverflow.com/questions/27215216/postgres-how-to-convert-a-json-string-to-text
+		operator = "->>"
+	}
 	switch s {
 	// top level fields can stay top level
 	case "id": // "created_at", "updated_at",  <-- these are not special fields for now
 		return s
 	}
 	if !strings.Contains(s, ".") {
-		return fmt.Sprintf("data -> '%v'", s)
+		return fmt.Sprintf("data %v '%v'", operator, s)
 	}
 	paths := strings.Split(s, ".")
 	ret := "data"
-	for _, path := range paths {
+	for i, path := range paths {
+		if i == len(paths)-1 && isText {
+			ret += fmt.Sprintf(" ->> '%v'", path)
+			break
+		}
 		ret += fmt.Sprintf(" -> '%v'", path)
 	}
 	return ret
@@ -236,7 +245,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 			case itemNotEquals:
 				op = "!="
 			}
-			queryField := correctFieldName(query.Field)
+			queryField := correctFieldName(query.Field, typ == "text")
 			db = db.Where(fmt.Sprintf("(%v)::%v %v ?", queryField, typ, op), query.Value)
 		}
 	}
@@ -245,7 +254,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	if req.OrderBy != "" {
 		orderField = req.OrderBy
 	}
-	orderField = correctFieldName(orderField)
+	orderField = correctFieldName(orderField, false)
 
 	ordering := "asc"
 	if req.Order != "" {
