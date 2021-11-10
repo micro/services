@@ -75,7 +75,7 @@ func TestBasic(t *testing.T) {
 		readRsp := &db.ReadResponse{}
 		err := h.Read(ctx, &db.ReadRequest{
 			Table: "users",
-			Query: "active == false",
+			Query: "isActive == false",
 		}, readRsp)
 		if err != nil {
 			t.Fatal(err)
