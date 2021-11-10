@@ -50,18 +50,17 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 	if !ok {
 		return merrors.Unauthorized("image.Upload", "Not authorized")
 	}
-	var imageBytes *bytes.Buffer
+	var imageBytes []byte
 	var err error
 
 	if len(req.File) > 0 {
-		imageBytes = bytes.NewBuffer(req.File)
-
+		imageBytes = req.File
 	} else if len(req.Base64) > 0 {
 		b, _, err := base64ToImage(req.Base64)
 		if err != nil {
 			return err
 		}
-		imageBytes = bytes.NewBuffer(b)
+		imageBytes = b
 	} else if len(req.Url) > 0 {
 		_, err := url.Parse(req.Url)
 		if err != nil {
@@ -76,12 +75,21 @@ func (e *Image) Upload(ctx context.Context, req *img.UploadRequest, rsp *img.Upl
 		if err != nil {
 			return err
 		}
-		imageBytes = bytes.NewBuffer(b)
+		imageBytes = b
 	} else {
 		return merrors.BadRequest("image.Upload", "file, base64 or url param is required")
 	}
 
-	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.Name), imageBytes, store.BlobPublic(true))
+	// validate that this is indeed an image file
+	_, _, err = image.Decode(bytes.NewReader(imageBytes))
+	if err != nil {
+		if err == image.ErrFormat {
+			return merrors.BadRequest("image.Upload", "Unrecognised image format")
+		}
+		return merrors.InternalServerError("image.Upload", "Error processing upload")
+	}
+
+	err = store.DefaultBlobStore.Write(fmt.Sprintf("%v/%v/%v", pathPrefix, tenantID, req.Name), bytes.NewReader(imageBytes), store.BlobPublic(true))
 	if err != nil {
 		return err
 	}
