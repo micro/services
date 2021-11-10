@@ -213,7 +213,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		db = db.Where("id = ?", req.Id)
 	} else {
 		for _, query := range queries {
-			logger.Infof("Query field: %v, op: %v, type: %v", query.Field, query.Op, query.Value)
+			logger.Infof("Query field: %v, op: %v, type: %v, value: %v", query.Field, query.Op, query.Value)
 			typ := "text"
 			switch query.Value.(type) {
 			case int64:
@@ -262,7 +262,7 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 	}
 
 	db = db.Order(orderField + " " + ordering).Offset(int(req.Offset)).Limit(int(req.Limit))
-	err = db.Find(&recs).Error
+	err = db.Debug().Find(&recs).Error
 	if err != nil {
 		return err
 	}
