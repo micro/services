@@ -12,7 +12,7 @@ func TakeScreenshotOfAurl() {
 	thumbnailService := thumbnail.NewThumbnailService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := thumbnailService.Screenshot(&thumbnail.ScreenshotRequest{
 		Height: 600,
-		Url:    "https://m3o.com",
+		Url:    "https://google.com",
 		Width:  600,
 	})
 	fmt.Println(rsp, err)

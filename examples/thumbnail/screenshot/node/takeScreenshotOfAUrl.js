@@ -5,7 +5,7 @@ async function takeScreenshotOfAurl() {
   let thumbnailService = new ThumbnailService(process.env.MICRO_API_TOKEN);
   let rsp = await thumbnailService.screenshot({
     height: 600,
-    url: "https://m3o.com",
+    url: "https://google.com",
     width: 600,
   });
   console.log(rsp);
