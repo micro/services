@@ -78,5 +78,5 @@
   "prepare": "npm run build"
  },
  "types": "index.d.ts",
- "version": "1.0.691"
+ "version": "1.0.698"
 }
