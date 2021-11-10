@@ -109,7 +109,7 @@ func TestBasic(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(readRsp.Records) != 2 || readRsp.Records[0].AsMap()["id"].(string) != "2" || readRsp.Records[1].AsMap()["id"].(string) != "1" {
+		if len(readRsp.Records) != 2 || readRsp.Records[0].AsMap()["id"].(string) != "1" || readRsp.Records[1].AsMap()["id"].(string) != "2" {
 			t.Fatal(readRsp)
 		}
 	})
@@ -124,7 +124,40 @@ func TestBasic(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(readRsp.Records) != 2 || readRsp.Records[0].AsMap()["id"].(string) != "1" || readRsp.Records[1].AsMap()["id"].(string) != "2" {
+		if len(readRsp.Records) != 2 || readRsp.Records[0].AsMap()["id"].(string) != "2" || readRsp.Records[1].AsMap()["id"].(string) != "1" {
+			t.Fatal(readRsp)
+		}
+	})
+
+	t.Run("order number desc, limit", func(t *testing.T) {
+		readRsp := &db.ReadResponse{}
+		err := h.Read(ctx, &db.ReadRequest{
+			Table:   "users",
+			OrderBy: "age",
+			Order:   "desc",
+			Limit:   1,
+		}, readRsp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(readRsp.Records) != 1 || readRsp.Records[0].AsMap()["id"].(string) != "2" {
+			t.Fatal(readRsp)
+		}
+	})
+
+	t.Run("order number desc, limit, offset", func(t *testing.T) {
+		readRsp := &db.ReadResponse{}
+		err := h.Read(ctx, &db.ReadRequest{
+			Table:   "users",
+			OrderBy: "age",
+			Order:   "desc",
+			Limit:   1,
+			Offset:  1,
+		}, readRsp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(readRsp.Records) != 1 || readRsp.Records[0].AsMap()["id"].(string) != "1" {
 			t.Fatal(readRsp)
 		}
 	})
