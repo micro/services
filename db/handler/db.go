@@ -47,12 +47,12 @@ func correctFieldName(s string) string {
 		return s
 	}
 	if !strings.Contains(s, ".") {
-		return fmt.Sprintf("data ->> '%v'", s)
+		return fmt.Sprintf("data -> '%v'", s)
 	}
 	paths := strings.Split(s, ".")
 	ret := "data"
 	for _, path := range paths {
-		ret += fmt.Sprintf(" ->> '%v'", path)
+		ret += fmt.Sprintf(" -> '%v'", path)
 	}
 	return ret
 }
