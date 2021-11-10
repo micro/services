@@ -18,6 +18,8 @@ type ImageService struct {
 
 // Convert an image from one format (jpeg, png etc.) to an other either on the fly (from base64 to base64),
 // or by uploading the conversion result.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 func (t *ImageService) Convert(request *ConvertRequest) (*ConvertResponse, error) {
 	rsp := &ConvertResponse{}
 	return rsp, t.client.Call("image", "Convert", request, rsp)
@@ -32,6 +34,8 @@ func (t *ImageService) Delete(request *DeleteRequest) (*DeleteResponse, error) {
 // Resize an image on the fly without storing it (by sending and receiving a base64 encoded image), or resize and upload depending on parameters.
 // If one of width or height is 0, the image aspect ratio is preserved.
 // Optional cropping.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 func (t *ImageService) Resize(request *ResizeRequest) (*ResizeResponse, error) {
 	rsp := &ResizeResponse{}
 	return rsp, t.client.Call("image", "Resize", request, rsp)
@@ -39,6 +43,8 @@ func (t *ImageService) Resize(request *ResizeRequest) (*ResizeResponse, error) {
 
 // Upload an image by either sending a base64 encoded image to this endpoint or a URL.
 // To resize an image before uploading, see the Resize endpoint.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 func (t *ImageService) Upload(request *UploadRequest) (*UploadResponse, error) {
 	rsp := &UploadResponse{}
 	return rsp, t.client.Call("image", "Upload", request, rsp)
@@ -47,6 +53,8 @@ func (t *ImageService) Upload(request *UploadRequest) (*UploadResponse, error) {
 type ConvertRequest struct {
 	// base64 encoded image to resize,
 	Base64 string `json:"base64"`
+	// The image file to convert
+	File string `json:"file"`
 	// output name of the image including extension, ie. "cat.png"
 	Name string `json:"name"`
 	// make output a URL and not a base64 response
@@ -97,7 +105,9 @@ type ResizeRequest struct {
 	// if provided, after resize, the image
 	// will be cropped
 	CropOptions *CropOptions `json:"cropOptions"`
-	Height      int64        `json:"height,string"`
+	// The image file to resize
+	File   string `json:"file"`
+	Height int64  `json:"height,string"`
 	// output name of the image including extension, ie. "cat.png"
 	Name string `json:"name"`
 	// make output a URL and not a base64 response
@@ -115,6 +125,8 @@ type ResizeResponse struct {
 type UploadRequest struct {
 	// Base64 encoded image to upload,
 	Base64 string `json:"base64"`
+	// The image file to upload
+	File string `json:"file"`
 	// Output name of the image including extension, ie. "cat.png"
 	Name string `json:"name"`
 	// URL of the image to upload

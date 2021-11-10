@@ -10,6 +10,8 @@ import (
 // Resize an image on the fly without storing it (by sending and receiving a base64 encoded image), or resize and upload depending on parameters.
 // If one of width or height is 0, the image aspect ratio is preserved.
 // Optional cropping.
+// To use the file parameter you need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 func Base64toHostedImage() {
 	imageService := image.NewImageService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := imageService.Resize(&image.ResizeRequest{
