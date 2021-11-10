@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package spam;
+
+option go_package = "./proto;spam";
+
+service Spam {
+	rpc Check(CheckRequest) returns (CheckResponse) {}
+}
+
+message CheckRequest {
+	string email_body = 1;
+	map<string, string> headers = 2;
+}
+
+message CheckResponse {
+	bool is_spam = 1;
+	double score = 2;
+}

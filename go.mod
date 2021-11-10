@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
+	github.com/Teamwork/spamc v0.0.0-20200109085853-a4e0c5c3f7a0
 	github.com/asim/mq v0.1.0
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
@@ -45,6 +46,8 @@ require (
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/stoewer/go-strcase v1.2.0
 	github.com/stretchr/testify v1.7.0
+	github.com/teamwork/test v0.0.0-20200108114543-02621bae84ad // indirect
+	github.com/teamwork/utils v0.0.0-20211103135549-f7e7a68ba696 // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/tkuchiki/go-timezone v0.2.2
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
