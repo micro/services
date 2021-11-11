@@ -355,8 +355,8 @@ func (e *Db) Count(ctx context.Context, req *db.CountRequest, rsp *db.CountRespo
 }
 
 func (e *Db) RenameTable(ctx context.Context, req *db.RenameTableRequest, rsp *db.RenameTableResponse) error {
-	if req.From == "" {
-		req.From = "default"
+	if req.From == "" || req.To == "" {
+		return errors.BadRequest("db.renameTable", "must provide table names")
 	}
 
 	oldtableName, err := e.tableName(ctx, req.From)
