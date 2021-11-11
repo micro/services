@@ -23,12 +23,16 @@ func (t *SpamService) Classify(request *ClassifyRequest) (*ClassifyResponse, err
 }
 
 type ClassifyRequest struct {
-	// The body of the email
+	// The raw body of the email including headers etc per RFC 822. Alternatively, use the other parameters to correctly format the message
 	EmailBody string `json:"emailBody"`
 	// The email address it has been sent from
 	From string `json:"from"`
+	// the HTML version of the email body
+	HtmlBody string `json:"htmlBody"`
 	// The subject of the email
 	Subject string `json:"subject"`
+	// the plain text version of the email body
+	TextBody string `json:"textBody"`
 	// The email address it is being sent to
 	To string `json:"to"`
 }
