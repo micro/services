@@ -10,7 +10,7 @@ service Spam {
 
 // Check whether an email is likely to be spam based on its attributes
 message ClassifyRequest {
-	// The body of the email
+	// The raw body of the email including headers etc per RFC 822. Alternatively, use the other parameters to correctly format the message
 	string email_body = 1;
 	// The email address it is being sent to
 	string to = 2;
@@ -18,6 +18,10 @@ message ClassifyRequest {
 	string from = 3;
 	// The subject of the email
 	string subject = 4;
+	// the plain text version of the email body
+	string text_body = 5;
+	// the HTML version of the email body
+	string html_body = 6;
 }
 
 message ClassifyResponse {

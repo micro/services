@@ -1,11 +1,9 @@
 package handler
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"fmt"
-	"net/textproto"
 	"time"
 
 	"github.com/Teamwork/spamc"
@@ -13,6 +11,7 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	spam "github.com/micro/services/spam/proto"
+	"gopkg.in/gomail.v2"
 )
 
 type conf struct {
@@ -40,26 +39,39 @@ func New() *Spam {
 }
 
 func (s *Spam) Classify(ctx context.Context, request *spam.ClassifyRequest, response *spam.ClassifyResponse) error {
-	if len(request.EmailBody) == 0 {
-		return errors.BadRequest("spam.Classify", "missing email_body")
+	if len(request.EmailBody) == 0 && len(request.TextBody) == 0 && len(request.HtmlBody) == 0 {
+		return errors.BadRequest("spam.Classify", "Missing one of email_body, html_body, text_body")
 	}
+	bf := bytes.Buffer{}
 
-	bf := bytes.NewBufferString("")
-	tp := textproto.NewWriter(bufio.NewWriter(bf))
+	if len(request.EmailBody) > 0 {
+		bf.WriteString(request.EmailBody)
+	} else {
+		m := gomail.NewMessage()
 
-	if len(request.To) > 0 {
-		tp.PrintfLine("To: %v", request.To)
+		if len(request.To) > 0 {
+			m.SetHeader("To", request.To)
+		}
+		if len(request.From) > 0 {
+			m.SetHeader("From", request.From)
+		}
+		if len(request.Subject) > 0 {
+			m.SetHeader("Subject", request.Subject)
+		}
+		m.SetHeader("Date", time.Now().Format(time.RFC1123Z))
+		if len(request.TextBody) > 0 {
+			m.SetBody("text/plain", request.TextBody)
+		}
+		if len(request.HtmlBody) > 0 {
+			m.SetBody("text/html", request.HtmlBody)
+		}
+		if _, err := m.WriteTo(&bf); err != nil {
+			log.Errorf("Error classifying email %s", err)
+			return errors.InternalServerError("spam.Classify", "Error classifying email")
+		}
+
 	}
-	if len(request.From) > 0 {
-		tp.PrintfLine("From: %v", request.From)
-	}
-	if len(request.Subject) > 0 {
-		tp.PrintfLine("Subject: %v", request.Subject)
-	}
-	tp.PrintfLine("Date: %s", time.Now().Format(time.RFC1123Z))
-	tp.PrintfLine("")
-	tp.PrintfLine("%v", request.EmailBody)
-	rc, err := s.client.Report(ctx, bf, spamc.Header{}.Set("Content-Length", fmt.Sprintf("%d", bf.Len())))
+	rc, err := s.client.Report(ctx, &bf, spamc.Header{}.Set("Content-Length", fmt.Sprintf("%d", bf.Len())))
 	if err != nil {
 		log.Errorf("Error checking spamd %s", err)
 		return errors.InternalServerError("spam.Classify", "Error classifying email")
