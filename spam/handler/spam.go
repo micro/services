@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"net/textproto"
+	"time"
 
 	"github.com/Teamwork/spamc"
 	"github.com/micro/micro/v3/service/config"
@@ -38,9 +39,9 @@ func New() *Spam {
 	}
 }
 
-func (s *Spam) Check(ctx context.Context, request *spam.CheckRequest, response *spam.CheckResponse) error {
+func (s *Spam) Classify(ctx context.Context, request *spam.ClassifyRequest, response *spam.ClassifyResponse) error {
 	if len(request.EmailBody) == 0 {
-		return errors.BadRequest("spam.Check", "missing email_body")
+		return errors.BadRequest("spam.Classify", "missing email_body")
 	}
 
 	bf := bytes.NewBufferString("")
@@ -55,12 +56,13 @@ func (s *Spam) Check(ctx context.Context, request *spam.CheckRequest, response *
 	if len(request.Subject) > 0 {
 		tp.PrintfLine("Subject: %v", request.Subject)
 	}
+	tp.PrintfLine("Date: %s", time.Now().Format(time.RFC1123Z))
 	tp.PrintfLine("")
 	tp.PrintfLine("%v", request.EmailBody)
 	rc, err := s.client.Report(ctx, bf, spamc.Header{}.Set("Content-Length", fmt.Sprintf("%d", bf.Len())))
 	if err != nil {
 		log.Errorf("Error checking spamd %s", err)
-		return errors.InternalServerError("spam.Check", "Error checking spam")
+		return errors.InternalServerError("spam.Classify", "Error classifying email")
 	}
 	response.IsSpam = rc.IsSpam
 	response.Score = rc.Score
