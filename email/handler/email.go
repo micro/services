@@ -8,12 +8,15 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/micro/micro/v3/service"
+	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/email/proto"
 	"github.com/micro/services/pkg/tenant"
+	spampb "github.com/micro/services/spam/proto"
 )
 
 const (
@@ -31,7 +34,7 @@ type sendgridConf struct {
 	EmailFrom string `json:"email_from"`
 }
 
-func NewEmailHandler() *Email {
+func NewEmailHandler(svc *service.Service) *Email {
 	c := sendgridConf{}
 	val, err := config.Get("sendgridapi")
 	if err != nil {
@@ -46,11 +49,13 @@ func NewEmailHandler() *Email {
 	}
 	return &Email{
 		c,
+		spampb.NewSpamService("spam", svc.Client()),
 	}
 }
 
 type Email struct {
-	config sendgridConf
+	config  sendgridConf
+	spamSvc spampb.SpamService
 }
 
 func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.SendResponse) error {
@@ -65,6 +70,19 @@ func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.
 	}
 	if len(request.TextBody) == 0 && len(request.HtmlBody) == 0 {
 		return errors.BadRequest("email.send.validation", "Missing email body")
+	}
+
+	spamReq := &spampb.ClassifyRequest{
+		TextBody: request.TextBody,
+		HtmlBody: request.HtmlBody,
+		To:       request.To,
+		From:     request.From,
+		Subject:  request.Subject,
+	}
+	rsp, err := e.spamSvc.Classify(ctx, spamReq, client.WithAuthToken())
+	if err != nil || rsp.IsSpam {
+		log.Errorf("Error validating email %s %v", err, rsp)
+		return errors.InternalServerError("email.send", "Error validating email")
 	}
 
 	if err := e.sendEmail(ctx, request); err != nil {
