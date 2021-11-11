@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"bufio"
+	"bytes"
 	"context"
-	"strings"
+	"net/textproto"
 
 	"github.com/Teamwork/spamc"
 	"github.com/micro/micro/v3/service/config"
@@ -36,22 +38,25 @@ func New() *Spam {
 }
 
 func (s *Spam) Check(ctx context.Context, request *spam.CheckRequest, response *spam.CheckResponse) error {
-	hdr := spamc.Header{}
 	if len(request.EmailBody) == 0 {
 		return errors.BadRequest("spam.Check", "missing email_body")
 	}
 
+	bf := bytes.NewBufferString("")
+	tp := textproto.NewWriter(bufio.NewWriter(bf))
+
 	if len(request.To) > 0 {
-		hdr.Set("To", request.To)
+		tp.PrintfLine("To: %v", request.To)
 	}
 	if len(request.From) > 0 {
-		hdr.Set("From", request.From)
+		tp.PrintfLine("From: %v", request.From)
 	}
 	if len(request.Subject) > 0 {
-		hdr.Set("Subject", request.Subject)
+		tp.PrintfLine("Subject: %v", request.Subject)
 	}
-	log.Infof("Headers %v", hdr)
-	rc, err := s.client.Report(ctx, strings.NewReader(request.EmailBody), hdr)
+	tp.PrintfLine("")
+	tp.PrintfLine("%v", request.EmailBody)
+	rc, err := s.client.Report(ctx, bf, nil)
 	if err != nil {
 		log.Errorf("Error checking spamd %s", err)
 		return errors.InternalServerError("spam.Check", "Error checking spam")
