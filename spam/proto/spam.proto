@@ -10,7 +10,9 @@ service Spam {
 
 message CheckRequest {
 	string email_body = 1;
-	map<string, string> headers = 2;
+	string to = 2;
+	string from = 3;
+	string subject = 4;
 }
 
 message CheckResponse {
