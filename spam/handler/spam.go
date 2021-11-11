@@ -37,6 +37,9 @@ func New() *Spam {
 
 func (s *Spam) Check(ctx context.Context, request *spam.CheckRequest, response *spam.CheckResponse) error {
 	hdr := spamc.Header{}
+	if len(request.EmailBody) == 0 {
+		return errors.BadRequest("spam.Check", "missing email_body")
+	}
 
 	if len(request.To) > 0 {
 		hdr.Set("To", request.To)
@@ -47,6 +50,7 @@ func (s *Spam) Check(ctx context.Context, request *spam.CheckRequest, response *
 	if len(request.Subject) > 0 {
 		hdr.Set("Subject", request.Subject)
 	}
+	log.Infof("Headers %v", hdr)
 	rc, err := s.client.Report(ctx, strings.NewReader(request.EmailBody), hdr)
 	if err != nil {
 		log.Errorf("Error checking spamd %s", err)
