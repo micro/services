@@ -31,6 +31,7 @@ import * as routing from "./routing";
 import * as rss from "./rss";
 import * as sentiment from "./sentiment";
 import * as sms from "./sms";
+import * as spam from "./spam";
 import * as stock from "./stock";
 import * as stream from "./stream";
 import * as sunnah from "./sunnah";
@@ -78,6 +79,7 @@ export class Client {
     this.rssService = new rss.RssService(token);
     this.sentimentService = new sentiment.SentimentService(token);
     this.smsService = new sms.SmsService(token);
+    this.spamService = new spam.SpamService(token);
     this.stockService = new stock.StockService(token);
     this.streamService = new stream.StreamService(token);
     this.sunnahService = new sunnah.SunnahService(token);
@@ -124,6 +126,7 @@ export class Client {
   rssService: rss.RssService;
   sentimentService: sentiment.SentimentService;
   smsService: sms.SmsService;
+  spamService: spam.SpamService;
   stockService: stock.StockService;
   streamService: stream.StreamService;
   sunnahService: sunnah.SunnahService;
