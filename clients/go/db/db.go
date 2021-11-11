@@ -34,10 +34,22 @@ func (t *DbService) Delete(request *DeleteRequest) (*DeleteResponse, error) {
 	return rsp, t.client.Call("db", "Delete", request, rsp)
 }
 
+//
+func (t *DbService) ListTables(request *ListTablesRequest) (*ListTablesResponse, error) {
+	rsp := &ListTablesResponse{}
+	return rsp, t.client.Call("db", "ListTables", request, rsp)
+}
+
 // Read data from a table. Lookup can be by ID or via querying any field in the record.
 func (t *DbService) Read(request *ReadRequest) (*ReadResponse, error) {
 	rsp := &ReadResponse{}
 	return rsp, t.client.Call("db", "Read", request, rsp)
+}
+
+//
+func (t *DbService) RenameTable(request *RenameTableRequest) (*RenameTableResponse, error) {
+	rsp := &RenameTableResponse{}
+	return rsp, t.client.Call("db", "RenameTable", request, rsp)
 }
 
 // Truncate the records in a table
@@ -84,6 +96,13 @@ type DeleteRequest struct {
 type DeleteResponse struct {
 }
 
+type ListTablesRequest struct {
+}
+
+type ListTablesResponse struct {
+	Tables []string `json:"tables"`
+}
+
 type ReadRequest struct {
 	// Read by id. Equivalent to 'id == "your-id"'
 	Id string `json:"id"`
@@ -108,6 +127,14 @@ type ReadRequest struct {
 type ReadResponse struct {
 	// JSON encoded records
 	Records []map[string]interface{} `json:"records"`
+}
+
+type RenameTableRequest struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
+type RenameTableResponse struct {
 }
 
 type TruncateRequest struct {
