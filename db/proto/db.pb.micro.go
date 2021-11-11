@@ -49,6 +49,8 @@ type DbService interface {
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Truncate(ctx context.Context, in *TruncateRequest, opts ...client.CallOption) (*TruncateResponse, error)
 	Count(ctx context.Context, in *CountRequest, opts ...client.CallOption) (*CountResponse, error)
+	RenameTable(ctx context.Context, in *RenameTableRequest, opts ...client.CallOption) (*RenameTableResponse, error)
+	ListTables(ctx context.Context, in *ListTablesRequest, opts ...client.CallOption) (*ListTablesResponse, error)
 }
 
 type dbService struct {
@@ -123,6 +125,26 @@ func (c *dbService) Count(ctx context.Context, in *CountRequest, opts ...client.
 	return out, nil
 }
 
+func (c *dbService) RenameTable(ctx context.Context, in *RenameTableRequest, opts ...client.CallOption) (*RenameTableResponse, error) {
+	req := c.c.NewRequest(c.name, "Db.RenameTable", in)
+	out := new(RenameTableResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dbService) ListTables(ctx context.Context, in *ListTablesRequest, opts ...client.CallOption) (*ListTablesResponse, error) {
+	req := c.c.NewRequest(c.name, "Db.ListTables", in)
+	out := new(ListTablesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Db service
 
 type DbHandler interface {
@@ -132,6 +154,8 @@ type DbHandler interface {
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Truncate(context.Context, *TruncateRequest, *TruncateResponse) error
 	Count(context.Context, *CountRequest, *CountResponse) error
+	RenameTable(context.Context, *RenameTableRequest, *RenameTableResponse) error
+	ListTables(context.Context, *ListTablesRequest, *ListTablesResponse) error
 }
 
 func RegisterDbHandler(s server.Server, hdlr DbHandler, opts ...server.HandlerOption) error {
@@ -142,6 +166,8 @@ func RegisterDbHandler(s server.Server, hdlr DbHandler, opts ...server.HandlerOp
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Truncate(ctx context.Context, in *TruncateRequest, out *TruncateResponse) error
 		Count(ctx context.Context, in *CountRequest, out *CountResponse) error
+		RenameTable(ctx context.Context, in *RenameTableRequest, out *RenameTableResponse) error
+		ListTables(ctx context.Context, in *ListTablesRequest, out *ListTablesResponse) error
 	}
 	type Db struct {
 		db
@@ -176,4 +202,12 @@ func (h *dbHandler) Truncate(ctx context.Context, in *TruncateRequest, out *Trun
 
 func (h *dbHandler) Count(ctx context.Context, in *CountRequest, out *CountResponse) error {
 	return h.DbHandler.Count(ctx, in, out)
+}
+
+func (h *dbHandler) RenameTable(ctx context.Context, in *RenameTableRequest, out *RenameTableResponse) error {
+	return h.DbHandler.RenameTable(ctx, in, out)
+}
+
+func (h *dbHandler) ListTables(ctx context.Context, in *ListTablesRequest, out *ListTablesResponse) error {
+	return h.DbHandler.ListTables(ctx, in, out)
 }

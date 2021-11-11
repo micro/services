@@ -9,8 +9,8 @@ import (
 )
 
 func TestCorrectFieldName(t *testing.T) {
-	f := correctFieldName("a.b.c")
-	if f != "data ->> 'a' ->> 'b' ->> 'c'" {
+	f := correctFieldName("a.b.c", true)
+	if f != "data -> 'a' -> 'b' ->> 'c'" {
 		t.Fatal(f)
 	}
 }

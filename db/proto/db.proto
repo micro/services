@@ -12,6 +12,8 @@ service Db {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Truncate(TruncateRequest) returns (TruncateResponse) {}
 	rpc Count(CountRequest) returns (CountResponse) {}
+	rpc RenameTable(RenameTableRequest) returns (RenameTableResponse) {}
+	rpc ListTables(ListTablesRequest) returns (ListTablesResponse) {}
 }
 
 
@@ -99,4 +101,21 @@ message CountRequest {
 message CountResponse {
 	// the number of records in the table
 	int32 count = 1;
+}
+
+message RenameTableRequest {
+	string from = 1;
+	string to = 2;
+}
+
+message RenameTableResponse {
+
+}
+
+message ListTablesRequest {
+
+}
+
+message ListTablesResponse {
+	repeated string tables = 1;
 }
