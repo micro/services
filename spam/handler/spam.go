@@ -65,5 +65,9 @@ func (s *Spam) Check(ctx context.Context, request *spam.CheckRequest, response *
 	response.IsSpam = rc.IsSpam
 	response.Score = rc.Score
 	response.Report = rc.Report.String()
+	log.Infof("%s", rc.Report.Intro)
+	for _, v := range rc.Report.Table {
+		log.Infof("%s, %s, %s", v.Rule, v.Description, v.Points)
+	}
 	return nil
 }
