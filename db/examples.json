@@ -84,5 +84,28 @@
         "count": 31
       }
     }
+  ],
+  "listTables": [
+    {
+      "title": "List tables",
+      "run_check": false,
+      "request": {
+      },
+      "response": {
+        "tables": ["users", "events"]
+      }
+    }
+  ],
+  "renameTable": [
+    {
+      "title": "Rename table",
+      "run_check": false,
+      "request": {
+        "from": "events",
+        "to": "events_backup"
+      },
+      "response": {
+      }
+    }
   ]
 }
