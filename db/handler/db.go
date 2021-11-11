@@ -374,7 +374,7 @@ func (e *Db) RenameTable(ctx context.Context, req *db.RenameTableRequest, rsp *d
 		return err
 	}
 
-	return db.Raw(fmt.Sprintf(renameTableStmt, oldtableName, newtableName)).Error
+	return db.Debug().Raw(fmt.Sprintf(renameTableStmt, oldtableName, newtableName)).Error
 }
 
 func (e *Db) ListTables(ctx context.Context, req *db.ListTablesRequest, rsp *db.ListTablesResponse) error {
