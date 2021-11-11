@@ -2,6 +2,6 @@ Check if an email is spam
 
 # Spam Service
 
-Check if an email is spam.
+An API to classify emails against spam detection rules. 
 
 Powered by [SpamAssassin](http://spamassassin.apache.org/).
