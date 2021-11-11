@@ -396,7 +396,7 @@ func (e *Db) ListTables(ctx context.Context, req *db.ListTablesRequest, rsp *db.
 	rsp.Tables = []string{}
 	for _, v := range tables {
 		if strings.HasPrefix(v, tenantId) {
-			rsp.Tables = append(rsp.Tables, strings.Replace(v, tenantId, "", -1))
+			rsp.Tables = append(rsp.Tables, strings.Replace(v, tenantId+"_", "", -1))
 		}
 	}
 	return nil
