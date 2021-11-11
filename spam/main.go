@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/micro/services/pkg/tracing"
-	"github.com/micro/services/qr/handler"
-	pb "github.com/micro/services/qr/proto"
+	"github.com/micro/services/spam/handler"
+	pb "github.com/micro/services/spam/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
@@ -12,13 +12,14 @@ import (
 func main() {
 	// Create service
 	srv := service.New(
-		service.Name("qr"),
+		service.Name("spam"),
 		service.Version("latest"),
 	)
 
 	// Register handler
-	pb.RegisterQrHandler(srv.Server(), handler.New())
-	traceCloser := tracing.SetupOpentracing("qr")
+	pb.RegisterSpamHandler(srv.Server(), handler.New())
+
+	traceCloser := tracing.SetupOpentracing("spam")
 	defer traceCloser.Close()
 
 	// Run service
