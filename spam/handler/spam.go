@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"fmt"
 	"net/textproto"
 
 	"github.com/Teamwork/spamc"
@@ -56,7 +57,7 @@ func (s *Spam) Check(ctx context.Context, request *spam.CheckRequest, response *
 	}
 	tp.PrintfLine("")
 	tp.PrintfLine("%v", request.EmailBody)
-	rc, err := s.client.Report(ctx, bf, spamc.Header{}.Set("Content-Length", bf.Len()))
+	rc, err := s.client.Report(ctx, bf, spamc.Header{}.Set("Content-Length", fmt.Sprintf("%d", bf.Len())))
 	if err != nil {
 		log.Errorf("Error checking spamd %s", err)
 		return errors.InternalServerError("spam.Check", "Error checking spam")
