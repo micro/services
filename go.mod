@@ -34,7 +34,7 @@ require (
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/micro-go v0.0.0-20211101221015-79ab982f8163
-	github.com/micro/micro/v3 v3.7.1-0.20211111155628-5c83aaf82619
+	github.com/micro/micro/v3 v3.7.1-0.20211111162246-1f3d81ada4a9
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
