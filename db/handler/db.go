@@ -23,6 +23,7 @@ import (
 const idKey = "id"
 const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
 const truncateStmt = `truncate table "%v"`
+const renameTableStmt = `ALTER TABLE %v RENAME TO %v;`
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
@@ -350,5 +351,53 @@ func (e *Db) Count(ctx context.Context, req *db.CountRequest, rsp *db.CountRespo
 		return err
 	}
 	rsp.Count = int32(a)
+	return nil
+}
+
+func (e *Db) RenameTable(ctx context.Context, req *db.RenameTableRequest, rsp *db.RenameTableResponse) error {
+	if req.From == "" {
+		req.From = "default"
+	}
+
+	oldtableName, err := e.tableName(ctx, req.From)
+	if err != nil {
+		return err
+	}
+
+	newtableName, err := e.tableName(ctx, req.To)
+	if err != nil {
+		return err
+	}
+
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+
+	return db.Raw(fmt.Sprintf(renameTableStmt, oldtableName, newtableName)).Error
+}
+
+func (e *Db) ListTables(ctx context.Context, req *db.ListTablesRequest, rsp *db.ListTablesResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+
+	var tables []string
+	if err := db.Table("information_schema.tables").Select("table_name").Where("table_schema = ?", "public").Find(&tables).Error; err != nil {
+		return err
+	}
+	rsp.Tables = []string{}
+	for _, v := range tables {
+		if strings.HasPrefix(v, tenantId) {
+			rsp.Tables = append(rsp.Tables, v)
+		}
+	}
 	return nil
 }
