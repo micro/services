@@ -23,7 +23,7 @@ import (
 const idKey = "id"
 const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
 const truncateStmt = `truncate table "%v"`
-const renameTableStmt = `ALTER TABLE %v RENAME TO %v;`
+const renameTableStmt = `ALTER TABLE "%v" RENAME TO "%v";`
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
