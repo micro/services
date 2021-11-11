@@ -40,12 +40,13 @@ func (s *Spam) Check(ctx context.Context, request *spam.CheckRequest, response *
 	for k, v := range request.Headers {
 		hdr.Set(k, v)
 	}
-	rc, err := s.client.Check(ctx, strings.NewReader(request.EmailBody), hdr)
+	rc, err := s.client.Report(ctx, strings.NewReader(request.EmailBody), hdr)
 	if err != nil {
 		log.Errorf("Error checking spamd %s", err)
 		return errors.InternalServerError("spam.Check", "Error checking spam")
 	}
 	response.IsSpam = rc.IsSpam
 	response.Score = rc.Score
+	response.Report = rc.Report.String()
 	return nil
 }

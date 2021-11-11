@@ -16,4 +16,5 @@ message CheckRequest {
 message CheckResponse {
 	bool is_spam = 1;
 	double score = 2;
+	string report = 3;
 }
