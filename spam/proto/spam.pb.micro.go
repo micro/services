@@ -42,7 +42,7 @@ func NewSpamEndpoints() []*api.Endpoint {
 // Client API for Spam service
 
 type SpamService interface {
-	Check(ctx context.Context, in *CheckRequest, opts ...client.CallOption) (*CheckResponse, error)
+	Report(ctx context.Context, in *CheckRequest, opts ...client.CallOption) (*CheckResponse, error)
 }
 
 type spamService struct {
@@ -57,8 +57,8 @@ func NewSpamService(name string, c client.Client) SpamService {
 	}
 }
 
-func (c *spamService) Check(ctx context.Context, in *CheckRequest, opts ...client.CallOption) (*CheckResponse, error) {
-	req := c.c.NewRequest(c.name, "Spam.Check", in)
+func (c *spamService) Report(ctx context.Context, in *CheckRequest, opts ...client.CallOption) (*CheckResponse, error) {
+	req := c.c.NewRequest(c.name, "Spam.Report", in)
 	out := new(CheckResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -70,12 +70,12 @@ func (c *spamService) Check(ctx context.Context, in *CheckRequest, opts ...clien
 // Server API for Spam service
 
 type SpamHandler interface {
-	Check(context.Context, *CheckRequest, *CheckResponse) error
+	Report(context.Context, *CheckRequest, *CheckResponse) error
 }
 
 func RegisterSpamHandler(s server.Server, hdlr SpamHandler, opts ...server.HandlerOption) error {
 	type spam interface {
-		Check(ctx context.Context, in *CheckRequest, out *CheckResponse) error
+		Report(ctx context.Context, in *CheckRequest, out *CheckResponse) error
 	}
 	type Spam struct {
 		spam
@@ -88,6 +88,6 @@ type spamHandler struct {
 	SpamHandler
 }
 
-func (h *spamHandler) Check(ctx context.Context, in *CheckRequest, out *CheckResponse) error {
-	return h.SpamHandler.Check(ctx, in, out)
+func (h *spamHandler) Report(ctx context.Context, in *CheckRequest, out *CheckResponse) error {
+	return h.SpamHandler.Report(ctx, in, out)
 }

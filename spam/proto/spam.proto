@@ -5,7 +5,7 @@ package spam;
 option go_package = "./proto;spam";
 
 service Spam {
-	rpc Check(CheckRequest) returns (CheckResponse) {}
+	rpc Report(CheckRequest) returns (CheckResponse) {}
 }
 
 message CheckRequest {
@@ -18,5 +18,5 @@ message CheckRequest {
 message CheckResponse {
 	bool is_spam = 1;
 	double score = 2;
-	string report = 3;
+	repeated string details = 3;
 }
