@@ -74,7 +74,7 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	return err
 }
 
-func (domain *Domain) CreatePasswordRestCode(ctx context.Context, userID string) (*passwordResetCode, error) {
+func (domain *Domain) CreatePasswordResetCode(ctx context.Context, userID string) (*passwordResetCode, error) {
 	pwcode := passwordResetCode{
 		ID:      uuid.New().String(),
 		Expires: time.Now().Add(24 * time.Hour),
@@ -103,7 +103,7 @@ func (domain *Domain) DeletePasswordRestCode(ctx context.Context, id string) err
 }
 
 // ReadToken returns the user id
-func (domain *Domain) ReadPasswordRestCode(ctx context.Context, id string) (*passwordResetCode, error) {
+func (domain *Domain) ReadPasswordResetCode(ctx context.Context, id string) (*passwordResetCode, error) {
 	if id == "" {
 		return nil, errors.New("password reset code id is empty")
 	}
@@ -134,7 +134,7 @@ func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, fromNa
 	}
 	from := mail.NewEmail(fromName, "support@m3o.com")
 	to := mail.NewEmail(toUsername, toAddress)
-	code, err := domain.CreatePasswordRestCode(ctx, userId)
+	code, err := domain.CreatePasswordResetCode(ctx, userId)
 	if err != nil {
 		return err
 	}

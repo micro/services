@@ -256,7 +256,7 @@ func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordR
 }
 
 func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, rsp *pb.ResetPasswordResponse) error {
-	code, err := s.domain.ReadPasswordRestCode(ctx, req.Code)
+	code, err := s.domain.ReadPasswordResetCode(ctx, req.Code)
 	if err != nil {
 		return err
 	}
