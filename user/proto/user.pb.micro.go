@@ -52,6 +52,8 @@ type UserService interface {
 	ReadSession(ctx context.Context, in *ReadSessionRequest, opts ...client.CallOption) (*ReadSessionResponse, error)
 	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...client.CallOption) (*VerifyEmailResponse, error)
 	SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, opts ...client.CallOption) (*SendVerificationEmailResponse, error)
+	SendPasswordResetEmail(ctx context.Context, in *SendPasswordResetEmailRequest, opts ...client.CallOption) (*SendPasswordResetEmailResponse, error)
+	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...client.CallOption) (*ResetPasswordResponse, error)
 }
 
 type userService struct {
@@ -166,6 +168,26 @@ func (c *userService) SendVerificationEmail(ctx context.Context, in *SendVerific
 	return out, nil
 }
 
+func (c *userService) SendPasswordResetEmail(ctx context.Context, in *SendPasswordResetEmailRequest, opts ...client.CallOption) (*SendPasswordResetEmailResponse, error) {
+	req := c.c.NewRequest(c.name, "User.SendPasswordResetEmail", in)
+	out := new(SendPasswordResetEmailResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...client.CallOption) (*ResetPasswordResponse, error) {
+	req := c.c.NewRequest(c.name, "User.ResetPassword", in)
+	out := new(ResetPasswordResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for User service
 
 type UserHandler interface {
@@ -179,6 +201,8 @@ type UserHandler interface {
 	ReadSession(context.Context, *ReadSessionRequest, *ReadSessionResponse) error
 	VerifyEmail(context.Context, *VerifyEmailRequest, *VerifyEmailResponse) error
 	SendVerificationEmail(context.Context, *SendVerificationEmailRequest, *SendVerificationEmailResponse) error
+	SendPasswordResetEmail(context.Context, *SendPasswordResetEmailRequest, *SendPasswordResetEmailResponse) error
+	ResetPassword(context.Context, *ResetPasswordRequest, *ResetPasswordResponse) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
@@ -193,6 +217,8 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		ReadSession(ctx context.Context, in *ReadSessionRequest, out *ReadSessionResponse) error
 		VerifyEmail(ctx context.Context, in *VerifyEmailRequest, out *VerifyEmailResponse) error
 		SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, out *SendVerificationEmailResponse) error
+		SendPasswordResetEmail(ctx context.Context, in *SendPasswordResetEmailRequest, out *SendPasswordResetEmailResponse) error
+		ResetPassword(ctx context.Context, in *ResetPasswordRequest, out *ResetPasswordResponse) error
 	}
 	type User struct {
 		user
@@ -243,4 +269,12 @@ func (h *userHandler) VerifyEmail(ctx context.Context, in *VerifyEmailRequest, o
 
 func (h *userHandler) SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, out *SendVerificationEmailResponse) error {
 	return h.UserHandler.SendVerificationEmail(ctx, in, out)
+}
+
+func (h *userHandler) SendPasswordResetEmail(ctx context.Context, in *SendPasswordResetEmailRequest, out *SendPasswordResetEmailResponse) error {
+	return h.UserHandler.SendPasswordResetEmail(ctx, in, out)
+}
+
+func (h *userHandler) ResetPassword(ctx context.Context, in *ResetPasswordRequest, out *ResetPasswordResponse) error {
+	return h.UserHandler.ResetPassword(ctx, in, out)
 }

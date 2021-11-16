@@ -15,6 +15,8 @@ service User {
 	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
 	rpc VerifyEmail(VerifyEmailRequest) returns(VerifyEmailResponse) {}
 	rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse) {}
+	rpc SendPasswordResetEmail(SendPasswordResetEmailRequest) returns (SendPasswordResetEmailResponse) {}
+	rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
 }
 
 message Account {
@@ -185,3 +187,32 @@ message SendVerificationEmailRequest{
 }
 
 message SendVerificationEmailResponse{}
+
+// Send an email with a verification code to reset password.
+// Call "ResetPassword" endpoint once user provides the code.
+message SendPasswordResetEmailRequest {
+	string email = 1;
+	string subject = 2;
+	// Text content of the email. Don't forget to include the string '$code' which will be replaced by the real verification link
+	// HTML emails are not available currently.
+	string textContent = 3;
+	// Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
+	string fromName = 4;
+}
+
+message SendPasswordResetEmailResponse {
+}
+
+// Reset password with the code sent by the "SendPasswordResetEmail" endoint.
+message ResetPasswordRequest {
+	// The code from the verification email
+	string code = 1;
+	// the new password
+	string newPassword = 2;
+	// confirm new password
+	string confirmPassword = 3;
+}
+
+message ResetPasswordResponse {
+
+}

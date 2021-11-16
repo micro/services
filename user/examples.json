@@ -101,6 +101,19 @@
       "response": {}
     }
   ],
+  "sendPasswordResetEmail": [
+    {
+      "title": "Send password reset email",
+      "run_check": true,
+      "request": {
+        "email": "joe@example.com",
+        "subject": "Password reset",
+        "textContent": "Hi there,\n click here to reset your password: myapp.com/reset/code?=$code",
+        "fromName": "Awesome Dot Com"
+      },
+      "response": {}
+    }
+  ],
   "verifyEmail": [
     {
       "title": "Verify email",
