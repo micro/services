@@ -104,12 +104,24 @@
   "sendPasswordResetEmail": [
     {
       "title": "Send password reset email",
-      "run_check": true,
+      "run_check": false,
       "request": {
         "email": "joe@example.com",
         "subject": "Password reset",
         "textContent": "Hi there,\n click here to reset your password: myapp.com/reset/code?=$code",
         "fromName": "Awesome Dot Com"
+      },
+      "response": {}
+    }
+  ],
+  "resetPassword": [
+    {
+      "title": "Reset password",
+      "run_check": false,
+      "request": {
+        "code": "some-code-from-email",
+        "newPassword": "newpass123",
+        "confirmPassword": "newpass123"
       },
       "response": {}
     }
