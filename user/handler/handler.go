@@ -271,5 +271,6 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	if err := s.domain.UpdatePassword(ctx, code.UserID, salt, pp); err != nil {
 		return errors.InternalServerError("user.resetpassword", err.Error())
 	}
+	s.domain.DeletePasswordRestCode(ctx, req.Code)
 	return nil
 }
