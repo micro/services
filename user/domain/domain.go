@@ -110,7 +110,7 @@ func (domain *Domain) ReadPasswordResetCode(ctx context.Context, id string) (*pa
 	token := &passwordResetCode{}
 
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "password-reset-code",
+		Table: "password-reset-codes",
 		Query: fmt.Sprintf("id == '%v'", id),
 	})
 	if err != nil {
