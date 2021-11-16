@@ -31,6 +31,12 @@ type verificationToken struct {
 	UserID string `json:"userId"`
 }
 
+type passwordResetCode struct {
+	ID      string    `json:"id"`
+	Expires time.Time `json:"expires"`
+	UserID  string    `json:"userId"`
+}
+
 type Domain struct {
 	db         db.DbService
 	sengridKey string
@@ -60,6 +66,79 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	from := mail.NewEmail(fromName, "support@m3o.com")
 	to := mail.NewEmail(toUsername, toAddress)
 	textContent = strings.Replace(textContent, "$micro_verification_link", "https://angry-cori-854281.netlify.app?token="+token+"&redirectUrl="+url.QueryEscape(redirctUrl)+"&failureRedirectUrl="+url.QueryEscape(failureRedirectUrl), -1)
+	message := mail.NewSingleEmail(from, subject, to, textContent, "")
+	client := sendgrid.NewSendClient(domain.sengridKey)
+	response, err := client.Send(message)
+	logger.Info(response)
+
+	return err
+}
+
+func (domain *Domain) CreatePasswordRestCode(ctx context.Context, userID string) (*passwordResetCode, error) {
+	pwcode := passwordResetCode{
+		ID:      uuid.New().String(),
+		Expires: time.Now().Add(24 * time.Hour),
+		UserID:  userID,
+	}
+
+	s := &_struct.Struct{}
+	jso, _ := json.Marshal(pwcode)
+	err := s.UnmarshalJSON(jso)
+	if err != nil {
+		return nil, err
+	}
+	_, err = domain.db.Create(ctx, &db.CreateRequest{
+		Table:  "password-reset-codes",
+		Record: s,
+	})
+	return &pwcode, err
+}
+
+func (domain *Domain) DeletePasswordRestCode(ctx context.Context, id string) error {
+	_, err := domain.db.Delete(ctx, &db.DeleteRequest{
+		Table: "password-reset-codes",
+		Id:    id,
+	})
+	return err
+}
+
+// ReadToken returns the user id
+func (domain *Domain) ReadPasswordRestCode(ctx context.Context, id string) (*passwordResetCode, error) {
+	if id == "" {
+		return nil, errors.New("password reset code id is empty")
+	}
+	token := &passwordResetCode{}
+
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table: "password-reset-code",
+		Query: fmt.Sprintf("id == '%v'", id),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(rsp.Records) == 0 {
+		return nil, errors.New("password reset code not found")
+	}
+	m, _ := rsp.Records[0].MarshalJSON()
+	json.Unmarshal(m, token)
+
+	if token.Expires.Before(time.Now()) {
+		return nil, errors.New("password reset code expired")
+	}
+	return token, nil
+}
+
+func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, fromName, toAddress, toUsername, subject, textContent string) error {
+	if domain.sengridKey == "" {
+		return fmt.Errorf("empty email api key")
+	}
+	from := mail.NewEmail(fromName, "support@m3o.com")
+	to := mail.NewEmail(toUsername, toAddress)
+	code, err := domain.CreatePasswordRestCode(ctx, userId)
+	if err != nil {
+		return err
+	}
+	textContent = strings.Replace(textContent, "$code", code.ID, -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
 	client := sendgrid.NewSendClient(domain.sengridKey)
 	response, err := client.Send(message)

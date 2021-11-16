@@ -245,3 +245,31 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 
 	return s.domain.SendEmail(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.RedirectUrl, req.FailureRedirectUrl)
 }
+
+func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordResetEmailRequest, rsp *pb.SendPasswordResetEmailResponse) error {
+	users, err := s.domain.Search(ctx, "", req.Email)
+	if err != nil {
+		return err
+	}
+
+	return s.domain.SendPasswordResetEmail(ctx, users[0].Id, req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent)
+}
+
+func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, rsp *pb.ResetPasswordResponse) error {
+	code, err := s.domain.ReadPasswordRestCode(ctx, req.Code)
+	if err != nil {
+		return err
+	}
+	// no error means it exists and not expired
+	salt := random(16)
+	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.NewPassword), 10)
+	if err != nil {
+		return errors.InternalServerError("user.ResetPassword", err.Error())
+	}
+	pp := base64.StdEncoding.EncodeToString(h)
+
+	if err := s.domain.UpdatePassword(ctx, code.UserID, salt, pp); err != nil {
+		return errors.InternalServerError("user.resetpassword", err.Error())
+	}
+	return nil
+}
