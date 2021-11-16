@@ -123,6 +123,7 @@ message ListTablesResponse {
 	repeated string tables = 1;
 }
 
+// Drop a table in the DB
 message DropTableRequest {
 	string table = 1;
 }
