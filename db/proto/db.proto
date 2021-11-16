@@ -88,8 +88,6 @@ message TruncateRequest {
 }
 
 message TruncateResponse {
-	// The table truncated
-	string table = 1;
 }
 
 // Count records in a table
@@ -130,7 +128,5 @@ message DropTableRequest {
 }
 
 message DropTableResponse {
-	// The table truncated
-	string table = 1;
 }
 
