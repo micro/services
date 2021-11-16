@@ -103,8 +103,11 @@ message CountResponse {
 	int32 count = 1;
 }
 
+// Rename a table
 message RenameTableRequest {
+	// current table name
 	string from = 1;
+	// new table name
 	string to = 2;
 }
 
@@ -112,10 +115,12 @@ message RenameTableResponse {
 
 }
 
+// List tables in the DB
 message ListTablesRequest {
 
 }
 
 message ListTablesResponse {
+	// list of tables
 	repeated string tables = 1;
 }
