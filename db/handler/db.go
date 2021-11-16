@@ -23,6 +23,7 @@ import (
 const idKey = "id"
 const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
 const truncateStmt = `truncate table "%v"`
+const dropTableStmt = `drop table "%v"`
 const renameTableStmt = `ALTER TABLE "%v" RENAME TO "%v"`
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
@@ -328,6 +329,20 @@ func (e *Db) Truncate(ctx context.Context, req *db.TruncateRequest, rsp *db.Trun
 		return err
 	}
 	return db.Exec(fmt.Sprintf(truncateStmt, tableName)).Error
+}
+
+func (e *Db) DropTable(ctx context.Context, req *db.DropTableRequest, rsp *db.DropTableResponse) error {
+	tableName, err := e.tableName(ctx, req.Table)
+	if err != nil {
+		return err
+	}
+	logger.Infof("Dropping table '%v'", tableName)
+
+	db, err := e.GetDBConn(ctx)
+	if err != nil {
+		return err
+	}
+	return db.Exec(fmt.Sprintf(dropTableStmt, tableName)).Error
 }
 
 func (e *Db) Count(ctx context.Context, req *db.CountRequest, rsp *db.CountResponse) error {

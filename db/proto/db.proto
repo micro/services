@@ -14,6 +14,7 @@ service Db {
 	rpc Count(CountRequest) returns (CountResponse) {}
 	rpc RenameTable(RenameTableRequest) returns (RenameTableResponse) {}
 	rpc ListTables(ListTablesRequest) returns (ListTablesResponse) {}
+	rpc DropTable(DropTableRequest) returns (DropTableResponse) {}
 }
 
 
@@ -83,7 +84,6 @@ message DeleteResponse {
 
 // Truncate the records in a table
 message TruncateRequest {
-	// Optional table name. Defaults to 'default'
 	string table = 1;
 }
 
@@ -118,4 +118,13 @@ message ListTablesRequest {
 
 message ListTablesResponse {
 	repeated string tables = 1;
+}
+
+message DropTableRequest {
+	string table = 1;
+}
+
+message DropTableResponse {
+	// The table truncated
+	string table = 1;
 }

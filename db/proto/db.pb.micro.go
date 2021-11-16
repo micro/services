@@ -51,6 +51,7 @@ type DbService interface {
 	Count(ctx context.Context, in *CountRequest, opts ...client.CallOption) (*CountResponse, error)
 	RenameTable(ctx context.Context, in *RenameTableRequest, opts ...client.CallOption) (*RenameTableResponse, error)
 	ListTables(ctx context.Context, in *ListTablesRequest, opts ...client.CallOption) (*ListTablesResponse, error)
+	DropTable(ctx context.Context, in *DropTableRequest, opts ...client.CallOption) (*DropTableResponse, error)
 }
 
 type dbService struct {
@@ -145,6 +146,16 @@ func (c *dbService) ListTables(ctx context.Context, in *ListTablesRequest, opts 
 	return out, nil
 }
 
+func (c *dbService) DropTable(ctx context.Context, in *DropTableRequest, opts ...client.CallOption) (*DropTableResponse, error) {
+	req := c.c.NewRequest(c.name, "Db.DropTable", in)
+	out := new(DropTableResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Db service
 
 type DbHandler interface {
@@ -156,6 +167,7 @@ type DbHandler interface {
 	Count(context.Context, *CountRequest, *CountResponse) error
 	RenameTable(context.Context, *RenameTableRequest, *RenameTableResponse) error
 	ListTables(context.Context, *ListTablesRequest, *ListTablesResponse) error
+	DropTable(context.Context, *DropTableRequest, *DropTableResponse) error
 }
 
 func RegisterDbHandler(s server.Server, hdlr DbHandler, opts ...server.HandlerOption) error {
@@ -168,6 +180,7 @@ func RegisterDbHandler(s server.Server, hdlr DbHandler, opts ...server.HandlerOp
 		Count(ctx context.Context, in *CountRequest, out *CountResponse) error
 		RenameTable(ctx context.Context, in *RenameTableRequest, out *RenameTableResponse) error
 		ListTables(ctx context.Context, in *ListTablesRequest, out *ListTablesResponse) error
+		DropTable(ctx context.Context, in *DropTableRequest, out *DropTableResponse) error
 	}
 	type Db struct {
 		db
@@ -210,4 +223,8 @@ func (h *dbHandler) RenameTable(ctx context.Context, in *RenameTableRequest, out
 
 func (h *dbHandler) ListTables(ctx context.Context, in *ListTablesRequest, out *ListTablesResponse) error {
 	return h.DbHandler.ListTables(ctx, in, out)
+}
+
+func (h *dbHandler) DropTable(ctx context.Context, in *DropTableRequest, out *DropTableResponse) error {
+	return h.DbHandler.DropTable(ctx, in, out)
 }
