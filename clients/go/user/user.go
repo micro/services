@@ -53,6 +53,19 @@ func (t *UserService) ReadSession(request *ReadSessionRequest) (*ReadSessionResp
 	return rsp, t.client.Call("user", "ReadSession", request, rsp)
 }
 
+// Reset password with the code sent by the "SendPasswordResetEmail" endoint.
+func (t *UserService) ResetPassword(request *ResetPasswordRequest) (*ResetPasswordResponse, error) {
+	rsp := &ResetPasswordResponse{}
+	return rsp, t.client.Call("user", "ResetPassword", request, rsp)
+}
+
+// Send an email with a verification code to reset password.
+// Call "ResetPassword" endpoint once user provides the code.
+func (t *UserService) SendPasswordResetEmail(request *SendPasswordResetEmailRequest) (*SendPasswordResetEmailResponse, error) {
+	rsp := &SendPasswordResetEmailResponse{}
+	return rsp, t.client.Call("user", "SendPasswordResetEmail", request, rsp)
+}
+
 // Send a verification email
 // to the user being signed up. Email from will be from 'support@m3o.com',
 // but you can provide the title and contents.
@@ -168,6 +181,31 @@ type ReadSessionRequest struct {
 
 type ReadSessionResponse struct {
 	Session *Session `json:"session"`
+}
+
+type ResetPasswordRequest struct {
+	// The code from the verification email
+	Code string `json:"code"`
+	// confirm new password
+	ConfirmPassword string `json:"confirmPassword"`
+	// the new password
+	NewPassword string `json:"newPassword"`
+}
+
+type ResetPasswordResponse struct {
+}
+
+type SendPasswordResetEmailRequest struct {
+	Email string `json:"email"`
+	// Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
+	FromName string `json:"fromName"`
+	Subject  string `json:"subject"`
+	// Text content of the email. Don't forget to include the string '$code' which will be replaced by the real verification link
+	// HTML emails are not available currently.
+	TextContent string `json:"textContent"`
+}
+
+type SendPasswordResetEmailResponse struct {
 }
 
 type SendVerificationEmailRequest struct {
