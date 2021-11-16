@@ -73,6 +73,16 @@
       "response": {}
     }
   ],
+  "dropTable": [
+    {
+      "title": "Drop table",
+      "run_check": false,
+      "request": {
+        "table": "users"
+      },
+      "response": {}
+    }
+  ],
   "count": [
     {
       "title": "Count entries in a table",
@@ -89,8 +99,7 @@
     {
       "title": "List tables",
       "run_check": false,
-      "request": {
-      },
+      "request": {},
       "response": {
         "tables": ["users", "events"]
       }
@@ -104,8 +113,7 @@
         "from": "events",
         "to": "events_backup"
       },
-      "response": {
-      }
+      "response": {}
     }
   ]
 }
