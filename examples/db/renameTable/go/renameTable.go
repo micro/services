@@ -7,7 +7,7 @@ import (
 	"github.com/micro/services/clients/go/db"
 )
 
-//
+// Rename a table
 func RenameTable() {
 	dbService := db.NewDbService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := dbService.RenameTable(&db.RenameTableRequest{
