@@ -14,14 +14,14 @@ export class Client {
 }
 `
 
-const tsServiceTemplate = `import * as m3o from '@m3o/m3o-node';
+const tsServiceTemplate = `import * as micro from 'micro-js-client';
 
 {{ $service := .service }}
 export class {{ title $service.Name }}Service{
-	private client: m3o.Client;
+	private client: micro.Client;
 
 	constructor(token: string) {
-		this.client = new m3o.Client({token: token})
+		this.client = new micro.Client({token: token})
 	}
 	{{ range $key, $req := $service.Spec.Components.RequestBodies }}{{ $endpointName := requestTypeToEndpointName $key}}{{ if endpointComment $endpointName $service.Spec.Components.Schemas }}{{ endpointComment $endpointName $service.Spec.Components.Schemas }}{{ end }}{{ untitle $endpointName}}(request: {{ requestType $key }}): Promise<{{ requestTypeToResponseType $key }}> {
 		return this.client.call("{{ $service.Name }}", "{{ requestTypeToEndpointPath $key}}", request) as Promise<{{ requestTypeToResponseType $key }}>;
@@ -35,7 +35,7 @@ export interface {{ title $typeName }}{{ "{" }}
 {{end}}
 `
 
-const tsExampleTemplate = `{{ $service := .service }}const { {{ title $service.Name }}Service } = require('m3o/{{ $service.Name }}');
+const tsExampleTemplate = `{{ $service := .service }}const { {{ title $service.Name }}Service } = require('micro-js-client/{{ $service.Name }}');
 
 {{ if endpointComment .endpoint $service.Spec.Components.Schemas }}{{ endpointComment .endpoint $service.Spec.Components.Schemas }}{{ end }}async function {{ untitle .funcName }}() {
 	let {{ $service.Name }}Service = new {{ title $service.Name }}Service(process.env.MICRO_API_TOKEN)
