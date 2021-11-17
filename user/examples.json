@@ -89,7 +89,7 @@
   "sendVerificationEmail": [
     {
       "title": "Send verification email",
-      "run_check": true,
+      "run_check": false,
       "request": {
         "email": "joe@example.com",
         "subject": "Email verification",
