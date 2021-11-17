@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/client"
@@ -59,12 +60,24 @@ type Email struct {
 	spamSvc spampb.SpamService
 }
 
-func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.SendResponse) error {
-	if len(request.From) == 0 {
-		return errors.BadRequest("email.send.validation", "Missing from address")
+// validEmail does very light validation
+func validEmail(email string) bool {
+	if len(email) == 0 {
+		return false
 	}
-	if len(request.To) == 0 {
-		return errors.BadRequest("email.send.validation", "Missing to address")
+	m, err := regexp.MatchString("^\\S+@\\S+$", email)
+	if err != nil {
+		return false
+	}
+	return m
+}
+
+func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.SendResponse) error {
+	if !validEmail(request.From) {
+		return errors.BadRequest("email.send.validation", "Invalid from address")
+	}
+	if !validEmail(request.To) {
+		return errors.BadRequest("email.send.validation", "Invalid to address")
 	}
 	if len(request.Subject) == 0 {
 		return errors.BadRequest("email.send.validation", "Missing subject")
