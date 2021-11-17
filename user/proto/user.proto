@@ -123,12 +123,13 @@ message UpdatePasswordResponse {
 
 // Read a session by the session id. In the event it has expired or is not found and error is returned.
 message ReadSessionRequest {
-    // The unique session id
-    string sessionId = 1;
+	// The unique session id
+	string sessionId = 1;
 }
 
 message ReadSessionResponse {
-    Session session = 1;
+	// the session for the user
+	Session session = 1;
 }
 
 
@@ -150,7 +151,8 @@ message LoginResponse {
 
 // Logout a user account
 message LogoutRequest {
-    string sessionId = 1;
+	// the session id for the user to logout
+	string sessionId = 1;
 }
 
 message LogoutResponse {
