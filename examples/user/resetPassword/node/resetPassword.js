@@ -4,10 +4,10 @@ const { UserService } = require("m3o/user");
 async function resetPassword() {
   let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.resetPassword({
-    code: "some-code-from-email",
-    confirmPassword: "newpass123",
+    code: "012345",
+    confirmPassword: "NewPassword1",
     email: "joe@example.com",
-    newPassword: "newpass123",
+    newPassword: "NewPassword1",
   });
   console.log(rsp);
 }

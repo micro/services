@@ -4,10 +4,10 @@ const { UserService } = require("m3o/user");
 async function updateTheAccountPassword() {
   let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.updatePassword({
-    confirmPassword: "myEvenMoreSecretPass123",
-    id: "usrid-1",
-    newPassword: "myEvenMoreSecretPass123",
-    oldPassword: "mySecretPass123",
+    confirmPassword: "Password2",
+    id: "user-1",
+    newPassword: "Password2",
+    oldPassword: "Password1",
   });
   console.log(rsp);
 }

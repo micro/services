@@ -4,7 +4,7 @@ const { UserService } = require("m3o/user");
 async function readAsessionByTheSessionId() {
   let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.readSession({
-    sessionId: "sds34s34s34-s34s34-s43s43s34-s4s34s",
+    sessionId: "df91a612-5b24-4634-99ff-240220ab8f55",
   });
   console.log(rsp);
 }

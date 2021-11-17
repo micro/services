@@ -11,7 +11,7 @@ import (
 func DeleteUserAccount() {
 	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := userService.Delete(&user.DeleteRequest{
-		Id: "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+		Id: "8b98acbe-0b6a-4d66-a414-5ffbf666786f",
 	})
 	fmt.Println(rsp, err)
 }

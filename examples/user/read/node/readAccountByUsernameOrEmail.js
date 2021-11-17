@@ -4,7 +4,7 @@ const { UserService } = require("m3o/user");
 async function readAccountByUsernameOrEmail() {
   let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.read({
-    username: "usrname-1",
+    username: "joe",
   });
   console.log(rsp);
 }

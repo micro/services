@@ -11,7 +11,7 @@ import (
 func ReadAnAccountById() {
 	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := userService.Read(&user.ReadRequest{
-		Id: "usrid-1",
+		Id: "user-1",
 	})
 	fmt.Println(rsp, err)
 }

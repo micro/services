@@ -11,9 +11,9 @@ import (
 func UpdateTheAccountPassword() {
 	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := userService.UpdatePassword(&user.UpdatePasswordRequest{
-		ConfirmPassword: "myEvenMoreSecretPass123",
-		NewPassword:     "myEvenMoreSecretPass123",
-		OldPassword:     "mySecretPass123",
+		ConfirmPassword: "Password2",
+		NewPassword:     "Password2",
+		OldPassword:     "Password1",
 	})
 	fmt.Println(rsp, err)
 }

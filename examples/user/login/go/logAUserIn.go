@@ -13,7 +13,7 @@ func LogAuserIn() {
 	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := userService.Login(&user.LoginRequest{
 		Email:    "joe@example.com",
-		Password: "mySecretPass123",
+		Password: "Password1",
 	})
 	fmt.Println(rsp, err)
 }

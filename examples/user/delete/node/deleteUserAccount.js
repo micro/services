@@ -4,7 +4,7 @@ const { UserService } = require("m3o/user");
 async function deleteUserAccount() {
   let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.delete({
-    id: "fdf34f34f34-f34f34-f43f43f34-f4f34f",
+    id: "8b98acbe-0b6a-4d66-a414-5ffbf666786f",
   });
   console.log(rsp);
 }

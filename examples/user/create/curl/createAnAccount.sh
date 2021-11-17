@@ -3,7 +3,7 @@ curl "http://localhost:8080/user/Create" \
 -H "Authorization: Bearer $MICRO_API_TOKEN" \
 -d '{
   "email": "joe@example.com",
-  "id": "usrid-1",
-  "password": "mySecretPass123",
-  "username": "usrname-1"
+  "id": "user-1",
+  "password": "Password1",
+  "username": "joe"
 }'

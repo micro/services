@@ -5,7 +5,7 @@ async function verifyEmail() {
   let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.verifyEmail({
     email: "joe@example.com",
-    token: "t2323t232t",
+    token: "012345",
   });
   console.log(rsp);
 }

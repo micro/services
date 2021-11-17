@@ -5,9 +5,9 @@ async function createAnAccount() {
   let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.create({
     email: "joe@example.com",
-    id: "usrid-1",
-    password: "mySecretPass123",
-    username: "usrname-1",
+    id: "user-1",
+    password: "Password1",
+    username: "joe",
   });
   console.log(rsp);
 }

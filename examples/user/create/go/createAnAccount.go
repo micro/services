@@ -12,9 +12,9 @@ func CreateAnAccount() {
 	userService := user.NewUserService(os.Getenv("MICRO_API_TOKEN"))
 	rsp, err := userService.Create(&user.CreateRequest{
 		Email:    "joe@example.com",
-		Id:       "usrid-1",
-		Password: "mySecretPass123",
-		Username: "usrname-1",
+		Id:       "user-1",
+		Password: "Password1",
+		Username: "joe",
 	})
 	fmt.Println(rsp, err)
 }
