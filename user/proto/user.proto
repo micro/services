@@ -177,7 +177,9 @@ message VerifyEmailResponse{
 // 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
 
 message SendVerificationEmailRequest{
+	// email address to send the verification code
 	string email = 1;
+	// subject of the email
 	string subject = 2;
 	// Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
 	// HTML emails are not available currently.
