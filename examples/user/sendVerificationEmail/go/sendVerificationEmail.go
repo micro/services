@@ -8,7 +8,7 @@ import (
 )
 
 // Send a verification email
-// to the user being signed up. Email from will be from 'support@m3o.com',
+// to the user being signed up. Email from will be from 'noreply@email.m3ocontent.com',
 // but you can provide the title and contents.
 // The verification link will be injected in to the email as a template variable, $micro_verification_link.
 // Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
