@@ -268,6 +268,10 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		err = png.Encode(buf, srcImage)
 	case strings.HasSuffix(req.Name, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
 		err = jpeg.Encode(buf, srcImage, nil)
+	case strings.HasSuffix(req.Url, ".png"):
+		err = png.Encode(buf, srcImage)
+	case strings.HasSuffix(req.Url, ".jpg") || strings.HasSuffix(req.Url, ".jpeg"):
+		err = jpeg.Encode(buf, srcImage, nil)
 	}
 
 	if err != nil {
