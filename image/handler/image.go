@@ -224,6 +224,8 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 	var srcImage image.Image
 	var imageBytes []byte
 	var err error
+	var ext string
+
 	if len(req.File) > 0 {
 		imageBytes = req.File
 	} else if len(req.Base64) > 0 {
@@ -232,11 +234,10 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 			return err
 		}
 	} else if len(req.Url) > 0 {
-		_, err := url.Parse(req.Url)
+		ur, err := url.Parse(req.Url)
 		if err != nil {
 			return err
 		}
-
 		response, err := http.Get(req.Url)
 		if err != nil {
 			return err
@@ -245,6 +246,12 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		imageBytes, err = ioutil.ReadAll(response.Body)
 		if err != nil {
 			return err
+		}
+		switch {
+		case strings.HasSuffix(ur.Path, ".png"):
+			ext = "png"
+		case strings.HasSuffix(ur.Path, ".jpg") || strings.HasSuffix(ur.Path, ".jpeg"):
+			ext = "jpg"
 		}
 	} else {
 		return merrors.BadRequest("image.Convert", "Must pass either base64, url, or file param")
@@ -273,12 +280,11 @@ func (e *Image) Convert(ctx context.Context, req *img.ConvertRequest, rsp *img.C
 		}
 		rsp.Url = fmt.Sprintf("%v/%v/%v/%v/%v", e.hostPrefix, "micro", "images", tenantID, req.Name)
 	} else {
-		src := buf.Bytes()
-		length := base64.StdEncoding.EncodedLen(len(src))
-		dst := make([]byte, length)
-		base64.StdEncoding.Encode(dst, src)
-
-		rsp.Base64 = string(dst)
+		prefix := "data:image/png;base64, "
+		if ext == "jpg" {
+			prefix = "data:image/jpg;base64, "
+		}
+		rsp.Base64 = prefix + base64.StdEncoding.EncodeToString(buf.Bytes())
 		return nil
 	}
 	return nil
