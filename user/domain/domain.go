@@ -41,6 +41,7 @@ type passwordResetCode struct {
 type Domain struct {
 	db         db.DbService
 	sengridKey string
+	fromEmail  string
 }
 
 var (
@@ -49,10 +50,14 @@ var (
 )
 
 func New(db db.DbService) *Domain {
-	var key string
+	var key, email string
 	cfg, err := config.Get("micro.user.sendgrid.api_key")
 	if err == nil {
 		key = cfg.String("")
+	}
+	cfg, err = config.Get("micro.user.sendgrid.from_email")
+	if err == nil {
+		email = cfg.String(defaultSender)
 	}
 	if len(key) == 0 {
 		logger.Info("No email key found")
@@ -62,6 +67,7 @@ func New(db db.DbService) *Domain {
 	return &Domain{
 		sengridKey: key,
 		db:         db,
+		fromEmail:  email,
 	}
 }
 
@@ -69,7 +75,7 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	if domain.sengridKey == "" {
 		return fmt.Errorf("empty email api key")
 	}
-	from := mail.NewEmail(fromName, defaultSender)
+	from := mail.NewEmail(fromName, domain.fromEmail)
 	to := mail.NewEmail(toUsername, toAddress)
 
 	// set the text content
@@ -151,7 +157,7 @@ func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeSt
 		return fmt.Errorf("empty email api key")
 	}
 
-	from := mail.NewEmail(fromName, defaultSender)
+	from := mail.NewEmail(fromName, domain.fromEmail)
 	to := mail.NewEmail(toUsername, toAddress)
 
 	// save the password reset code
