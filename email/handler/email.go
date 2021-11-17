@@ -73,8 +73,8 @@ func validEmail(email string) bool {
 }
 
 func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.SendResponse) error {
-	if !validEmail(request.From) {
-		return errors.BadRequest("email.send.validation", "Invalid from address")
+	if len(request.From) == 0 {
+		return errors.BadRequest("email.send.validation", "Missing from name")
 	}
 	if !validEmail(request.To) {
 		return errors.BadRequest("email.send.validation", "Invalid to address")
