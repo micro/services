@@ -36,6 +36,7 @@ require (
 	github.com/micro/micro-go v0.0.0-20211101221015-79ab982f8163
 	github.com/micro/micro/v3 v3.7.1-0.20211111170433-1ebb8328e280
 	github.com/miekg/dns v1.1.31 // indirect
+	github.com/onsi/gomega v1.10.5
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
