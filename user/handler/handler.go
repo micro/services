@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
 	db "github.com/micro/services/db/proto"
+	otp "github.com/micro/services/otp/proto"
 	"github.com/micro/services/user/domain"
 	pb "github.com/micro/services/user/proto"
 	"golang.org/x/crypto/bcrypt"
@@ -40,11 +41,13 @@ func random(i int) string {
 
 type User struct {
 	domain *domain.Domain
+	Otp    otp.OtpService
 }
 
-func NewUser(db db.DbService) *User {
+func NewUser(db db.DbService, otp otp.OtpService) *User {
 	return &User{
 		domain: domain.New(db),
+		Otp:    otp,
 	}
 }
 
@@ -224,21 +227,64 @@ func (s *User) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp 
 }
 
 func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp *pb.VerifyEmailResponse) error {
-	userId, err := s.domain.ReadToken(ctx, req.Token)
+	if len(req.Email) == 0 {
+		return errors.BadRequest("user.verifyemail", "missing email")
+	}
+	if len(req.Token) == 0 {
+		return errors.BadRequest("user.verifyemail", "missing token")
+	}
+
+	// check the token exists
+	userId, err := s.domain.ReadToken(ctx, req.Email, req.Token)
 	if err != nil {
 		return err
 	}
+
+	// validate the code, e.g its an OTP token and hasn't expired
+	resp, err := s.Otp.Validate(ctx, &otp.ValidateRequest{
+		Id:   req.Email,
+		Code: req.Token,
+	})
+	if err != nil {
+		return err
+	}
+
+	// check if the code is actually valid
+	if !resp.Success {
+		return errors.BadRequest("user.resetpassword", "invalid code")
+	}
+
+	// mark user as verified
 	user, err := s.domain.Read(ctx, userId)
 	user.Verified = true
+
+	// update the user
 	return s.domain.Update(ctx, user)
 }
 
 func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificationEmailRequest, rsp *pb.SendVerificationEmailResponse) error {
+	if len(req.Email) == 0 {
+		return errors.BadRequest("user.sendverificationemail", "missing email")
+	}
+
+	// search for the user
 	users, err := s.domain.Search(ctx, "", req.Email)
 	if err != nil {
 		return err
 	}
-	token, err := s.domain.CreateToken(ctx, users[0].Id)
+
+	// generate a new OTP code
+	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
+		Expiry: 300,
+		Id:     req.Email,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// generate/save a token for verification
+	token, err := s.domain.CreateToken(ctx, req.Email, resp.Code)
 	if err != nil {
 		return err
 	}
@@ -247,19 +293,67 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 }
 
 func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordResetEmailRequest, rsp *pb.SendPasswordResetEmailResponse) error {
+	if len(req.Email) == 0 {
+		return errors.BadRequest("user.sendpasswordresetemail", "missing email")
+	}
+
+	// look for an existing user
 	users, err := s.domain.Search(ctx, "", req.Email)
 	if err != nil {
 		return err
 	}
 
-	return s.domain.SendPasswordResetEmail(ctx, users[0].Id, req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent)
-}
+	// generate a new OTP code
+	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
+		Expiry: 300,
+		Id:     req.Email,
+	})
 
-func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, rsp *pb.ResetPasswordResponse) error {
-	code, err := s.domain.ReadPasswordResetCode(ctx, req.Code)
 	if err != nil {
 		return err
 	}
+
+	// save the code in the database and then send via email
+	return s.domain.SendPasswordResetEmail(ctx, users[0].Id, resp.Code, req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent)
+}
+
+func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, rsp *pb.ResetPasswordResponse) error {
+	if len(req.Email) == 0 {
+		return errors.BadRequest("user.resetpassword", "missing email")
+	}
+	if len(req.Code) == 0 {
+		return errors.BadRequest("user.resetpassword", "missing code")
+	}
+	if len(req.ConfirmPassword) == 0 {
+		return errors.BadRequest("user.resetpassword", "missing confirm password")
+	}
+	if len(req.NewPassword) == 0 {
+		return errors.BadRequest("user.resetpassword", "missing new password")
+	}
+	if req.ConfirmPassword != req.NewPassword {
+		return errors.BadRequest("user.resetpassword", "passwords do not match")
+	}
+
+	// check if a request was made to reset the password, we should have saved it
+	code, err := s.domain.ReadPasswordResetCode(ctx, req.Email, req.Code)
+	if err != nil {
+		return err
+	}
+
+	// validate the code, e.g its an OTP token and hasn't expired
+	resp, err := s.Otp.Validate(ctx, &otp.ValidateRequest{
+		Id:   req.Email,
+		Code: req.Code,
+	})
+	if err != nil {
+		return err
+	}
+
+	// check if the code is actually valid
+	if !resp.Success {
+		return errors.BadRequest("user.resetpassword", "invalid code")
+	}
+
 	// no error means it exists and not expired
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.NewPassword), 10)
@@ -268,9 +362,13 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	}
 	pp := base64.StdEncoding.EncodeToString(h)
 
+	// update the user password
 	if err := s.domain.UpdatePassword(ctx, code.UserID, salt, pp); err != nil {
 		return errors.InternalServerError("user.resetpassword", err.Error())
 	}
-	s.domain.DeletePasswordRestCode(ctx, req.Code)
+
+	// delete our saved code
+	s.domain.DeletePasswordRestCode(ctx, req.Email, req.Code)
+
 	return nil
 }

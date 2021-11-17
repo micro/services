@@ -158,8 +158,10 @@ message LogoutResponse {
 
 // Verify the email address of an account from a token sent in an email to the user.
 message VerifyEmailRequest {
+	// the email address to verify
+	string email = 1;
 	// The token from the verification email
-	string token = 1;
+	string token = 2;
 }
 
 message VerifyEmailResponse{
@@ -191,7 +193,9 @@ message SendVerificationEmailResponse{}
 // Send an email with a verification code to reset password.
 // Call "ResetPassword" endpoint once user provides the code.
 message SendPasswordResetEmailRequest {
+	// email address to send reset for
 	string email = 1;
+	// subject of the email
 	string subject = 2;
 	// Text content of the email. Don't forget to include the string '$code' which will be replaced by the real verification link
 	// HTML emails are not available currently.
@@ -205,14 +209,14 @@ message SendPasswordResetEmailResponse {
 
 // Reset password with the code sent by the "SendPasswordResetEmail" endoint.
 message ResetPasswordRequest {
+	// the email to reset the password for
+	string email = 1;
 	// The code from the verification email
-	string code = 1;
+	string code = 2;
 	// the new password
-	string newPassword = 2;
+	string newPassword = 3;
 	// confirm new password
-	string confirmPassword = 3;
+	string confirmPassword = 4;
 }
 
-message ResetPasswordResponse {
-
-}
+message ResetPasswordResponse {}
