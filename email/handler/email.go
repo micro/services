@@ -32,6 +32,7 @@ type Sent struct {
 type sendgridConf struct {
 	Key       string `json:"key"`
 	EmailFrom string `json:"email_from"`
+	PoolName  string `json:"ip_pool_name"`
 }
 
 func NewEmailHandler(svc *service.Service) *Email {
@@ -93,8 +94,8 @@ func (e *Email) Send(ctx context.Context, request *pb.SendRequest, response *pb.
 	return nil
 }
 
-// sendEmail sends an email invite via the sendgrid API using the
-// pre-designed email template. Docs: https://bit.ly/2VYPQD1
+// sendEmail sends an email via the sendgrid API
+// Docs: https://bit.ly/2VYPQD1
 func (e *Email) sendEmail(ctx context.Context, req *pb.SendRequest) error {
 	content := []interface{}{}
 	replyTo := e.config.EmailFrom
@@ -116,7 +117,7 @@ func (e *Email) sendEmail(ctx context.Context, req *pb.SendRequest) error {
 		})
 	}
 
-	reqBody, _ := json.Marshal(map[string]interface{}{
+	reqMap := map[string]interface{}{
 		"from": map[string]string{
 			"email": e.config.EmailFrom,
 			"name":  req.From,
@@ -135,7 +136,12 @@ func (e *Email) sendEmail(ctx context.Context, req *pb.SendRequest) error {
 				},
 			},
 		},
-	})
+	}
+	if len(e.config.PoolName) > 0 {
+		reqMap["ip_pool_name"] = e.config.PoolName
+	}
+
+	reqBody, _ := json.Marshal(reqMap)
 
 	httpReq, err := http.NewRequest("POST", "https://api.sendgrid.com/v3/mail/send", bytes.NewBuffer(reqBody))
 	if err != nil {
