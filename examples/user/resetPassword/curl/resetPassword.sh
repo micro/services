@@ -4,5 +4,6 @@ curl "http://localhost:8080/user/ResetPassword" \
 -d '{
   "code": "some-code-from-email",
   "confirmPassword": "newpass123",
+  "email": "joe@example.com",
   "newPassword": "newpass123"
 }'

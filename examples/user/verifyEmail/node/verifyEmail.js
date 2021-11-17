@@ -4,6 +4,7 @@ const { UserService } = require("m3o/user");
 async function verifyEmail() {
   let userService = new UserService(process.env.MICRO_API_TOKEN);
   let rsp = await userService.verifyEmail({
+    email: "joe@example.com",
     token: "t2323t232t",
   });
   console.log(rsp);

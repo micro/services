@@ -13,6 +13,7 @@ func ResetPassword() {
 	rsp, err := userService.ResetPassword(&user.ResetPasswordRequest{
 		Code:            "some-code-from-email",
 		ConfirmPassword: "newpass123",
+		Email:           "joe@example.com",
 		NewPassword:     "newpass123",
 	})
 	fmt.Println(rsp, err)

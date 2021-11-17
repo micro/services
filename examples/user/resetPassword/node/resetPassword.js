@@ -6,6 +6,7 @@ async function resetPassword() {
   let rsp = await userService.resetPassword({
     code: "some-code-from-email",
     confirmPassword: "newpass123",
+    email: "joe@example.com",
     newPassword: "newpass123",
   });
   console.log(rsp);
