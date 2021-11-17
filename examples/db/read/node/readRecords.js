@@ -1,4 +1,4 @@
-const { DbService } = require("m3o/db");
+const { DbService } = require("micro-js-client/db");
 
 // Read data from a table. Lookup can be by ID or via querying any field in the record.
 async function readRecords() {

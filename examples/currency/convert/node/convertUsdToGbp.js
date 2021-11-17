@@ -1,4 +1,4 @@
-const { CurrencyService } = require("m3o/currency");
+const { CurrencyService } = require("micro-js-client/currency");
 
 // Convert returns the currency conversion rate between two pairs e.g USD/GBP
 async function convertUsdToGbp() {

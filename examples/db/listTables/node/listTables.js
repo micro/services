@@ -1,4 +1,4 @@
-const { DbService } = require("m3o/db");
+const { DbService } = require("micro-js-client/db");
 
 // List tables in the DB
 async function listTables() {

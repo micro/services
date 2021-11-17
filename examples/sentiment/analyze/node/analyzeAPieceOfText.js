@@ -1,4 +1,4 @@
-const { SentimentService } = require("m3o/sentiment");
+const { SentimentService } = require("micro-js-client/sentiment");
 
 // Analyze and score a piece of text
 async function analyzeApieceOfText() {

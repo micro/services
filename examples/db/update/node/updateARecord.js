@@ -1,4 +1,4 @@
-const { DbService } = require("m3o/db");
+const { DbService } = require("micro-js-client/db");
 
 // Update a record in the database. Include an "id" in the record to update.
 async function updateArecord() {

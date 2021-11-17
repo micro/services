@@ -1,4 +1,4 @@
-const { RoutingService } = require("m3o/routing");
+const { RoutingService } = require("micro-js-client/routing");
 
 // Get the eta for a route from origin to destination. The eta is an estimated time based on car routes
 async function etaFromPointAtoPointB() {

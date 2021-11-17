@@ -1,4 +1,4 @@
-const { SunnahService } = require("m3o/sunnah");
+const { SunnahService } = require("micro-js-client/sunnah");
 
 // Get a list of books from within a collection. A book can contain many chapters
 // each with its own hadiths.

@@ -1,4 +1,4 @@
-const { UserService } = require("m3o/user");
+const { UserService } = require("micro-js-client/user");
 
 // Reset password with the code sent by the "SendPasswordResetEmail" endoint.
 async function resetPassword() {

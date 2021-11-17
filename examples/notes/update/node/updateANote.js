@@ -1,4 +1,4 @@
-const { NotesService } = require("m3o/notes");
+const { NotesService } = require("micro-js-client/notes");
 
 // Update a note
 async function updateAnote() {

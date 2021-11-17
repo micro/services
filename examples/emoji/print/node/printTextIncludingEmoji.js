@@ -1,4 +1,4 @@
-const { EmojiService } = require("m3o/emoji");
+const { EmojiService } = require("micro-js-client/emoji");
 
 // Print text and renders the emojis with aliases e.g
 // let's grab a :beer: becomes let's grab a 🍺

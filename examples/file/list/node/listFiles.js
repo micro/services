@@ -1,4 +1,4 @@
-const { FileService } = require("m3o/file");
+const { FileService } = require("micro-js-client/file");
 
 // List files by their project and optionally a path.
 async function listFiles() {

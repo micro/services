@@ -1,4 +1,4 @@
-const { UserService } = require("m3o/user");
+const { UserService } = require("micro-js-client/user");
 
 // Logout a user account
 async function logAuserOut() {

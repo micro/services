@@ -1,4 +1,4 @@
-const { EmojiService } = require("m3o/emoji");
+const { EmojiService } = require("micro-js-client/emoji");
 
 // Get the flag for a country. Requires country code e.g GB for great britain
 async function getFlagByCountryCode() {

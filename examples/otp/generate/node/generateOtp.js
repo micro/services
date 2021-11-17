@@ -1,4 +1,4 @@
-const { OtpService } = require("m3o/otp");
+const { OtpService } = require("micro-js-client/otp");
 
 // Generate an OTP (one time pass) code
 async function generateOtp() {

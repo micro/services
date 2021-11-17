@@ -1,4 +1,4 @@
-const { IdService } = require("m3o/id");
+const { IdService } = require("micro-js-client/id");
 
 // Generate a unique ID. Defaults to uuid.
 async function generateAbigflakeId() {

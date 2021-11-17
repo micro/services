@@ -1,4 +1,4 @@
-const { UrlService } = require("m3o/url");
+const { UrlService } = require("micro-js-client/url");
 
 // Proxy returns the destination URL of a short URL.
 async function resolveAshortUrlToAlongDestinationUrl() {

@@ -1,4 +1,4 @@
-const { HelloworldService } = require("m3o/helloworld");
+const { HelloworldService } = require("micro-js-client/helloworld");
 
 // Stream returns a stream of "Hello $name" responses
 async function streamsResponsesFromTheServerUsingWebsockets() {

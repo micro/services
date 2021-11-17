@@ -1,4 +1,4 @@
-const { UserService } = require("m3o/user");
+const { UserService } = require("micro-js-client/user");
 
 // Read an account by id, username or email. Only one need to be specified.
 async function readAccountByUsernameOrEmail() {

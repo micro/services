@@ -1,4 +1,4 @@
-const { YoutubeService } = require("m3o/youtube");
+const { YoutubeService } = require("micro-js-client/youtube");
 
 // Search for videos on YouTube
 async function searchForVideos() {

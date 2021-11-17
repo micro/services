@@ -1,4 +1,4 @@
-const { SunnahService } = require("m3o/sunnah");
+const { SunnahService } = require("micro-js-client/sunnah");
 
 // Get all the chapters of a given book within a collection.
 async function listTheChaptersInAbook() {

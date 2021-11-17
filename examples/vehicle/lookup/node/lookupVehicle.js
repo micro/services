@@ -1,4 +1,4 @@
-const { VehicleService } = require("m3o/vehicle");
+const { VehicleService } = require("micro-js-client/vehicle");
 
 // Lookup a UK vehicle by it's registration number
 async function lookupVehicle() {

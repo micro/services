@@ -1,4 +1,4 @@
-const { StockService } = require("m3o/stock");
+const { StockService } = require("micro-js-client/stock");
 
 // Get the last quote for the stock
 async function getAstockQuote() {

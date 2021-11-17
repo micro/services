@@ -1,4 +1,4 @@
-const { GoogleService } = require("m3o/google");
+const { GoogleService } = require("micro-js-client/google");
 
 // Search for videos on Google
 async function searchForVideos() {

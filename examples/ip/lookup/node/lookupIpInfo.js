@@ -1,4 +1,4 @@
-const { IpService } = require("m3o/ip");
+const { IpService } = require("micro-js-client/ip");
 
 // Lookup the geolocation information for an IP address
 async function lookupIpInfo() {

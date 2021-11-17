@@ -1,4 +1,4 @@
-const { GeocodingService } = require("m3o/geocoding");
+const { GeocodingService } = require("micro-js-client/geocoding");
 
 // Reverse lookup an address from gps coordinates
 async function reverseGeocodeLocation() {

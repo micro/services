@@ -1,4 +1,4 @@
-const { QuranService } = require("m3o/quran");
+const { QuranService } = require("micro-js-client/quran");
 
 // Lookup the verses (ayahs) for a chapter including
 // translation, interpretation and breakdown by individual

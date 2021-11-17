@@ -1,4 +1,4 @@
-const { AnswerService } = require("m3o/answer");
+const { AnswerService } = require("micro-js-client/answer");
 
 // Ask a question and receive an instant answer
 async function askAquestion() {

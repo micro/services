@@ -1,4 +1,4 @@
-const { ThumbnailService } = require("m3o/thumbnail");
+const { ThumbnailService } = require("micro-js-client/thumbnail");
 
 // Create a thumbnail screenshot by passing in a url, height and width
 async function takeScreenshotOfAurl() {

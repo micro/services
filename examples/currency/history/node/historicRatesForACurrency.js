@@ -1,4 +1,4 @@
-const { CurrencyService } = require("m3o/currency");
+const { CurrencyService } = require("micro-js-client/currency");
 
 // Returns the historic rates for a currency on a given date
 async function historicRatesForAcurrency() {

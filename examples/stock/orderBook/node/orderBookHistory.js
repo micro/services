@@ -1,4 +1,4 @@
-const { StockService } = require("m3o/stock");
+const { StockService } = require("micro-js-client/stock");
 
 // Get the historic order book and each trade by timestamp
 async function orderBookHistory() {

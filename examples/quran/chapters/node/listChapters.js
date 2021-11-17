@@ -1,4 +1,4 @@
-const { QuranService } = require("m3o/quran");
+const { QuranService } = require("micro-js-client/quran");
 
 // List the Chapters (surahs) of the Quran
 async function listChapters() {

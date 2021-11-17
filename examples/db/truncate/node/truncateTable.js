@@ -1,4 +1,4 @@
-const { DbService } = require("m3o/db");
+const { DbService } = require("micro-js-client/db");
 
 // Truncate the records in a table
 async function truncateTable() {

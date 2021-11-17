@@ -1,4 +1,4 @@
-const { LocationService } = require("m3o/location");
+const { LocationService } = require("micro-js-client/location");
 
 // Save an entity's current position
 async function saveAnEntity() {

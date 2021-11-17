@@ -1,4 +1,4 @@
-const { WeatherService } = require("m3o/weather");
+const { WeatherService } = require("micro-js-client/weather");
 
 // Get the current weather report for a location by postcode, city, zip code, ip address
 async function getCurrentWeather() {

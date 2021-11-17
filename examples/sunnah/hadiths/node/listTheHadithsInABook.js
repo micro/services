@@ -1,4 +1,4 @@
-const { SunnahService } = require("m3o/sunnah");
+const { SunnahService } = require("micro-js-client/sunnah");
 
 // Hadiths returns a list of hadiths and their corresponding text for a
 // given book within a collection.

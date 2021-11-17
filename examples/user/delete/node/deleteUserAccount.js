@@ -1,4 +1,4 @@
-const { UserService } = require("m3o/user");
+const { UserService } = require("micro-js-client/user");
 
 // Delete an account by id
 async function deleteUserAccount() {

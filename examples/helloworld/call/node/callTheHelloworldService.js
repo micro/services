@@ -1,4 +1,4 @@
-const { HelloworldService } = require("m3o/helloworld");
+const { HelloworldService } = require("micro-js-client/helloworld");
 
 // Call returns a personalised "Hello $name" response
 async function callTheHelloworldService() {

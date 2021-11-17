@@ -1,4 +1,4 @@
-const { TwitterService } = require("m3o/twitter");
+const { TwitterService } = require("micro-js-client/twitter");
 
 // Get the current global trending topics
 async function getTheCurrentGlobalTrendingTopics() {

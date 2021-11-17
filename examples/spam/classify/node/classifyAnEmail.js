@@ -1,4 +1,4 @@
-const { SpamService } = require("m3o/spam");
+const { SpamService } = require("micro-js-client/spam");
 
 // Check whether an email is likely to be spam based on its attributes
 async function classifyAnEmail() {

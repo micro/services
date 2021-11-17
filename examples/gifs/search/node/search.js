@@ -1,4 +1,4 @@
-const { GifsService } = require("m3o/gifs");
+const { GifsService } = require("micro-js-client/gifs");
 
 // Search for a GIF
 async function search() {

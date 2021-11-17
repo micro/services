@@ -1,4 +1,4 @@
-const { AddressService } = require("m3o/address");
+const { AddressService } = require("micro-js-client/address");
 
 // Lookup a list of UK addresses by postcode
 async function lookupPostcode() {

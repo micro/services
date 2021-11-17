@@ -1,4 +1,4 @@
-const { SunnahService } = require("m3o/sunnah");
+const { SunnahService } = require("micro-js-client/sunnah");
 
 // Get a list of available collections. A collection is
 // a compilation of hadiths collected and written by an author.

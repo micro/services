@@ -1,4 +1,4 @@
-const { RssService } = require("m3o/rss");
+const { RssService } = require("micro-js-client/rss");
 
 // Get an RSS feed by name. If no name is given, all feeds are returned. Default limit is 25 entries.
 async function readAfeed() {

@@ -1,4 +1,4 @@
-const { ImageService } = require("m3o/image");
+const { ImageService } = require("micro-js-client/image");
 
 // Upload an image by either sending a base64 encoded image to this endpoint or a URL.
 // To resize an image before uploading, see the Resize endpoint.

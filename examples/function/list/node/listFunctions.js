@@ -1,4 +1,4 @@
-const { FunctionService } = require("m3o/function");
+const { FunctionService } = require("micro-js-client/function");
 
 // List all the deployed functions
 async function listFunctions() {

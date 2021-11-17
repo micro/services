@@ -1,4 +1,4 @@
-const { ForexService } = require("m3o/forex");
+const { ForexService } = require("micro-js-client/forex");
 
 // Returns the data for the previous close
 async function getPreviousClose() {

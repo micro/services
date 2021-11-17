@@ -1,4 +1,4 @@
-const { EvchargersService } = require("m3o/evchargers");
+const { EvchargersService } = require("micro-js-client/evchargers");
 
 // Search by giving a coordinate and a max distance, or bounding box and optional filters
 async function searchByBoundingBox() {

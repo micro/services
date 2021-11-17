@@ -1,4 +1,4 @@
-const { EmojiService } = require("m3o/emoji");
+const { EmojiService } = require("micro-js-client/emoji");
 
 // Find an emoji by its alias e.g :beer:
 async function findEmoji() {

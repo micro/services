@@ -1,4 +1,4 @@
-const { DbService } = require("m3o/db");
+const { DbService } = require("micro-js-client/db");
 
 // Create a record in the database. Optionally include an "id" field otherwise it's set automatically.
 async function createArecord() {

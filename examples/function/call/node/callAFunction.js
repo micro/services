@@ -1,4 +1,4 @@
-const { FunctionService } = require("m3o/function");
+const { FunctionService } = require("micro-js-client/function");
 
 // Call a function by name
 async function callAfunction() {

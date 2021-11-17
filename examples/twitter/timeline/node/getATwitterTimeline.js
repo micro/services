@@ -1,4 +1,4 @@
-const { TwitterService } = require("m3o/twitter");
+const { TwitterService } = require("micro-js-client/twitter");
 
 // Get the timeline for a given user
 async function getAtwitterTimeline() {

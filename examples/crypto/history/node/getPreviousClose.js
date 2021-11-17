@@ -1,4 +1,4 @@
-const { CryptoService } = require("m3o/crypto");
+const { CryptoService } = require("micro-js-client/crypto");
 
 // Returns the history for the previous close
 async function getPreviousClose() {

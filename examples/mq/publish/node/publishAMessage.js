@@ -1,4 +1,4 @@
-const { MqService } = require("m3o/mq");
+const { MqService } = require("micro-js-client/mq");
 
 // Publish a message. Specify a topic to group messages for a specific topic.
 async function publishAmessage() {

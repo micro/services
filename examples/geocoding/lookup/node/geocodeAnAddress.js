@@ -1,4 +1,4 @@
-const { GeocodingService } = require("m3o/geocoding");
+const { GeocodingService } = require("micro-js-client/geocoding");
 
 // Lookup returns a geocoded address including normalized address and gps coordinates. All fields are optional, provide more to get more accurate results
 async function geocodeAnAddress() {

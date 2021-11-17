@@ -1,4 +1,4 @@
-const { StreamService } = require("m3o/stream");
+const { StreamService } = require("micro-js-client/stream");
 
 // List all the active channels
 async function listChannels() {

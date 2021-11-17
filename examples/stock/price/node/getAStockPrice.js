@@ -1,4 +1,4 @@
-const { StockService } = require("m3o/stock");
+const { StockService } = require("micro-js-client/stock");
 
 // Get the last price for a given stock ticker
 async function getAstockPrice() {

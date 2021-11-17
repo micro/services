@@ -1,4 +1,4 @@
-const { SmsService } = require("m3o/sms");
+const { SmsService } = require("micro-js-client/sms");
 
 // Send an SMS.
 async function sendSms() {

@@ -1,4 +1,4 @@
-const { HolidaysService } = require("m3o/holidays");
+const { HolidaysService } = require("micro-js-client/holidays");
 
 // List the holiday dates for a given country and year
 async function getHolidays() {

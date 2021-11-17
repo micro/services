@@ -1,4 +1,4 @@
-const { RssService } = require("m3o/rss");
+const { RssService } = require("micro-js-client/rss");
 
 // Remove an RSS feed by name
 async function removeAfeed() {

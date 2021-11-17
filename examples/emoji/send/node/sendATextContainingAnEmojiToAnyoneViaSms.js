@@ -1,4 +1,4 @@
-const { EmojiService } = require("m3o/emoji");
+const { EmojiService } = require("micro-js-client/emoji");
 
 // Send an emoji to anyone via SMS. Messages are sent in the form '<message> Sent from <from>'
 async function sendAtextContainingAnEmojiToAnyoneViaSms() {

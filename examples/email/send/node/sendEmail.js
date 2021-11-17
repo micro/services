@@ -1,4 +1,4 @@
-const { EmailService } = require("m3o/email");
+const { EmailService } = require("micro-js-client/email");
 
 // Send an email by passing in from, to, subject, and a text or html body
 async function sendEmail() {

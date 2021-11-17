@@ -1,4 +1,4 @@
-const { StreamService } = require("m3o/stream");
+const { StreamService } = require("micro-js-client/stream");
 
 // Send a message to the stream.
 async function sendMessage() {

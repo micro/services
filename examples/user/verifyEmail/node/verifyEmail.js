@@ -1,4 +1,4 @@
-const { UserService } = require("m3o/user");
+const { UserService } = require("micro-js-client/user");
 
 // Verify the email address of an account from a token sent in an email to the user.
 async function verifyEmail() {

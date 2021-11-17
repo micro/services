@@ -1,4 +1,4 @@
-const { UserService } = require("m3o/user");
+const { UserService } = require("micro-js-client/user");
 
 // Create a new user account. The email address and username for the account must be unique.
 async function createAnAccount() {

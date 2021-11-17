@@ -1,4 +1,4 @@
-const { ForexService } = require("m3o/forex");
+const { ForexService } = require("micro-js-client/forex");
 
 // Get the latest price for a given forex ticker
 async function getAnFxPrice() {

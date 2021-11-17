@@ -1,4 +1,4 @@
-const { CacheService } = require("m3o/cache");
+const { CacheService } = require("micro-js-client/cache");
 
 // Decrement a value (if it's a number). If key not found it is equivalent to set.
 async function decrementAvalue() {

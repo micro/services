@@ -1,4 +1,4 @@
-const { CacheService } = require("m3o/cache");
+const { CacheService } = require("micro-js-client/cache");
 
 // Get an item from the cache by key. If key is not found, an empty response is returned.
 async function getAvalue() {

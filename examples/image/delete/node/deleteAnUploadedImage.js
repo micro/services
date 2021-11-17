@@ -1,4 +1,4 @@
-const { ImageService } = require("m3o/image");
+const { ImageService } = require("micro-js-client/image");
 
 // Delete an image previously uploaded.
 async function deleteAnUploadedImage() {

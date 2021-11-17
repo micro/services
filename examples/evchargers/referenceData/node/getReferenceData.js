@@ -1,4 +1,4 @@
-const { EvchargersService } = require("m3o/evchargers");
+const { EvchargersService } = require("micro-js-client/evchargers");
 
 // Retrieve reference data as used by this API and in conjunction with the Search endpoint
 async function getReferenceData() {

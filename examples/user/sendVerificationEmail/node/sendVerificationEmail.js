@@ -1,4 +1,4 @@
-const { UserService } = require("m3o/user");
+const { UserService } = require("micro-js-client/user");
 
 // Send a verification email
 // to the user being signed up. Email from will be from 'noreply@email.m3ocontent.com',

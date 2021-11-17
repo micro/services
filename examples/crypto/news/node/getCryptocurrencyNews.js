@@ -1,4 +1,4 @@
-const { CryptoService } = require("m3o/crypto");
+const { CryptoService } = require("micro-js-client/crypto");
 
 // Get news related to a currency
 async function getCryptocurrencyNews() {

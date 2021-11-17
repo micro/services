@@ -1,4 +1,4 @@
-const { UserService } = require("m3o/user");
+const { UserService } = require("micro-js-client/user");
 
 // Read a session by the session id. In the event it has expired or is not found and error is returned.
 async function readAsessionByTheSessionId() {

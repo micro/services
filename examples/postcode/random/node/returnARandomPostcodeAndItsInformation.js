@@ -1,4 +1,4 @@
-const { PostcodeService } = require("m3o/postcode");
+const { PostcodeService } = require("micro-js-client/postcode");
 
 // Return a random postcode and its related info
 async function returnArandomPostcodeAndItsInformation() {

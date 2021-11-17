@@ -1,4 +1,4 @@
-const { LocationService } = require("m3o/location");
+const { LocationService } = require("micro-js-client/location");
 
 // Search for entities in a given radius
 async function searchForLocations() {

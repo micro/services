@@ -1,4 +1,4 @@
-const { IdService } = require("m3o/id");
+const { IdService } = require("micro-js-client/id");
 
 // List the types of IDs available. No query params needed.
 async function listTheTypesOfIdsAvailable() {

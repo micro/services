@@ -1,4 +1,4 @@
-const { UrlService } = require("m3o/url");
+const { UrlService } = require("micro-js-client/url");
 
 // Shortens a destination URL and returns a full short URL.
 async function shortenAlongUrl() {

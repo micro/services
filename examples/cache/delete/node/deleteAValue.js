@@ -1,4 +1,4 @@
-const { CacheService } = require("m3o/cache");
+const { CacheService } = require("micro-js-client/cache");
 
 // Delete a value from the cache. If key not found a success response is returned.
 async function deleteAvalue() {

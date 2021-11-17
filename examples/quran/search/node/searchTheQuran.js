@@ -1,4 +1,4 @@
-const { QuranService } = require("m3o/quran");
+const { QuranService } = require("micro-js-client/quran");
 
 // Search the Quran for any form of query or questions
 async function searchTheQuran() {

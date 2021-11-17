@@ -1,4 +1,4 @@
-const { RssService } = require("m3o/rss");
+const { RssService } = require("micro-js-client/rss");
 
 // List the saved RSS fields
 async function listRssFeeds() {

@@ -1,4 +1,4 @@
-const { PrayerService } = require("m3o/prayer");
+const { PrayerService } = require("micro-js-client/prayer");
 
 // Get the prayer (salah) times for a location on a given date
 async function prayerTimes() {

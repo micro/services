@@ -1,4 +1,4 @@
-const { PostcodeService } = require("m3o/postcode");
+const { PostcodeService } = require("micro-js-client/postcode");
 
 // Lookup a postcode to retrieve the related region, county, etc
 async function lookupPostcode() {

@@ -1,4 +1,4 @@
-const { ImageService } = require("m3o/image");
+const { ImageService } = require("micro-js-client/image");
 
 // Convert an image from one format (jpeg, png etc.) to an other either on the fly (from base64 to base64),
 // or by uploading the conversion result.

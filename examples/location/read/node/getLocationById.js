@@ -1,4 +1,4 @@
-const { LocationService } = require("m3o/location");
+const { LocationService } = require("micro-js-client/location");
 
 // Read an entity by its ID
 async function getLocationById() {

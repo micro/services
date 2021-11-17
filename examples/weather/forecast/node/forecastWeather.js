@@ -1,4 +1,4 @@
-const { WeatherService } = require("m3o/weather");
+const { WeatherService } = require("micro-js-client/weather");
 
 // Get the weather forecast for the next 1-10 days
 async function forecastWeather() {

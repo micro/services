@@ -1,4 +1,4 @@
-const { TimeService } = require("m3o/time");
+const { TimeService } = require("micro-js-client/time");
 
 // Get the current time
 async function returnsCurrentTimeOptionallyWithLocation() {

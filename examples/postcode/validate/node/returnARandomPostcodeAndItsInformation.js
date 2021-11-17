@@ -1,4 +1,4 @@
-const { PostcodeService } = require("m3o/postcode");
+const { PostcodeService } = require("micro-js-client/postcode");
 
 // Validate a postcode.
 async function returnArandomPostcodeAndItsInformation() {

@@ -1,4 +1,4 @@
-const { TimeService } = require("m3o/time");
+const { TimeService } = require("micro-js-client/time");
 
 // Get the timezone info for a specific location
 async function getTheTimezoneInfoForAspecificLocation() {

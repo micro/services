@@ -1,4 +1,4 @@
-const { EventService } = require("m3o/event");
+const { EventService } = require("micro-js-client/event");
 
 // Read stored events
 async function readEventsOnAtopic() {

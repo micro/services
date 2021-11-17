@@ -1,4 +1,4 @@
-const { FileService } = require("m3o/file");
+const { FileService } = require("micro-js-client/file");
 
 // Save a file
 async function saveFile() {

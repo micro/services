@@ -1,4 +1,4 @@
-const { QrService } = require("m3o/qr");
+const { QrService } = require("micro-js-client/qr");
 
 // Generate a QR code with a specific text and size
 async function generateAqrCode() {

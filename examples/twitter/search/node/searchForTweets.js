@@ -1,4 +1,4 @@
-const { TwitterService } = require("m3o/twitter");
+const { TwitterService } = require("micro-js-client/twitter");
 
 // Search for tweets with a simple query
 async function searchForTweets() {

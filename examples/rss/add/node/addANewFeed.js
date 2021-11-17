@@ -1,4 +1,4 @@
-const { RssService } = require("m3o/rss");
+const { RssService } = require("micro-js-client/rss");
 
 // Add a new RSS feed with a name, url, and category
 async function addAnewFeed() {

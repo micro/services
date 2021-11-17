@@ -1,4 +1,4 @@
-const { CurrencyService } = require("m3o/currency");
+const { CurrencyService } = require("micro-js-client/currency");
 
 // Rates returns the currency rates for a given code e.g USD
 async function getRatesForUsd() {

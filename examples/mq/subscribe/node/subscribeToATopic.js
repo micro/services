@@ -1,4 +1,4 @@
-const { MqService } = require("m3o/mq");
+const { MqService } = require("micro-js-client/mq");
 
 // Subscribe to messages for a given topic.
 async function subscribeToAtopic() {

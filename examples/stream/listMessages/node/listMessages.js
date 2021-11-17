@@ -1,4 +1,4 @@
-const { StreamService } = require("m3o/stream");
+const { StreamService } = require("micro-js-client/stream");
 
 // List messages for a given channel
 async function listMessages() {

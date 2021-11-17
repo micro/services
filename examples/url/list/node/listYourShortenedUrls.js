@@ -1,4 +1,4 @@
-const { UrlService } = require("m3o/url");
+const { UrlService } = require("micro-js-client/url");
 
 // List information on all the shortened URLs that you have created
 async function listYourShortenedUrls() {

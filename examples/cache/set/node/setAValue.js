@@ -1,4 +1,4 @@
-const { CacheService } = require("m3o/cache");
+const { CacheService } = require("micro-js-client/cache");
 
 // Set an item in the cache. Overwrites any existing value already set.
 async function setAvalue() {

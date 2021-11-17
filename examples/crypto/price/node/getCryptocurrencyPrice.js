@@ -1,4 +1,4 @@
-const { CryptoService } = require("m3o/crypto");
+const { CryptoService } = require("micro-js-client/crypto");
 
 // Get the last price for a given crypto ticker
 async function getCryptocurrencyPrice() {

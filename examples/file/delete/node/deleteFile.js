@@ -1,4 +1,4 @@
-const { FileService } = require("m3o/file");
+const { FileService } = require("micro-js-client/file");
 
 // Delete a file by project name/path
 async function deleteFile() {
