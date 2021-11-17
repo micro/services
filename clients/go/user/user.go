@@ -188,6 +188,8 @@ type ResetPasswordRequest struct {
 	Code string `json:"code"`
 	// confirm new password
 	ConfirmPassword string `json:"confirmPassword"`
+	// the email to reset the password for
+	Email string `json:"email"`
 	// the new password
 	NewPassword string `json:"newPassword"`
 }
@@ -196,10 +198,12 @@ type ResetPasswordResponse struct {
 }
 
 type SendPasswordResetEmailRequest struct {
+	// email address to send reset for
 	Email string `json:"email"`
 	// Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
 	FromName string `json:"fromName"`
-	Subject  string `json:"subject"`
+	// subject of the email
+	Subject string `json:"subject"`
 	// Text content of the email. Don't forget to include the string '$code' which will be replaced by the real verification link
 	// HTML emails are not available currently.
 	TextContent string `json:"textContent"`
@@ -263,6 +267,8 @@ type UpdateResponse struct {
 }
 
 type VerifyEmailRequest struct {
+	// the email address to verify
+	Email string `json:"email"`
 	// The token from the verification email
 	Token string `json:"token"`
 }
