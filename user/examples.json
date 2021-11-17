@@ -119,6 +119,7 @@
       "title": "Reset password",
       "run_check": false,
       "request": {
+        "email": "joe@example.com",
         "code": "some-code-from-email",
         "newPassword": "newpass123",
         "confirmPassword": "newpass123"
@@ -131,6 +132,7 @@
       "title": "Verify email",
       "run_check": false,
       "request": {
+        "email": "joe@example.com",
         "token": "t2323t232t"
       },
       "response": {}
