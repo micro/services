@@ -31,10 +31,10 @@ type Metadata struct {
 }
 
 type Stream struct {
-	Id       string
+	Id          string
 	Description string
-	Messages []*Message
-	Updated  int64
+	Messages    []*Message
+	Updated     int64
 }
 
 type Message struct {
@@ -71,9 +71,9 @@ func newStore() *Store {
 
 func newStream(id, desc string) *Stream {
 	return &Stream{
-		Id:      id,
+		Id:          id,
 		Description: desc,
-		Updated: time.Now().UnixNano(),
+		Updated:     time.Now().UnixNano(),
 	}
 }
 

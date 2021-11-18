@@ -117,9 +117,9 @@ func (s *Stream) ListChannels(ctx context.Context, req *pb.ListChannelsRequest, 
 		name := strings.TrimPrefix(channel.Id, id+"/")
 
 		rsp.Channels = append(rsp.Channels, &pb.Channel{
-			Name:       name,
+			Name:        name,
 			Description: channel.Description,
-			LastActive: time.Unix(0, channel.Updated).Format(time.RFC3339Nano),
+			LastActive:  time.Unix(0, channel.Updated).Format(time.RFC3339Nano),
 		})
 	}
 

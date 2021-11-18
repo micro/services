@@ -13,9 +13,9 @@ import (
 	timepb "github.com/micro/services/time/proto"
 )
 
-type Prayer struct{
+type Prayer struct {
 	Geocode geocode.GeocodingService
-	Time timepb.TimeService
+	Time    timepb.TimeService
 }
 
 func New(c client.Client) *Prayer {

@@ -369,7 +369,7 @@ func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, 
 		rsp.Function = f
 	} else {
 		rsp.Function = &function.Func{
-			Name: req.Name,
+			Name:    req.Name,
 			Project: req.Project,
 		}
 	}

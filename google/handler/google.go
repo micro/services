@@ -13,7 +13,7 @@ import (
 
 type Google struct {
 	Client *customsearch.Service
-	CxId string
+	CxId   string
 }
 
 func New(apiKey, cxId string) *Google {
@@ -22,7 +22,7 @@ func New(apiKey, cxId string) *Google {
 
 	return &Google{
 		Client: cs,
-		CxId: cxId,
+		CxId:   cxId,
 	}
 }
 
