@@ -17,6 +17,7 @@ service User {
 	rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse) {}
 	rpc SendPasswordResetEmail(SendPasswordResetEmailRequest) returns (SendPasswordResetEmailResponse) {}
 	rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
+	rpc List(ListRequest) returns(ListResponse) {}
 }
 
 message Account {
@@ -224,3 +225,11 @@ message ResetPasswordRequest {
 }
 
 message ResetPasswordResponse {}
+
+message ListRequest {
+
+}
+
+message ListResponse {
+	repeated Account users = 1;
+}
