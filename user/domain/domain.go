@@ -434,9 +434,19 @@ func (domain *Domain) SaltAndPassword(ctx context.Context, userId string) (strin
 	return password.Salt, password.Password, nil
 }
 
-func (domain *Domain) List(ctx context.Context) ([]*user.Account, error) {
+func (domain *Domain) List(ctx context.Context, o, l int32) ([]*user.Account, error) {
+	var limit int32 = 25
+	var offset int32 = 0
+	if l > 0 {
+		limit = l
+	}
+	if o > 0 {
+		offset = o
+	}
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "users",
+		Table:  "users",
+		Limit:  limit,
+		Offset: offset,
 	})
 	if err != nil {
 		return nil, err

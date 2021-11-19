@@ -192,5 +192,39 @@
         }
       }
     }
+  ],
+  "list": [
+    {
+      "title": "List all users",
+      "run_check": false,
+      "request": {
+        "offset": 0,
+        "limit": 100
+      },
+      "response": {
+        "users": [
+          {
+            "id": "user-1",
+            "username": "joe",
+            "email": "joe@example.com",
+            "created": "1637322407",
+            "updated": "1637322407",
+            "verified": false,
+            "verificationDate": "0",
+            "profile": {}
+          },
+          {
+            "id": "user-2",
+            "username": "jane",
+            "email": "jane@example.com",
+            "created": "1637324407",
+            "updated": "1637324407",
+            "verified": false,
+            "verificationDate": "0",
+            "profile": {}
+          }
+        ]
+      }
+    }
   ]
 }
