@@ -3,8 +3,6 @@
   "icon": "🧭",
   "category": "logistics",
   "pricing": {
-    "Routing.Route": 1000,
-    "Routing.Eta": 1000,
     "Routing.Directions": 1000
   },
   "display_name": "Routing"
