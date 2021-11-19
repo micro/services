@@ -17,6 +17,7 @@ service User {
 	rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse) {}
 	rpc SendPasswordResetEmail(SendPasswordResetEmailRequest) returns (SendPasswordResetEmailResponse) {}
 	rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
+	rpc List(ListRequest) returns(ListResponse) {}
 }
 
 message Account {
@@ -224,3 +225,15 @@ message ResetPasswordRequest {
 }
 
 message ResetPasswordResponse {}
+
+// List all users. Returns a paged list of results
+message ListRequest {
+	int32 offset = 1;
+	// Maximum number of records to return. Default limit is 25.
+	// Maximum limit is 1000. Anything higher will return an error.
+	int32 limit = 2;
+}
+
+message ListResponse {
+	repeated Account users = 1;
+}

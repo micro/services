@@ -1,6 +1,7 @@
 package handler
 
 import (
+	goctx "context"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
@@ -370,5 +371,17 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	// delete our saved code
 	s.domain.DeletePasswordRestCode(ctx, req.Email, req.Code)
 
+	return nil
+}
+
+func (s *User) List(ctx goctx.Context, request *pb.ListRequest, response *pb.ListResponse) error {
+	accs, err := s.domain.List(ctx, request.Offset, request.Limit)
+	if err != nil && err != domain.ErrNotFound {
+		return errors.InternalServerError("user.List", "Error retrieving user list")
+	}
+	response.Users = make([]*pb.Account, len(accs))
+	for i, v := range accs {
+		response.Users[i] = v
+	}
 	return nil
 }

@@ -19,6 +19,10 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
+var (
+	ErrNotFound = errors.New("not found")
+)
+
 type pw struct {
 	ID       string `json:"id"`
 	Password string `json:"password"`
@@ -276,7 +280,7 @@ func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session
 		return nil, err
 	}
 	if len(rsp.Records) == 0 {
-		return nil, errors.New("not found")
+		return nil, ErrNotFound
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, sess)
@@ -359,7 +363,7 @@ func (domain *Domain) Read(ctx context.Context, userId string) (*user.Account, e
 		return nil, err
 	}
 	if len(rsp.Records) == 0 {
-		return nil, errors.New("not found")
+		return nil, ErrNotFound
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, user)
@@ -386,7 +390,7 @@ func (domain *Domain) Search(ctx context.Context, username, email string) ([]*us
 		return nil, err
 	}
 	if len(rsp.Records) == 0 {
-		return nil, errors.New("not found")
+		return nil, ErrNotFound
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, usr)
@@ -423,9 +427,39 @@ func (domain *Domain) SaltAndPassword(ctx context.Context, userId string) (strin
 		return "", "", err
 	}
 	if len(rsp.Records) == 0 {
-		return "", "", errors.New("not found")
+		return "", "", ErrNotFound
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, password)
 	return password.Salt, password.Password, nil
+}
+
+func (domain *Domain) List(ctx context.Context, o, l int32) ([]*user.Account, error) {
+	var limit int32 = 25
+	var offset int32 = 0
+	if l > 0 {
+		limit = l
+	}
+	if o > 0 {
+		offset = o
+	}
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table:  "users",
+		Limit:  limit,
+		Offset: offset,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(rsp.Records) == 0 {
+		return nil, ErrNotFound
+	}
+	ret := make([]*user.Account, len(rsp.Records))
+	for i, v := range rsp.Records {
+		m, _ := v.MarshalJSON()
+		var user user.Account
+		json.Unmarshal(m, &user)
+		ret[i] = &user
+	}
+	return ret, nil
 }
