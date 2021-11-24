@@ -1,4 +1,4 @@
-Get the news
+Get the latest news
 
 # News Service
 
