@@ -26,10 +26,6 @@ To call a service from another
 import "github.com/micro/services/helloworld/proto"
 ```
 
-## Examples
-
-See the [examples](https://github.com/micro/services/tree/master/examples) directory.
-
 ## Contribute
 
 We welcome contributions of additional services which are then hosted on [m3o.com](https://m3o.com).
