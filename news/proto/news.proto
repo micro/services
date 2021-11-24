@@ -35,6 +35,7 @@ message Article {
 	string locale = 12;
 }
 
+// Get the latest news headlines
 message HeadlinesRequest {
 	// comma separated list of languages to retrieve in e.g en,es
 	string language = 1;

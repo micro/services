@@ -1,23 +1,5 @@
+Get the news
+
 # News Service
 
-This is the News service
-
-Generated with
-
-```
-micro new news
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+Get the latest news headlines from anywhere in the world
