@@ -1,0 +1,9 @@
+{
+  "name": "app",
+  "icon": "💭",
+  "category": "hosting",
+  "display_name": "Apps",
+  "pricing": {
+    "App.Reserve": 1000000
+  }
+}
