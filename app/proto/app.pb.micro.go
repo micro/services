@@ -43,6 +43,7 @@ func NewAppEndpoints() []*api.Endpoint {
 
 type AppService interface {
 	Reserve(ctx context.Context, in *ReserveRequest, opts ...client.CallOption) (*ReserveResponse, error)
+	Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error)
 }
 
 type appService struct {
@@ -67,15 +68,27 @@ func (c *appService) Reserve(ctx context.Context, in *ReserveRequest, opts ...cl
 	return out, nil
 }
 
+func (c *appService) Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Vote", in)
+	out := new(VoteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for App service
 
 type AppHandler interface {
 	Reserve(context.Context, *ReserveRequest, *ReserveResponse) error
+	Vote(context.Context, *VoteRequest, *VoteResponse) error
 }
 
 func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.HandlerOption) error {
 	type app interface {
 		Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error
+		Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error
 	}
 	type App struct {
 		app
@@ -90,4 +103,8 @@ type appHandler struct {
 
 func (h *appHandler) Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error {
 	return h.AppHandler.Reserve(ctx, in, out)
+}
+
+func (h *appHandler) Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error {
+	return h.AppHandler.Vote(ctx, in, out)
 }

@@ -6,6 +6,18 @@ option go_package = "./proto;app";
 
 service App {
 	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
+        rpc Vote(VoteRequest) returns (VoteResponse) {}
+}
+
+// Vote to have the App api launched faster!
+message VoteRequest {
+        // optional message
+        string message = 1;
+}
+
+message VoteResponse {
+        // response message
+        string message = 2;
 }
 
 message Reservation {
