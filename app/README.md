@@ -1,4 +1,4 @@
-Global app deployment (Coming soon)
+Global app deployment
 
 # App Service
 
