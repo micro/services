@@ -1,4 +1,4 @@
-Explore, buy and sell NFTs (coming soon)
+Explore, buy and sell NFTs
 
 # NFT Service
 
