@@ -335,8 +335,14 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 		return errors.BadRequest("user.resetpassword", "passwords do not match")
 	}
 
+	// look for an existing user
+	users, err := s.domain.Search(ctx, "", req.Email)
+	if err != nil {
+		return err
+	}
+
 	// check if a request was made to reset the password, we should have saved it
-	code, err := s.domain.ReadPasswordResetCode(ctx, req.Email, req.Code)
+	code, err := s.domain.ReadPasswordResetCode(ctx, users[0].Id, req.Code)
 	if err != nil {
 		return err
 	}
@@ -369,7 +375,7 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	}
 
 	// delete our saved code
-	s.domain.DeletePasswordRestCode(ctx, req.Email, req.Code)
+	s.domain.DeletePasswordResetCode(ctx, users[0].Id, req.Code)
 
 	return nil
 }

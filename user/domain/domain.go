@@ -117,7 +117,7 @@ func (domain *Domain) SavePasswordResetCode(ctx context.Context, userID, code st
 	return &pwcode, err
 }
 
-func (domain *Domain) DeletePasswordRestCode(ctx context.Context, userId, code string) error {
+func (domain *Domain) DeletePasswordResetCode(ctx context.Context, userId, code string) error {
 	_, err := domain.db.Delete(ctx, &db.DeleteRequest{
 		Table: "password-reset-codes",
 		Id:    userId + "-" + code,
