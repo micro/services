@@ -46,7 +46,7 @@ func (e *Thumbnail) Screenshot(ctx context.Context, req *thumbnail.ScreenshotReq
 	}
 	cmd := exec.Command("/usr/bin/chromium-browser",
 		"--headless", "--window-size="+width+","+height, "--no-sandbox", "--screenshot="+imagePath,
-		"--hide-scrollbars", "--disable-setuid-sandbox", "--single-process", "--no-zygote", req.Url)
+		"--hide-scrollbars", "--disable-setuid-sandbox", "--single-process", "--no-zygote", "--disable-gpu", req.Url)
 	outp, err := cmd.CombinedOutput()
 	logger.Info(string(outp))
 	if err != nil {
