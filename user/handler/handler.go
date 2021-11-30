@@ -276,7 +276,7 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 
 	// generate a new OTP code
 	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
-		Expiry: 300,
+		Expiry: 900,
 		Id:     req.Email,
 	})
 
@@ -306,7 +306,7 @@ func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordR
 
 	// generate a new OTP code
 	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
-		Expiry: 300,
+		Expiry: 900,
 		Id:     req.Email,
 	})
 
