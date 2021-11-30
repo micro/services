@@ -51,6 +51,8 @@ message CreateRequest {
 	string table = 1;
 	// JSON encoded record or records (can be array or object)
 	google.protobuf.Struct record = 2;
+	// optional record id to use
+	string id = 3;
 }
 
 message CreateResponse {
