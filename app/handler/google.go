@@ -272,7 +272,12 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))
 			// set the error status
-			service.Status = string(outp)
+			parts := strings.Split(string(outp), "ERROR:")
+			if len(parts) > 1 {
+				service.Status = "Error: " + parts[len(parts)-1]
+			} else {
+				service.Status = string(outp)
+			}
 		} else {
 			// check the app name reservation for custom domain mapping
 			// apply the custom domain mapping if it exists and is valid
