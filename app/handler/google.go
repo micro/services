@@ -331,26 +331,20 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 	}
 
 	// execute the delete async
-	go func(srv *pb.Service) {
-		// delete the app
-		cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
-		outp, err := cmd.CombinedOutput()
-		if err != nil && !strings.Contains(string(outp), "could not be found") {
-			log.Error(fmt.Errorf(string(outp)))
-			return
-		}
+	// delete the app
+	cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
+	outp, err := cmd.CombinedOutput()
+	if err != nil && !strings.Contains(string(outp), "could not be found") {
+		log.Error(fmt.Errorf(string(outp)))
+		return err
+	}
 
-		// delete from the db
-		_, err = e.db.Delete(ctx, &db.DeleteRequest{
-			Table: "apps",
-			Id:    req.Name,
-		})
-		if err != nil {
-			log.Error(err)
-		}
-	}(srv)
-
-	return nil
+	// delete from the db
+	_, err = e.db.Delete(ctx, &db.DeleteRequest{
+		Table: "apps",
+		Id:    req.Name,
+	})
+	return err
 }
 
 func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
