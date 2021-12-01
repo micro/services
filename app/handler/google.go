@@ -412,7 +412,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
-		return fmt.Errorf("function does not exist")
+		return fmt.Errorf("app does not exist")
 	}
 
 	output := map[string]interface{}{}
