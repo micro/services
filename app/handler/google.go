@@ -331,7 +331,7 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 	}
 
 	// execute the delete async
-	go func(service *pb.Service) {
+	go func(srv *pb.Service) {
 		// delete the app
 		cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
 		outp, err := cmd.CombinedOutput()
@@ -345,6 +345,9 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 			Table: "apps",
 			Id:    req.Name,
 		})
+		if err != nil {
+			log.Error(err)
+		}
 	}(srv)
 
 	return nil
