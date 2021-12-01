@@ -83,6 +83,12 @@ func New(db db.DbService) *GoogleApp {
 		log.Fatalf("empty project")
 	}
 
+        v, err = config.Get("app.service_account")
+        if err != nil {
+                log.Fatalf("app.service_account: %v", err)
+        }
+        accName := v.String("")
+
 	m := map[string]interface{}{}
 	err = json.Unmarshal(keyfile, &m)
 	if err != nil {
@@ -99,7 +105,7 @@ func New(db db.DbService) *GoogleApp {
 	// https://cloud.google.com/functions/docs/reference/iam/roles#additional-configuration
 
 	// https://cloud.google.com/sdk/docs/authorizing#authorizing_with_a_service_account
-	outp, err := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", "/acc.json").CombinedOutput()
+	outp, err := exec.Command("gcloud", "auth", "activate-service-account", accName, "--key-file", "/acc.json").CombinedOutput()
 	if err != nil {
 		log.Fatalf(string(outp))
 	}
