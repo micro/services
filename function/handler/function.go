@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"gopkg.in/yaml.v2"
 
@@ -102,9 +103,18 @@ func NewFunction(db db.DbService) *Function {
 func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
 	log.Info("Received Function.Deploy request")
 	gitter := git.NewGitter(map[string]string{})
-	err := gitter.Checkout(req.Repo, "master")
+
+	var err error
+
+	for _, branch := range []string{"master", "main"} {
+		err = gitter.Checkout(req.Repo, branch)
+		if err == nil {
+			break
+		}
+	}
+
 	if err != nil {
-		return err
+		return errors.InternalServerError("function.deploy", err.Error())
 	}
 
 	tenantId, ok := tenant.FromContext(ctx)
