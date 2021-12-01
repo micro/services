@@ -245,7 +245,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		log.Error(err)
 	}
 
-	go func() {
+	go func(service *pb.Service) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
 			"--cpu", "100m", "--memory", "128Mi", "--port", fmt.Sprintf("%d", req.Port), "--use-http2",
@@ -305,7 +305,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		if err != nil {
 			log.Error(err)
 		}
-	}()
+	}(service)
 
 	// set the service in the response
 	rsp.Service = service
