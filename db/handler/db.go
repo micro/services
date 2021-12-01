@@ -112,13 +112,24 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 
 	m := req.Record.AsMap()
-	if _, ok := m[idKey].(string); !ok {
-		m[idKey] = uuid.New().String()
+	id := req.Id
+
+	// check the record for an id field
+	if len(id) == 0 {
+		if mid, ok := m[idKey].(string); ok {
+			id = mid
+		} else {
+			// set id as uuid
+			id  = uuid.New().String()
+			// inject id into record
+			m[idKey] = id
+		}
 	}
+
 	bs, _ := json.Marshal(m)
 
 	err = db.Table(tableName).Create(&Record{
-		ID:   m[idKey].(string),
+		ID:   id,
 		Data: bs,
 	}).Error
 	if err != nil {

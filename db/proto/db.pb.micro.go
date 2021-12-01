@@ -6,7 +6,7 @@ package db
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/struct"
+	_ "google.golang.org/protobuf/types/known/structpb"
 	math "math"
 )
 
