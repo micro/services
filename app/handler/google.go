@@ -83,11 +83,11 @@ func New(db db.DbService) *GoogleApp {
 		log.Fatalf("empty project")
 	}
 
-        v, err = config.Get("app.service_account")
-        if err != nil {
-                log.Fatalf("app.service_account: %v", err)
-        }
-        accName := v.String("")
+	v, err = config.Get("app.service_account")
+	if err != nil {
+		log.Fatalf("app.service_account: %v", err)
+	}
+	accName := v.String("")
 
 	m := map[string]interface{}{}
 	err = json.Unmarshal(keyfile, &m)
@@ -255,7 +255,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	go func(service *pb.Service) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
-			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port), "--use-http2",
+			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
 
@@ -427,7 +427,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 		return fmt.Errorf("app does not exist")
 	}
 
-	var output map[string]interface{}{}
+	var output map[string]interface{}
 	if err = json.Unmarshal(outp, &output); err != nil {
 		return err
 	}
