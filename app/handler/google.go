@@ -83,12 +83,6 @@ func New(db db.DbService) *GoogleApp {
 		log.Fatalf("empty project")
 	}
 
-	v, err = config.Get("app.service_account")
-	if err != nil {
-		log.Fatalf("app.service_account: %v", err)
-	}
-	accName := v.String("")
-
 	m := map[string]interface{}{}
 	err = json.Unmarshal(keyfile, &m)
 	if err != nil {
@@ -105,7 +99,7 @@ func New(db db.DbService) *GoogleApp {
 	// https://cloud.google.com/functions/docs/reference/iam/roles#additional-configuration
 
 	// https://cloud.google.com/sdk/docs/authorizing#authorizing_with_a_service_account
-	outp, err := exec.Command("gcloud", "auth", "activate-service-account", accName, "--key-file", "/acc.json").CombinedOutput()
+	outp, err := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", "/acc.json").CombinedOutput()
 	if err != nil {
 		log.Fatalf(string(outp))
 	}
@@ -253,7 +247,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
+		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
 			"--cpu", "100m", "--memory", "128Mi", "--port", fmt.Sprintf("%d", req.Port), "--use-http2",
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
@@ -345,7 +339,7 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 	}
 
 	// delete the app
-	cmd := exec.Command("gcloud", "run", "services", "delete", "--region", srv.Region, srv.Id)
+	cmd := exec.Command("gcloud", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
@@ -408,9 +402,13 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	}
 
 	// get the current app status
-	cmd := exec.Command("gcloud", "--format", "json", "run", "services", "describe", "--region", srv.Region, srv.Id)
+	cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "services", "describe", "--region", srv.Region, srv.Id)
 	outp, err := cmd.CombinedOutput()
-	if err != nil {
+	if err != nil && srv.Status == "Deploying" {
+		log.Error(fmt.Errorf(string(outp)))
+		srv.Status = "Building"
+		return nil
+	} else if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
 		return fmt.Errorf("app does not exist")
 	}
