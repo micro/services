@@ -137,7 +137,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 
 	// set the response id
-	rsp.Id = m[idKey].(string)
+	rsp.Id = id
 
 	return nil
 }
@@ -161,12 +161,9 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 
 	// where ID is specified do a single update record update
 	id := req.Id
-	if v, ok := m[idKey].(string); ok && id == "" {
-		id = v
-	}
 
 	// if the id is blank then check the data
-	if len(req.Id) == 0 {
+	if len(id) == 0 {
 		var ok bool
 		id, ok = m[idKey].(string)
 		if !ok {
