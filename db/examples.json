@@ -4,7 +4,7 @@
       "title": "Create a record",
       "run_check": true,
       "request": {
-        "table": "people",
+        "table": "example",
         "record": {
           "id": "1",
           "name": "Jane",
