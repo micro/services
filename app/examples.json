@@ -28,5 +28,19 @@
         "message": "Thanks for the vote!"
       }
     }
+  ],
+  "regions": [
+    {
+      "title": "List regions",
+      "run_check": false,
+      "request": {},
+      "response": {
+        "regions": [
+                "europe-west1",
+                "us-east1",
+                "us-west1"
+        ]
+      }
+    }
   ]
 }

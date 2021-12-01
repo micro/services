@@ -249,7 +249,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
 			"--cpu", "100m", "--memory", "128Mi", "--port", fmt.Sprintf("%d", req.Port), "--use-http2",
-			"--allow-unauthenticated", "--max-instances", "1",
+			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
 
 		// if env vars exist then set them
@@ -306,6 +306,9 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			log.Error(err)
 		}
 	}()
+
+	// set the service in the response
+	rsp.Service = service
 
 	return err
 }
