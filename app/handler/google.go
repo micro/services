@@ -148,7 +148,13 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 	// only support github and gitlab
 	for _, repo := range GitRepos {
-		if strings.HasPrefix(req.Repo, "https://"+repo) {
+		rp := repo
+
+		if strings.HasPrefix(req.Repo, "https://") {
+			rp = "https://" + repo
+		}
+
+		if strings.HasPrefix(req.Repo, rp) {
 			validRepo = true
 			break
 		}
