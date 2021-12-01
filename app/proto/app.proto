@@ -6,7 +6,75 @@ option go_package = "./proto;app";
 
 service App {
 	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
-        rpc Vote(VoteRequest) returns (VoteResponse) {}
+	rpc Regions(RegionsRequest) returns (RegionsResponse) {}
+	rpc Run(RunRequest) returns (RunResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Status(StatusRequest) returns (StatusResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+}
+
+message Service {
+	// unique id
+	string id = 1;
+	// name of the app
+	string name = 2;
+	// source repository
+	string repo = 3;
+	// region running in
+	string region = 4;
+	// port running on
+	int32 port = 5;
+	// status of the app
+	string status = 6;
+	// app url
+	string url = 7;
+	// last deployed time
+	string deployed_at = 8;
+	// associated env vars
+	map<string,string> env_vars = 9;
+}
+
+// Delete an app
+message DeleteRequest {
+	// name of the app
+	string name = 1;
+}
+
+message DeleteResponse {}
+
+// List all the apps
+message ListRequest {
+}
+
+message ListResponse {
+	// all the apps
+	repeated Service services = 1;
+}
+
+// Run an app
+message RunRequest {
+	// name of the app
+	string name = 1;
+	// source repository
+	string repo = 2;
+	// region to run in
+	string region = 3;
+	// port to run on
+	int32 port = 4;
+	// associatede env vars to pass in
+	map<string,string> env_vars = 5;
+}
+
+message RunResponse {
+	// The running service
+	Service service = 1;
+}
+
+// Return the support regions
+message RegionsRequest {}
+
+message RegionsResponse {
+	repeated string regions = 1;
 }
 
 // Vote to have the App api launched faster!
@@ -40,5 +108,17 @@ message ReserveRequest {
 }
 
 message ReserveResponse {
+	// The app reservation
 	Reservation reservation = 1;
+}
+
+// Get the status of an app
+message StatusRequest {
+	// name of the app
+	string name = 1;
+}
+
+message StatusResponse {
+	// running service info
+	Service service = 1;
 }
