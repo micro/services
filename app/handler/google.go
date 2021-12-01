@@ -269,37 +269,15 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 		// execute the command
 		outp, err := cmd.CombinedOutput()
-		if err != nil {
-			log.Error(fmt.Errorf(string(outp)))
-			// set the error status
-			parts := strings.Split(string(outp), "ERROR:")
-			if len(parts) > 1 {
-				service.Status = "Error: " + parts[len(parts)-1]
-			} else {
-				service.Status = string(outp)
-			}
-		} else {
-			// check the app name reservation for custom domain mapping
-			// apply the custom domain mapping if it exists and is valid
-			var output map[string]interface{}
-
-			// get the status output and deployment url
-			if err := json.Unmarshal(outp, &output); err == nil {
-				status := output["status"].(map[string]interface{})
-				url := status["address"].(map[string]interface{})["url"].(string)
-				deployed := status["conditions"].([]interface{})[0].(map[string]interface{})
-
-				service.Url = url
-				service.DeployedAt = deployed["lastTransitionTime"].(string)
-
-				if deployed["status"] == "True" {
-					service.Status = "Running"
-				}
-			} else {
-				// TODO: return error
-				service.Status = "Unknown error"
-			}
+		if err == nil {
+			// populate the app status
+			e.Status(ctx, &pb.StatusRequest{Name: req.Name}, &pb.StatusResponse{})
+			return
 		}
+
+		log.Error(fmt.Errorf(string(outp)))
+		// set the error status
+		service.Status = "DeploymentError"
 
 		// crazy garbage structs
 		s := &_struct.Struct{}
@@ -348,25 +326,28 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 	b, _ := json.Marshal(record.AsMap())
 	srv := new(pb.Service)
 
-	if err = json.Unmarshal(b, srv); err != nil {
+	if err := json.Unmarshal(b, srv); err != nil {
 		return err
 	}
 
-	// delete the app
-	cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
-	outp, err := cmd.CombinedOutput()
-	if err != nil && !strings.Contains(string(outp), "could not be found") {
-		log.Error(fmt.Errorf(string(outp)))
-		return errors.InternalServerError("app.delete", "Failed to delete app")
-	}
+	// execute the delete async
+	go func(service *pb.Service) {
+		// delete the app
+		cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
+		outp, err := cmd.CombinedOutput()
+		if err != nil && !strings.Contains(string(outp), "could not be found") {
+			log.Error(fmt.Errorf(string(outp)))
+			return
+		}
 
-	// delete from the db
-	_, err = e.db.Delete(ctx, &db.DeleteRequest{
-		Table: "apps",
-		Id:    req.Name,
-	})
+		// delete from the db
+		_, err = e.db.Delete(ctx, &db.DeleteRequest{
+			Table: "apps",
+			Id:    req.Name,
+		})
+	}(srv)
 
-	return err
+	return nil
 }
 
 func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
@@ -424,7 +405,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 		return nil
 	} else if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
-		return fmt.Errorf("app does not exist")
+		return errors.BadRequest("app.status", "service does not exist")
 	}
 
 	var output map[string]interface{}
@@ -432,18 +413,47 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 		return err
 	}
 
+	currentStatus := srv.Status
+	currentUrl := srv.Url
+	deployedAt := srv.DeployedAt
+
 	// get the service status
 	status := output["status"].(map[string]interface{})
 	deployed := status["conditions"].([]interface{})[0].(map[string]interface{})
-
 	srv.DeployedAt = deployed["lastTransitionTime"].(string)
 
-	if deployed["status"] == "True" {
+	switch deployed["status"].(string) {
+	case "True":
 		srv.Status = "Running"
+		srv.Url = status["url"].(string)
+	default:
+		srv.Status = deployed["status"].(string)
 	}
 
 	// set response
 	rsp.Service = srv
 
-	return nil
+	// no change in status and we have a pre-existing url
+	if srv.Status == currentStatus && srv.Url == currentUrl && srv.DeployedAt == deployedAt {
+		return nil
+	}
+
+	// update built in status
+
+	s := &_struct.Struct{}
+	b, _ = json.Marshal(srv)
+
+	if err = s.UnmarshalJSON(b); err != nil {
+		log.Error(err)
+		return err
+	}
+
+	// write the app to the db
+	_, err = e.db.Update(ctx, &db.UpdateRequest{
+		Table:  "apps",
+		Record: s,
+		Id:     req.Name,
+	})
+
+	return err
 }
