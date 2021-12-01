@@ -427,8 +427,8 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 		return fmt.Errorf("app does not exist")
 	}
 
-	output := map[string]interface{}{}
-	if err = json.Unmarshal(outp, output); err != nil {
+	var output map[string]interface{}{}
+	if err = json.Unmarshal(outp, &output); err != nil {
 		return err
 	}
 
