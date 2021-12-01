@@ -353,7 +353,7 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 	}
 
 	// delete the app
-	cmd := exec.Command("gcloud", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
+	cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
 	outp, err := cmd.CombinedOutput()
 	if err != nil && !strings.Contains(string(outp), "could not be found") {
 		log.Error(fmt.Errorf(string(outp)))
@@ -420,7 +420,6 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	outp, err := cmd.CombinedOutput()
 	if err != nil && srv.Status == "Deploying" {
 		log.Error(fmt.Errorf(string(outp)))
-		srv.Status = "Building"
 		rsp.Service = srv
 		return nil
 	} else if err != nil {
