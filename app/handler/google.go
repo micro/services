@@ -216,6 +216,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		sid = random(8)
 	}
 
+	sid = strings.ToLower(sid)
 	id := req.Name + "-" + strings.Replace(sid, "-", "", -1)
 
 	service := &pb.Service{
@@ -264,27 +265,29 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		outp, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))
-		}
-
-		// check the app name reservation for custom domain mapping
-		// apply the custom domain mapping if it exists and is valid
-		var output map[string]interface{}
-
-		// get the status output and deployment url
-		if err := json.Unmarshal(outp, &output); err == nil {
-			status := output["status"].(map[string]interface{})
-			url := status["address"].(map[string]interface{})["url"].(string)
-			deployed := status["conditions"].([]interface{})[0].(map[string]interface{})
-
-			service.Url = url
-			service.DeployedAt = deployed["lastTransitionTime"].(string)
-
-			if deployed["status"] == "True" {
-				service.Status = "Running"
-			}
+			// set the error status
+			service.Status = string(outp)
 		} else {
-			// TODO: return error
-			service.Status = "Error"
+			// check the app name reservation for custom domain mapping
+			// apply the custom domain mapping if it exists and is valid
+			var output map[string]interface{}
+
+			// get the status output and deployment url
+			if err := json.Unmarshal(outp, &output); err == nil {
+				status := output["status"].(map[string]interface{})
+				url := status["address"].(map[string]interface{})["url"].(string)
+				deployed := status["conditions"].([]interface{})[0].(map[string]interface{})
+
+				service.Url = url
+				service.DeployedAt = deployed["lastTransitionTime"].(string)
+
+				if deployed["status"] == "True" {
+					service.Status = "Running"
+				}
+			} else {
+				// TODO: return error
+				service.Status = "Unknown error"
+			}
 		}
 
 		// crazy garbage structs
@@ -341,7 +344,7 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 	// delete the app
 	cmd := exec.Command("gcloud", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
 	outp, err := cmd.CombinedOutput()
-	if err != nil {
+	if err != nil && !strings.Contains(string(outp), "could not be found") {
 		log.Error(fmt.Errorf(string(outp)))
 		return errors.InternalServerError("app.delete", "Failed to delete app")
 	}
@@ -407,6 +410,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	if err != nil && srv.Status == "Deploying" {
 		log.Error(fmt.Errorf(string(outp)))
 		srv.Status = "Building"
+		rsp.Service = srv
 		return nil
 	} else if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
