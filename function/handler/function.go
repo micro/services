@@ -218,6 +218,10 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *function.CallResponse) error {
 	log.Info("Received Function.Call request")
 
+	if len(req.Name) == 0 {
+		return errors.BadRequest("function.call", "Missing function name")
+	}
+
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
 		tenantId = "micro"
@@ -262,6 +266,10 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 
 func (e *Function) Delete(ctx context.Context, req *function.DeleteRequest, rsp *function.DeleteResponse) error {
 	log.Info("Received Function.Delete request")
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest("function.delete", "Missing function name")
+	}
 
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
@@ -344,6 +352,10 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 }
 
 func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, rsp *function.DescribeResponse) error {
+	if len(req.Name) == 0 {
+		return errors.BadRequest("function.describe", "Missing function name")
+	}
+
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
 		tenantId = "micro"
