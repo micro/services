@@ -102,6 +102,15 @@ func NewFunction(db db.DbService) *Function {
 
 func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
 	log.Info("Received Function.Deploy request")
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest("function.deploy", "Missing name")
+	}
+
+	if len(req.Repo) == 0 {
+		return errors.BadRequest("function.deploy", "Missing repo")
+	}
+
 	gitter := git.NewGitter(map[string]string{})
 
 	var err error
@@ -121,10 +130,12 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if !ok {
 		tenantId = "micro"
 	}
+
 	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
 	if req.Entrypoint == "" {
 		req.Entrypoint = req.Name
 	}
+
 	project := req.Project
 	if project == "" {
 		project = "default"
