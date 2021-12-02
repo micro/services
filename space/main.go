@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/micro/services/space/handler"
-	pb "github.com/micro/services/space/proto"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/space/handler"
+	pb "github.com/micro/services/space/proto"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterSpaceHandler(srv.Server(), new(handler.Space))
+	pb.RegisterSpaceHandler(srv.Server(), handler.NewSpace(srv))
 
 	// Run service
 	if err := srv.Run(); err != nil {

@@ -42,7 +42,11 @@ func NewSpaceEndpoints() []*api.Endpoint {
 // Client API for Space service
 
 type SpaceService interface {
-	Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
+	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 }
 
 type spaceService struct {
@@ -57,9 +61,49 @@ func NewSpaceService(name string, c client.Client) SpaceService {
 	}
 }
 
-func (c *spaceService) Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error) {
-	req := c.c.NewRequest(c.name, "Space.Vote", in)
-	out := new(VoteResponse)
+func (c *spaceService) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
+	req := c.c.NewRequest(c.name, "Space.Create", in)
+	out := new(CreateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceService) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error) {
+	req := c.c.NewRequest(c.name, "Space.Update", in)
+	out := new(UpdateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+	req := c.c.NewRequest(c.name, "Space.Delete", in)
+	out := new(DeleteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "Space.List", in)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
+	req := c.c.NewRequest(c.name, "Space.Read", in)
+	out := new(ReadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +114,20 @@ func (c *spaceService) Vote(ctx context.Context, in *VoteRequest, opts ...client
 // Server API for Space service
 
 type SpaceHandler interface {
-	Vote(context.Context, *VoteRequest, *VoteResponse) error
+	Create(context.Context, *CreateRequest, *CreateResponse) error
+	Update(context.Context, *UpdateRequest, *UpdateResponse) error
+	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
+	List(context.Context, *ListRequest, *ListResponse) error
+	Read(context.Context, *ReadRequest, *ReadResponse) error
 }
 
 func RegisterSpaceHandler(s server.Server, hdlr SpaceHandler, opts ...server.HandlerOption) error {
 	type space interface {
-		Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error
+		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
+		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
+		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
+		List(ctx context.Context, in *ListRequest, out *ListResponse) error
+		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
 	}
 	type Space struct {
 		space
@@ -88,6 +140,22 @@ type spaceHandler struct {
 	SpaceHandler
 }
 
-func (h *spaceHandler) Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error {
-	return h.SpaceHandler.Vote(ctx, in, out)
+func (h *spaceHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
+	return h.SpaceHandler.Create(ctx, in, out)
+}
+
+func (h *spaceHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {
+	return h.SpaceHandler.Update(ctx, in, out)
+}
+
+func (h *spaceHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
+	return h.SpaceHandler.Delete(ctx, in, out)
+}
+
+func (h *spaceHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
+	return h.SpaceHandler.List(ctx, in, out)
+}
+
+func (h *spaceHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
+	return h.SpaceHandler.Read(ctx, in, out)
 }
