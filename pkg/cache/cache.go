@@ -13,6 +13,7 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/pkg/tenant"
+	"github.com/peterbourgon/diskv/v3"
 )
 
 type Cache interface {
@@ -23,11 +24,14 @@ type Cache interface {
 	Delete(key string) error
 	Increment(key string, val int64) (int64, error)
 	Decrement(key string, val int64) (int64, error)
+	Close() error
 }
 
 type cache struct {
 	sync.Mutex
+	closed chan bool
 	LRU    *lru.Cache
+	Disk   *diskv.Diskv
 	Store  store.Store
 	Prefix string
 }
@@ -48,9 +52,25 @@ var (
 
 func New(st store.Store) Cache {
 	l, _ := lru.New(DefaultCacheSize)
+	d := diskv.New(diskv.Options{
+		BasePath: "cache",
+	})
+
 	return &cache{
 		LRU:   l,
+		Disk:  d,
 		Store: st,
+	}
+}
+
+func (c *cache) run() {
+	for {
+		select {
+		case <-c.closed:
+			return
+		case <-time.After(time.Hour):
+			c.Disk.EraseAll()
+		}
 	}
 }
 
@@ -67,10 +87,26 @@ func (c *cache) Context(ctx context.Context) Cache {
 		return c
 	}
 	return &cache{
+		closed: make(chan bool),
 		LRU:    c.LRU,
+		Disk:   c.Disk,
 		Store:  c.Store,
 		Prefix: t,
 	}
+}
+
+func (c *cache) Close() error {
+	c.Lock()
+	defer c.Unlock()
+
+	select {
+	case <-c.closed:
+		return nil
+	default:
+		close(c.closed)
+	}
+
+	return nil
 }
 
 func (c *cache) Get(key string, val interface{}) error {
@@ -93,6 +129,25 @@ func (c *cache) Get(key string, val interface{}) error {
 	}
 
 	logger.Infof("Cache miss for %v", k)
+
+	if c.Disk == nil {
+		c.Disk = diskv.New(diskv.Options{
+			BasePath: "cache",
+		})
+	}
+
+	// read from disk
+	b, err := c.Disk.Read(k)
+	if err == nil && len(b) > 0 {
+		var i item
+		if err := json.Unmarshal(b, &i); err == nil {
+			if !i.expires.IsZero() && i.expires.Sub(time.Now()).Seconds() < 0 {
+				c.Disk.Erase(k)
+				return ErrNotFound
+			}
+			return json.Unmarshal(i.val, val)
+		}
+	}
 
 	// otherwise check  the store
 	if c.Store == nil {
@@ -119,7 +174,13 @@ func (c *cache) Get(key string, val interface{}) error {
 	if rec.Expiry > time.Duration(0) {
 		expires = time.Now().Add(rec.Expiry)
 	}
-	c.LRU.Add(rec.Key, &item{key: rec.Key, val: rec.Value, expires: expires})
+
+	vi := &item{key: rec.Key, val: rec.Value, expires: expires}
+	c.LRU.Add(rec.Key, vi)
+
+	b, _ = json.Marshal(vi)
+	// put on disk
+	c.Disk.Write(rec.Key, b)
 
 	return nil
 }
@@ -146,7 +207,11 @@ func (c *cache) Set(key string, val interface{}, expires time.Time) error {
 	}
 
 	// set in the lru
-	c.LRU.Add(rec.Key, &item{key: rec.Key, val: rec.Value, expires: expires})
+	vi := &item{key: rec.Key, val: rec.Value, expires: expires}
+	c.LRU.Add(rec.Key, vi)
+	b, _ = json.Marshal(vi)
+	// put on disk
+	c.Disk.Write(rec.Key, b)
 	return nil
 }
 
@@ -158,6 +223,8 @@ func (c *cache) Delete(key string) error {
 	k := c.Key(key)
 	// remove from the lru
 	c.LRU.Remove(k)
+	// remove from disk
+	c.Disk.Erase(k)
 	// delete from the store
 	return c.Store.Delete(k)
 }

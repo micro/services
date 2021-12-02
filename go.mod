@@ -3,7 +3,6 @@ module github.com/micro/services
 go 1.15
 
 require (
-	github.com/Masterminds/semver/v3 v3.1.1 // indirect
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/Teamwork/spamc v0.0.0-20200109085853-a4e0c5c3f7a0
@@ -11,12 +10,9 @@ require (
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
-	github.com/crufter/nested v0.0.0-20210903145606-dea42c476b37 // indirect
 	github.com/dghubble/go-twitter v0.0.0-20210609183100-2fdbf421508e
 	github.com/disintegration/imaging v1.6.2
 	github.com/enescakir/emoji v1.0.0
-	github.com/fatih/camelcase v1.0.0 // indirect
-	github.com/getkin/kin-openapi v0.26.0 // indirect
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/protobuf v1.5.2
@@ -33,19 +29,17 @@ require (
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro-go v0.0.0-20211101221015-79ab982f8163 // indirect
 	github.com/micro/micro/v3 v3.7.1-0.20211111170433-1ebb8328e280
 	github.com/miekg/dns v1.1.31 // indirect
-	github.com/onsi/gomega v1.10.5 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
+	github.com/peterbourgon/diskv/v3 v3.0.1
 	github.com/pquerna/otp v1.3.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.0+incompatible
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
-	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/teamwork/test v0.0.0-20200108114543-02621bae84ad // indirect
 	github.com/teamwork/utils v0.0.0-20211103135549-f7e7a68ba696 // indirect
