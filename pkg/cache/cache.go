@@ -19,7 +19,7 @@ import (
 type Cache interface {
 	// Context returns a tenant scoped Cache
 	Context(ctx context.Context) Cache
-	Get(key string, val interface{}) error
+	Get(key string, val interface{}) (time.Time, error)
 	Set(key string, val interface{}, expires time.Time) error
 	Delete(key string) error
 	Increment(key string, val int64) (int64, error)
@@ -109,7 +109,7 @@ func (c *cache) Close() error {
 	return nil
 }
 
-func (c *cache) Get(key string, val interface{}) error {
+func (c *cache) Get(key string, val interface{}) (time.Time, error) {
 	k := c.Key(key)
 
 	// try the LRU
@@ -121,11 +121,11 @@ func (c *cache) Get(key string, val interface{}) error {
 		if !i.expires.IsZero() && i.expires.Sub(time.Now()).Seconds() < 0 {
 			// remove it
 			c.LRU.Remove(k)
-			return ErrNotFound
+			return time.Time{}, ErrNotFound
 		}
 
 		// otherwise unmarshal and return it
-		return json.Unmarshal(i.val, val)
+		return i.expires, json.Unmarshal(i.val, val)
 	}
 
 	logger.Infof("Cache miss for %v", k)
@@ -143,9 +143,9 @@ func (c *cache) Get(key string, val interface{}) error {
 		if err := json.Unmarshal(b, &i); err == nil {
 			if !i.expires.IsZero() && i.expires.Sub(time.Now()).Seconds() < 0 {
 				c.Disk.Erase(k)
-				return ErrNotFound
+				return time.Time{}, ErrNotFound
 			}
-			return json.Unmarshal(i.val, val)
+			return i.expires, json.Unmarshal(i.val, val)
 		}
 	}
 
@@ -156,15 +156,15 @@ func (c *cache) Get(key string, val interface{}) error {
 
 	recs, err := c.Store.Read(k, store.ReadLimit(1))
 	if err != nil && err == store.ErrNotFound {
-		return ErrNotFound
+		return time.Time{}, ErrNotFound
 	} else if err != nil {
-		return err
+		return time.Time{}, err
 	}
 	if len(recs) == 0 {
-		return ErrNotFound
+		return time.Time{}, ErrNotFound
 	}
 	if err := json.Unmarshal(recs[0].Value, val); err != nil {
-		return err
+		return time.Time{}, err
 	}
 
 	// put it in the cache for future use
@@ -182,7 +182,7 @@ func (c *cache) Get(key string, val interface{}) error {
 	// put on disk
 	c.Disk.Write(rec.Key, b)
 
-	return nil
+	return vi.expires, nil
 }
 
 func (c *cache) Set(key string, val interface{}, expires time.Time) error {
@@ -234,7 +234,7 @@ func (c *cache) Increment(key string, value int64) (int64, error) {
 	defer c.Unlock()
 
 	var val int64
-	if err := c.Get(key, &val); err != nil && err != ErrNotFound {
+	if _, err := c.Get(key, &val); err != nil && err != ErrNotFound {
 		return 0, err
 	}
 	val += value
@@ -249,7 +249,7 @@ func (c *cache) Decrement(key string, value int64) (int64, error) {
 	defer c.Unlock()
 
 	var val int64
-	if err := c.Get(key, &val); err != nil && err != ErrNotFound {
+	if _, err := c.Get(key, &val); err != nil && err != ErrNotFound {
 		return 0, err
 	}
 	val -= value
@@ -263,7 +263,7 @@ func Context(ctx context.Context) Cache {
 	return DefaultCache.Context(ctx)
 }
 
-func Get(key string, val interface{}) error {
+func Get(key string, val interface{}) (time.Time, error) {
 	return DefaultCache.Get(key, val)
 }
 
