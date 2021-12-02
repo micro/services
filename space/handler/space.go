@@ -14,23 +14,28 @@ import (
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/space/proto"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
+	awscreds "github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	sthree "github.com/aws/aws-sdk-go/service/s3"
 )
 
 const (
-	mdACL       = "X-Amz-Acl"
-	mdACLPublic = "public-read"
-	mdCreated   = "x-amz-meta-micro-created" // need the x-amz-meta prefix because minio does non-obvious things with prefixes
+	mdACL        = "X-Amz-Acl"
+	mdACLPublic  = "public-read"
+	mdCreated    = "X-Amz-Meta-Micro-Created" // need the x-amz-meta prefix because minio does non-obvious things with prefixes
+	mdVisibility = "X-Amz-Meta-Micro-Visibility"
 
 	visibilityPrivate = "private"
 	visibilityPublic  = "public"
 )
 
 type Space struct {
-	client *minio.Client
 	conf   conf
+	client *sthree.S3
 }
 
 type conf struct {
@@ -52,31 +57,24 @@ func NewSpace(srv *service.Service) *Space {
 		log.Fatalf("Failed to load config %s", err)
 	}
 
-	cl, err := minio.New(c.Endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV2(c.AccessKey, c.SecretKey, ""),
-		Secure: c.SSL,
-		Region: c.Region,
-	})
-	if err != nil {
-		log.Fatalf("Failed to load minio client %s", err)
-	}
+	sess := session.Must(session.NewSession(&aws.Config{
+		Endpoint:    &c.Endpoint,
+		Region:      &c.Region,
+		Credentials: awscreds.NewStaticCredentials(c.AccessKey, c.SecretKey, ""),
+	}))
+	client := sthree.New(sess)
 
-	bucks, err := cl.ListBuckets(context.Background())
-	if err != nil {
-		log.Errorf("Error listing buckets %s", err)
-	}
-	for _, b := range bucks {
-		log.Infof("%v", b)
-	}
 	// make sure this thing exists
-	if err := cl.MakeBucket(context.Background(), c.SpaceName, minio.MakeBucketOptions{}); err != nil &&
+	if _, err := client.CreateBucket(&sthree.CreateBucketInput{
+		Bucket: aws.String(c.SpaceName),
+	}); err != nil &&
 		(!strings.Contains(err.Error(), "already exists") && !strings.Contains(err.Error(), "not empty")) {
 		log.Fatalf("Error making bucket %s", err)
 	}
 
 	return &Space{
-		client: cl,
 		conf:   c,
+		client: client,
 	}
 }
 
@@ -98,26 +96,36 @@ func (s Space) upsert(ctx context.Context, object []byte, name, visibility, meth
 	if err := s3utils.CheckValidObjectName(objectName); err != nil {
 		return "", errors.BadRequest(method, "Invalid name")
 	}
-	md := map[string]string{}
 	if create { // check that this doesn't alraedy exist
-		o, err := s.client.GetObject(ctx, s.conf.SpaceName, objectName, minio.GetObjectOptions{})
+		_, err := s.client.HeadObject(&sthree.HeadObjectInput{
+			Bucket: aws.String(s.conf.SpaceName),
+			Key:    aws.String(objectName),
+		})
 		if err == nil {
-			_, err := o.Stat()
-			if err == nil {
-				return "", errors.BadRequest(method, "Object already exists")
-			}
+			return "", errors.BadRequest(method, "Object already exists")
 		}
-		md[mdCreated] = fmt.Sprintf("%d", time.Now().Unix())
+
+		aerr, ok := err.(awserr.Error)
+		if !ok || aerr.Code() != "NotFound" {
+			return "", errors.InternalServerError(method, "Error creating object")
+		}
 	}
 
-	buf := bytes.NewBuffer(object)
+	putInput := &sthree.PutObjectInput{
+		Body:   bytes.NewReader(object),
+		Key:    aws.String(objectName),
+		Bucket: aws.String(s.conf.SpaceName),
+		Metadata: map[string]*string{
+			mdCreated:    aws.String(fmt.Sprintf("%d", time.Now().Unix())),
+			mdVisibility: aws.String(visibility),
+		},
+	}
 	// TODO flesh out options - might want to do content-type for better serving of object
 	if visibility == visibilityPublic {
-		md[mdACL] = mdACLPublic
+		putInput.ACL = aws.String(mdACLPublic)
 	}
-	i, err := s.client.PutObject(ctx, s.conf.SpaceName, objectName, buf, int64(buf.Len()), minio.PutObjectOptions{
-		UserMetadata: md,
-	})
+
+	_, err := s.client.PutObject(putInput)
 
 	if err != nil {
 		log.Errorf("Error creating object %s", err)
@@ -125,7 +133,7 @@ func (s Space) upsert(ctx context.Context, object []byte, name, visibility, meth
 	}
 
 	// TODO fix the url
-	return i.Location, nil
+	return "", nil // i.Location, nil
 
 }
 
@@ -145,7 +153,10 @@ func (s Space) Delete(ctx context.Context, request *pb.DeleteRequest, response *
 		return errors.BadRequest(method, "Missing name param")
 	}
 	objectName := fmt.Sprintf("%s/%s", tnt, request.Name)
-	if err := s.client.RemoveObject(ctx, s.conf.SpaceName, objectName, minio.RemoveObjectOptions{}); err != nil {
+	if _, err := s.client.DeleteObject(&sthree.DeleteObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	}); err != nil {
 		log.Errorf("Error deleting object %s", err)
 		return errors.InternalServerError(method, "Error deleting object")
 	}
@@ -162,15 +173,18 @@ func (s Space) List(ctx context.Context, request *pb.ListRequest, response *pb.L
 		return errors.BadRequest(method, "Missing prefix param")
 	}
 	objectName := fmt.Sprintf("%s/%s", tnt, request.Prefix)
-	ch := s.client.ListObjects(ctx, s.conf.SpaceName, minio.ListObjectsOptions{
-		WithMetadata: true,
-		Prefix:       objectName,
-		Recursive:    true,
+	rsp, err := s.client.ListObjects(&sthree.ListObjectsInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Prefix: aws.String(objectName),
 	})
+	if err != nil {
+		log.Errorf("Error listing objects %s", err)
+		return errors.InternalServerError(method, "Error listing objects")
+	}
 	response.Objects = []*pb.ListObject{}
-	for oi := range ch {
+	for _, oi := range rsp.Contents {
 		response.Objects = append(response.Objects, &pb.ListObject{
-			Name:     strings.TrimPrefix(oi.Key, tnt+"/"),
+			Name:     strings.TrimPrefix(*oi.Key, tnt+"/"),
 			Modified: oi.LastModified.Unix(),
 		})
 	}
@@ -187,35 +201,39 @@ func (s Space) Read(ctx context.Context, request *pb.ReadRequest, response *pb.R
 		return errors.BadRequest(method, "Missing name param")
 	}
 	objectName := fmt.Sprintf("%s/%s", tnt, request.Name)
-	o, err := s.client.GetObject(ctx, s.conf.SpaceName, objectName, minio.GetObjectOptions{})
+
+	// TODO replace with HeadObject?
+	goo, err := s.client.GetObject(&sthree.GetObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
 	if err != nil {
-		log.Errorf("Error reading object %s", err)
-		return errors.InternalServerError(method, "Error reading object")
-	}
-	oi, err := o.Stat()
-	if err != nil {
-		if strings.Contains(err.Error(), "does not exist") {
-			return errors.BadRequest(method, "Object does not exist")
+		// TODO check for not exists
+		log.Errorf("Error s3 %s", err)
+		aerr, ok := err.(awserr.Error)
+		if ok && aerr.Code() == "NoSuchKey" {
+			return errors.BadRequest(method, "Object not found")
 		}
-		log.Errorf("Error statting object %s", err)
 		return errors.InternalServerError(method, "Error reading object")
 	}
 
-	log.Infof("OI %+v", oi)
+	log.Infof("OIII %+v", goo)
+
 	vis := visibilityPrivate
-	if md := oi.Metadata[mdACL]; len(md) > 0 {
-		vis = md[0]
+	if md, ok := goo.Metadata[mdVisibility]; ok && len(*md) > 0 {
+		vis = *md
 	}
 	var created int64
-	if md := oi.Metadata[strings.Title(mdCreated)]; len(md) > 0 {
-		created, err = strconv.ParseInt(md[0], 10, 64)
+	if md, ok := goo.Metadata[mdCreated]; ok && len(*md) > 0 {
+		created, err = strconv.ParseInt(*md, 10, 64)
 		if err != nil {
 			log.Errorf("Error %s", err)
 		}
 	}
+
 	response.Object = &pb.ReadObject{
-		Name:       strings.TrimPrefix(oi.Key, tnt+"/"),
-		Modified:   oi.LastModified.Unix(),
+		Name:       request.Name,
+		Modified:   goo.LastModified.Unix(),
 		Created:    created,
 		Visibility: vis,
 	}
