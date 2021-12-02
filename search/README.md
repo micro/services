@@ -1,7 +1,7 @@
-Infinite cloud storage
+Indexing & full text search
 
-# NFT Service
+# Search Service
 
-Search for simple object storage. Put anything in the cloud 
-forever. Backed by S3 compatible storage API.
+Store and search for anything text based. The Search API provides 
+full indexing and text search.
 
