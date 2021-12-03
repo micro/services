@@ -201,8 +201,8 @@ func (s Space) List(ctx context.Context, request *pb.ListRequest, response *pb.L
 	return nil
 }
 
-func (s Space) Read(ctx context.Context, request *pb.ReadRequest, response *pb.ReadResponse) error {
-	method := "space.Read"
+func (s Space) Head(ctx context.Context, request *pb.HeadRequest, response *pb.HeadResponse) error {
+	method := "space.Head"
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
@@ -213,13 +213,13 @@ func (s Space) Read(ctx context.Context, request *pb.ReadRequest, response *pb.R
 	objectName := fmt.Sprintf("%s/%s", tnt, request.Name)
 
 	// TODO replace with HeadObject?
-	goo, err := s.client.GetObject(&sthree.GetObjectInput{
+	goo, err := s.client.HeadObject(&sthree.HeadObjectInput{
 		Bucket: aws.String(s.conf.SpaceName),
 		Key:    aws.String(objectName),
 	})
 	if err != nil {
 		aerr, ok := err.(awserr.Error)
-		if ok && aerr.Code() == "NoSuchKey" {
+		if ok && aerr.Code() == "NotFound" {
 			return errors.BadRequest(method, "Object not found")
 		}
 		log.Errorf("Error s3 %s", err)
@@ -238,7 +238,7 @@ func (s Space) Read(ctx context.Context, request *pb.ReadRequest, response *pb.R
 		}
 	}
 
-	response.Object = &pb.ReadObject{
+	response.Object = &pb.HeadObject{
 		Name:       request.Name,
 		Modified:   goo.LastModified.Unix(),
 		Created:    created,

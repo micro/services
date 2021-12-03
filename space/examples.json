@@ -61,9 +61,9 @@
       }
     }
   ],
-  "read": [
+  "head": [
     {
-      "title": "Read an object",
+      "title": "Head an object",
       "run_check": false,
       "request": {
         "name": "images/file.jpg"

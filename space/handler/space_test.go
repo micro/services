@@ -442,7 +442,7 @@ func TestList(t *testing.T) {
 
 }
 
-func TestRead(t *testing.T) {
+func TestHead(t *testing.T) {
 	g := NewWithT(t)
 	tcs := []struct {
 		name       string
@@ -452,7 +452,7 @@ func TestRead(t *testing.T) {
 		modified   int64
 		created    int64
 		err        error
-		get        func(input *sthree.GetObjectInput) (*sthree.GetObjectOutput, error)
+		head       func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error)
 	}{
 		{
 			name:       "Simple case",
@@ -461,11 +461,11 @@ func TestRead(t *testing.T) {
 			url:        "https://my-space.ams3.example.com/micro/123/foo.jpg",
 			created:    1638547905,
 			modified:   1638547906,
-			get: func(input *sthree.GetObjectInput) (*sthree.GetObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
 
-				return &sthree.GetObjectOutput{
+				return &sthree.HeadObjectOutput{
 					LastModified: aws.Time(time.Unix(1638547906, 0)),
 					Metadata: map[string]*string{
 						mdCreated:    aws.String("1638547905"),
@@ -476,14 +476,14 @@ func TestRead(t *testing.T) {
 		},
 		{
 			name: "Empty prefix",
-			err:  errors.BadRequest("space.Read", "Missing name param"),
+			err:  errors.BadRequest("space.Head", "Missing name param"),
 		},
 		{
 			name:       "Not found",
 			objectName: "foo.jpg",
-			err:        errors.BadRequest("space.Read", "Object not found"),
-			get: func(input *sthree.GetObjectInput) (*sthree.GetObjectOutput, error) {
-				return nil, mockError{code: "NoSuchKey"}
+			err:        errors.BadRequest("space.Head", "Object not found"),
+			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+				return nil, mockError{code: "NotFound"}
 			},
 		},
 	}
@@ -501,7 +501,7 @@ func TestRead(t *testing.T) {
 					BaseURL:   "https://my-space.ams3.example.com",
 				},
 				client: &mockS3Client{
-					get: tc.get,
+					head: tc.head,
 				},
 			}
 			ctx := context.Background()
@@ -513,8 +513,8 @@ func TestRead(t *testing.T) {
 				Scopes:   []string{"space"},
 				Name:     "john@example.com",
 			})
-			rsp := pb.ReadResponse{}
-			err := handler.Read(ctx, &pb.ReadRequest{
+			rsp := pb.HeadResponse{}
+			err := handler.Head(ctx, &pb.HeadRequest{
 				Name: tc.objectName,
 			}, &rsp)
 			if tc.err != nil {

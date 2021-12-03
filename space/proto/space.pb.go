@@ -501,7 +501,8 @@ func (x *ListObject) GetUrl() string {
 	return ""
 }
 
-type ReadRequest struct {
+// Head information about an object
+type HeadRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -509,8 +510,8 @@ type ReadRequest struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
-func (x *ReadRequest) Reset() {
-	*x = ReadRequest{}
+func (x *HeadRequest) Reset() {
+	*x = HeadRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_space_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -518,13 +519,13 @@ func (x *ReadRequest) Reset() {
 	}
 }
 
-func (x *ReadRequest) String() string {
+func (x *HeadRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ReadRequest) ProtoMessage() {}
+func (*HeadRequest) ProtoMessage() {}
 
-func (x *ReadRequest) ProtoReflect() protoreflect.Message {
+func (x *HeadRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_space_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -536,28 +537,28 @@ func (x *ReadRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ReadRequest.ProtoReflect.Descriptor instead.
-func (*ReadRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use HeadRequest.ProtoReflect.Descriptor instead.
+func (*HeadRequest) Descriptor() ([]byte, []int) {
 	return file_proto_space_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ReadRequest) GetName() string {
+func (x *HeadRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-type ReadResponse struct {
+type HeadResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Object *ReadObject `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
+	Object *HeadObject `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
 }
 
-func (x *ReadResponse) Reset() {
-	*x = ReadResponse{}
+func (x *HeadResponse) Reset() {
+	*x = HeadResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_space_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -565,13 +566,13 @@ func (x *ReadResponse) Reset() {
 	}
 }
 
-func (x *ReadResponse) String() string {
+func (x *HeadResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ReadResponse) ProtoMessage() {}
+func (*HeadResponse) ProtoMessage() {}
 
-func (x *ReadResponse) ProtoReflect() protoreflect.Message {
+func (x *HeadResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_space_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -583,19 +584,19 @@ func (x *ReadResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ReadResponse.ProtoReflect.Descriptor instead.
-func (*ReadResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use HeadResponse.ProtoReflect.Descriptor instead.
+func (*HeadResponse) Descriptor() ([]byte, []int) {
 	return file_proto_space_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *ReadResponse) GetObject() *ReadObject {
+func (x *HeadResponse) GetObject() *HeadObject {
 	if x != nil {
 		return x.Object
 	}
 	return nil
 }
 
-type ReadObject struct {
+type HeadObject struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -608,8 +609,8 @@ type ReadObject struct {
 	Url        string `protobuf:"bytes,5,opt,name=url,proto3" json:"url,omitempty"`
 }
 
-func (x *ReadObject) Reset() {
-	*x = ReadObject{}
+func (x *HeadObject) Reset() {
+	*x = HeadObject{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_space_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -617,13 +618,13 @@ func (x *ReadObject) Reset() {
 	}
 }
 
-func (x *ReadObject) String() string {
+func (x *HeadObject) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ReadObject) ProtoMessage() {}
+func (*HeadObject) ProtoMessage() {}
 
-func (x *ReadObject) ProtoReflect() protoreflect.Message {
+func (x *HeadObject) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_space_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -635,40 +636,40 @@ func (x *ReadObject) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ReadObject.ProtoReflect.Descriptor instead.
-func (*ReadObject) Descriptor() ([]byte, []int) {
+// Deprecated: Use HeadObject.ProtoReflect.Descriptor instead.
+func (*HeadObject) Descriptor() ([]byte, []int) {
 	return file_proto_space_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *ReadObject) GetName() string {
+func (x *HeadObject) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *ReadObject) GetModified() int64 {
+func (x *HeadObject) GetModified() int64 {
 	if x != nil {
 		return x.Modified
 	}
 	return 0
 }
 
-func (x *ReadObject) GetCreated() int64 {
+func (x *HeadObject) GetCreated() int64 {
 	if x != nil {
 		return x.Created
 	}
 	return 0
 }
 
-func (x *ReadObject) GetVisibility() string {
+func (x *HeadObject) GetVisibility() string {
 	if x != nil {
 		return x.Visibility
 	}
 	return ""
 }
 
-func (x *ReadObject) GetUrl() string {
+func (x *HeadObject) GetUrl() string {
 	if x != nil {
 		return x.Url
 	}
@@ -710,13 +711,13 @@ var file_proto_space_proto_rawDesc = []byte{
 	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x6f, 0x64,
 	0x69, 0x66, 0x69, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x6d, 0x6f, 0x64,
 	0x69, 0x66, 0x69, 0x65, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x21, 0x0a, 0x0b, 0x52, 0x65, 0x61, 0x64, 0x52,
+	0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x21, 0x0a, 0x0b, 0x48, 0x65, 0x61, 0x64, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x39, 0x0a, 0x0c, 0x52, 0x65,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x39, 0x0a, 0x0c, 0x48, 0x65,
 	0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x29, 0x0a, 0x06, 0x6f, 0x62,
 	0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x73, 0x70, 0x61,
-	0x63, 0x65, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x06, 0x6f,
-	0x62, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x88, 0x01, 0x0a, 0x0a, 0x52, 0x65, 0x61, 0x64, 0x4f, 0x62,
+	0x63, 0x65, 0x2e, 0x48, 0x65, 0x61, 0x64, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x06, 0x6f,
+	0x62, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x88, 0x01, 0x0a, 0x0a, 0x48, 0x65, 0x61, 0x64, 0x4f, 0x62,
 	0x6a, 0x65, 0x63, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x6f, 0x64, 0x69,
 	0x66, 0x69, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x6d, 0x6f, 0x64, 0x69,
@@ -739,9 +740,9 @@ var file_proto_space_proto_rawDesc = []byte{
 	0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x31, 0x0a, 0x04, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x12, 0x2e,
 	0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x1a, 0x13, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x31, 0x0a, 0x04, 0x52, 0x65, 0x61, 0x64,
-	0x12, 0x12, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x52, 0x65, 0x61,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x31, 0x0a, 0x04, 0x48, 0x65, 0x61, 0x64,
+	0x12, 0x12, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x48, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x48, 0x65, 0x61,
 	0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x0f, 0x5a, 0x0d, 0x2e,
 	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x33,
@@ -770,23 +771,23 @@ var file_proto_space_proto_goTypes = []interface{}{
 	(*ListRequest)(nil),    // 6: space.ListRequest
 	(*ListResponse)(nil),   // 7: space.ListResponse
 	(*ListObject)(nil),     // 8: space.ListObject
-	(*ReadRequest)(nil),    // 9: space.ReadRequest
-	(*ReadResponse)(nil),   // 10: space.ReadResponse
-	(*ReadObject)(nil),     // 11: space.ReadObject
+	(*HeadRequest)(nil),    // 9: space.HeadRequest
+	(*HeadResponse)(nil),   // 10: space.HeadResponse
+	(*HeadObject)(nil),     // 11: space.HeadObject
 }
 var file_proto_space_proto_depIdxs = []int32{
 	8,  // 0: space.ListResponse.objects:type_name -> space.ListObject
-	11, // 1: space.ReadResponse.object:type_name -> space.ReadObject
+	11, // 1: space.HeadResponse.object:type_name -> space.HeadObject
 	0,  // 2: space.Space.Create:input_type -> space.CreateRequest
 	2,  // 3: space.Space.Update:input_type -> space.UpdateRequest
 	4,  // 4: space.Space.Delete:input_type -> space.DeleteRequest
 	6,  // 5: space.Space.List:input_type -> space.ListRequest
-	9,  // 6: space.Space.Read:input_type -> space.ReadRequest
+	9,  // 6: space.Space.Head:input_type -> space.HeadRequest
 	1,  // 7: space.Space.Create:output_type -> space.CreateResponse
 	3,  // 8: space.Space.Update:output_type -> space.UpdateResponse
 	5,  // 9: space.Space.Delete:output_type -> space.DeleteResponse
 	7,  // 10: space.Space.List:output_type -> space.ListResponse
-	10, // 11: space.Space.Read:output_type -> space.ReadResponse
+	10, // 11: space.Space.Head:output_type -> space.HeadResponse
 	7,  // [7:12] is the sub-list for method output_type
 	2,  // [2:7] is the sub-list for method input_type
 	2,  // [2:2] is the sub-list for extension type_name
@@ -909,7 +910,7 @@ func file_proto_space_proto_init() {
 			}
 		}
 		file_proto_space_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReadRequest); i {
+			switch v := v.(*HeadRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -921,7 +922,7 @@ func file_proto_space_proto_init() {
 			}
 		}
 		file_proto_space_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReadResponse); i {
+			switch v := v.(*HeadResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -933,7 +934,7 @@ func file_proto_space_proto_init() {
 			}
 		}
 		file_proto_space_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReadObject); i {
+			switch v := v.(*HeadObject); i {
 			case 0:
 				return &v.state
 			case 1:

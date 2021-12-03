@@ -46,7 +46,7 @@ type SpaceService interface {
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
-	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
+	Head(ctx context.Context, in *HeadRequest, opts ...client.CallOption) (*HeadResponse, error)
 }
 
 type spaceService struct {
@@ -101,9 +101,9 @@ func (c *spaceService) List(ctx context.Context, in *ListRequest, opts ...client
 	return out, nil
 }
 
-func (c *spaceService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
-	req := c.c.NewRequest(c.name, "Space.Read", in)
-	out := new(ReadResponse)
+func (c *spaceService) Head(ctx context.Context, in *HeadRequest, opts ...client.CallOption) (*HeadResponse, error) {
+	req := c.c.NewRequest(c.name, "Space.Head", in)
+	out := new(HeadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ type SpaceHandler interface {
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
-	Read(context.Context, *ReadRequest, *ReadResponse) error
+	Head(context.Context, *HeadRequest, *HeadResponse) error
 }
 
 func RegisterSpaceHandler(s server.Server, hdlr SpaceHandler, opts ...server.HandlerOption) error {
@@ -127,7 +127,7 @@ func RegisterSpaceHandler(s server.Server, hdlr SpaceHandler, opts ...server.Han
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
-		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
+		Head(ctx context.Context, in *HeadRequest, out *HeadResponse) error
 	}
 	type Space struct {
 		space
@@ -156,6 +156,6 @@ func (h *spaceHandler) List(ctx context.Context, in *ListRequest, out *ListRespo
 	return h.SpaceHandler.List(ctx, in, out)
 }
 
-func (h *spaceHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
-	return h.SpaceHandler.Read(ctx, in, out)
+func (h *spaceHandler) Head(ctx context.Context, in *HeadRequest, out *HeadResponse) error {
+	return h.SpaceHandler.Head(ctx, in, out)
 }

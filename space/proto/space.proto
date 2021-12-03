@@ -9,7 +9,7 @@ service Space {
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
-	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc Head(HeadRequest) returns (HeadResponse) {}
 }
 
 // Create an object. Returns error if object with this name already exists. If you want to update an existing object use the `Update` endpoint
@@ -71,15 +71,16 @@ message ListObject {
 	string url = 3;
 }
 
-message ReadRequest {
+// Head information about an object
+message HeadRequest {
 	string name = 1;
 }
 
-message ReadResponse {
-	ReadObject object = 1;
+message HeadResponse {
+	HeadObject object = 1;
 }
 
-message ReadObject {
+message HeadObject {
 	string name = 1;
 	// when was this last modified
 	int64 modified = 2;
