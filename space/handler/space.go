@@ -21,13 +21,14 @@ import (
 	awscreds "github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	sthree "github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
 const (
 	mdACL        = "X-Amz-Acl"
 	mdACLPublic  = "public-read"
-	mdCreated    = "X-Amz-Meta-Micro-Created" // need the x-amz-meta prefix because minio does non-obvious things with prefixes
-	mdVisibility = "X-Amz-Meta-Micro-Visibility"
+	mdCreated    = "Micro-Created"
+	mdVisibility = "Micro-Visibility"
 
 	visibilityPrivate = "private"
 	visibilityPublic  = "public"
@@ -35,7 +36,7 @@ const (
 
 type Space struct {
 	conf   conf
-	client *sthree.S3
+	client s3iface.S3API
 }
 
 type conf struct {
@@ -45,6 +46,7 @@ type conf struct {
 	SpaceName string `json:"space_name"`
 	SSL       bool   `json:"ssl"`
 	Region    string `json:"region"`
+	BaseURL   string `json:"base_url"`
 }
 
 func NewSpace(srv *service.Service) *Space {
@@ -96,28 +98,40 @@ func (s Space) upsert(ctx context.Context, object []byte, name, visibility, meth
 	if err := s3utils.CheckValidObjectName(objectName); err != nil {
 		return "", errors.BadRequest(method, "Invalid name")
 	}
-	if create { // check that this doesn't alraedy exist
-		_, err := s.client.HeadObject(&sthree.HeadObjectInput{
-			Bucket: aws.String(s.conf.SpaceName),
-			Key:    aws.String(objectName),
-		})
-		if err == nil {
-			return "", errors.BadRequest(method, "Object already exists")
-		}
 
+	exists := false
+	hoo, err := s.client.HeadObject(&sthree.HeadObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	if err != nil {
 		aerr, ok := err.(awserr.Error)
 		if !ok || aerr.Code() != "NotFound" {
 			return "", errors.InternalServerError(method, "Error creating object")
 		}
+	} else {
+		exists = true
 	}
 
+	if create && exists {
+		return "", errors.BadRequest(method, "Object already exists")
+	}
+
+	createTime := aws.String(fmt.Sprintf("%d", time.Now().Unix()))
+	if exists {
+		createTime = hoo.Metadata[mdCreated]
+	}
+
+	if len(visibility) == 0 {
+		visibility = visibilityPrivate
+	}
 	putInput := &sthree.PutObjectInput{
 		Body:   bytes.NewReader(object),
 		Key:    aws.String(objectName),
 		Bucket: aws.String(s.conf.SpaceName),
 		Metadata: map[string]*string{
-			mdCreated:    aws.String(fmt.Sprintf("%d", time.Now().Unix())),
 			mdVisibility: aws.String(visibility),
+			mdCreated:    createTime,
 		},
 	}
 	// TODO flesh out options - might want to do content-type for better serving of object
@@ -125,15 +139,13 @@ func (s Space) upsert(ctx context.Context, object []byte, name, visibility, meth
 		putInput.ACL = aws.String(mdACLPublic)
 	}
 
-	_, err := s.client.PutObject(putInput)
-
-	if err != nil {
+	if _, err := s.client.PutObject(putInput); err != nil {
 		log.Errorf("Error creating object %s", err)
 		return "", errors.InternalServerError(method, "Error creating object")
 	}
 
 	// TODO fix the url
-	return "", nil // i.Location, nil
+	return fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName), nil
 
 }
 
@@ -169,9 +181,6 @@ func (s Space) List(ctx context.Context, request *pb.ListRequest, response *pb.L
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
 	}
-	if len(request.Prefix) == 0 {
-		return errors.BadRequest(method, "Missing prefix param")
-	}
 	objectName := fmt.Sprintf("%s/%s", tnt, request.Prefix)
 	rsp, err := s.client.ListObjects(&sthree.ListObjectsInput{
 		Bucket: aws.String(s.conf.SpaceName),
@@ -186,6 +195,7 @@ func (s Space) List(ctx context.Context, request *pb.ListRequest, response *pb.L
 		response.Objects = append(response.Objects, &pb.ListObject{
 			Name:     strings.TrimPrefix(*oi.Key, tnt+"/"),
 			Modified: oi.LastModified.Unix(),
+			Url:      fmt.Sprintf("%s/%s", s.conf.BaseURL, *oi.Key),
 		})
 	}
 	return nil
@@ -208,16 +218,13 @@ func (s Space) Read(ctx context.Context, request *pb.ReadRequest, response *pb.R
 		Key:    aws.String(objectName),
 	})
 	if err != nil {
-		// TODO check for not exists
-		log.Errorf("Error s3 %s", err)
 		aerr, ok := err.(awserr.Error)
 		if ok && aerr.Code() == "NoSuchKey" {
 			return errors.BadRequest(method, "Object not found")
 		}
+		log.Errorf("Error s3 %s", err)
 		return errors.InternalServerError(method, "Error reading object")
 	}
-
-	log.Infof("OIII %+v", goo)
 
 	vis := visibilityPrivate
 	if md, ok := goo.Metadata[mdVisibility]; ok && len(*md) > 0 {
@@ -236,6 +243,7 @@ func (s Space) Read(ctx context.Context, request *pb.ReadRequest, response *pb.R
 		Modified:   goo.LastModified.Unix(),
 		Created:    created,
 		Visibility: vis,
+		Url:        fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName),
 	}
 
 	return nil
