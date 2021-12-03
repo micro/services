@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spamd-latest
+  labels:
+    app: spamd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spamd
+  template:
+    metadata:
+      labels:
+        app: spamd
+    spec:
+      containers:
+        - name: spamd
+          image: instantlinux/spamassassin:latest
+          ports:
+            - containerPort: 783
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: spamd
+spec:
+  selector:
+    app: spamd
+  ports:
+    - protocol: TCP
+      port: 783
+      targetPort: 783

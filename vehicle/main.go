@@ -16,14 +16,14 @@ func main() {
 		service.Version("latest"),
 	)
 
-        v, err := config.Get("dvla.api_key")
-        if err != nil {
-                logger.Fatalf("sunnha.api_key config not found: %v", err)
-        }
-        key := v.String("")
-        if len(key) == 0 {
-                logger.Fatal("dvla.api_key config not found")
-        }
+	v, err := config.Get("dvla.api_key")
+	if err != nil {
+		logger.Fatalf("sunnha.api_key config not found: %v", err)
+	}
+	key := v.String("")
+	if len(key) == 0 {
+		logger.Fatal("dvla.api_key config not found")
+	}
 
 	// Register handler
 	pb.RegisterVehicleHandler(srv.Server(), handler.New(key))

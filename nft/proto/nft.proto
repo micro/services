@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package nft;
+
+option go_package = "./proto;nft";
+
+service Nft {
+	rpc Vote(VoteRequest) returns (VoteResponse) {}
+}
+
+// Vote to have the NFT api launched faster!
+message VoteRequest {
+	// optional message
+	string message = 1;
+}
+
+message VoteResponse {
+	// response message
+	string message = 2;
+}

@@ -4,6 +4,7 @@
         "title": "Call the helloworld service",
         "description": "Helloworld is a simple example that takes a name and returns a personalised message",
         "run_check": true,
+        "idempotent": true,
         "request": {
             "name": "John"
         },
@@ -12,13 +13,15 @@
         }
     }],
     "stream": [{
-        "title": "Streams are currently temporarily not supported in clients",
+        "title": "Streams responses from the server using websockets",
         "run_check": true,
+        "idempotent": true,
         "request": {
-            "name": "not supported"
+            "name": "John",
+            "messages": 10
         },
         "response": {
-            "message": "not supported"
+            "message": "Hello John"
         }
     }]
 }

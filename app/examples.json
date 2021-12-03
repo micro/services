@@ -1,0 +1,32 @@
+{
+  "reserve": [
+    {
+      "title": "Reserve App Name",
+      "run_check": false,
+      "request": {
+        "name": "helloworld"
+      },
+      "response": {
+        "reservation": {
+                "name": "helloworld",
+                "owner": "3143bf6a-ced5-4589-b9b3-bb87cc476301",
+                "token": "a990be106204d103df461bb3a3075aefedda5z10",
+                "created": "2021-11-26T10:41:59.851107343Z",
+                "expires": "2022-11-26T10:41:59.851107422Z"
+        }
+      }
+    }
+  ],
+  "vote": [
+    {
+      "title": "Vote for the API",
+      "run_check": false,
+      "request": {
+        "message": "Launch it!"
+      },
+      "response": {
+        "message": "Thanks for the vote!"
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "headlines": [
+    {
+      "title": "Get news headlines",
+      "description": "Retrieve the latest headlines for the US",
+      "run_check": false,
+      "request": {
+        "language": "en",
+        "locale": "us",
+        "date": "2021-11-24"
+      },
+      "response": {
+        "articles": [{
+		"title": "Will Trump run again? Against Biden? The shadow-boxing begins",
+		"description": "With the Democratic Party in a bit of a tizzy over whether Joe Biden will run again, there’s at least as much uncertainty about whether Donald Trump will be on the ballot.",
+		"keywords": "",
+		"snippet": "With the Democratic Party in a bit of a tizzy over whether Joe Biden will run again, there’s at least as much uncertainty about whether Donald Trump will be o...",
+		"url": "https://www.foxnews.com/media/will-trump-biden-shadow-boxing-begins-kurtz-media-buzz",
+		"image_url": "https://static.foxnews.com/foxnews.com/content/uploads/2021/11/USA-TRUMP-SOCIALMEDIA-CHINA.jpg",
+		"published_at": "2021-11-24T08:58:18.000000Z",
+		"source": "foxnews.com",
+		"categories": [
+			"general",
+			"politics"
+		],
+		"language": "en",
+		"locale": "us"
+        }]
+      }
+    }
+  ]
+}

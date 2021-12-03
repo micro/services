@@ -4,10 +4,10 @@
       "title": "Create an account",
       "run_check": true,
       "request": {
-        "id": "usrid-1",
-        "username": "usrname-1",
+        "id": "user-1",
+        "username": "joe",
         "email": "joe@example.com",
-        "password": "mySecretPass123"
+        "password": "Password1"
       },
       "response": {}
     }
@@ -17,8 +17,8 @@
       "title": "Update an account",
       "run_check": false,
       "request": {
-        "id": "usrid-1",
-        "email": "joeotheremail@example.com"
+        "id": "user-1",
+        "email": "joe+2@example.com"
       },
       "response": {}
     }
@@ -28,10 +28,10 @@
       "title": "Update the account password",
       "run_check": false,
       "request": {
-        "id": "usrid-1",
-        "oldPassword": "mySecretPass123",
-        "newPassword": "myEvenMoreSecretPass123",
-        "confirmPassword": "myEvenMoreSecretPass123"
+        "id": "user-1",
+        "oldPassword": "Password1",
+        "newPassword": "Password2",
+        "confirmPassword": "Password2"
       },
       "response": {}
     }
@@ -41,12 +41,12 @@
       "title": "Read an account by id",
       "run_check": true,
       "request": {
-        "id": "usrid-1"
+        "id": "user-1"
       },
       "response": {
         "account": {
           "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-          "username": "usrname-1",
+          "username": "joe",
           "email": "joe@example.com",
           "created": "1623677579",
           "updated": "1623677579"
@@ -57,12 +57,12 @@
       "title": "Read account by username or email",
       "run_check": true,
       "request": {
-        "username": "usrname-1"
+        "username": "joe"
       },
       "response": {
         "account": {
           "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-          "username": "usrname-1",
+          "username": "joe",
           "email": "joe@example.com",
           "created": "1623677579",
           "updated": "1623677579"
@@ -77,8 +77,8 @@
       },
       "response": {
         "account": {
-          "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f",
-          "username": "usrname-1",
+          "id": "8b98acbe-0b6a-4d66-a414-5ffbf666786f",
+          "username": "joe",
           "email": "joe@example.com",
           "created": "1623677579",
           "updated": "1623677579"
@@ -89,7 +89,7 @@
   "sendVerificationEmail": [
     {
       "title": "Send verification email",
-      "run_check": true,
+      "run_check": false,
       "request": {
         "email": "joe@example.com",
         "subject": "Email verification",
@@ -101,12 +101,39 @@
       "response": {}
     }
   ],
+  "sendPasswordResetEmail": [
+    {
+      "title": "Send password reset email",
+      "run_check": false,
+      "request": {
+        "email": "joe@example.com",
+        "subject": "Password reset",
+        "textContent": "Hi there,\n click here to reset your password: myapp.com/reset/code?=$code",
+        "fromName": "Awesome Dot Com"
+      },
+      "response": {}
+    }
+  ],
+  "resetPassword": [
+    {
+      "title": "Reset password",
+      "run_check": false,
+      "request": {
+        "email": "joe@example.com",
+        "code": "012345",
+        "newPassword": "NewPassword1",
+        "confirmPassword": "NewPassword1"
+      },
+      "response": {}
+    }
+  ],
   "verifyEmail": [
     {
       "title": "Verify email",
       "run_check": false,
       "request": {
-        "token": "t2323t232t"
+        "email": "joe@example.com",
+        "token": "012345"
       },
       "response": {}
     }
@@ -116,7 +143,7 @@
       "title": "Delete user account",
       "run_check": false,
       "request": {
-        "id": "fdf34f34f34-f34f34-f43f43f34-f4f34f"
+        "id": "8b98acbe-0b6a-4d66-a414-5ffbf666786f"
       },
       "response": {}
     }
@@ -127,14 +154,14 @@
       "run_check": false,
       "request": {
         "email": "joe@example.com",
-        "password": "mySecretPass123"
+        "password": "Password1"
       },
       "response": {
         "session": {
-          "id": "sds34s34s34-s34s34-s43s43s34-s4s34s",
+          "id": "df91a612-5b24-4634-99ff-240220ab8f55",
           "created": "1623677579",
           "expires": "1623699579",
-          "userId": "fdf34f34f34-f34f34-f43f43f34-f4f34f"
+          "userId": "8b98acbe-0b6a-4d66-a414-5ffbf666786f"
         }
       }
     }
@@ -144,7 +171,7 @@
       "title": "Log a user out",
       "run_check": false,
       "request": {
-        "sessionId": "sds34s34s34-s34s34-s43s43s34-s4s34s"
+        "sessionId": "df91a612-5b24-4634-99ff-240220ab8f55"
       },
       "response": {}
     }
@@ -154,15 +181,49 @@
       "title": "Read a session by the session id.",
       "run_check": false,
       "request": {
-        "sessionId": "sds34s34s34-s34s34-s43s43s34-s4s34s"
+        "sessionId": "df91a612-5b24-4634-99ff-240220ab8f55"
       },
       "response": {
         "session": {
-          "id": "sds34s34s34-s34s34-s43s43s34-s4s34s",
+          "id": "df91a612-5b24-4634-99ff-240220ab8f55",
           "created": "1623677579",
           "expires": "1623699579",
-          "userId": "fdf34f34f34-f34f34-f43f43f34-f4f34f"
+          "userId": "8b98acbe-0b6a-4d66-a414-5ffbf666786f"
         }
+      }
+    }
+  ],
+  "list": [
+    {
+      "title": "List all users",
+      "run_check": false,
+      "request": {
+        "offset": 0,
+        "limit": 100
+      },
+      "response": {
+        "users": [
+          {
+            "id": "user-1",
+            "username": "joe",
+            "email": "joe@example.com",
+            "created": "1637322407",
+            "updated": "1637322407",
+            "verified": false,
+            "verificationDate": "0",
+            "profile": {}
+          },
+          {
+            "id": "user-2",
+            "username": "jane",
+            "email": "jane@example.com",
+            "created": "1637324407",
+            "updated": "1637324407",
+            "verified": false,
+            "verificationDate": "0",
+            "profile": {}
+          }
+        ]
       }
     }
   ]

@@ -31,7 +31,7 @@ A non-comprehensive list of additional high-level value add services:
 - Customer
 - [x] Database
 - [x] Email
-- Event
+- [x] Event
 - Food (markets)
 - Fraud/Risk
 - Gamify (scores / leaderboard)

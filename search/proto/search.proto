@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package search;
+
+option go_package = "./proto;search";
+
+service Search {
+	rpc Vote(VoteRequest) returns (VoteResponse) {}
+}
+
+// Vote to have the Search api launched faster!
+message VoteRequest {
+	// optional message
+	string message = 1;
+}
+
+message VoteResponse {
+	// response message
+	string message = 2;
+}

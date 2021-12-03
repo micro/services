@@ -9,8 +9,8 @@ import (
 	"github.com/asim/mq/broker"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/mq/proto"
+	"github.com/micro/services/pkg/tenant"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

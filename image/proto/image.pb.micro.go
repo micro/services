@@ -45,6 +45,7 @@ type ImageService interface {
 	Upload(ctx context.Context, in *UploadRequest, opts ...client.CallOption) (*UploadResponse, error)
 	Resize(ctx context.Context, in *ResizeRequest, opts ...client.CallOption) (*ResizeResponse, error)
 	Convert(ctx context.Context, in *ConvertRequest, opts ...client.CallOption) (*ConvertResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 }
 
 type imageService struct {
@@ -89,12 +90,23 @@ func (c *imageService) Convert(ctx context.Context, in *ConvertRequest, opts ...
 	return out, nil
 }
 
+func (c *imageService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+	req := c.c.NewRequest(c.name, "Image.Delete", in)
+	out := new(DeleteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Image service
 
 type ImageHandler interface {
 	Upload(context.Context, *UploadRequest, *UploadResponse) error
 	Resize(context.Context, *ResizeRequest, *ResizeResponse) error
 	Convert(context.Context, *ConvertRequest, *ConvertResponse) error
+	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 }
 
 func RegisterImageHandler(s server.Server, hdlr ImageHandler, opts ...server.HandlerOption) error {
@@ -102,6 +114,7 @@ func RegisterImageHandler(s server.Server, hdlr ImageHandler, opts ...server.Han
 		Upload(ctx context.Context, in *UploadRequest, out *UploadResponse) error
 		Resize(ctx context.Context, in *ResizeRequest, out *ResizeResponse) error
 		Convert(ctx context.Context, in *ConvertRequest, out *ConvertResponse) error
+		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 	}
 	type Image struct {
 		image
@@ -124,4 +137,8 @@ func (h *imageHandler) Resize(ctx context.Context, in *ResizeRequest, out *Resiz
 
 func (h *imageHandler) Convert(ctx context.Context, in *ConvertRequest, out *ConvertResponse) error {
 	return h.ImageHandler.Convert(ctx, in, out)
+}
+
+func (h *imageHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
+	return h.ImageHandler.Delete(ctx, in, out)
 }

@@ -3,33 +3,76 @@ syntax = "proto3";
 package stream;
 
 option go_package = "./proto;stream";
-import "google/protobuf/struct.proto";
 
 service Stream {
-	rpc Publish(PublishRequest) returns (PublishResponse) {}
-	rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {}
+	rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {}
+	rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
+	rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {}
+	rpc ListChannels(ListChannelsRequest) returns (ListChannelsResponse) {}
 }
 
-// Publish a message to the stream. Specify a topic to group messages for a specific topic.
-message PublishRequest {
-	// The topic to publish to
-	string topic = 1;
-	// The json message to publish
-	google.protobuf.Struct message = 2;
+message Message {
+	// id of the message
+	string id = 1;
+	// text of the message
+	string text = 2;
+	// time of message creation
+	string timestamp = 3;
+	// the channel name
+	string channel = 4;
+	// the associated metadata
+	map<string,string> metadata = 5;
 }
 
-message PublishResponse {}
-
-// Subscribe to messages for a given topic.
-message SubscribeRequest {
-	// The topic to subscribe to
-	string topic = 1;
+message Channel {
+	// name of the channel
+	string name = 1;
+	// description for the channel
+	string description = 2;
+	// last activity time
+	string last_active = 3;
 }
 
-// A blocking stream will be returned in response.
-message SubscribeResponse {
-	// The topic subscribed to
-	string topic = 1;
-	// The next json message on the topic
-	google.protobuf.Struct message = 2;
+// Create a channel with a given name and description. Channels are created automatically but 
+// this allows you to specify a description that's persisted for the lifetime of the channel.
+message CreateChannelRequest {
+	// name of the channel
+	string name = 1;
+	// description for the channel
+	string description = 2;
+}
+
+message CreateChannelResponse {}
+
+// Send a message to the stream.
+message SendMessageRequest {
+	// The channel to send to
+	string channel = 1;
+	// The message text to send
+	string text = 2;
+}
+
+message SendMessageResponse {}
+
+// List all the active channels
+message ListChannelsRequest {
+}
+
+message ListChannelsResponse {
+	repeated Channel channels = 1;
+}
+
+// List messages for a given channel
+message ListMessagesRequest {
+	// The channel to subscribe to
+	string channel = 1;
+	// number of message to return
+	int32 limit = 2;
+}
+
+message ListMessagesResponse {
+	// The channel subscribed to
+	string channel = 1;
+	// Messages are chronological order
+	repeated Message messages = 2;
 }

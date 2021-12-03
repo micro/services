@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/qr/handler"
 	pb "github.com/micro/services/qr/proto"
 
@@ -17,6 +18,8 @@ func main() {
 
 	// Register handler
 	pb.RegisterQrHandler(srv.Server(), handler.New())
+	traceCloser := tracing.SetupOpentracing("qr")
+	defer traceCloser.Close()
 
 	// Run service
 	if err := srv.Run(); err != nil {

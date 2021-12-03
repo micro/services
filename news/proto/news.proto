@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package news;
+
+option go_package = "./proto;news";
+
+service News {
+	rpc Headlines(HeadlinesRequest) returns (HeadlinesResponse) {}
+}
+
+message Article {
+	// article id
+	string id = 1;
+	// article title
+	string title = 2;
+	// article description
+	string description = 3;
+	// related keywords
+	string keywords = 4;
+	// first 60 characters of article body
+	string snippet = 5;
+	// url of the article
+	string url = 6;
+	// image url
+	string image_url = 7;
+	// time it was published
+	string published_at = 8;
+	// source of news
+	string source = 9;
+	// categories
+	repeated string categories = 10;
+	// the article language
+	string language = 11;
+	// the locale
+	string locale = 12;
+}
+
+// Get the latest news headlines
+message HeadlinesRequest {
+	// comma separated list of languages to retrieve in e.g en,es
+	string language = 1;
+	// comma separated list of countries to include e.g us,ca
+	string locale = 2;
+	// date published on in YYYY-MM-DD format
+	string date = 3;
+}
+
+message HeadlinesResponse {
+	repeated Article articles = 1;
+}

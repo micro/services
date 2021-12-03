@@ -1,21 +1,18 @@
 package handler
 
 import (
+	goctx "context"
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
-	"path"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/asim/mq/broker"
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
-	"github.com/micro/services/pkg/tenant"
+	otp "github.com/micro/services/otp/proto"
 	"github.com/micro/services/user/domain"
 	pb "github.com/micro/services/user/proto"
 	"golang.org/x/crypto/bcrypt"
@@ -28,7 +25,7 @@ const (
 
 var (
 	alphanum    = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-	emailFormat = regexp.MustCompile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+	emailFormat = regexp.MustCompile("^[\\w-\\.\\+]+@([\\w-]+\\.)+[\\w-]{2,4}$")
 )
 
 func random(i int) string {
@@ -45,11 +42,13 @@ func random(i int) string {
 
 type User struct {
 	domain *domain.Domain
+	Otp    otp.OtpService
 }
 
-func NewUser(db db.DbService) *User {
+func NewUser(db db.DbService, otp otp.OtpService) *User {
 	return &User{
 		domain: domain.New(db),
+		Otp:    otp,
 	}
 }
 
@@ -146,7 +145,7 @@ func (s *User) UpdatePassword(ctx context.Context, req *pb.UpdatePasswordRequest
 		return errors.InternalServerError("user.updatepassword", err.Error())
 	}
 	if req.NewPassword != req.ConfirmPassword {
-		return errors.InternalServerError("user.updatepassword", "Passwords don't math")
+		return errors.InternalServerError("user.updatepassword", "Passwords don't match")
 	}
 
 	salt, hashed, err := s.domain.SaltAndPassword(ctx, usr.Id)
@@ -229,26 +228,68 @@ func (s *User) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp 
 }
 
 func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp *pb.VerifyEmailResponse) error {
-	userId, err := s.domain.ReadToken(ctx, req.Token)
+	if len(req.Email) == 0 {
+		return errors.BadRequest("user.verifyemail", "missing email")
+	}
+	if len(req.Token) == 0 {
+		return errors.BadRequest("user.verifyemail", "missing token")
+	}
+
+	// check the token exists
+	userId, err := s.domain.ReadToken(ctx, req.Email, req.Token)
 	if err != nil {
 		return err
 	}
 
+	// validate the code, e.g its an OTP token and hasn't expired
+	resp, err := s.Otp.Validate(ctx, &otp.ValidateRequest{
+		Id:   req.Email,
+		Code: req.Token,
+	})
+	if err != nil {
+		return err
+	}
+
+	// check if the code is actually valid
+	if !resp.Success {
+		return errors.BadRequest("user.resetpassword", "invalid code")
+	}
+
+	// mark user as verified
 	user, err := s.domain.Read(ctx, userId)
 	if err != nil {
 		return err
 	}
 
 	user.Verified = true
+
+	// update the user
 	return s.domain.Update(ctx, user)
 }
 
 func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificationEmailRequest, rsp *pb.SendVerificationEmailResponse) error {
+	if len(req.Email) == 0 {
+		return errors.BadRequest("user.sendverificationemail", "missing email")
+	}
+
+	// search for the user
 	users, err := s.domain.Search(ctx, "", req.Email)
 	if err != nil {
 		return err
 	}
-	token, err := s.domain.CreateToken(ctx, users[0].Id)
+
+	// generate a new OTP code
+	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
+		Expiry: 900,
+		Id:     req.Email,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// generate/save a token for verification
+	token, err := s.domain.CreateToken(ctx, req.Email, resp.Code)
 	if err != nil {
 		return err
 	}
@@ -256,100 +297,101 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 	return s.domain.SendEmail(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.RedirectUrl, req.FailureRedirectUrl)
 }
 
-func (s *User) Passwordless(ctx context.Context, req *pb.PasswordlessRequest, rsp *pb.PasswordlessResponse) error {
-	// check if the email has the correct format
-	if !emailFormat.MatchString(req.Email) {
-		return errors.BadRequest("Passwordless.email-format-check", "email has wrong format")
+func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordResetEmailRequest, rsp *pb.SendPasswordResetEmailResponse) error {
+	if len(req.Email) == 0 {
+		return errors.BadRequest("user.sendpasswordresetemail", "missing email")
 	}
 
-	// check if the email exist in the DB
+	// look for an existing user
 	users, err := s.domain.Search(ctx, "", req.Email)
-	if err.Error() == "not found" {
-		return errors.BadRequest("Passwordless.email-check", "email doesn't exist")
-	} else if err != nil {
-		return errors.BadRequest("Passwordless.email-check", err.Error())
-	}
-
-	// create a token object
-	token := random(128)
-	timestamp := time.Now().Unix()
-
-	// save token, so we can retrieve it later
-	err = s.domain.Passwordless(ctx, req.Email, token, timestamp)
 	if err != nil {
-		return errors.BadRequest("Passwordless.token", "Oooops something went wrong")
+		return err
 	}
 
-	// send magic link to email address
-	err = s.domain.PasswordlessSendEmail(req.FromName, req.Email, users[0].Username, req.Subject,
-		req.TextContent, token, req.Topic)
+	// generate a new OTP code
+	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
+		Expiry: 900,
+		Id:     req.Email,
+	})
+
 	if err != nil {
-		return errors.BadRequest("Passwordless.sendEmail", "Oooops something went wrong")
+		return err
 	}
+
+	// save the code in the database and then send via email
+	return s.domain.SendPasswordResetEmail(ctx, users[0].Id, resp.Code, req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent)
+}
+
+func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, rsp *pb.ResetPasswordResponse) error {
+	if len(req.Email) == 0 {
+		return errors.BadRequest("user.resetpassword", "missing email")
+	}
+	if len(req.Code) == 0 {
+		return errors.BadRequest("user.resetpassword", "missing code")
+	}
+	if len(req.ConfirmPassword) == 0 {
+		return errors.BadRequest("user.resetpassword", "missing confirm password")
+	}
+	if len(req.NewPassword) == 0 {
+		return errors.BadRequest("user.resetpassword", "missing new password")
+	}
+	if req.ConfirmPassword != req.NewPassword {
+		return errors.BadRequest("user.resetpassword", "passwords do not match")
+	}
+
+	// look for an existing user
+	users, err := s.domain.Search(ctx, "", req.Email)
+	if err != nil {
+		return err
+	}
+
+	// check if a request was made to reset the password, we should have saved it
+	code, err := s.domain.ReadPasswordResetCode(ctx, users[0].Id, req.Code)
+	if err != nil {
+		return err
+	}
+
+	// validate the code, e.g its an OTP token and hasn't expired
+	resp, err := s.Otp.Validate(ctx, &otp.ValidateRequest{
+		Id:   req.Email,
+		Code: req.Code,
+	})
+	if err != nil {
+		return err
+	}
+
+	// check if the code is actually valid
+	if !resp.Success {
+		return errors.BadRequest("user.resetpassword", "invalid code")
+	}
+
+	// no error means it exists and not expired
+	salt := random(16)
+	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.NewPassword), 10)
+	if err != nil {
+		return errors.InternalServerError("user.ResetPassword", err.Error())
+	}
+	pp := base64.StdEncoding.EncodeToString(h)
+
+	// update the user password
+	if err := s.domain.UpdatePassword(ctx, code.UserID, salt, pp); err != nil {
+		return errors.InternalServerError("user.resetpassword", err.Error())
+	}
+
+	// delete our saved code
+	s.domain.DeletePasswordResetCode(ctx, users[0].Id, req.Code)
 
 	return nil
 }
 
-func (s *User) PasswordlessML(ctx context.Context, req *pb.PasswordlessMLRequest, rsp *pb.PasswordlessMLResponse) error {
-	// save the current timestamp in a variable
-	now := time.Now().Unix()
-
-	// extract token and topic
-	token := req.Token
-	topic := req.Topic
-
-	// check if topic exist
-	timestamp, email, err := s.domain.PasswordlessReadToken(ctx, token)
-	if err != nil {
-		return errors.BadRequest("PasswordlessML.readToken", err.Error())
+func (s *User) List(ctx goctx.Context, request *pb.ListRequest, response *pb.ListResponse) error {
+	accs, err := s.domain.List(ctx, request.Offset, request.Limit)
+	if err != nil && err != domain.ErrNotFound {
+		return errors.InternalServerError("user.List", "Error retrieving user list")
 	}
-
-	// check if the token is still valid (token life time shoud not exce 1 minute)
-	if (now - timestamp) > 60 {
-		return errors.BadRequest("PasswordlessML.validToken", "token expired")
+	response.Users = make([]*pb.Account, len(accs))
+	for i, v := range accs {
+		response.Users[i] = v
 	}
-
-	// save session
-	accounts, err := s.domain.Search(ctx, "", email)
-	if err != nil {
-		return err
-	}
-	if len(accounts) == 0 {
-		return fmt.Errorf("account not found")
-	}
-
-	sess := &pb.Session{
-		Id:      random(128),
-		Created: time.Now().Unix(),
-		Expires: time.Now().Add(time.Hour * 24 * 7).Unix(),
-		UserId:  accounts[0].Id,
-	}
-
-	if err := s.domain.CreateSession(ctx, sess); err != nil {
-		return errors.InternalServerError("PasswordlessML.createSession", err.Error())
-	}
-
-	// publish a message to the received topic which holds the session value.
-	if len(req.Topic) == 0 {
-		return errors.BadRequest("PasswordlessML.publish", "topic is blank")
-	}
-
-	// get the tenant
-	id, ok := tenant.FromContext(ctx)
-	if !ok {
-		id = "default"
-	}
-
-	// create tenant based topics
-	topic = path.Join("stream", id, topic)
-
-	// marshal the data
-	b, _ := json.Marshal(sess)
-
-	logger.Infof("Tenant %v publishing to %v\n", id, req.Topic)
-
-	// publish the message
-	broker.Publish(topic, b)
-
 	return nil
 }

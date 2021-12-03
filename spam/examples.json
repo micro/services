@@ -1,0 +1,39 @@
+{
+  "classify": [
+    {
+      "title": "Classify an email",
+      "run_check": true,
+      "request": {
+        "subject": "Welcome",
+        "text_body": "Hi there,\n\nWelcome to M3O.\n\nThanks\nM3O team",
+        "from": "noreply@m3o.com",
+        "to": "hello@example.com"
+      },
+      "response": {
+        "is_spam": false,
+        "score": 0.1,
+        "details": [
+          "NO_RELAYS, Informational: message was not relayed via SMTP, -0",
+          "NO_RECEIVED, Informational: message has no Received headers, -0",
+          "MISSING_MID, Missing Message-Id: header, 0.1"
+        ]
+      }
+    },
+    {
+      "title": "Classify an email using the raw data",
+      "run_check": true,
+      "request": {
+        "email_body": "Subject: Welcome\r\nTo: hello@emaple.com\r\nFrom: noreply@m3o.com\r\n\r\nHi there,\n\nWelcome to M3O.\n\nThanks\nM3O team"
+      },
+      "response": {
+        "is_spam": false,
+        "score": 0.1,
+        "details": [
+          "NO_RELAYS, Informational: message was not relayed via SMTP, -0",
+          "NO_RECEIVED, Informational: message has no Received headers, -0",
+          "MISSING_MID, Missing Message-Id: header, 0.1"
+        ]
+      }
+    }
+  ]
+}

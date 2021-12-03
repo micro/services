@@ -4,6 +4,7 @@
         "title": "Set a value",
         "description": "Set allows you to set a value",
         "run_check": true,
+        "idempotent": true,
         "request": {
             "key": "foo",
             "value": "bar"

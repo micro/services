@@ -16,7 +16,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterEmailHandler(srv.Server(), handler.NewEmailHandler())
+	pb.RegisterEmailHandler(srv.Server(), handler.NewEmailHandler(srv))
 	traceCloser := tracing.SetupOpentracing("email")
 	defer traceCloser.Close()
 

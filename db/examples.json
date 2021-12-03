@@ -4,7 +4,7 @@
       "title": "Create a record",
       "run_check": true,
       "request": {
-        "table": "users",
+        "table": "example",
         "record": {
           "id": "1",
           "name": "Jane",
@@ -22,7 +22,7 @@
       "title": "Update a record",
       "run_check": true,
       "request": {
-        "table": "users",
+        "table": "example",
         "record": {
           "id": "1",
           "age": 43
@@ -35,8 +35,9 @@
     {
       "title": "Read records",
       "run_check": true,
+      "idempotent": true,
       "request": {
-        "table": "users",
+        "table": "example",
         "query": "age == 43"
       },
       "response": {
@@ -56,7 +57,7 @@
       "title": "Delete a record",
       "run_check": true,
       "request": {
-        "table": "users",
+        "table": "example",
         "id": "1"
       },
       "response": {}
@@ -67,7 +68,17 @@
       "title": "Truncate table",
       "run_check": false,
       "request": {
-        "table": "users"
+        "table": "example"
+      },
+      "response": {}
+    }
+  ],
+  "dropTable": [
+    {
+      "title": "Drop table",
+      "run_check": false,
+      "request": {
+        "table": "example"
       },
       "response": {}
     }
@@ -77,11 +88,32 @@
       "title": "Count entries in a table",
       "run_check": false,
       "request": {
-        "table": "users"
+        "table": "example"
       },
       "response": {
         "count": 31
       }
+    }
+  ],
+  "listTables": [
+    {
+      "title": "List tables",
+      "run_check": false,
+      "request": {},
+      "response": {
+        "tables": ["example", "example2"]
+      }
+    }
+  ],
+  "renameTable": [
+    {
+      "title": "Rename table",
+      "run_check": false,
+      "request": {
+        "from": "examples2",
+        "to": "examples3"
+      },
+      "response": {}
     }
   ]
 }

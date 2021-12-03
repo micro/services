@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package app;
+
+option go_package = "./proto;app";
+
+service App {
+	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
+        rpc Vote(VoteRequest) returns (VoteResponse) {}
+}
+
+// Vote to have the App api launched faster!
+message VoteRequest {
+        // optional message
+        string message = 1;
+}
+
+message VoteResponse {
+        // response message
+        string message = 2;
+}
+
+message Reservation {
+	// name of the app
+	string name = 1;
+	// owner id
+	string owner = 2;
+	// associated token
+	string token = 3;
+	// time of reservation
+	string created = 4;
+	// time reservation expires
+	string expires = 5;
+}
+
+// Reserve your app name
+message ReserveRequest {
+	// name of your app e.g helloworld
+	string name = 1;
+}
+
+message ReserveResponse {
+	Reservation reservation = 1;
+}

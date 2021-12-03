@@ -10,7 +10,6 @@ import (
 	"time"
 
 	_struct "github.com/golang/protobuf/ptypes/struct"
-	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
@@ -18,6 +17,10 @@ import (
 
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+)
+
+var (
+	ErrNotFound = errors.New("not found")
 )
 
 type pw struct {
@@ -29,18 +32,36 @@ type pw struct {
 type verificationToken struct {
 	ID     string `json:"id"`
 	UserID string `json:"userId"`
+	Token  string `json:"token"`
+}
+
+type passwordResetCode struct {
+	ID      string    `json:"id"`
+	Expires time.Time `json:"expires"`
+	UserID  string    `json:"userId"`
+	Code    string    `json:"code"`
 }
 
 type Domain struct {
 	db         db.DbService
 	sengridKey string
+	fromEmail  string
 }
 
+var (
+	// TODO: use the config to drive this value
+	defaultSender = "noreply@email.m3ocontent.com"
+)
+
 func New(db db.DbService) *Domain {
-	var key string
+	var key, email string
 	cfg, err := config.Get("micro.user.sendgrid.api_key")
 	if err == nil {
 		key = cfg.String("")
+	}
+	cfg, err = config.Get("micro.user.sendgrid.from_email")
+	if err == nil {
+		email = cfg.String(defaultSender)
 	}
 	if len(key) == 0 {
 		logger.Info("No email key found")
@@ -50,6 +71,7 @@ func New(db db.DbService) *Domain {
 	return &Domain{
 		sengridKey: key,
 		db:         db,
+		fromEmail:  email,
 	}
 }
 
@@ -57,12 +79,106 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	if domain.sengridKey == "" {
 		return fmt.Errorf("empty email api key")
 	}
-	from := mail.NewEmail(fromName, "support@m3o.com")
+	from := mail.NewEmail(fromName, domain.fromEmail)
 	to := mail.NewEmail(toUsername, toAddress)
-	textContent = strings.Replace(textContent, "$micro_verification_link", "https://angry-cori-854281.netlify.app?token="+token+"&redirectUrl="+url.QueryEscape(redirctUrl)+"&failureRedirectUrl="+url.QueryEscape(failureRedirectUrl), -1)
+
+	// set the text content
+	textContent = strings.Replace(textContent, "$micro_verification_link", "https://user.m3o.com?token="+token+"&redirectUrl="+url.QueryEscape(redirctUrl)+"&failureRedirectUrl="+url.QueryEscape(failureRedirectUrl), -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
+
+	// send the email
 	client := sendgrid.NewSendClient(domain.sengridKey)
 	response, err := client.Send(message)
+	logger.Info(response)
+
+	return err
+}
+
+func (domain *Domain) SavePasswordResetCode(ctx context.Context, userID, code string) (*passwordResetCode, error) {
+	pwcode := passwordResetCode{
+		ID:      userID + "-" + code,
+		Expires: time.Now().Add(24 * time.Hour),
+		UserID:  userID,
+		Code:    code,
+	}
+
+	s := &_struct.Struct{}
+	jso, _ := json.Marshal(pwcode)
+	err := s.UnmarshalJSON(jso)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = domain.db.Create(ctx, &db.CreateRequest{
+		Table:  "password-reset-codes",
+		Record: s,
+	})
+
+	return &pwcode, err
+}
+
+func (domain *Domain) DeletePasswordResetCode(ctx context.Context, userId, code string) error {
+	_, err := domain.db.Delete(ctx, &db.DeleteRequest{
+		Table: "password-reset-codes",
+		Id:    userId + "-" + code,
+	})
+	return err
+}
+
+// ReadToken returns the user id
+func (domain *Domain) ReadPasswordResetCode(ctx context.Context, userId, code string) (*passwordResetCode, error) {
+	// generate the key
+	id := userId + "-" + code
+
+	if id == "" {
+		return nil, errors.New("password reset code id is empty")
+	}
+	token := &passwordResetCode{}
+
+	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
+		Table: "password-reset-codes",
+		Query: fmt.Sprintf("id == '%v'", id),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(rsp.Records) == 0 {
+		return nil, errors.New("password reset code not found")
+	}
+	m, _ := rsp.Records[0].MarshalJSON()
+	json.Unmarshal(m, token)
+
+	// check the expiry
+	if token.Expires.Before(time.Now()) {
+		return nil, errors.New("password reset code expired")
+	}
+
+	return token, nil
+}
+
+func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeStr, fromName, toAddress, toUsername, subject, textContent string) error {
+	if domain.sengridKey == "" {
+		return fmt.Errorf("empty email api key")
+	}
+
+	from := mail.NewEmail(fromName, domain.fromEmail)
+	to := mail.NewEmail(toUsername, toAddress)
+
+	// save the password reset code
+	pw, err := domain.SavePasswordResetCode(ctx, userId, codeStr)
+	if err != nil {
+		return err
+	}
+
+	// set the code in the text content
+	textContent = strings.Replace(textContent, "$code", pw.Code, -1)
+	message := mail.NewSingleEmail(from, subject, to, textContent, "")
+
+	// send the email
+	client := sendgrid.NewSendClient(domain.sengridKey)
+	response, err := client.Send(message)
+
+	// log the response
 	logger.Info(response)
 
 	return err
@@ -99,44 +215,53 @@ func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 }
 
 // ReadToken returns the user id
-func (domain *Domain) ReadToken(ctx context.Context, tokenId string) (string, error) {
-	if tokenId == "" {
+func (domain *Domain) ReadToken(ctx context.Context, userId, token string) (string, error) {
+	id := userId + "-" + token
+
+	if token == "" {
 		return "", errors.New("token id empty")
 	}
-	token := &verificationToken{}
+
+	tk := &verificationToken{}
 
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
 		Table: "tokens",
-		Query: fmt.Sprintf("id == '%v'", tokenId),
+		Query: fmt.Sprintf("id == '%v'", id),
 	})
 	if err != nil {
 		return "", err
 	}
+
 	if len(rsp.Records) == 0 {
 		return "", errors.New("token not found")
 	}
+
 	m, _ := rsp.Records[0].MarshalJSON()
-	json.Unmarshal(m, token)
-	return token.UserID, nil
+	json.Unmarshal(m, tk)
+
+	return tk.UserID, nil
 }
 
 // CreateToken returns the created and saved token
-func (domain *Domain) CreateToken(ctx context.Context, userId string) (string, error) {
+func (domain *Domain) CreateToken(ctx context.Context, userId, token string) (string, error) {
 	s := &_struct.Struct{}
-	tokenId := uuid.New().String()
 	jso, _ := json.Marshal(verificationToken{
-		ID:     tokenId,
+		ID:     userId + "-" + token,
 		UserID: userId,
+		Token:  token,
 	})
+
 	err := s.UnmarshalJSON(jso)
 	if err != nil {
 		return "", err
 	}
+
 	_, err = domain.db.Create(ctx, &db.CreateRequest{
 		Table:  "tokens",
 		Record: s,
 	})
-	return tokenId, err
+
+	return token, err
 }
 
 func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session, error) {
@@ -155,7 +280,7 @@ func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session
 		return nil, err
 	}
 	if len(rsp.Records) == 0 {
-		return nil, errors.New("not found")
+		return nil, ErrNotFound
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, sess)
@@ -238,7 +363,7 @@ func (domain *Domain) Read(ctx context.Context, userId string) (*user.Account, e
 		return nil, err
 	}
 	if len(rsp.Records) == 0 {
-		return nil, errors.New("not found")
+		return nil, ErrNotFound
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, user)
@@ -265,7 +390,7 @@ func (domain *Domain) Search(ctx context.Context, username, email string) ([]*us
 		return nil, err
 	}
 	if len(rsp.Records) == 0 {
-		return nil, errors.New("not found")
+		return nil, ErrNotFound
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, usr)
@@ -302,77 +427,39 @@ func (domain *Domain) SaltAndPassword(ctx context.Context, userId string) (strin
 		return "", "", err
 	}
 	if len(rsp.Records) == 0 {
-		return "", "", errors.New("not found")
+		return "", "", ErrNotFound
 	}
 	m, _ := rsp.Records[0].MarshalJSON()
 	json.Unmarshal(m, password)
 	return password.Salt, password.Password, nil
 }
 
-func (domain *Domain) Passwordless(ctx context.Context, email string, token string, timestamp int64) error {
-	tokenO := &tokenObject{
-		Email:     email,
-		Token:     token,
-		Timestamp: timestamp,
+func (domain *Domain) List(ctx context.Context, o, l int32) ([]*user.Account, error) {
+	var limit int32 = 25
+	var offset int32 = 0
+	if l > 0 {
+		limit = l
 	}
-
-	s := _struct.Struct{}
-
-	data, _ := json.Marshal(tokenO)
-	err := s.UnmarshalJSON(data)
-	if err != nil {
-		return err
+	if o > 0 {
+		offset = o
 	}
-
-	_, err = domain.db.Create(ctx, &db.CreateRequest{
-		Table:  "passwordless",
-		Record: &s,
-	})
-
-	return err
-}
-
-func (domain *Domain) PasswordlessSendEmail(fromName, toAddress, toUsername, subject, textContent, token, topic string) error {
-	if domain.sengridKey == "" {
-		return fmt.Errorf("empty email api key")
-	}
-	from := mail.NewEmail(fromName, "support@m3o.com")
-	to := mail.NewEmail(toUsername, toAddress)
-	textContent = strings.Replace(textContent, "$micro_verification_link", "https://api.m3o.com/v1/user/PasswordlessML?token="+token+"&topic="+topic, -1)
-	message := mail.NewSingleEmail(from, subject, to, textContent, "")
-	client := sendgrid.NewSendClient(domain.sengridKey)
-	response, err := client.Send(message)
-	logger.Info(response)
-
-	return err
-}
-
-func (domain *Domain) PasswordlessReadToken(ctx context.Context, token string) (int64, string, error) {
-	if token == "" {
-		return 0, "", errors.New("token empty")
-	}
-
-	tokenO := &tokenObject{}
-
 	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "passwordless",
-		Query: fmt.Sprintf("token == '%v'", token),
+		Table:  "users",
+		Limit:  limit,
+		Offset: offset,
 	})
 	if err != nil {
-		return 0, "", err
+		return nil, err
 	}
 	if len(rsp.Records) == 0 {
-		return 0, "", errors.New("token not found")
+		return nil, ErrNotFound
 	}
-
-	m, _ := rsp.Records[0].MarshalJSON()
-	json.Unmarshal(m, tokenO)
-
-	return tokenO.Timestamp, tokenO.Email, nil
-}
-
-type tokenObject struct {
-	Email     string
-	Token     string
-	Timestamp int64
+	ret := make([]*user.Account, len(rsp.Records))
+	for i, v := range rsp.Records {
+		m, _ := v.MarshalJSON()
+		var user user.Account
+		json.Unmarshal(m, &user)
+		ret[i] = &user
+	}
+	return ret, nil
 }

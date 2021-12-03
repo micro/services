@@ -12,7 +12,7 @@ service Cache {
 	rpc Decrement(DecrementRequest) returns (DecrementResponse) {}
 }
 
-// Get an item from the cache by key
+// Get an item from the cache by key. If key is not found, an empty response is returned.
 message GetRequest {
 	// The key to retrieve
 	string key = 1;
@@ -42,7 +42,7 @@ message SetResponse {
 	string status = 1;
 }
 
-// Delete a value from the cache
+// Delete a value from the cache. If key not found a success response is returned.
 message DeleteRequest {
 	// The key to delete
 	string key = 1;
@@ -53,7 +53,7 @@ message DeleteResponse {
 	string status = 1;
 }
 
-// Increment a value (if it's a number)
+// Increment a value (if it's a number). If key not found it is equivalent to set.
 message IncrementRequest {
 	// The key to increment
 	string key = 1;
@@ -68,7 +68,7 @@ message IncrementResponse {
 	int64 value = 2;
 }
 
-// Decrement a value (if it's a number)
+// Decrement a value (if it's a number). If key not found it is equivalent to set.
 message DecrementRequest {
 	// The key to decrement
 	string key = 1;

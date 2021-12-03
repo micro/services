@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package space;
+
+option go_package = "./proto;space";
+
+service Space {
+	rpc Vote(VoteRequest) returns (VoteResponse) {}
+}
+
+// Vote to have the Space api launched faster!
+message VoteRequest {
+	// optional message
+	string message = 1;
+}
+
+message VoteResponse {
+	// response message
+	string message = 2;
+}

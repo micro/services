@@ -15,8 +15,9 @@ service User {
 	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
 	rpc VerifyEmail(VerifyEmailRequest) returns(VerifyEmailResponse) {}
 	rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse) {}
-	rpc Passwordless(PasswordlessRequest) returns (PasswordlessResponse) {}
-	rpc PasswordlessML(PasswordlessMLRequest) returns (PasswordlessMLResponse) {}
+	rpc SendPasswordResetEmail(SendPasswordResetEmailRequest) returns (SendPasswordResetEmailResponse) {}
+	rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
+	rpc List(ListRequest) returns(ListResponse) {}
 }
 
 message Account {
@@ -123,12 +124,13 @@ message UpdatePasswordResponse {
 
 // Read a session by the session id. In the event it has expired or is not found and error is returned.
 message ReadSessionRequest {
-    // The unique session id
-    string sessionId = 1;
+	// The unique session id
+	string sessionId = 1;
 }
 
 message ReadSessionResponse {
-    Session session = 1;
+	// the session for the user
+	Session session = 1;
 }
 
 
@@ -150,7 +152,8 @@ message LoginResponse {
 
 // Logout a user account
 message LogoutRequest {
-    string sessionId = 1;
+	// the session id for the user to logout
+	string sessionId = 1;
 }
 
 message LogoutResponse {
@@ -158,8 +161,10 @@ message LogoutResponse {
 
 // Verify the email address of an account from a token sent in an email to the user.
 message VerifyEmailRequest {
+	// the email address to verify
+	string email = 1;
 	// The token from the verification email
-	string token = 1;
+	string token = 2;
 }
 
 message VerifyEmailResponse{
@@ -167,7 +172,7 @@ message VerifyEmailResponse{
 }
 
 // Send a verification email
-// to the user being signed up. Email from will be from 'support@m3o.com',
+// to the user being signed up. Email from will be from 'noreply@email.m3ocontent.com',
 // but you can provide the title and contents.
 // The verification link will be injected in to the email as a template variable, $micro_verification_link.
 // Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
@@ -175,42 +180,60 @@ message VerifyEmailResponse{
 // 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
 
 message SendVerificationEmailRequest{
+	// email address to send the verification code
 	string email = 1;
+	// subject of the email
 	string subject = 2;
 	// Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
 	// HTML emails are not available currently.
 	string textContent = 3;
 	string redirectUrl = 4;
 	string failureRedirectUrl = 5;
-	// Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
+	// Display name of the sender for the email. Note: the email address will still be 'noreply@email.m3ocontent.com'
 	string fromName = 6;
 }
 
 message SendVerificationEmailResponse{}
 
-// Login using email only - Passwordless
-message PasswordlessRequest {
-	// the email address of the user
+// Send an email with a verification code to reset password.
+// Call "ResetPassword" endpoint once user provides the code.
+message SendPasswordResetEmailRequest {
+	// email address to send reset for
 	string email = 1;
+	// subject of the email
 	string subject = 2;
-	// Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
+	// Text content of the email. Don't forget to include the string '$code' which will be replaced by the real verification link
 	// HTML emails are not available currently.
 	string textContent = 3;
-	// Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
+	// Display name of the sender for the email. Note: the email address will still be 'noreply@email.m3ocontent.com'
 	string fromName = 4;
-	// the topic which you will subscribe to - M3O Stream API - in ordre to
-	// receive confirmation. 
-	// Topic must be unique to maintain privacy  
-	string topic = 5;
 }
 
-message PasswordlessResponse {}
-
-message PasswordlessMLRequest {
-	string token = 1;
-	// the topic which you will subscribe to - M3O Stream API - in ordre to
-	// receive confirmation 
-	string topic = 2;
+message SendPasswordResetEmailResponse {
 }
 
-message PasswordlessMLResponse {}
+// Reset password with the code sent by the "SendPasswordResetEmail" endoint.
+message ResetPasswordRequest {
+	// the email to reset the password for
+	string email = 1;
+	// The code from the verification email
+	string code = 2;
+	// the new password
+	string newPassword = 3;
+	// confirm new password
+	string confirmPassword = 4;
+}
+
+message ResetPasswordResponse {}
+
+// List all users. Returns a paged list of results
+message ListRequest {
+	int32 offset = 1;
+	// Maximum number of records to return. Default limit is 25.
+	// Maximum limit is 1000. Anything higher will return an error.
+	int32 limit = 2;
+}
+
+message ListResponse {
+	repeated Account users = 1;
+}

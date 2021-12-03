@@ -2,10 +2,6 @@
     "name": "function",
     "icon": "🔥",
     "category": "hosting",
-    "pricing": {
-      "Function.Deploy": 1000,
-      "Function.Call": 10
-    },
     "display_name": "Functions"
   }
   
