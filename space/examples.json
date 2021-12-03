@@ -1,13 +1,79 @@
 {
-  "vote": [
+  "create": [
     {
-      "title": "Vote for the API",
+      "title": "Create an object",
       "run_check": false,
       "request": {
-        "message": "Launch it!"
+        "object": "<file bytes>",
+        "name": "images/file.jpg",
+        "visibility": "public"
       },
       "response": {
-	"message": "Thanks for the vote!"
+	    "url": "https://example.com/foo/bar/file.jpg"
+      }
+    }
+  ],
+  "update": [
+    {
+      "title": "Update an object",
+      "run_check": false,
+      "request": {
+        "object": "<file bytes>",
+        "name": "images/file.jpg",
+        "visibility": "public"
+      },
+      "response": {
+        "url": "https://example.com/foo/bar/images/file.jpg"
+      }
+    }
+  ],
+  "delete": [
+    {
+      "title": "Delete an object",
+      "run_check": false,
+      "request": {
+        "name": "images/file.jpg"
+      },
+      "response": {
+      }
+    }
+  ],
+  "list": [
+    {
+      "title": "List objects with prefix",
+      "run_check": false,
+      "request": {
+        "prefix": "images/"
+      },
+      "response": {
+        "objects": [
+          {
+            "name": "images/file.jpg",
+            "modified": 1638549232,
+            "url": "https://example.com/foo/bar/images/file.jpg"
+          },
+          {
+            "name": "images/file2.jpg",
+            "modified": 1638547232,
+            "url": "https://example.com/foo/bar/images/file2.jpg"
+          }
+        ]
+      }
+    }
+  ],
+  "read": [
+    {
+      "title": "Read an object",
+      "run_check": false,
+      "request": {
+        "name": "images/file.jpg"
+      },
+      "response": {
+        "name": "images/file.jpg",
+        "modified": 1638549232,
+        "created": 1638546232,
+        "url": "https://example.com/foo/bar/images/file.jpg",
+        "visibility": "public"
       }
     }
   ]

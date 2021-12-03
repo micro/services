@@ -21,6 +21,8 @@ const (
 )
 
 // Create an object. Returns error if object with this name already exists. If you want to update an existing object use the `Update` endpoint
+// You need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 type CreateRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -136,6 +138,8 @@ func (x *CreateResponse) GetUrl() string {
 }
 
 // Update an object. If an object with this name does not exist, creates a new one.
+// You need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
 type UpdateRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
