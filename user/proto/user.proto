@@ -18,6 +18,8 @@ service User {
 	rpc SendPasswordResetEmail(SendPasswordResetEmailRequest) returns (SendPasswordResetEmailResponse) {}
 	rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
 	rpc List(ListRequest) returns(ListResponse) {}
+	rpc SendMagicLink(SendMagicLinkRequest) returns (stream SendMagicLinkResponse) {}
+	rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse) {}
 }
 
 message Account {
@@ -236,4 +238,35 @@ message ListRequest {
 
 message ListResponse {
 	repeated Account users = 1;
+}
+
+// Login using email only - Passwordless
+message SendMagicLinkRequest {
+	// the email address of the user
+	string email = 1;
+	string subject = 2;
+	// Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
+	// HTML emails are not available currently.
+	string textContent = 3;
+	// Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
+	string fromName = 4;
+	// Your web site address, example www.example.com or user.example.com
+	string address = 5;
+	// Endpoint name where your http request handler handles MagicLink by 
+	// calling M3O VerifyToken endpoint. You can return as a result a success 
+	// page, a faild page or redirect. 
+	string endpoint = 6;
+}
+
+message SendMagicLinkResponse {
+	Session session = 1;
+}
+
+message VerifyTokenRequest {
+	string token = 1;
+}
+
+message VerifyTokenResponse {
+	bool isvalid = 1;
+	string message = 2;
 }
