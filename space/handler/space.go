@@ -3,11 +3,13 @@ package handler
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/micro/micro/v3/proto/api"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
@@ -212,7 +214,6 @@ func (s Space) Head(ctx context.Context, request *pb.HeadRequest, response *pb.H
 	}
 	objectName := fmt.Sprintf("%s/%s", tnt, request.Name)
 
-	// TODO replace with HeadObject?
 	goo, err := s.client.HeadObject(&sthree.HeadObjectInput{
 		Bucket: aws.String(s.conf.SpaceName),
 		Key:    aws.String(objectName),
@@ -245,6 +246,60 @@ func (s Space) Head(ctx context.Context, request *pb.HeadRequest, response *pb.H
 		Visibility: vis,
 		Url:        fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName),
 	}
+
+	return nil
+}
+
+func (s *Space) Read(ctx context.Context, req *api.Request, rsp *api.Response) error {
+	method := "space.Read"
+	tnt, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized(method, "Unauthorized")
+	}
+	var input map[string]string
+	if err := json.Unmarshal([]byte(req.Body), &input); err != nil {
+		return errors.BadRequest(method, "Request in unexpected format")
+	}
+	name := input["name"]
+	if len(name) == 0 {
+		return errors.BadRequest(method, "Missing name param")
+	}
+
+	objectName := fmt.Sprintf("%s/%s", tnt, name)
+
+	_, err := s.client.HeadObject(&sthree.HeadObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if ok && aerr.Code() == "NotFound" {
+			return errors.BadRequest(method, "Object not found")
+		}
+		log.Errorf("Error s3 %s", err)
+		return errors.InternalServerError(method, "Error reading object")
+	}
+
+	gooreq, _ := s.client.GetObjectRequest(&sthree.GetObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	urlStr, err := gooreq.Presign(5 * time.Second)
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if ok && aerr.Code() == "NoSuchKey" {
+			return errors.BadRequest(method, "Object not found")
+		}
+		log.Errorf("Error presigning url %s", err)
+		return errors.InternalServerError(method, "Error reading object")
+	}
+	rsp.Header = map[string]*api.Pair{
+		"Location": {
+			Key:    "Location",
+			Values: []string{urlStr},
+		},
+	}
+	rsp.StatusCode = 302
 
 	return nil
 }

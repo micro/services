@@ -1,5 +1,7 @@
 
 GOPATH:=$(shell go env GOPATH)
+MODIFY=Mproto/imports/api.proto=github.com/micro/micro/v3/proto/api
+
 .PHONY: init
 init:
 	go get -u github.com/golang/protobuf/proto
@@ -13,7 +15,7 @@ api:
 
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/space.proto
+	protoc --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/space.proto
 	
 .PHONY: build
 build:

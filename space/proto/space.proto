@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package space;
-
+import "proto/imports/api.proto";
 option go_package = "./proto;space";
 
 service Space {
@@ -10,6 +10,7 @@ service Space {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Head(HeadRequest) returns (HeadResponse) {}
+//	rpc Read(go.api.Request) returns (go.api.Response) {}
 }
 
 // Create an object. Returns error if object with this name already exists. If you want to update an existing object use the `Update` endpoint
@@ -87,4 +88,8 @@ message HeadObject {
 	int64 created = 3;
 	string visibility = 4;
 	string url = 5;
+}
+
+message ReadRequest {
+	string name = 1;
 }
