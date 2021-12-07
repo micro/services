@@ -110,12 +110,14 @@ func (m *Movie) Search(_ context.Context, req *pb.SearchRequest, rsp *pb.SearchR
 			}
 		}
 
-		id, _ := info["id"].(float64)
-		voteCount, _ := info["vote_count"].(float64)
-
 		mi := &pb.MovieInfo{}
 
+		id, _ := info["id"].(float64)
 		mi.Id = int32(id)
+
+		voteCount, _ := info["vote_count"].(float64)
+		mi.VoteCount = int32(voteCount)
+
 		mi.PosterPath, _ = info["poster_path"].(string)
 		mi.Adult, _ = info["adult"].(bool)
 		mi.Overview, _ = info["overview"].(string)
@@ -128,7 +130,6 @@ func (m *Movie) Search(_ context.Context, req *pb.SearchRequest, rsp *pb.SearchR
 		mi.Popularity, _ = info["popularity"].(float64)
 		mi.Video, _ = info["video"].(bool)
 		mi.VoteAverage, _ = info["vote_average"].(float64)
-		mi.VoteCount = int32(voteCount)
 
 		rsp.Results = append(rsp.Results, mi)
 	}
