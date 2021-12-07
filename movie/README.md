@@ -1,7 +1,6 @@
+Search for movies
+
 # Movie Service
 
-Search movies by IMDb ID or title
+Search for movies by IMDb ID or title. Powered by [https://www.themoviedb.org/](https://www.themoviedb.org/).
 
-Powered by [https://www.themoviedb.org/](https://www.themoviedb.org/).
-
-Generate API Key: [https://www.themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
