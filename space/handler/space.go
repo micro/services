@@ -258,6 +258,7 @@ func (s *Space) Read(ctx context.Context, req *api.Request, rsp *api.Response) e
 	}
 	var input map[string]string
 	if err := json.Unmarshal([]byte(req.Body), &input); err != nil {
+		log.Errorf("Error unmarshalling %s", err)
 		return errors.BadRequest(method, "Request in unexpected format")
 	}
 	name := input["name"]

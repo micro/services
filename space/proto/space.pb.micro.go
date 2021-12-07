@@ -6,7 +6,7 @@ package space
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/micro/micro/v3/proto/api"
+	api1 "github.com/micro/micro/v3/proto/api"
 	math "math"
 )
 
@@ -48,6 +48,7 @@ type SpaceService interface {
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Head(ctx context.Context, in *HeadRequest, opts ...client.CallOption) (*HeadResponse, error)
+	Read(ctx context.Context, in *api1.Request, opts ...client.CallOption) (*api1.Response, error)
 }
 
 type spaceService struct {
@@ -112,6 +113,16 @@ func (c *spaceService) Head(ctx context.Context, in *HeadRequest, opts ...client
 	return out, nil
 }
 
+func (c *spaceService) Read(ctx context.Context, in *api1.Request, opts ...client.CallOption) (*api1.Response, error) {
+	req := c.c.NewRequest(c.name, "Space.Read", in)
+	out := new(api1.Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Space service
 
 type SpaceHandler interface {
@@ -120,6 +131,7 @@ type SpaceHandler interface {
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
 	Head(context.Context, *HeadRequest, *HeadResponse) error
+	Read(context.Context, *api1.Request, *api1.Response) error
 }
 
 func RegisterSpaceHandler(s server.Server, hdlr SpaceHandler, opts ...server.HandlerOption) error {
@@ -129,6 +141,7 @@ func RegisterSpaceHandler(s server.Server, hdlr SpaceHandler, opts ...server.Han
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Head(ctx context.Context, in *HeadRequest, out *HeadResponse) error
+		Read(ctx context.Context, in *api1.Request, out *api1.Response) error
 	}
 	type Space struct {
 		space
@@ -159,4 +172,8 @@ func (h *spaceHandler) List(ctx context.Context, in *ListRequest, out *ListRespo
 
 func (h *spaceHandler) Head(ctx context.Context, in *HeadRequest, out *HeadResponse) error {
 	return h.SpaceHandler.Head(ctx, in, out)
+}
+
+func (h *spaceHandler) Read(ctx context.Context, in *api1.Request, out *api1.Response) error {
+	return h.SpaceHandler.Read(ctx, in, out)
 }

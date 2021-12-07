@@ -76,5 +76,16 @@
         "visibility": "public"
       }
     }
+  ],
+  "read": [
+    {
+      "title": "Read an object",
+      "run_check": false,
+      "request": {
+        "name": "images/file.jpg"
+      },
+      "response": {
+      }
+    }
   ]
 }

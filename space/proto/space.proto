@@ -10,7 +10,7 @@ service Space {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Head(HeadRequest) returns (HeadResponse) {}
-//	rpc Read(go.api.Request) returns (go.api.Response) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
 }
 
 // Create an object. Returns error if object with this name already exists. If you want to update an existing object use the `Update` endpoint
@@ -92,4 +92,8 @@ message HeadObject {
 
 message ReadRequest {
 	string name = 1;
+}
+
+message ReadResponse {
+
 }
