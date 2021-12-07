@@ -20,18 +20,20 @@ message Service {
 	string name = 2;
 	// source repository
 	string repo = 3;
+	// branch of code
+	string branch = 4;
 	// region running in
-	string region = 4;
+	string region = 5;
 	// port running on
-	int32 port = 5;
+	int32 port = 6;
 	// status of the app
-	string status = 6;
+	string status = 7;
 	// app url
-	string url = 7;
+	string url = 8;
 	// last deployed time
-	string deployed_at = 8;
+	string deployed_at = 9;
 	// associated env vars
-	map<string,string> env_vars = 9;
+	map<string,string> env_vars = 10;
 }
 
 // Delete an app
@@ -57,12 +59,14 @@ message RunRequest {
 	string name = 1;
 	// source repository
 	string repo = 2;
+	// branch. defaults to master
+	string branch = 3;
 	// region to run in
-	string region = 3;
+	string region = 4;
 	// port to run on
-	int32 port = 4;
+	int32 port = 5;
 	// associatede env vars to pass in
-	map<string,string> env_vars = 5;
+	map<string,string> env_vars = 6;
 }
 
 message RunResponse {

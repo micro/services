@@ -11,7 +11,9 @@ import (
 	"time"
 
 	_struct "github.com/golang/protobuf/ptypes/struct"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/runtime/source/git"
@@ -186,9 +188,12 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	}
 
 	// checkout the source code
+	if len(req.Branch) == 0 {
+		req.Branch = "master"
+	}
 
 	gitter := git.NewGitter(map[string]string{})
-	err := gitter.Checkout(req.Repo, "master")
+	err := gitter.Checkout(req.Repo, req.Branch)
 	if err != nil {
 		return err
 	}
@@ -229,6 +234,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		Name:    req.Name,
 		Id:      id,
 		Repo:    req.Repo,
+		Branch:  req.Branch,
 		Region:  req.Region,
 		Port:    req.Port,
 		Status:  "Deploying",
@@ -269,6 +275,14 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 		// execute the command
 		outp, err := cmd.CombinedOutput()
+
+		// by this point the context may have been cancelled
+		acc, _ := auth.AccountFromContext(ctx)
+		md, _ := metadata.FromContext(ctx)
+
+		ctx = metadata.NewContext(context.Background(), md)
+		ctx = auth.ContextWithAccount(ctx, acc)
+
 		if err == nil {
 			// populate the app status
 			e.Status(ctx, &pb.StatusRequest{Name: req.Name}, &pb.StatusResponse{})
