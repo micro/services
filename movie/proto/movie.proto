@@ -25,6 +25,7 @@ message MovieInfo {
   double vote_average = 14;
 }
 
+// Search for movies by simple text search
 message SearchRequest {
   // a ISO 639-1 value to display translated data
   string language = 1;
@@ -34,8 +35,9 @@ message SearchRequest {
   int32 page = 3;
   // a ISO 3166-1 code to filter release dates.
   string region = 4;
-
+  // year of making
   int32 year = 5;
+  // year of release
   int32 primary_release_year = 6;
 }
 
