@@ -29,7 +29,7 @@ require (
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro/v3 v3.7.1-0.20211111170433-1ebb8328e280
+	github.com/micro/micro/v3 v3.8.0
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
