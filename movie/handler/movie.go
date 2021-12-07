@@ -110,33 +110,27 @@ func (m *Movie) Search(_ context.Context, req *pb.SearchRequest, rsp *pb.SearchR
 			}
 		}
 
-		postPath := ""
-		if p, ok := info["poster_path"].(string); ok {
-			postPath = p
-		}
+		id, _ := info["id"].(float64)
+		voteCount, _ := info["vote_count"].(float64)
 
-		backdropPath := ""
-		if b, ok := info["backdrop_path"].(string); ok {
-			backdropPath = b
-		}
+		mi := &pb.MovieInfo{}
 
-		rsp.Results = append(rsp.Results, &pb.MovieInfo{
-			PosterPath:       postPath,
-			Adult:            info["adult"].(bool),
-			Overview:         info["overview"].(string),
-			ReleaseDate:      info["release_date"].(string),
-			GenreIds:         genreIds,
-			Id:               int32(info["id"].(float64)),
-			OriginalTitle:    info["original_title"].(string),
-			OriginalLanguage: info["original_language"].(string),
-			Title:            info["title"].(string),
-			BackdropPath:     backdropPath,
-			Popularity:       info["popularity"].(float64),
-			VoteCount:        int32(info["vote_count"].(float64)),
-			Video:            info["video"].(bool),
-			VoteAverage:      info["vote_average"].(float64),
-		})
+		mi.Id = int32(id)
+		mi.PosterPath, _ = info["poster_path"].(string)
+		mi.Adult, _ = info["adult"].(bool)
+		mi.Overview, _ = info["overview"].(string)
+		mi.ReleaseDate, _ = info["release_date"].(string)
+		mi.GenreIds = genreIds
+		mi.OriginalTitle, _ = info["original_title"].(string)
+		mi.OriginalLanguage, _ = info["original_language"].(string)
+		mi.Title, _ = info["title"].(string)
+		mi.BackdropPath, _ = info["poster_path"].(string)
+		mi.Popularity, _ = info["popularity"].(float64)
+		mi.Video, _ = info["video"].(bool)
+		mi.VoteAverage, _ = info["vote_average"].(float64)
+		mi.VoteCount = int32(voteCount)
 
+		rsp.Results = append(rsp.Results, mi)
 	}
 
 	return nil
