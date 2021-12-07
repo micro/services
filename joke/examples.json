@@ -1,0 +1,37 @@
+{
+  "random": [
+    {
+      "title": "Get random n jokes",
+      "description": "Leveraged by https://github.com/taivop/joke-dataset",
+      "run_check": false,
+      "request": {
+        "count": 3
+      },
+      "response": {
+        "jokes": [
+          {
+            "id": "3rpt4l",
+            "title": "In five-card poker, six-high beats a pair...",
+            "body": "",
+            "category": "",
+            "source": "https://www.reddit.com/r/jokes"
+          },
+          {
+            "id": "5sbykr",
+            "title": "Who choked harder the Golden State Warriors or the Atlanta Falcons?",
+            "body": "Hillary Clinton",
+            "category": "",
+            "source": "https://www.reddit.com/r/jokes"
+          },
+          {
+            "id": "52uuuz",
+            "title": "I was wondering why the ball was getting bigger.",
+            "body": "Then it struck me.",
+            "category": "",
+            "source": "https://www.reddit.com/r/jokes"
+          }
+        ]
+      }
+    }
+  ]
+}
