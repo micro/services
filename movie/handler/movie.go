@@ -47,8 +47,7 @@ func New() *Movie {
 	}
 }
 
-func (m *Movie) SearchMovie(ctx context.Context, req *pb.SearchMovieRequest, rsp *pb.SearchMovieResponse) error {
-
+func (m *Movie) Search(_ context.Context, req *pb.SearchRequest, rsp *pb.SearchResponse) error {
 	if req.Page == 0 {
 		req.Page = 1
 	}
@@ -58,7 +57,7 @@ func (m *Movie) SearchMovie(ctx context.Context, req *pb.SearchMovieRequest, rsp
 	vals.Set("query", req.Query)
 	vals.Set("language", req.Language)
 	vals.Set("page", fmt.Sprintf("%d", req.Page))
-	vals.Set("include_adult", fmt.Sprintf("%t", req.IncludeAdult))
+	vals.Set("include_adult", "false")
 	vals.Set("region", req.Region)
 	if req.Year > 0 {
 		vals.Set("year", fmt.Sprintf("%d", req.Year))
@@ -80,7 +79,11 @@ func (m *Movie) SearchMovie(ctx context.Context, req *pb.SearchMovieRequest, rsp
 		return errors.InternalServerError("movie.search", fmt.Sprintf("movie search status is not 200, it's %d", resp.StatusCode))
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			logger.Errorf("Movie search close response body error: %v\n", err)
+		}
+	}()
 
 	b, _ := ioutil.ReadAll(resp.Body)
 

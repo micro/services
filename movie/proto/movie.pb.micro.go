@@ -42,7 +42,7 @@ func NewMovieEndpoints() []*api.Endpoint {
 // Client API for Movie service
 
 type MovieService interface {
-	SearchMovie(ctx context.Context, in *SearchMovieRequest, opts ...client.CallOption) (*SearchMovieResponse, error)
+	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
 }
 
 type movieService struct {
@@ -57,9 +57,9 @@ func NewMovieService(name string, c client.Client) MovieService {
 	}
 }
 
-func (c *movieService) SearchMovie(ctx context.Context, in *SearchMovieRequest, opts ...client.CallOption) (*SearchMovieResponse, error) {
-	req := c.c.NewRequest(c.name, "Movie.SearchMovie", in)
-	out := new(SearchMovieResponse)
+func (c *movieService) Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error) {
+	req := c.c.NewRequest(c.name, "Movie.Search", in)
+	out := new(SearchResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +70,12 @@ func (c *movieService) SearchMovie(ctx context.Context, in *SearchMovieRequest, 
 // Server API for Movie service
 
 type MovieHandler interface {
-	SearchMovie(context.Context, *SearchMovieRequest, *SearchMovieResponse) error
+	Search(context.Context, *SearchRequest, *SearchResponse) error
 }
 
 func RegisterMovieHandler(s server.Server, hdlr MovieHandler, opts ...server.HandlerOption) error {
 	type movie interface {
-		SearchMovie(ctx context.Context, in *SearchMovieRequest, out *SearchMovieResponse) error
+		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
 	}
 	type Movie struct {
 		movie
@@ -88,6 +88,6 @@ type movieHandler struct {
 	MovieHandler
 }
 
-func (h *movieHandler) SearchMovie(ctx context.Context, in *SearchMovieRequest, out *SearchMovieResponse) error {
-	return h.MovieHandler.SearchMovie(ctx, in, out)
+func (h *movieHandler) Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error {
+	return h.MovieHandler.Search(ctx, in, out)
 }

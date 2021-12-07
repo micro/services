@@ -5,7 +5,7 @@ package movie;
 option go_package = "./proto;movie";
 
 service Movie {
-  rpc SearchMovie(SearchMovieRequest) returns (SearchMovieResponse) {}
+  rpc Search(SearchRequest) returns (SearchResponse) {}
 }
 
 message MovieInfo {
@@ -25,24 +25,22 @@ message MovieInfo {
   double vote_average = 14;
 }
 
-message SearchMovieRequest {
+message SearchRequest {
   // a ISO 639-1 value to display translated data
   string language = 1;
   // a text query to search
   string query = 2;
   // page to query
   int32 page = 3;
-  // whether to include adult (pornography) content in the results
-  bool include_adult = 4;
   // a ISO 3166-1 code to filter release dates.
-  string region = 5;
+  string region = 4;
 
-  int32 year = 6;
-  int32 primary_release_year = 7;
+  int32 year = 5;
+  int32 primary_release_year = 6;
 }
 
 
-message SearchMovieResponse {
+message SearchResponse {
   int32 total_results = 1;
   int32 total_pages = 2;
   int32 page = 3;
