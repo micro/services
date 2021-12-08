@@ -5,10 +5,10 @@ package joke;
 option go_package = "./proto;joke";
 
 service Joke {
-  // get n random jokes
   rpc Random(RandomRequest) returns (RandomResponse) {}
 }
 
+// Get a random joke
 message RandomRequest {
   // the count of random jokes want, maximum: 10
   int32 count = 1;
@@ -19,7 +19,6 @@ message JokeInfo {
   string title = 2;
   string body = 3;
   string category = 4;
-  // the source of joke
   string source = 5;
 }
 
