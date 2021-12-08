@@ -1,7 +1,11 @@
 package domain
 
-type AssetResponse struct {
+type AssetsResponse struct {
 	Assets []*Asset `json:"assets"`
+}
+
+type CollectionsResponse struct {
+	Collections []*Collection `json:"collections"`
 }
 
 type Asset struct {

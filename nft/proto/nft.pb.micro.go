@@ -44,6 +44,7 @@ func NewNftEndpoints() []*api.Endpoint {
 type NftService interface {
 	Assets(ctx context.Context, in *AssetsRequest, opts ...client.CallOption) (*AssetsResponse, error)
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
+	Collections(ctx context.Context, in *CollectionsRequest, opts ...client.CallOption) (*CollectionsResponse, error)
 }
 
 type nftService struct {
@@ -78,17 +79,29 @@ func (c *nftService) Create(ctx context.Context, in *CreateRequest, opts ...clie
 	return out, nil
 }
 
+func (c *nftService) Collections(ctx context.Context, in *CollectionsRequest, opts ...client.CallOption) (*CollectionsResponse, error) {
+	req := c.c.NewRequest(c.name, "Nft.Collections", in)
+	out := new(CollectionsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Nft service
 
 type NftHandler interface {
 	Assets(context.Context, *AssetsRequest, *AssetsResponse) error
 	Create(context.Context, *CreateRequest, *CreateResponse) error
+	Collections(context.Context, *CollectionsRequest, *CollectionsResponse) error
 }
 
 func RegisterNftHandler(s server.Server, hdlr NftHandler, opts ...server.HandlerOption) error {
 	type nft interface {
 		Assets(ctx context.Context, in *AssetsRequest, out *AssetsResponse) error
 		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
+		Collections(ctx context.Context, in *CollectionsRequest, out *CollectionsResponse) error
 	}
 	type Nft struct {
 		nft
@@ -107,4 +120,8 @@ func (h *nftHandler) Assets(ctx context.Context, in *AssetsRequest, out *AssetsR
 
 func (h *nftHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
 	return h.NftHandler.Create(ctx, in, out)
+}
+
+func (h *nftHandler) Collections(ctx context.Context, in *CollectionsRequest, out *CollectionsResponse) error {
+	return h.NftHandler.Collections(ctx, in, out)
 }

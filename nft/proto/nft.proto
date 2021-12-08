@@ -7,6 +7,7 @@ option go_package = "./proto;nft";
 service Nft {
 	rpc Assets(AssetsRequest) returns (AssetsResponse) {}
 	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Collections(CollectionsRequest) returns (CollectionsResponse) {}
 }
 
 // Create your own NFT (coming soon)
@@ -23,6 +24,16 @@ message CreateRequest {
 
 message CreateResponse {
 	Asset asset = 1;
+}
+
+// Get a list of collections
+message CollectionsRequest {
+	int32 limit = 1;
+	int32 offset = 2;
+}
+
+message CollectionsResponse {
+	repeated Collection collections = 1;
 }
 
 message Asset {

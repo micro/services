@@ -101,5 +101,26 @@
       },
       "response": {}
     }
+  ],
+  "collections": [
+    {
+      "title": "List collections",
+      "run_check": false,
+      "request": {
+        "limit": 1
+      },
+      "response": {
+        "collections": [
+                {
+                        "name": "Picasso Flippies 043CfXo75V",
+                        "description": "",
+                        "slug": "picasso-flippies-043cfxo75v",
+                        "image_url": "",
+                        "created_at": "2021-12-08T14:38:50.380134",
+                        "payout_address": ""
+                }
+        ]
+      }
+    }
   ]
 }

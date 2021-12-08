@@ -81,7 +81,7 @@ func (o *OpenSea) Assets(ctx context.Context, req *pb.AssetsRequest, rsp *pb.Ass
 		params += "&collection=" + req.Collection
 	}
 
-	var resp domain.AssetResponse
+	var resp domain.AssetsResponse
 
 	if err := api.Get(uri + params, &resp); err != nil {
 		return errors.InternalServerError("nft.assets", "failed to get assets: %v", err)
@@ -225,3 +225,41 @@ func (o *OpenSea) Assets(ctx context.Context, req *pb.AssetsRequest, rsp *pb.Ass
 func (o *OpenSea) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
 	return errors.BadRequest("nft.create", "coming soon")
 }
+
+func (o *OpenSea) Collections(ctx context.Context, req *pb.CollectionsRequest, rsp *pb.CollectionsResponse) error {
+	uri := openseaURL + "/collections"
+	params := "?"
+
+	limit := int32(20)
+	offset := int32(0)
+
+	if req.Limit > 0 {
+		limit = req.Limit
+	}
+
+	if req.Offset > 0 {
+		offset = req.Offset
+	}
+
+	params += fmt.Sprintf("limit=%d&offset=%d",limit, offset)
+
+	var resp domain.CollectionsResponse
+
+	if err := api.Get(uri + params, &resp); err != nil {
+		return errors.InternalServerError("nft.collections", "failed to get collections: %v", err)
+	}
+
+	for _, collection := range resp.Collections {
+		rsp.Collections = append(rsp.Collections, &pb.Collection{
+			Name: collection.Name,
+			Description: collection.Description,
+			Slug: collection.Slug,
+			ImageUrl: collection.ImageUrl,
+			CreatedAt: collection.CreatedAt,
+			PayoutAddress: collection.PayoutAddress,
+		})
+	}
+
+	return nil
+}
+
