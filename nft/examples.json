@@ -1,13 +1,105 @@
 {
-  "vote": [
+  "assets": [
     {
-      "title": "Vote for the API",
+      "title": "Get a list of assets",
       "run_check": false,
       "request": {
-        "message": "Launch it!"
+        "order_by": "sale_date",
+        "limit": 1
       },
       "response": {
-	"message": "Thanks for the vote!"
+        "assets": [
+                {
+                        "id": 96959754,
+                        "token_id": "24",
+                        "name": "The Bitcoin Price Crash",
+                        "description": "\"The Bitcoin Price Crash\" from CryptoCards collection",
+                        "image_url": "https://lh3.googleusercontent.com/QKCsg3W-71eFbFSHl_4sVV89gxzZvgX8sls9r8PCyJIwYkEKVm1VJVcWdCEm5IxpqYgpcLDNm9JaiF13jKxWvOflVnYW5KIs8GhIdXg",
+                        "sales": 7,
+                        "permalink": "https://opensea.io/assets/0x3a7dc718eaf31f0a55988161f3d75d7ca785b034/24",
+                        "contract": {
+                                "name": "Cryptocards",
+                                "address": "0x3a7dc718eaf31f0a55988161f3d75d7ca785b034",
+                                "type": "semi-fungible",
+                                "created_at": "2021-11-10T08:31:01.405462",
+                                "owner": 63182848,
+                                "schema": "ERC1155",
+                                "symbol": "CC",
+                                "description": "The Cryptocards collection was created at the dawn of what is considered cryptoart or NFTs today being minted on January 2018. \n\nIt is the only NFT collection chronicling the history of Bitcoin including over 50 cards with a total supply of 7.851.\n\nThe initial CryptoCards were issued as a ERC-20, but we developed an ERC1155 wrapper to make them available on OpenSea.\n\nBeware of other fake collections on OS. Stay safe and join the community: https://discord.gg/m9nUKEzcWJ",
+                                "payout_address": "0xb7e0c211fb088e42aa9fd936b0a9c52985fbd273",
+                                "seller_fees": ""
+                        },
+                        "collection": {
+                                "name": "The CryptoCards Collection (2018)",
+                                "description": "The Cryptocards collection was created at the dawn of what is considered cryptoart or NFTs today being minted on January 2018. \n\nIt is the only NFT collection chronicling the history of Bitcoin including over 50 cards with a total supply of 7.851.\n\nThe initial CryptoCards were issued as a ERC-20, but we developed an ERC1155 wrapper to make them available on OpenSea.\n\nBeware of other fake collections on OS. Stay safe and join the community: https://discord.gg/m9nUKEzcWJ",
+                                "slug": "cryptocards-collection",
+                                "image_url": "https://lh3.googleusercontent.com/ByPl14lqRv2VsFm_drrTcxM7qE4pDRH3A3beQ2lPtes2gJ7gl4qFH1-v-8Vn7I47yLDN4F_QGLT1-Qqi1IIsuM20AkXZUKZX9l800LI=s120",
+                                "created_at": "2021-11-10T08:44:55.811633",
+                                "payout_address": "0xb7e0c211fb088e42aa9fd936b0a9c52985fbd273"
+                        },
+                        "creator": {
+                                "username": "",
+                                "profile_url": "",
+                                "address": ""
+                        },
+                        "owner": {
+                                "username": "NullAddress",
+                                "profile_url": "https://storage.googleapis.com/opensea-static/opensea-profile/1.png",
+                                "address": "0x0000000000000000000000000000000000000000"
+                        },
+                        "presale": false,
+                        "last_sale": {
+                                "asset_token_id": "24",
+                                "asset_decimals": 0,
+                                "event_type": "successful",
+                                "event_timestamp": "2021-12-08T13:52:33",
+                                "total_price": "75000000000000000",
+                                "quantity": "1",
+                                "created_at": "2021-12-08T13:52:54.475811",
+                                "transaction": {
+                                        "id": 218344593,
+                                        "timestamp": "2021-12-08T13:52:33",
+                                        "block_hash": "0xe168736f9f7f9bf610c04c0705165ef2ca470ddfc5fedb6d0337701f1d083d32",
+                                        "block_number": "13765159",
+                                        "from_account": {
+                                                "username": "austincountach",
+                                                "profile_url": "https://storage.googleapis.com/opensea-static/opensea-profile/31.png",
+                                                "address": "0x12ad5707401114453020a92a7384f267c9c559f2"
+                                        },
+                                        "to_account": {
+                                                "username": "OpenSea-Orders",
+                                                "profile_url": "https://storage.googleapis.com/opensea-static/opensea-profile/22.png",
+                                                "address": "0x7be8076f4ea4a4ad08075c2508e481d6c946d12b"
+                                        },
+                                        "transaction_hash": "0xd3bfa0ffe5d37af6854f485606ceb349634e957ff5778570ea396288fe8914db",
+                                        "transaction_index": "176"
+                                },
+                                "payment_token": {
+                                        "id": 1,
+                                        "name": "Ether",
+                                        "symbol": "ETH",
+                                        "address": "0x0000000000000000000000000000000000000000",
+                                        "image_url": "https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg",
+                                        "decimals": 18,
+                                        "eth_price": "1.000000000000000",
+                                        "usd_price": "4274.930000000000291000"
+                                }
+                        },
+                        "listing_date": ""
+                }
+        ]
+      }
+    }
+  ],
+  "create": [
+    {
+      "title": "Create an NFT",
+      "run_check": false,
+      "request": {
+        "name": "Guybrush Threepwood",
+        "description": "The epic monkey island character"
+      },
+      "response": {}
       }
     }
   ]

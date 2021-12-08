@@ -42,7 +42,8 @@ func NewNftEndpoints() []*api.Endpoint {
 // Client API for Nft service
 
 type NftService interface {
-	Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error)
+	Assets(ctx context.Context, in *AssetsRequest, opts ...client.CallOption) (*AssetsResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
 }
 
 type nftService struct {
@@ -57,9 +58,19 @@ func NewNftService(name string, c client.Client) NftService {
 	}
 }
 
-func (c *nftService) Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error) {
-	req := c.c.NewRequest(c.name, "Nft.Vote", in)
-	out := new(VoteResponse)
+func (c *nftService) Assets(ctx context.Context, in *AssetsRequest, opts ...client.CallOption) (*AssetsResponse, error) {
+	req := c.c.NewRequest(c.name, "Nft.Assets", in)
+	out := new(AssetsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *nftService) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
+	req := c.c.NewRequest(c.name, "Nft.Create", in)
+	out := new(CreateResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +81,14 @@ func (c *nftService) Vote(ctx context.Context, in *VoteRequest, opts ...client.C
 // Server API for Nft service
 
 type NftHandler interface {
-	Vote(context.Context, *VoteRequest, *VoteResponse) error
+	Assets(context.Context, *AssetsRequest, *AssetsResponse) error
+	Create(context.Context, *CreateRequest, *CreateResponse) error
 }
 
 func RegisterNftHandler(s server.Server, hdlr NftHandler, opts ...server.HandlerOption) error {
 	type nft interface {
-		Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error
+		Assets(ctx context.Context, in *AssetsRequest, out *AssetsResponse) error
+		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
 	}
 	type Nft struct {
 		nft
@@ -88,6 +101,10 @@ type nftHandler struct {
 	NftHandler
 }
 
-func (h *nftHandler) Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error {
-	return h.NftHandler.Vote(ctx, in, out)
+func (h *nftHandler) Assets(ctx context.Context, in *AssetsRequest, out *AssetsResponse) error {
+	return h.NftHandler.Assets(ctx, in, out)
+}
+
+func (h *nftHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
+	return h.NftHandler.Create(ctx, in, out)
 }
