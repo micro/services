@@ -14,15 +14,15 @@ type Joke struct{}
 func (e *Joke) Random(_ context.Context, req *pb.RandomRequest, rsp *pb.RandomResponse) error {
 	jokes := model.GetAllJokes()
 	count := req.Count
-	
+
 	if count <= 0 {
 		count = 1
 	} else if count > 10 {
 		count = 10
-	} 
-	
-	if count > len(jokes) {
-		count = len(jokes)
+	}
+
+	if count > int32(len(jokes)) {
+		count = int32(len(jokes))
 	}
 
 	for i := int32(0); i < count; i++ {
