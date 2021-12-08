@@ -18,10 +18,6 @@ import (
 var (
 	sources = []model.JokeSource{
 		{
-			Source: "https://www.reddit.com/r/jokes",
-			Api:    "https://raw.githubusercontent.com/taivop/joke-dataset/master/reddit_jokes.json",
-		},
-		{
 			Source: "http://wocka.com/",
 			Api:    "https://raw.githubusercontent.com/taivop/joke-dataset/master/wocka.json",
 		},
