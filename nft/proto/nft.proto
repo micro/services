@@ -139,7 +139,7 @@ message Token {
 	string usd_price = 8;
 }
 
-// Return a list of NFT assets
+// Return a list of assets
 message AssetsRequest {
 	// limit returned assets
 	int32 limit = 1;
