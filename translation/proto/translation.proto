@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package translation;
+
+option go_package = "./proto;translation";
+
+service Translation {
+  rpc Youdao(YoudaoRequest) returns (YoudaoResponse) {}
+}
+
+// Translation via https://ai.youdao.com/
+message YoudaoRequest {
+  // the word to translate
+  string q = 1;
+  // the source language, default is "auto"
+  // all supported language: http://ml.mbd.baidu.com/xFjVPZxw1q
+  string from = 2;
+  // the destination language, default is "auto"
+  // all supported language: http://ml.mbd.baidu.com/xFjVPZxw1q
+  string to = 3;
+  // voice of translation, 0 for female, 1 for male, default is 0
+  string voice = 4;
+  // strictly use `from` or `to`
+  bool strict = 5;
+}
+
+// Translations from internet
+message YoudaoWeb {
+  string key = 1;
+  repeated string value = 2;
+}
+
+// Variant of the word
+message YoudaoVariant {
+  string name = 1;
+  string value = 2;
+}
+
+// basic info of translation
+message YoudaoBasic {
+  // the level of the word
+  repeated string exam_type = 1;
+  // the explains of the word
+  repeated string explains = 2;
+  // the phonetic of the word
+  string phonetic = 3;
+  // the uk phonetic of the word
+  string uk_phonetic = 4;
+  // the uk speech source url of the word
+  string uk_speech = 5;
+  // the us phonetic of the word
+  string us_phonetic = 6;
+  // the us speech source url of the word
+  string us_speech = 7;
+  // the variants of the word
+  repeated YoudaoVariant variants = 8;
+
+}
+
+message YoudaoResponse {
+  // the word to be translated
+  string query = 1;
+  // translations of the search word
+  repeated string translation = 2;
+  // reveal the source language and destination language, eg: en2zh-CHS or zh-CHS2en
+  string language = 3;
+  // the speech link of the translation
+  string translation_speak_url = 4;
+  // the speech link of the search word
+  string query_speak_url = 5;
+  // the dictionary link of the translation
+  map<string, string> dict = 6;
+  // the web link of the translation
+  map<string, string> web_dict = 7;
+  // the translations from internet
+  repeated YoudaoWeb web = 8;
+  // the basic info of the word
+  YoudaoBasic basic = 9;
+  // whether the search string is a word
+  bool is_word = 10;
+}
