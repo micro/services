@@ -2,68 +2,73 @@ package handler
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/pkg/errors"
+	"golang.org/x/text/language"
+	"google.golang.org/api/option"
 
-	"github.com/micro/services/translation/domain"
 	pb "github.com/micro/services/translation/proto"
+
+	"cloud.google.com/go/translate"
 )
 
 type translation struct {
-	youdaoCfg domain.YoudaoConfig
+	ApiKey string
 }
 
-func NewTranslation(youdaoCfg domain.YoudaoConfig) *translation {
-	return &translation{
-		youdaoCfg: youdaoCfg,
-	}
-}
+func NewTranslation() *translation {
 
-// Youdao leverages https://ai.youdao.com APIs
-func (t *translation) Youdao(_ context.Context, req *pb.YoudaoRequest, rsp *pb.YoudaoResponse) error {
-	youdao := domain.NewYoudao(t.youdaoCfg, req)
-	result, err := youdao.Translate()
+	v, err := config.Get("translation.google.api_key")
 	if err != nil {
-		logger.Errorf("get youdaoCfg translation result error: %s", err)
+		logger.Fatalf("translation.google.api_key config not found: %v", err)
+	}
+	key := v.String("")
+
+	if key == "" {
+		logger.Fatalf("translation.google.api_key config can not be an empty string")
 	}
 
-	if result.ErrorCode != "0" {
-		logger.Errorf("youdao translation error code is not 0, response: %+v; For more information: https://bit.ly/3rLp4PH", result)
-		return errors.New(fmt.Sprintf("youdao translation response error code is not 0; code=%s", result.ErrorCode))
+	return &translation{
+		ApiKey: key,
+	}
+}
+
+// TranslateString calls Google Cloud Translation Basic edition API
+// For more information: https://cloud.google.com/translate/docs/samples/translate-text-with-model
+func (t *translation) TranslateString(ctx context.Context, req *pb.BasicTranslationRequest, rsp *pb.BasicTranslationResponse) error {
+	client, err := translate.NewClient(ctx, option.WithAPIKey(t.ApiKey))
+	if err != nil {
+		return errors.Wrap(err, "new google translation client error")
+	}
+	defer client.Close()
+
+	source, err := language.Parse(req.Source)
+	if err != nil {
+		return errors.Wrap(err, "google translation parse source language error")
 	}
 
-	rsp.Query = result.Query
-	rsp.Translation = result.Translation
-	rsp.Language = result.L
-	rsp.TranslationSpeakUrl = result.TSpeakUrl
-	rsp.WebDict = result.Webdict
-	rsp.Dict = result.Dict
-	rsp.QuerySpeakUrl = result.SpeakUrl
-	rsp.IsWord = result.IsWord
-
-	rsp.Basic = &pb.YoudaoBasic{
-		ExamType:   result.Basic.ExamType,
-		Explains:   result.Basic.Explains,
-		Phonetic:   result.Basic.Phonetic,
-		UkPhonetic: result.Basic.UkPhonetic,
-		UkSpeech:   result.Basic.UkSpeech,
-		UsPhonetic: result.Basic.UsPhonetic,
-		UsSpeech:   result.Basic.UsSpeech,
+	target, err := language.Parse(req.Target)
+	if err != nil {
+		return errors.Wrap(err, "google translation parse target language error")
 	}
 
-	for _, v := range result.Basic.Wfs {
-		rsp.Basic.Variants = append(rsp.Basic.Variants, &pb.YoudaoVariant{
-			Name:  v.Wf.Name,
-			Value: v.Wf.Value,
-		})
+	result, err := client.Translate(ctx, req.Contents, target, &translate.Options{
+		Source: source,
+		Format: translate.Format(req.Format),
+		Model:  req.Model,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "get google translation error")
 	}
 
-	for _, v := range result.Web {
-		rsp.Web = append(rsp.Web, &pb.YoudaoWeb{
-			Key:   v.Key,
-			Value: v.Value,
+	for _, v := range result {
+		rsp.Translations = append(rsp.Translations, &pb.BasicTranslation{
+			Text:   v.Text,
+			Source: v.Source.String(),
+			Model:  v.Model,
 		})
 	}
 

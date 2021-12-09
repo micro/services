@@ -5,77 +5,38 @@ package translation;
 option go_package = "./proto;translation";
 
 service Translation {
-  rpc Youdao(YoudaoRequest) returns (YoudaoResponse) {}
+  rpc TranslateString(BasicTranslationRequest) returns (BasicTranslationResponse) {}
+  // TODO: implement Google Translation Advanced Edition, See https://cloud.google.com/translate/docs/advanced/translating-text-v3
 }
 
-// Translation via https://ai.youdao.com/
-message YoudaoRequest {
-  // the word to translate
-  string q = 1;
-  // the source language, default is "auto"
-  // all supported language: http://ml.mbd.baidu.com/xFjVPZxw1q
-  string from = 2;
-  // the destination language, default is "auto"
-  // all supported language: http://ml.mbd.baidu.com/xFjVPZxw1q
-  string to = 3;
-  // voice of translation, 0 for female, 1 for male, default is 0
-  string voice = 4;
-  // strictly use `from` or `to`
-  bool strict = 5;
+message BasicTranslation {
+  // The translation result
+  string text = 1;
+  // The source of the query string
+  string source = 2;
+  // The model used in translation
+  string model = 3;
 }
 
-// Translations from internet
-message YoudaoWeb {
-  string key = 1;
-  repeated string value = 2;
+// BasicTranslationRequest is the basic edition request
+message BasicTranslationRequest {
+  // The contents to be translated
+  repeated string contents = 1;
+  // Source language, format in ISO-639-1 codes
+  // See https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for more information
+  string source = 2;
+  // Target language, format in ISO-639-1 codes
+  // See https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for more information
+  string target = 3;
+  // The string format, `text` or `html`
+  string format = 4;
+  // The model to use for translation, `nmt` or `base`,
+  // See https://cloud.google.com/translate/docs/advanced/translating-text-v3#comparing-models for more information
+  string model = 5;
 }
 
-// Variant of the word
-message YoudaoVariant {
-  string name = 1;
-  string value = 2;
-}
 
-// basic info of translation
-message YoudaoBasic {
-  // the level of the word
-  repeated string exam_type = 1;
-  // the explains of the word
-  repeated string explains = 2;
-  // the phonetic of the word
-  string phonetic = 3;
-  // the uk phonetic of the word
-  string uk_phonetic = 4;
-  // the uk speech source url of the word
-  string uk_speech = 5;
-  // the us phonetic of the word
-  string us_phonetic = 6;
-  // the us speech source url of the word
-  string us_speech = 7;
-  // the variants of the word
-  repeated YoudaoVariant variants = 8;
-
-}
-
-message YoudaoResponse {
-  // the word to be translated
-  string query = 1;
-  // translations of the search word
-  repeated string translation = 2;
-  // reveal the source language and destination language, eg: en2zh-CHS or zh-CHS2en
-  string language = 3;
-  // the speech link of the translation
-  string translation_speak_url = 4;
-  // the speech link of the search word
-  string query_speak_url = 5;
-  // the dictionary link of the translation
-  map<string, string> dict = 6;
-  // the web link of the translation
-  map<string, string> web_dict = 7;
-  // the translations from internet
-  repeated YoudaoWeb web = 8;
-  // the basic info of the word
-  YoudaoBasic basic = 9;
-  // whether the search string is a word
-  bool is_word = 10;
+// BasicTranslationResponse is the basic edition response
+message BasicTranslationResponse {
+  repeated BasicTranslation translations = 1;
 }

@@ -1,80 +1,32 @@
 {
-  "youdao": [
+  "translateString": [
     {
-      "title": "Search for movies",
+      "title": "Translate String",
       "run_check": false,
-      "description": "Search for movies",
+      "description": "Google Basic Edition Translation",
       "request": {
-        "q": "user",
-        "voice": "1",
-        "from": "en",
-        "to": "zh-CHS",
-        "strict": true
+        "contents": [
+          "pen",
+          "pencil"
+        ],
+        "model": "nmt",
+        "format": "text",
+        "source": "en",
+        "target": "zh"
       },
       "response": {
-        "query": "user",
-        "translation": [
-          "用户"
-        ],
-        "language": "en2zh-CHS",
-        "translation_speak_url": "https://openapi.youdao.com/ttsapi?q=%E7%94%A8%E6%88%B7\u0026langType=zh-CHS\u0026sign=CFA7B4FB16046550C4412867CCDDF825\u0026salt=1638966156706\u0026voice=1\u0026format=mp3\u0026appKey=2dd49ed7cdb56431\u0026ttsVoiceStrict=false",
-        "query_speak_url": "https://openapi.youdao.com/ttsapi?q=user\u0026langType=en\u0026sign=29CAE3364E3374334A7C64BA261E6A89\u0026salt=1638966156706\u0026voice=1\u0026format=mp3\u0026appKey=2dd49ed7cdb56431\u0026ttsVoiceStrict=false",
-        "dict": {
-          "url": "yddict://m.youdao.com/dict?le=eng\u0026q=user"
-        },
-        "web_dict": {
-          "url": "http://mobile.youdao.com/dict?le=eng\u0026q=user"
-        },
-        "web": [
+        "translations": [
           {
-            "key": "user",
-            "value": [
-              "使用者",
-              "网友",
-              "户表"
-            ]
+            "text": "钢笔",
+            "source": "und",
+            "model": "nmt"
           },
           {
-            "key": "User Interface",
-            "value": [
-              "户界面",
-              "用户界面",
-              "户接口"
-            ]
-          },
-          {
-            "key": "user agent",
-            "value": [
-              "用户代理",
-              "户代理",
-              "用户代理程序",
-              "客户端"
-            ]
+            "text": "铅笔",
+            "source": "und",
+            "model": "nmt"
           }
-        ],
-        "basic": {
-          "exam_type": [
-            "高中",
-            "CET4",
-            "CET6"
-          ],
-          "explains": [
-            "n. 用户；使用者",
-            "n. （User）（土）乌塞尔（人名）"
-          ],
-          "phonetic": "ˈjuːzə(r)",
-          "uk_phonetic": "ˈjuːzə(r)",
-          "uk_speech": "https://openapi.youdao.com/ttsapi?q=user\u0026langType=en\u0026sign=29CAE3364E3374334A7C64BA261E6A89\u0026salt=1638966156706\u0026voice=5\u0026format=mp3\u0026appKey=2dd49ed7cdb56431\u0026ttsVoiceStrict=false",
-          "us_phonetic": "ˈjuːzər",
-          "us_speech": "https://openapi.youdao.com/ttsapi?q=user\u0026langType=en\u0026sign=29CAE3364E3374334A7C64BA261E6A89\u0026salt=1638966156706\u0026voice=6\u0026format=mp3\u0026appKey=2dd49ed7cdb56431\u0026ttsVoiceStrict=false",
-          "variants": [
-            {
-              "name": "复数",
-              "value": "users"
-            }
-          ]
-        },
-        "is_word": true
+        ]
       }
     }
   ]

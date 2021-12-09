@@ -42,7 +42,7 @@ func NewTranslationEndpoints() []*api.Endpoint {
 // Client API for Translation service
 
 type TranslationService interface {
-	Youdao(ctx context.Context, in *YoudaoRequest, opts ...client.CallOption) (*YoudaoResponse, error)
+	TranslateString(ctx context.Context, in *BasicTranslationRequest, opts ...client.CallOption) (*BasicTranslationResponse, error)
 }
 
 type translationService struct {
@@ -57,9 +57,9 @@ func NewTranslationService(name string, c client.Client) TranslationService {
 	}
 }
 
-func (c *translationService) Youdao(ctx context.Context, in *YoudaoRequest, opts ...client.CallOption) (*YoudaoResponse, error) {
-	req := c.c.NewRequest(c.name, "Translation.Youdao", in)
-	out := new(YoudaoResponse)
+func (c *translationService) TranslateString(ctx context.Context, in *BasicTranslationRequest, opts ...client.CallOption) (*BasicTranslationResponse, error) {
+	req := c.c.NewRequest(c.name, "Translation.TranslateString", in)
+	out := new(BasicTranslationResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +70,12 @@ func (c *translationService) Youdao(ctx context.Context, in *YoudaoRequest, opts
 // Server API for Translation service
 
 type TranslationHandler interface {
-	Youdao(context.Context, *YoudaoRequest, *YoudaoResponse) error
+	TranslateString(context.Context, *BasicTranslationRequest, *BasicTranslationResponse) error
 }
 
 func RegisterTranslationHandler(s server.Server, hdlr TranslationHandler, opts ...server.HandlerOption) error {
 	type translation interface {
-		Youdao(ctx context.Context, in *YoudaoRequest, out *YoudaoResponse) error
+		TranslateString(ctx context.Context, in *BasicTranslationRequest, out *BasicTranslationResponse) error
 	}
 	type Translation struct {
 		translation
@@ -88,6 +88,6 @@ type translationHandler struct {
 	TranslationHandler
 }
 
-func (h *translationHandler) Youdao(ctx context.Context, in *YoudaoRequest, out *YoudaoResponse) error {
-	return h.TranslationHandler.Youdao(ctx, in, out)
+func (h *translationHandler) TranslateString(ctx context.Context, in *BasicTranslationRequest, out *BasicTranslationResponse) error {
+	return h.TranslationHandler.TranslateString(ctx, in, out)
 }
