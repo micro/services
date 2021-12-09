@@ -195,7 +195,8 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	gitter := git.NewGitter(map[string]string{})
 	err := gitter.Checkout(req.Repo, req.Branch)
 	if err != nil {
-		return err
+		log.Errorf("Failed to download %s@%s\n", req.Repo, req.Branch)
+		return errors.InternalServerError("app.run", "Failed to download source")
 	}
 
 	// check for the existing app
@@ -289,9 +290,17 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			return
 		}
 
-		log.Error(fmt.Errorf(string(outp)))
+
+		errString := string(outp)
+
+		log.Error(fmt.Errorf(errString))
+
 		// set the error status
 		service.Status = "DeploymentError"
+
+		if strings.Contains(errString, "Failed to start and then listen on the port defined by the PORT environment variable") {
+			service.Status += ": Failed to start and listen on port " + fmt.Sprintf("%d", req.Port)
+		}
 
 		// crazy garbage structs
 		s := &_struct.Struct{}
