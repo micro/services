@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package space;
-import "proto/imports/api.proto";
+
 option go_package = "./proto;space";
 
 service Space {
@@ -72,7 +72,7 @@ message ListObject {
 	string url = 3;
 }
 
-// Head information about an object
+// Retrieve meta information about an object
 message HeadRequest {
 	string name = 1;
 }
@@ -85,15 +85,20 @@ message HeadObject {
 	string name = 1;
 	// when was this last modified
 	int64 modified = 2;
+	// when was this created
 	int64 created = 3;
+	// is this public or private
 	string visibility = 4;
+	// URL to access the object if it is public
 	string url = 5;
 }
 
+// Read/download the object
 message ReadRequest {
 	string name = 1;
 }
 
+// Returns the raw object
 message ReadResponse {
 
 }
