@@ -102,6 +102,6 @@ message ReadRequest {
 
 // Returns the raw object
 message ReadResponse {
-	// Returns the response as a raw object
+	// Returns the response as raw data
 	string object = 1;
 }
