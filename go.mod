@@ -7,6 +7,7 @@ require (
 	github.com/SlyMarbo/rss v1.0.1
 	github.com/Teamwork/spamc v0.0.0-20200109085853-a4e0c5c3f7a0
 	github.com/asim/mq v0.1.0
+	github.com/aws/aws-sdk-go v1.42.17
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
@@ -31,6 +32,8 @@ require (
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/micro/v3 v3.8.0
 	github.com/miekg/dns v1.1.31 // indirect
+	github.com/minio/minio-go/v7 v7.0.16
+	github.com/onsi/gomega v1.10.5
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
@@ -50,7 +53,7 @@ require (
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
 	go.mongodb.org/mongo-driver v1.7.2
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
-	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 	google.golang.org/api v0.59.0
 	google.golang.org/grpc/examples v0.0.0-20211103202053-3b94303f3754 // indirect
