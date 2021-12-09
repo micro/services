@@ -74,6 +74,7 @@ message ListObject {
 
 // Retrieve meta information about an object
 message HeadRequest {
+	// name of the object
 	string name = 1;
 }
 
@@ -93,12 +94,14 @@ message HeadObject {
 	string url = 5;
 }
 
-// Read/download the object
+// Read an object in storage
 message ReadRequest {
+	// name of the object
 	string name = 1;
 }
 
 // Returns the raw object
 message ReadResponse {
-
+	// Returns the response as a raw object
+	string object = 1;
 }
