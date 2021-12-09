@@ -98,7 +98,7 @@ func New(db db.DbService) *GoogleApp {
 	}
 
 	// only root
-	err = ioutil.WriteFile("/acc.json", keyfile, 0700)
+	err = ioutil.WriteFile("account.json", keyfile, 0700)
 	if err != nil {
 		log.Fatalf("app.service_account: %v", err)
 	}
@@ -107,14 +107,14 @@ func New(db db.DbService) *GoogleApp {
 	// https://cloud.google.com/functions/docs/reference/iam/roles#additional-configuration
 
 	// https://cloud.google.com/sdk/docs/authorizing#authorizing_with_a_service_account
-	outp, err := exec.Command("gcloud", "auth", "activate-service-account", accName, "--key-file", "/acc.json").CombinedOutput()
+	outp, err := exec.Command("gcloud", "auth", "activate-service-account", accName, "--key-file", "account.json").CombinedOutput()
 	if err != nil {
-		log.Fatalf(string(outp))
+		log.Fatal(string(outp), err.Error())
 	}
 
 	outp, err = exec.Command("gcloud", "auth", "list").CombinedOutput()
 	if err != nil {
-		log.Fatalf(string(outp))
+		log.Fatal(string(outp), err.Error())
 	}
 	log.Info(string(outp))
 
