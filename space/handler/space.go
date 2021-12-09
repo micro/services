@@ -296,12 +296,16 @@ func (s Space) Head(ctx context.Context, request *pb.HeadRequest, response *pb.H
 		created = t.Format(time.RFC3339Nano)
 	}
 
+	url := ""
+	if vis == "public" {
+		url = fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName)
+	}
 	response.Object = &pb.HeadObject{
 		Name:       request.Name,
 		Modified:   goo.LastModified.Format(time.RFC3339Nano),
 		Created:    created,
 		Visibility: vis,
-		Url:        fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName),
+		Url:        url,
 	}
 
 	return nil

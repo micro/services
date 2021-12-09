@@ -580,7 +580,7 @@ func TestHead(t *testing.T) {
 			} else {
 				g.Expect(err).To(BeNil())
 				g.Expect(rsp.Object.Name).To(Equal(tc.objectName))
-				g.Expect(rsp.Object.Url).To(Equal("https://my-space.ams3.example.com/micro/123/" + tc.objectName))
+				g.Expect(rsp.Object.Url).To(Equal(tc.url))
 				g.Expect(rsp.Object.Visibility).To(Equal(tc.visibility))
 				g.Expect(rsp.Object.Created).To(Equal(tc.created))
 				g.Expect(rsp.Object.Modified).To(Equal(tc.modified))
