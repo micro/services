@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"gopkg.in/yaml.v2"
 
@@ -28,6 +29,7 @@ type Function struct {
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
 	db      db.DbService
+	limit int
 }
 
 type Func struct {
@@ -63,7 +65,14 @@ func NewFunction(db db.DbService) *Function {
 	if len(project) == 0 {
 		log.Fatalf("empty project")
 	}
-
+        v, err = config.Get("app.limit")
+        if err != nil {
+                log.Fatalf("app.limit: %v", err)
+        }
+        limit := v.Int(0)
+        if limit == 0 {
+                log.Infof("App limit is %d", limit)
+        }
 	v, err = config.Get("function.service_account")
 	if err != nil {
 		log.Fatalf("function.service_account: %v", err)
@@ -96,7 +105,7 @@ func NewFunction(db db.DbService) *Function {
 		log.Fatalf(string(outp))
 	}
 	log.Info(string(outp))
-	return &Function{project: project, address: address, db: db}
+	return &Function{project: project, address: address, db: db, limit: limit}
 }
 
 func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
@@ -130,6 +139,21 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if req.Runtime == "" {
 		return fmt.Errorf("missing runtime field, please specify nodejs14, go116 etc")
 	}
+
+        // check for function limit
+        if e.limit > 0 {
+                // check for the existing app
+                countRsp, err := e.db.Count(ctx, &db.CountRequest{
+                        Table: "functions",
+                })
+                if err != nil {
+                        return err
+                }
+
+                if int(countRsp.Count) >= e.limit {
+                        return errors.BadRequest("function.deploy", "deployment limit reached")
+                }
+        }
 
 	// process the env vars to the required format
 	var envVars []string
