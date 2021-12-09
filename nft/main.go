@@ -15,7 +15,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterNftHandler(srv.Server(), new(handler.Nft))
+	pb.RegisterNftHandler(srv.Server(), handler.New())
 
 	// Run service
 	if err := srv.Run(); err != nil {

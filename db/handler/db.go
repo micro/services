@@ -21,6 +21,7 @@ import (
 )
 
 const idKey = "id"
+const _idKey = "_id"
 const stmt = "create table if not exists %v(id text not null, data jsonb, primary key(id)); alter table %v add created_at timestamptz; alter table %v add updated_at timestamptz"
 const truncateStmt = `truncate table "%v"`
 const dropTableStmt = `drop table "%v"`
@@ -116,12 +117,13 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 
 	// check the record for an id field
 	if len(id) == 0 {
+		// try use an id from the record
 		if mid, ok := m[idKey].(string); ok {
 			id = mid
 		} else {
 			// set id as uuid
-			id  = uuid.New().String()
-			// inject id into record
+			id = uuid.New().String()
+			// inject into record
 			m[idKey] = id
 		}
 	}
@@ -137,7 +139,7 @@ func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateRe
 	}
 
 	// set the response id
-	rsp.Id = m[idKey].(string)
+	rsp.Id = id
 
 	return nil
 }
@@ -161,12 +163,9 @@ func (e *Db) Update(ctx context.Context, req *db.UpdateRequest, rsp *db.UpdateRe
 
 	// where ID is specified do a single update record update
 	id := req.Id
-	if v, ok := m[idKey].(string); ok && id == "" {
-		id = v
-	}
 
 	// if the id is blank then check the data
-	if len(req.Id) == 0 {
+	if len(id) == 0 {
 		var ok bool
 		id, ok = m[idKey].(string)
 		if !ok {
@@ -293,15 +292,28 @@ func (e *Db) Read(ctx context.Context, req *db.ReadRequest, rsp *db.ReadResponse
 		if err != nil {
 			return err
 		}
+
 		ma := map[string]interface{}{}
 		json.Unmarshal(m, &ma)
-		ma[idKey] = rec.ID
+
+		// only inject the ID if it does not exist
+		if id, ok := ma[idKey]; !ok {
+			ma[idKey] = rec.ID
+		} else if id != rec.ID {
+			// inject an _id key because
+			// they don't match e.g user defined
+			// an id field in their data
+			// and separately set an id
+			ma[_idKey] = rec.ID
+		}
+
 		m, _ = json.Marshal(ma)
 		s := &structpb.Struct{}
-		err = s.UnmarshalJSON(m)
-		if err != nil {
+
+		if err = s.UnmarshalJSON(m); err != nil {
 			return err
 		}
+
 		rsp.Records = append(rsp.Records, s)
 	}
 
