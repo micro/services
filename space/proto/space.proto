@@ -47,7 +47,7 @@ message UpdateResponse {
 	string url = 1;
 }
 
-// Delete an object
+// Delete an object from space
 message DeleteRequest {
 	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
 	string name = 1;
@@ -55,7 +55,7 @@ message DeleteRequest {
 
 message DeleteResponse {}
 
-// List the objects in the space
+// List the objects in space
 message ListRequest {
 	// optional prefix for the name e.g. to return all the objects in the images directory pass images/
 	string prefix = 1;
@@ -94,7 +94,7 @@ message HeadObject {
 	string url = 5;
 }
 
-// Read an object in storage. Use for private objects.
+// Read an object in space. Use for private objects.
 message ReadRequest {
 	// name of the object
 	string name = 1;
@@ -102,6 +102,6 @@ message ReadRequest {
 
 // Returns the raw object
 message ReadResponse {
-	// Returns the response as raw data
+	// Returns the object as raw data
 	string object = 1;
 }
