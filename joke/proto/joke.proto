@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package joke;
+
+option go_package = "./proto;joke";
+
+service Joke {
+  rpc Random(RandomRequest) returns (RandomResponse) {}
+}
+
+// Get a random joke
+message RandomRequest {
+  // the count of random jokes want, maximum: 10
+  int32 count = 1;
+}
+
+message JokeInfo {
+  string id = 1;
+  string title = 2;
+  string body = 3;
+  string category = 4;
+  string source = 5;
+}
+
+message RandomResponse {
+  repeated JokeInfo jokes = 1;
+}

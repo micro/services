@@ -1,7 +1,6 @@
-Explore, buy and sell NFTs
+Explore NFT Assets
 
 # NFT Service
 
-Explore, buy and sell NFTs with a simple API. Powered by OpenSea. 
-Create your own unique NFT now and launch it when the API is ready.
+Explore NFT collections and assets with a simple API, powered by OpenSea. 
 

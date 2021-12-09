@@ -5,16 +5,105 @@ package space;
 option go_package = "./proto;space";
 
 service Space {
-	rpc Vote(VoteRequest) returns (VoteResponse) {}
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Head(HeadRequest) returns (HeadResponse) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
 }
 
-// Vote to have the Space api launched faster!
-message VoteRequest {
-	// optional message
-	string message = 1;
+// Create an object. Returns error if object with this name already exists. If you want to update an existing object use the `Update` endpoint
+// You need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
+message CreateRequest {
+	// The contents of the object
+	bytes object = 1;
+	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
+	string name = 2;
+	// Who can see this object? "public" or "private", defaults to "private"
+	string visibility = 3;
 }
 
-message VoteResponse {
-	// response message
-	string message = 2;
+message CreateResponse {
+	// A public URL to access the object if visibility is "public"
+	string url = 1;
+}
+
+// Update an object. If an object with this name does not exist, creates a new one.
+// You need to send the request as a multipart/form-data rather than the usual application/json
+// with each parameter as a form field.
+message UpdateRequest {
+	// The contents of the object
+	bytes object = 1;
+	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
+	string name = 2;
+	// Who can see this object? "public" or "private", defaults to "private"
+	string visibility = 3;
+}
+
+message UpdateResponse {
+	// A public URL to access the object if visibility is "public"
+	string url = 1;
+}
+
+// Delete an object from space
+message DeleteRequest {
+	// Name of the object
+	string name = 1;
+}
+
+message DeleteResponse {}
+
+// List the objects in space
+message ListRequest {
+	// optional prefix for the name e.g. to return all the objects in the images directory pass images/
+	string prefix = 1;
+}
+
+message ListResponse {
+	repeated ListObject objects = 1;
+}
+
+message ListObject {
+	string name = 1;
+	// when was this last modified
+	string modified = 2;
+	string url = 3;
+	string visibility = 4;
+	string created = 5;
+}
+
+// Retrieve meta information about an object
+message HeadRequest {
+	// name of the object
+	string name = 1;
+}
+
+message HeadResponse {
+	HeadObject object = 1;
+}
+
+message HeadObject {
+	string name = 1;
+	// when was this last modified
+	string modified = 2;
+	// when was this created
+	string created = 3;
+	// is this public or private
+	string visibility = 4;
+	// URL to access the object if it is public
+	string url = 5;
+}
+
+// Read an object in space. Use for private objects.
+message ReadRequest {
+	// name of the object
+	string name = 1;
+}
+
+// Returns the raw object
+message ReadResponse {
+	// Returns the object as raw data
+	string object = 1;
 }

@@ -1,0 +1,65 @@
+{
+  "search": [
+    {
+      "title": "Search for movies",
+      "run_check": false,
+      "description": "Search for movies",
+      "request": {
+        "language": "en-US",
+        "query": "inception",
+        "page": 1,
+        "region": "US",
+        "year": 2010,
+        "primary_release_year": 2010
+      },
+      "response": {
+        "total_results": 2,
+        "total_pages": 1,
+        "page": 1,
+        "results": [
+          {
+            "poster_path": "/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+            "adult": false,
+            "overview": "Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets is offered a chance to regain his old life as payment for a task considered to be impossible: \"inception\", the implantation of another person's idea into a target's subconscious.",
+            "release_date": "2010-07-16",
+            "genre_ids": [
+              28,
+              878,
+              12
+            ],
+            "id": 27205,
+            "original_title": "Inception",
+            "original_language": "en",
+            "title": "Inception",
+            "backdrop_path": "/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+            "popularity": 130.507,
+            "vote_count": 30372,
+            "video": false,
+            "vote_average": 8.4
+          },
+          {
+            "poster_path": "/sNxqwtyHMNQwKWoFYDqcYTui5Ok.jpg",
+            "adult": false,
+            "overview": "The Cobol Job is a fourteen-minute animated prequel to Christopher Nolan’s award-winning movie: Inception, detailing the heist on Mr. Kaneda's mind by Nash, Cobb, Arthur, and several Cobol Engineering thugs.",
+            "release_date": "2010-12-07",
+            "genre_ids": [
+              16,
+              28,
+              53,
+              878
+            ],
+            "id": 64956,
+            "original_title": "Inception: The Cobol Job",
+            "original_language": "en",
+            "title": "Inception: The Cobol Job",
+            "backdrop_path": "/sNxqwtyHMNQwKWoFYDqcYTui5Ok.jpg",
+            "popularity": 9.748,
+            "vote_count": 269,
+            "video": false,
+            "vote_average": 7.3
+          }
+        ]
+      }
+    }
+  ]
+}
