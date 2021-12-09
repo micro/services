@@ -358,7 +358,7 @@ func (s *Space) Read(ctx context.Context, req *api.Request, rsp *api.Response) e
 
 	// replace hostname or url with our base
 	split := strings.SplitN(urlStr, s.conf.Endpoint, 2)
-	urlStr = split[1]
+	urlStr = s.conf.BaseURL + split[1]
 
 	rsp.Header = map[string]*api.Pair{
 		"Location": {
