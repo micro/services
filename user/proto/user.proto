@@ -262,6 +262,7 @@ message SendMagicLinkResponse {
 	Session session = 1;
 }
 
+// Verify the token sent via a magic link
 message VerifyTokenRequest {
 	string token = 1;
 }
