@@ -69,11 +69,13 @@
         "name": "images/file.jpg"
       },
       "response": {
-        "name": "images/file.jpg",
-        "modified": 1638549232,
-        "created": 1638546232,
-        "url": "https://example.com/foo/bar/images/file.jpg",
-        "visibility": "public"
+        "object": {
+          "name": "images/file.jpg",
+          "modified": 1638549232,
+          "created": 1638546232,
+          "url": "https://example.com/foo/bar/images/file.jpg",
+          "visibility": "public"
+        }
       }
     }
   ],
