@@ -49,7 +49,7 @@ message UpdateResponse {
 
 // Delete an object from space
 message DeleteRequest {
-	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
+	// Name of the object
 	string name = 1;
 }
 
