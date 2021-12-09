@@ -94,7 +94,7 @@ message HeadObject {
 	string url = 5;
 }
 
-// Read an object in storage
+// Read an object in storage. Use for private objects.
 message ReadRequest {
 	// name of the object
 	string name = 1;
