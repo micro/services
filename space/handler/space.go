@@ -355,6 +355,11 @@ func (s *Space) Read(ctx context.Context, req *api.Request, rsp *api.Response) e
 		log.Errorf("Error presigning url %s", err)
 		return errors.InternalServerError(method, "Error reading object")
 	}
+
+	// replace hostname or url with our base
+	split := strings.SplitN(urlStr, s.conf.Endpoint, 2)
+	urlStr = s.conf.BaseURL + split[1]
+
 	rsp.Header = map[string]*api.Pair{
 		"Location": {
 			Key:    "Location",
