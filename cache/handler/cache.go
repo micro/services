@@ -21,7 +21,9 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 
 	var value interface{}
 
-	if err := cache.Context(ctx).Get(req.Key, &value); err != nil {
+	expires, err := cache.Context(ctx).Get(req.Key, &value)
+
+	if err != nil {
 		if !strings.Contains(err.Error(), "not found") {
 			log.Errorf("Error querying cache %s", err)
 			return errors.InternalServerError("cache.get", "Error querying cache")
@@ -32,6 +34,12 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 	rsp.Key = req.Key
 	// set the value
 	rsp.Value = fmt.Sprintf("%v", value)
+	// set the ttl
+	rsp.Ttl = int64(expires.Sub(time.Now()).Seconds())
+
+	if rsp.Ttl < 0 {
+		rsp.Ttl = 0
+	}
 
 	return nil
 }

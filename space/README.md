@@ -1,7 +1,7 @@
 Infinite cloud storage
 
-# NFT Service
+# Space Service
 
-Space for simple object storage. Put anything in the cloud 
-forever. Backed by S3 compatible storage API.
+Space for simple object storage. Put anything in the cloud forever. Objects can be public (readable by all via a public URL) or private.
 
+Powered by S3 compatible storage API.

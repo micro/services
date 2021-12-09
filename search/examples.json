@@ -1,0 +1,14 @@
+{
+  "vote": [
+    {
+      "title": "Vote for the API",
+      "run_check": false,
+      "request": {
+        "message": "Launch it!"
+      },
+      "response": {
+	"message": "Thanks for the vote!"
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package movie;
+
+option go_package = "./proto;movie";
+
+service Movie {
+  rpc Search(SearchRequest) returns (SearchResponse) {}
+}
+
+message MovieInfo {
+  string poster_path = 1;
+  bool adult = 2;
+  string overview = 3;
+  string release_date = 4;
+  repeated int32 genre_ids = 5;
+  int32 id = 6;
+  string original_title = 7;
+  string original_language = 8;
+  string title = 9;
+  string backdrop_path = 10;
+  double popularity = 11;
+  int32 vote_count = 12;
+  bool video = 13;
+  double vote_average = 14;
+}
+
+// Search for movies by simple text search
+message SearchRequest {
+  // a ISO 639-1 value to display translated data
+  string language = 1;
+  // a text query to search
+  string query = 2;
+  // page to query
+  int32 page = 3;
+  // a ISO 3166-1 code to filter release dates.
+  string region = 4;
+  // year of making
+  int32 year = 5;
+  // year of release
+  int32 primary_release_year = 6;
+}
+
+
+message SearchResponse {
+  int32 total_results = 1;
+  int32 total_pages = 2;
+  int32 page = 3;
+  repeated MovieInfo results = 4;
+}
+
+

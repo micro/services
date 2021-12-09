@@ -28,12 +28,12 @@ message CallResponse {
 
 // Deploy a group of functions
 message DeployRequest {
-	// github url to repo
-	string repo = 1;
-	// optional subfolder path
-	string subfolder = 2;
 	// function name
-	string name = 3;
+	string name = 1;
+	// github url to repo
+	string repo = 2;
+	// optional subfolder path
+	string subfolder = 3;
 	// entry point, ie. handler name in the source code 
 	// if not provided, defaults to the name parameter
 	string entrypoint = 4;

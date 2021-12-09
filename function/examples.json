@@ -4,9 +4,8 @@
       "title": "Deploy a function",
       "request": {
         "repo": "github.com/m3o/nodejs-function-example",
-        "name": "my-first-func",
+        "name": "helloworld",
         "entrypoint": "helloworld",
-        "project": "tests",
         "runtime": "nodejs14"
       },
       "response": {}
@@ -16,7 +15,7 @@
     {
       "title": "Call a function",
       "request": {
-        "name": "my-first-func",
+        "name": "helloworld",
         "request": {}
       },
       "response": {
@@ -33,8 +32,7 @@
       "response": {
         "functions": [
           {
-            "project": "a",
-            "name": "test4",
+            "name": "helloworld",
             "entrypoint": "helloworld",
             "repo": "github.com/m3o/nodejs-function-example",
             "subfolder": "",
@@ -49,8 +47,7 @@
     {
       "title": "Delete a function",
       "request": {
-        "project": "tests",
-        "name": "my-first-func"
+        "name": "helloworld"
       },
       "response": {}
     }
@@ -59,13 +56,11 @@
     {
       "title": "Describe function status",
       "request": {
-        "project": "tests",
-        "name": "my-first-func"
+        "name": "helloworld"
       },
       "response": {
         "function": {
-            "project": "a",
-            "name": "test4",
+            "name": "helloworld",
             "entrypoint": "helloworld",
             "repo": "github.com/m3o/nodejs-function-example",
             "subfolder": "",
