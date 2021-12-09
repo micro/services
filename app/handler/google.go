@@ -300,6 +300,8 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 		if strings.Contains(errString, "Failed to start and then listen on the port defined by the PORT environment variable") {
 			service.Status += ": Failed to start and listen on port " + fmt.Sprintf("%d", req.Port)
+		} else if strings.Contains(errString, "Build failed") {
+			service.Status += ": Build failed"
 		}
 
 		// crazy garbage structs
