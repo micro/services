@@ -5,16 +5,155 @@ package nft;
 option go_package = "./proto;nft";
 
 service Nft {
-	rpc Vote(VoteRequest) returns (VoteResponse) {}
+	rpc Assets(AssetsRequest) returns (AssetsResponse) {}
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Collections(CollectionsRequest) returns (CollectionsResponse) {}
 }
 
-// Vote to have the NFT api launched faster!
-message VoteRequest {
-	// optional message
-	string message = 1;
+// Create your own NFT (coming soon)
+message CreateRequest {
+	// name of the NFT
+	string name = 1;
+	// description
+	string description = 2;
+	// image data
+	bytes image = 3;
+	// data if not image
+	bytes data = 4;
 }
 
-message VoteResponse {
-	// response message
-	string message = 2;
+message CreateResponse {
+	Asset asset = 1;
+}
+
+// Get a list of collections
+message CollectionsRequest {
+	int32 limit = 1;
+	int32 offset = 2;
+}
+
+message CollectionsResponse {
+	repeated Collection collections = 1;
+}
+
+message Asset {
+	// id of the asset
+	int32 id = 1;
+	// the token id
+	string token_id = 2;
+	// name of the asset
+	string name = 3;
+	// related description
+	string description = 4;
+	// the image url
+	string image_url = 5;
+	// number of sales
+	int32 sales = 6;
+	// the permalink
+	string permalink = 7;
+	// asset contract
+	Contract contract = 8;
+	// associated collection
+	Collection collection = 9;
+	// Creator of the NFT
+	User creator = 10;
+	// Owner of the NFT
+	User owner = 11;
+	// is it a presale
+	bool presale = 12;
+	// last time sold
+	Sale last_sale = 13;
+	// listing date
+	string listing_date = 14;
+}
+
+message Contract {
+	// name of contract
+	string name = 1;
+	// ethereum address
+	string address = 2;
+	// type of contract e.g "semi-fungible"
+	string type = 3;
+	// timestamp of creation
+	string created_at = 4;
+	// owner id
+	int32 owner = 5;
+	// aka "ERC1155"
+	string schema = 6;
+	// related symbol
+	string symbol = 7;
+	// description of contract
+	string description = 8;
+	// payout address
+	string payout_address = 9;
+	// seller fees
+	string seller_fees = 10;
+}
+
+message Collection {
+	string name = 1;
+	string description = 2;
+	string slug = 3;
+	string image_url = 4;
+	string created_at = 5;
+	string payout_address = 6;
+}
+
+message User {
+	string username = 1;
+	string profile_url = 2;
+	string address = 3;
+}
+
+message Sale {
+	string asset_token_id = 1;
+	int32 asset_decimals = 2;
+	string event_type = 3;
+	string event_timestamp = 4;
+	string total_price = 5;
+	string quantity = 6;
+	string created_at = 7;
+	Transaction transaction = 8;
+	Token payment_token = 9;
+}
+
+message Transaction {
+	int32 id = 1;
+	string timestamp = 2;
+	string block_hash = 3;
+	string block_number = 4;
+	User from_account = 5;
+	User to_account = 6;
+	string transaction_hash = 7;
+	string transaction_index = 8;
+}
+
+message Token {
+	int32 id = 1;
+	string name = 2;
+	string symbol = 3;
+	string address = 4;
+	string image_url = 5;
+	int32 decimals = 6;
+	string eth_price = 7;
+	string usd_price = 8;
+}
+
+// Return a list of assets
+message AssetsRequest {
+	// limit returned assets
+	int32 limit = 1;
+	// offset for pagination
+	int32 offset = 2;
+	// order "asc" or "desc"
+	string order = 3;
+	// order by "sale_date", "sale_count", "sale_price", "total_price"
+	string order_by = 4;
+	// limit to members of a collection by slug name (case sensitive)
+	string collection = 5;
+}
+
+message AssetsResponse {
+	// list of assets
+	repeated Asset assets = 1;
 }
