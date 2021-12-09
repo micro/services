@@ -11,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/micro/v3/service/store/memory"
 	pb "github.com/micro/services/space/proto"
 
 	. "github.com/onsi/gomega"
@@ -96,7 +98,7 @@ func TestCreate(t *testing.T) {
 		{
 			name:    "Simple case",
 			objName: "foo.jpg",
-			url:     "https://my-space.ams3.example.com/micro/123/foo.jpg",
+			url:     "",
 			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
 				return nil, mockError{code: "NotFound"}
 			},
@@ -140,6 +142,7 @@ func TestCreate(t *testing.T) {
 			},
 		},
 	}
+	store.DefaultStore = memory.NewStore()
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
@@ -196,7 +199,7 @@ func TestUpdate(t *testing.T) {
 		{
 			name:    "Does not exist",
 			objName: "foo.jpg",
-			url:     "https://my-space.ams3.example.com/micro/123/foo.jpg",
+			url:     "",
 			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
 				return nil, mockError{code: "NotFound"}
 			},
@@ -250,7 +253,7 @@ func TestUpdate(t *testing.T) {
 				g.Expect(*input.Metadata[mdCreated]).To(Equal("1638541918"))
 				return &sthree.PutObjectOutput{}, nil
 			},
-			url: "https://my-space.ams3.example.com/micro/123/foo.jpg",
+			url: "",
 		},
 		{
 			name:    "Already exists public",
@@ -277,6 +280,7 @@ func TestUpdate(t *testing.T) {
 			visibility: "public",
 		},
 	}
+	store.DefaultStore = memory.NewStore()
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
@@ -338,6 +342,7 @@ func TestDelete(t *testing.T) {
 			err:     errors.BadRequest("space.Delete", "Missing name param"),
 		},
 	}
+	store.DefaultStore = memory.NewStore()
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
@@ -385,22 +390,38 @@ func TestDelete(t *testing.T) {
 func TestList(t *testing.T) {
 	g := NewWithT(t)
 	tcs := []struct {
-		name   string
-		prefix string
-		err    error
-		list   func(input *sthree.ListObjectsInput) (*sthree.ListObjectsInput, error)
+		name       string
+		prefix     string
+		err        error
+		list       func(input *sthree.ListObjectsInput) (*sthree.ListObjectsOutput, error)
+		visibility string
 	}{
 		{
 			name:   "Simple case",
-			prefix: "foo",
+			prefix: "file",
 		},
 		{
 			name: "Empty prefix",
 		},
 	}
+	store.DefaultStore = memory.NewStore()
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			store.Write(
+				store.NewRecord(fmt.Sprintf("%s/micro/123/file.jpg", prefixByUser),
+					meta{
+						Visibility:   "public",
+						CreateTime:   "2009-11-10T23:00:00Z",
+						ModifiedTime: "2009-11-10T23:00:00Z",
+					}))
+			store.Write(
+				store.NewRecord(fmt.Sprintf("%s/micro/123/file2.jpg", prefixByUser),
+					meta{
+						Visibility:   "private",
+						CreateTime:   "2009-11-10T23:00:01Z",
+						ModifiedTime: "2009-11-10T23:00:01Z",
+					}))
 			handler := Space{
 				conf: conf{
 					AccessKey: "access",
@@ -415,7 +436,18 @@ func TestList(t *testing.T) {
 					list: func(input *sthree.ListObjectsInput) (*sthree.ListObjectsOutput, error) {
 						g.Expect(input.Bucket).To(Equal(aws.String("my-space")))
 						g.Expect(input.Prefix).To(Equal(aws.String("micro/123/" + tc.prefix)))
-						return &sthree.ListObjectsOutput{}, nil
+						return &sthree.ListObjectsOutput{
+							Contents: []*sthree.Object{
+								{
+									Key:          aws.String("micro/123/file.jpg"),
+									LastModified: aws.Time(time.Unix(1257894000, 0)),
+								},
+								{
+									Key:          aws.String("micro/123/file2.jpg"),
+									LastModified: aws.Time(time.Unix(1257894000, 0)),
+								},
+							},
+						}, nil
 					}},
 			}
 			ctx := context.Background()
@@ -435,6 +467,11 @@ func TestList(t *testing.T) {
 				g.Expect(err).To(Equal(tc.err))
 			} else {
 				g.Expect(err).To(BeNil())
+				g.Expect(rsp.Objects).To(HaveLen(2))
+				g.Expect(rsp.Objects[0].Name).To(Equal("file.jpg"))
+				g.Expect(rsp.Objects[0].Url).To(Equal("https://my-space.ams3.example.com/micro/123/file.jpg"))
+				g.Expect(rsp.Objects[1].Name).To(Equal("file2.jpg"))
+				g.Expect(rsp.Objects[1].Url).To(Equal(""))
 			}
 
 		})
@@ -449,8 +486,8 @@ func TestHead(t *testing.T) {
 		objectName string
 		url        string
 		visibility string
-		modified   int64
-		created    int64
+		modified   string
+		created    string
 		err        error
 		head       func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error)
 	}{
@@ -459,17 +496,37 @@ func TestHead(t *testing.T) {
 			objectName: "foo.jpg",
 			visibility: "public",
 			url:        "https://my-space.ams3.example.com/micro/123/foo.jpg",
-			created:    1638547905,
-			modified:   1638547906,
+			created:    "2009-11-10T23:00:00Z",
+			modified:   "2009-11-10T23:00:00Z",
 			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
 
 				return &sthree.HeadObjectOutput{
-					LastModified: aws.Time(time.Unix(1638547906, 0)),
+					LastModified: aws.Time(time.Unix(1257894000, 0)),
 					Metadata: map[string]*string{
-						mdCreated:    aws.String("1638547905"),
+						mdCreated:    aws.String("1257894000"),
 						mdVisibility: aws.String(visibilityPublic),
+					},
+				}, nil
+			},
+		},
+		{
+			name:       "Simple case private",
+			objectName: "foo.jpg",
+			visibility: "private",
+			url:        "",
+			created:    "2009-11-10T23:00:00Z",
+			modified:   "2009-11-10T23:00:00Z",
+			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+				g.Expect(*input.Bucket).To(Equal("my-space"))
+				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
+
+				return &sthree.HeadObjectOutput{
+					LastModified: aws.Time(time.Unix(1257894000, 0)),
+					Metadata: map[string]*string{
+						mdCreated:    aws.String("2009-11-10T23:00:00Z"),
+						mdVisibility: aws.String("private"),
 					},
 				}, nil
 			},
@@ -487,6 +544,7 @@ func TestHead(t *testing.T) {
 			},
 		},
 	}
+	store.DefaultStore = memory.NewStore()
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
@@ -522,7 +580,7 @@ func TestHead(t *testing.T) {
 			} else {
 				g.Expect(err).To(BeNil())
 				g.Expect(rsp.Object.Name).To(Equal(tc.objectName))
-				g.Expect(rsp.Object.Url).To(Equal("https://my-space.ams3.example.com/micro/123/" + tc.objectName))
+				g.Expect(rsp.Object.Url).To(Equal(tc.url))
 				g.Expect(rsp.Object.Visibility).To(Equal(tc.visibility))
 				g.Expect(rsp.Object.Created).To(Equal(tc.created))
 				g.Expect(rsp.Object.Modified).To(Equal(tc.modified))

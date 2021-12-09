@@ -68,8 +68,10 @@ message ListResponse {
 message ListObject {
 	string name = 1;
 	// when was this last modified
-	int64 modified = 2;
+	string modified = 2;
 	string url = 3;
+	string visibility = 4;
+	string created = 5;
 }
 
 // Retrieve meta information about an object
@@ -85,9 +87,9 @@ message HeadResponse {
 message HeadObject {
 	string name = 1;
 	// when was this last modified
-	int64 modified = 2;
+	string modified = 2;
 	// when was this created
-	int64 created = 3;
+	string created = 3;
 	// is this public or private
 	string visibility = 4;
 	// URL to access the object if it is public
