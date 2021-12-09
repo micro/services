@@ -226,5 +226,40 @@
         ]
       }
     }
+  ],
+  "sendMagicLink": [
+    {
+      "title": "Send a MagicLink",
+      "run_check": false,
+      "request": {
+        "email": "joe@example.com",
+        "subject": "MagicLink to access your account",
+        "textContent": "Hi there,\n\nClick here to access your account $micro_verification_link",
+        "fromName": "Awesome Dot Com",
+        "address": "www.example.com",
+        "endpoint": "verifytoken"
+      },
+      "response": {
+        "session": {
+          "id": "df91a612-5b24-4634-99ff-240220ab8f55",
+          "created": "1623677579",
+          "expires": "1623699579",
+          "userId": "8b98acbe-0b6a-4d66-a414-5ffbf666786f"
+        }
+      }
+    }
+  ],
+  "verifyToken": [
+    {
+      "title": "Verify a Token",
+      "run_check": false,
+      "request": {
+        "token": "EdsUiidouJJJLldjlloofUiorkojflsWWdld"
+      },
+      "response": {
+        "is_valid": false,
+        "message": ""
+      }
+    }
   ]
 }
