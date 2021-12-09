@@ -27,6 +27,7 @@ type GoogleApp struct {
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
 	db      db.DbService
+	limit int
 	regions []string
 
 	// Embed the app handler
@@ -84,6 +85,14 @@ func New(db db.DbService) *GoogleApp {
 	if len(project) == 0 {
 		log.Fatalf("empty project")
 	}
+	v, err = config.Get("app.limit")
+	if err != nil {
+		log.Fatalf("app.limit: %v", err)
+	}
+	limit := v.Int(0)
+	if limit == 0 {
+		log.Infof("App limit is %d", limit)
+	}
 
 	v, err = config.Get("app.service_account")
 	if err != nil {
@@ -118,7 +127,7 @@ func New(db db.DbService) *GoogleApp {
 	}
 	log.Info(string(outp))
 
-	return &GoogleApp{project: project, address: address, db: db, App: new(App)}
+	return &GoogleApp{project: project, address: address, db: db, limit: limit, App: new(App)}
 }
 
 func (e *GoogleApp) Regions(ctx context.Context, req *pb.RegionsRequest, rsp *pb.RegionsResponse) error {
@@ -211,6 +220,21 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	// app is already running
 	if len(readRsp.Records) > 0 {
 		return errors.BadRequest("app.run", "%s already exists", req.Name)
+	}
+
+	// check for app limit
+	if e.limit > 0 {
+		// check for the existing app
+		countRsp, err := e.db.Count(ctx, &db.CountRequest{
+			Table: "apps",
+		})
+		if err != nil {
+			return err
+		}
+
+		if int(countRsp.Count) >= e.limit {
+			return errors.BadRequest("app.run", "deployment limit reached")
+		}
 	}
 
 	// TODO validate name and use custom domain name
