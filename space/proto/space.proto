@@ -11,6 +11,7 @@ service Space {
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Head(HeadRequest) returns (HeadResponse) {}
 	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc Download(DownloadRequest) returns (DownloadResponse) {}
 }
 
 // Create an object. Returns error if object with this name already exists. If you want to update an existing object use the `Update` endpoint
@@ -96,7 +97,22 @@ message HeadObject {
 	string url = 5;
 }
 
-// Read an object in space. Use for private objects.
+message Object {
+	// name of object
+	string name = 1;
+	// when was this last modified
+	string modified = 2;
+	// when was this created
+	string created = 3;
+	// is this public or private
+	string visibility = 4;
+	// URL to access the object if it is public
+	string url = 5;
+	// the data within the object
+	string data = 6;
+}
+
+// Read an object in space
 message ReadRequest {
 	// name of the object
 	string name = 1;
@@ -104,6 +120,17 @@ message ReadRequest {
 
 // Returns the raw object
 message ReadResponse {
-	// Returns the object as raw data
-	string object = 1;
+	// The object itself
+	Object object = 1;
+}
+
+// Download an object via a presigned url
+message DownloadRequest {
+	// name of object
+	string name = 1;
+}
+
+message DownloadResponse {
+	// presigned url
+	string url = 2;
 }
