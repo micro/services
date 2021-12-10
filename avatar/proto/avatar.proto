@@ -12,15 +12,19 @@ message GenerateRequest {
   // avatar's gender, `male` or `female`, default is `male`
   string gender = 1;
   // avatar's username, unique username will generates the unique avatar;
-  // if you keep username empty, then it'll generates a random avatar in every request
+  // if username == "", will generate a random avatar in every request
+  // if upload == true, username will be used as CDN filename rather than a random uuid string
   string username = 2;
   // encode format of avatar image, `png` or `jpeg`, default is `jpeg`
   string format = 3;
+  // if upload to m3o CDN, default is `false`
+  // if update = true, then it'll return the CDN url
+  bool upload = 4;
 }
 
 message GenerateResponse {
-  // format of the avatar image
-  string format = 1;
-  // avatar image data in base64encode string
-  string avatar = 2;
+  // Micro's CDN url of the avatar image
+  string url = 1;
+  // base64encode string of the avatar image
+  string base64 = 2;
 }

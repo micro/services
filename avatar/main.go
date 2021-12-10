@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/micro/services/avatar/handler"
 	pb "github.com/micro/services/avatar/proto"
+	imagePb "github.com/micro/services/image/proto"
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
@@ -16,7 +17,8 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterAvatarHandler(srv.Server(), new(handler.Avatar))
+	hdlr := handler.NewAvatar(imagePb.NewImageService("image", srv.Client()))
+	pb.RegisterAvatarHandler(srv.Server(), hdlr)
 
 	// Run service
 	if err := srv.Run(); err != nil {

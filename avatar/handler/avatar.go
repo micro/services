@@ -9,17 +9,27 @@ import (
 	"image/jpeg"
 	"image/png"
 
-	"github.com/pkg/errors"
+	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/errors"
 
 	"github.com/o1egl/govatar"
 
 	pb "github.com/micro/services/avatar/proto"
+	imagePb "github.com/micro/services/image/proto"
 )
 
-type Avatar struct{}
+type avatar struct {
+	imageSvc imagePb.ImageService
+}
+
+func NewAvatar(service imagePb.ImageService) *avatar {
+	return &avatar{
+		imageSvc: service,
+	}
+}
 
 // Generate is used to generate a avatar
-func (e *Avatar) Generate(_ context.Context, req *pb.GenerateRequest, rsp *pb.GenerateResponse) error {
+func (e *avatar) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.GenerateResponse) error {
 	var gender govatar.Gender
 
 	// gender, default is `male`
@@ -32,16 +42,16 @@ func (e *Avatar) Generate(_ context.Context, req *pb.GenerateRequest, rsp *pb.Ge
 	}
 
 	// generate avatar
-	var avatar image.Image
+	var avatarImg image.Image
 	var err error
 
 	if req.Username == "" {
-		avatar, err = govatar.Generate(gender)
+		avatarImg, err = govatar.Generate(gender)
 	} else {
-		avatar, err = govatar.GenerateForUsername(gender, req.Username)
+		avatarImg, err = govatar.GenerateForUsername(gender, req.Username)
 	}
 	if err != nil {
-		return errors.Wrap(err, "generate avatar error")
+		return errors.InternalServerError("avatar.generate", "generate avatarImg error: %v", err)
 	}
 
 	// format avatar image, default is `jpeg`
@@ -52,17 +62,38 @@ func (e *Avatar) Generate(_ context.Context, req *pb.GenerateRequest, rsp *pb.Ge
 
 	buf := bytes.NewBuffer(nil)
 	if format == "png" {
-		err = png.Encode(buf, avatar)
+		err = png.Encode(buf, avatarImg)
 	} else {
-		err = jpeg.Encode(buf, avatar, nil)
+		err = jpeg.Encode(buf, avatarImg, nil)
 	}
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("encode %s format error", req.Format))
+		return errors.InternalServerError("avatar.generate", "encode avatar image error: %v", err)
 	}
 
-	// response
-	rsp.Format = req.Format
-	rsp.Avatar = base64.StdEncoding.EncodeToString(buf.Bytes())
+	base64String := fmt.Sprintf("data:image/%s;base64,%s", format, base64.StdEncoding.EncodeToString(buf.Bytes()))
+
+	if !req.Upload {
+		rsp.Base64 = base64String
+		return nil
+	}
+
+	// upload to CDN
+	name := req.Username
+	if name == "" {
+		uid, _ := uuid.NewUUID()
+		name = uid.String()
+	}
+
+	uploadResp, err := e.imageSvc.Upload(ctx, &imagePb.UploadRequest{
+		Base64: base64String,
+		Name:   fmt.Sprintf("%s.%s", name, format),
+	})
+
+	if err != nil {
+		return errors.InternalServerError("avatar.generate", "upload avatar image error: %v", err)
+	}
+
+	rsp.Url = uploadResp.Url
 
 	return nil
 }
