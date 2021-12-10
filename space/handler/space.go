@@ -348,7 +348,6 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		Key:    aws.String(objectName),
 	})
 
-
 	vis := visibilityPrivate
 	if md, ok := goo.Metadata[mdVisibility]; ok && len(*md) > 0 {
 		vis = *md
@@ -458,6 +457,68 @@ func (s *Space) Download(ctx context.Context, req *api.Request, rsp *api.Respons
 
 	b, _ := json.Marshal(resp)
 	rsp.Body = string(b)
+
+	return nil
+}
+
+func (s Space) Upload(ctx context.Context, request *pb.UploadRequest, response *pb.UploadResponse) error {
+	method := "space.Upload"
+	tnt, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized(method, "Unauthorized")
+	}
+	if len(request.Name) == 0 {
+		return errors.BadRequest(method, "Missing name param")
+	}
+	objectName := fmt.Sprintf("%s/%s", tnt, request.Name)
+	if err := s3utils.CheckValidObjectName(objectName); err != nil {
+		return errors.BadRequest(method, "Invalid name")
+	}
+
+	hoo, err := s.client.HeadObject(&sthree.HeadObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if !ok || aerr.Code() != "NotFound" {
+			return errors.InternalServerError(method, "Error creating upload URL")
+		}
+	} else {
+		return errors.BadRequest(method, "Object already exists")
+	}
+
+	createTime := aws.String(time.Now().Format(time.RFC3339Nano))
+
+	if len(request.Visibility) == 0 {
+		request.Visibility = visibilityPrivate
+	}
+	putInput := &sthree.PutObjectInput{
+		Key:    aws.String(objectName),
+		Bucket: aws.String(s.conf.SpaceName),
+		Metadata: map[string]*string{
+			mdVisibility: aws.String(request.Visibility),
+			mdCreated:    createTime,
+		},
+	}
+	if request.Visibility == visibilityPublic {
+		putInput.ACL = aws.String(mdACLPublic)
+	}
+
+	req, _ := s.client.PutObjectRequest(putInput)
+	url, err := req.Presign(5 * time.Minute)
+	if err != nil {
+		return errors.InternalServerError(method, "Error creating upload URL")
+	}
+	response.Url = url
+
+	// store the metadata for easy retrieval for listing
+	if err := store.Write(store.NewRecord(
+		fmt.Sprintf("%s/%s", prefixByUser, objectName),
+		meta{Visibility: request.Visibility, CreateTime: *createTime, ModifiedTime: time.Now().Format(time.RFC3339Nano)})); err != nil {
+		log.Errorf("Error writing object to store %s", err)
+		return errors.InternalServerError(method, "Error creating upload URL")
+	}
 
 	return nil
 }
