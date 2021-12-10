@@ -2,5 +2,8 @@
   "name": "translate",
   "icon": "📖",
   "category": "language",
-  "display_name": "Translate"
+  "display_name": "Translate",
+  "pricing": {
+    "Translate.Text" 
+  }
 }
