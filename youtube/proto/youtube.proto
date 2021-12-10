@@ -6,6 +6,22 @@ option go_package = "./proto;youtube";
 
 service Youtube {
 	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc Embed(EmbedRequest) returns (EmbedResponse) {}
+}
+
+// Embed a YouTube video
+message EmbedRequest {
+	// provide the youtube url e.g https://www.youtube.com/watch?v=GWRWZu7XsJ0
+	string url = 1;
+}
+
+message EmbedResponse {
+	// the embeddable link e.g https://www.youtube.com/watch?v=GWRWZu7XsJ0
+	string link = 1;
+	// the script code
+	string script = 2;
+	// the short link
+	string short_url = 3;
 }
 
 message SearchResult {
