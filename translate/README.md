@@ -1,6 +1,6 @@
-Translation powered by google translation
+Translate service powered by google translation
 
-# Translation Service
+# Translate Service
 
 1. Create a Google Cloud Translation App followed
    by [https://cloud.google.com/translate/](https://cloud.google.com/translate/)

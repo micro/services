@@ -9,15 +9,15 @@ init:
 
 .PHONY: api
 api:
-	protoc --openapi_out=. --proto_path=. proto/translation.proto
+	protoc --openapi_out=. --proto_path=. proto/translate.proto
 
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/translation.proto
+	protoc --proto_path=. --micro_out=. --go_out=:. proto/translate.proto
 	
 .PHONY: build
 build:
-	go build -o translation *.go
+	go build -o translate*.go
 
 .PHONY: test
 test:
@@ -25,4 +25,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t translation:latest
+	docker build . -t translate:latest

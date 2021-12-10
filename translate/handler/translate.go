@@ -9,7 +9,7 @@ import (
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
 
-	pb "github.com/micro/services/translation/proto"
+	pb "github.com/micro/services/translate/proto"
 
 	"cloud.google.com/go/translate"
 )
@@ -20,14 +20,14 @@ type translation struct {
 
 func NewTranslation() *translation {
 
-	v, err := config.Get("translation.google.api_key")
+	v, err := config.Get("translate.google.api_key")
 	if err != nil {
-		logger.Fatalf("translation.google.api_key config not found: %v", err)
+		logger.Fatalf("translate.google.api_key config not found: %v", err)
 	}
 	key := v.String("")
 
 	if key == "" {
-		logger.Fatalf("translation.google.api_key config can not be an empty string")
+		logger.Fatalf("translate.google.api_key config can not be an empty string")
 	}
 
 	return &translation{
@@ -35,9 +35,9 @@ func NewTranslation() *translation {
 	}
 }
 
-// TranslateString calls Google Cloud Translation Basic edition API
+// Text calls Google Cloud Translation Basic edition API
 // For more information: https://cloud.google.com/translate/docs/samples/translate-text-with-model
-func (t *translation) TranslateString(ctx context.Context, req *pb.BasicTranslationRequest, rsp *pb.BasicTranslationResponse) error {
+func (t *translation) Text(ctx context.Context, req *pb.BasicTranslationRequest, rsp *pb.BasicTranslationResponse) error {
 	client, err := translate.NewClient(ctx, option.WithAPIKey(t.ApiKey))
 	if err != nil {
 		return errors.Wrap(err, "new google translation client error")

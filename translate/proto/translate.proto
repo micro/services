@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package translation;
+package translate;
 
-option go_package = "./proto;translation";
+option go_package = "./proto;translate";
 
-service Translation {
-  rpc TranslateString(BasicTranslationRequest) returns (BasicTranslationResponse) {}
+service Translate {
+  rpc Text(BasicTranslationRequest) returns (BasicTranslationResponse) {}
   // TODO: implement Google Translation Advanced Edition, See https://cloud.google.com/translate/docs/advanced/translating-text-v3
 }
 
