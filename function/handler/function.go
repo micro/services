@@ -66,7 +66,7 @@ func NewFunction() *Function {
 		log.Fatalf("function.limit: %v", err)
 	}
 	limit := v.Int(0)
-	if limit == 0 {
+	if limit > 0 {
 		log.Infof("Function limit is %d", limit)
 	}
 	v, err = config.Get("function.service_account")
