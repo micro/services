@@ -61,13 +61,13 @@ func NewFunction() *Function {
 	if len(project) == 0 {
 		log.Fatalf("empty project")
 	}
-	v, err = config.Get("app.limit")
+	v, err = config.Get("function.limit")
 	if err != nil {
-		log.Fatalf("app.limit: %v", err)
+		log.Fatalf("function.limit: %v", err)
 	}
 	limit := v.Int(0)
 	if limit == 0 {
-		log.Infof("App limit is %d", limit)
+		log.Infof("Function limit is %d", limit)
 	}
 	v, err = config.Get("function.service_account")
 	if err != nil {
