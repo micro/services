@@ -389,7 +389,7 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		Created:    created,
 		Visibility: vis,
 		Url:        url,
-		Data:       string(b),
+		Data:       b,
 	}
 
 	return nil

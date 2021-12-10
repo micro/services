@@ -109,7 +109,7 @@ message Object {
 	// URL to access the object if it is public
 	string url = 5;
 	// the data within the object
-	string data = 6;
+	bytes data = 6;
 }
 
 // Read an object in space
