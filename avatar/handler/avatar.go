@@ -44,7 +44,7 @@ func (e *Avatar) Generate(_ context.Context, req *pb.GenerateRequest, rsp *pb.Ge
 		return errors.Wrap(err, "generate avatar error")
 	}
 
-	// format avatar image, default is `jepg`
+	// format avatar image, default is `jpeg`
 	format := req.Format
 	if format != "png" && format != "jpeg" {
 		format = "jpeg"
