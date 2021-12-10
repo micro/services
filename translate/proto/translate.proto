@@ -18,7 +18,7 @@ message Translation {
 	string model = 3;
 }
 
-// TextRequest is the basic edition request
+// Basic text translation
 message TextRequest {
 	// The contents to be translated
 	string content = 1;
@@ -37,5 +37,6 @@ message TextRequest {
 
 // TextResponse is the basic edition response
 message TextResponse {
+	// The translated text
 	Translation translation = 1;
 }
