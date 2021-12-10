@@ -6,13 +6,16 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"path"
 	"strings"
 	"time"
 
 	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/micro/micro/v3/service/config"
+	microerr "github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
+	"github.com/micro/services/pkg/cache"
 	user "github.com/micro/services/user/proto"
 
 	"github.com/sendgrid/sendgrid-go"
@@ -462,4 +465,58 @@ func (domain *Domain) List(ctx context.Context, o, l int32) ([]*user.Account, er
 		ret[i] = &user
 	}
 	return ret, nil
+}
+
+func (domain *Domain) CacheToken(ctx context.Context, token, id, email string, ttl int) error {
+	obj := &tokenObject{
+		Id:    id,
+		Email: email,
+	}
+
+	expires := time.Now().Add(time.Duration(ttl) * time.Second)
+
+	err := cache.Context(ctx).Set(token, obj, expires)
+
+	return err
+}
+
+func (domain *Domain) SendMLE(fromName, toAddress, toUsername, subject, textContent, token, address, endpoint string) error {
+	if domain.sengridKey == "" {
+		return fmt.Errorf("empty email api key")
+	}
+	from := mail.NewEmail(fromName, "support@m3o.com")
+	to := mail.NewEmail(toUsername, toAddress)
+	textContent = strings.Replace(textContent, "$micro_verification_link", fmt.Sprint("https://", path.Join(address, endpoint, token)), -1)
+	message := mail.NewSingleEmail(from, subject, to, textContent, "")
+	client := sendgrid.NewSendClient(domain.sengridKey)
+	response, err := client.Send(message)
+	logger.Info(response)
+
+	return err
+}
+
+func (domain *Domain) CacheReadToken(ctx context.Context, token string) (string, string, error) {
+
+	if token == "" {
+		return "", "", errors.New("token empty")
+	}
+
+	var obj tokenObject
+
+	expires, err := cache.Context(ctx).Get(token, obj)
+
+	if err == cache.ErrNotFound {
+		return "", "", errors.New("token not found")
+	} else if time.Until(expires).Seconds() < 0 {
+		return "", "", errors.New("token expired")
+	} else if err != nil {
+		return "", "", microerr.InternalServerError("CacheReadToken", err.Error())
+	}
+
+	return obj.Id, obj.Email, nil
+}
+
+type tokenObject struct {
+	Id    string
+	Email string
 }
