@@ -380,10 +380,10 @@ func TestList(t *testing.T) {
 			name: "Empty prefix",
 		},
 	}
-	store.DefaultStore = memory.NewStore()
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			store.DefaultStore = memory.NewStore()
 			store.Write(
 				store.NewRecord(fmt.Sprintf("%s/micro/123/file.jpg", prefixByUser),
 					meta{
@@ -420,7 +420,7 @@ func TestList(t *testing.T) {
 								},
 								{
 									Key:          aws.String("micro/123/file2.jpg"),
-									LastModified: aws.Time(time.Unix(1257894000, 0)),
+									LastModified: aws.Time(time.Unix(1257894001, 0)),
 								},
 							},
 						}, nil
@@ -445,9 +445,16 @@ func TestList(t *testing.T) {
 				g.Expect(err).To(BeNil())
 				g.Expect(rsp.Objects).To(HaveLen(2))
 				g.Expect(rsp.Objects[0].Name).To(Equal("file.jpg"))
+				g.Expect(rsp.Objects[0].Visibility).To(Equal("public"))
+				g.Expect(rsp.Objects[0].Created).To(Equal("2009-11-10T23:00:00Z"))
+				g.Expect(rsp.Objects[0].Modified).To(Equal("2009-11-10T23:00:00Z"))
 				g.Expect(rsp.Objects[0].Url).To(Equal("https://my-space.ams3.example.com/micro/123/file.jpg"))
 				g.Expect(rsp.Objects[1].Name).To(Equal("file2.jpg"))
 				g.Expect(rsp.Objects[1].Url).To(Equal(""))
+				g.Expect(rsp.Objects[1].Visibility).To(Equal("private"))
+				g.Expect(rsp.Objects[1].Created).To(Equal("2009-11-10T23:00:01Z"))
+				g.Expect(rsp.Objects[1].Modified).To(Equal("2009-11-10T23:00:01Z"))
+
 			}
 
 		})
