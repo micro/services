@@ -198,8 +198,9 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 		}
 	}()
 
+	id := fmt.Sprintf("%v-%v-%v", tenantId, project, req.Name)
 	rec := store.NewRecord(key, map[string]interface{}{
-		"id":         key,
+		"id":         id,
 		"project":    project,
 		"name":       req.Name,
 		"tenantId":   tenantId,
@@ -293,8 +294,9 @@ func (e *Function) Update(ctx context.Context, req *function.UpdateRequest, rsp 
 		}
 	}()
 
+	id := fmt.Sprintf("%v-%v-%v", tenantId, project, req.Name)
 	rec := store.NewRecord(key, map[string]interface{}{
-		"id":         key,
+		"id":         id,
 		"project":    project,
 		"name":       req.Name,
 		"tenantId":   tenantId,
