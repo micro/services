@@ -43,6 +43,7 @@ func NewYoutubeEndpoints() []*api.Endpoint {
 
 type YoutubeService interface {
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
+	Embed(ctx context.Context, in *EmbedRequest, opts ...client.CallOption) (*EmbedResponse, error)
 }
 
 type youtubeService struct {
@@ -67,15 +68,27 @@ func (c *youtubeService) Search(ctx context.Context, in *SearchRequest, opts ...
 	return out, nil
 }
 
+func (c *youtubeService) Embed(ctx context.Context, in *EmbedRequest, opts ...client.CallOption) (*EmbedResponse, error) {
+	req := c.c.NewRequest(c.name, "Youtube.Embed", in)
+	out := new(EmbedResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Youtube service
 
 type YoutubeHandler interface {
 	Search(context.Context, *SearchRequest, *SearchResponse) error
+	Embed(context.Context, *EmbedRequest, *EmbedResponse) error
 }
 
 func RegisterYoutubeHandler(s server.Server, hdlr YoutubeHandler, opts ...server.HandlerOption) error {
 	type youtube interface {
 		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
+		Embed(ctx context.Context, in *EmbedRequest, out *EmbedResponse) error
 	}
 	type Youtube struct {
 		youtube
@@ -90,4 +103,8 @@ type youtubeHandler struct {
 
 func (h *youtubeHandler) Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error {
 	return h.YoutubeHandler.Search(ctx, in, out)
+}
+
+func (h *youtubeHandler) Embed(ctx context.Context, in *EmbedRequest, out *EmbedResponse) error {
+	return h.YoutubeHandler.Embed(ctx, in, out)
 }

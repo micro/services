@@ -1,5 +1,20 @@
 
 {
+ 
+    "embed": [{
+        "title": "Embed a youtube video",
+        "run_check": false,
+        "description": "Embed a youtube video",
+        "request": {
+	  "url": "https://www.youtube.com/watch?v=GWRWZu7XsJ0"
+        },
+        "response": {
+	  "embed_url": "https://www.youtube.com/embed/GWRWZu7XsJ0",
+	  "html_script": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/GWRWZu7XsJ0\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+	  "long_url": "https://www.youtube.com/watch?v=GWRWZu7XsJ0",
+	  "short_url": "https://youtu.be/GWRWZu7XsJ0"
+        }
+    }],
     "search": [{
         "title": "Search for videos",
         "run_check": false,

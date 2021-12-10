@@ -1,0 +1,23 @@
+{
+  "text": [
+    {
+      "title": "Translate Text",
+      "run_check": false,
+      "description": "Google Basic Edition Translation",
+      "request": {
+        "content": "hello",
+        "model": "nmt",
+        "format": "text",
+        "source": "en",
+        "target": "fr"
+      },
+      "response": {
+        "translation": {
+            "text": "Bonjour",
+            "source": "und",
+            "model": "nmt"
+        }
+      }
+    }
+  ]
+}

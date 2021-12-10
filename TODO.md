@@ -46,6 +46,7 @@ A non-comprehensive list of additional high-level value add services:
 - Notification
 - Payment
 - Personalisation
+- Presence
 - Place
 - Popup (locations)
 - Review (hyper local ephemeral reviews)
@@ -56,7 +57,7 @@ A non-comprehensive list of additional high-level value add services:
 - [x] Stream
 - Support
 - Timeline
-- translation
+- [x] translation
 - [x] User
 - Video
 - Voice

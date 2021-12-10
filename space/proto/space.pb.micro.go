@@ -48,6 +48,7 @@ type SpaceService interface {
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Head(ctx context.Context, in *HeadRequest, opts ...client.CallOption) (*HeadResponse, error)
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
+	Download(ctx context.Context, in *DownloadRequest, opts ...client.CallOption) (*DownloadResponse, error)
 }
 
 type spaceService struct {
@@ -122,6 +123,16 @@ func (c *spaceService) Read(ctx context.Context, in *ReadRequest, opts ...client
 	return out, nil
 }
 
+func (c *spaceService) Download(ctx context.Context, in *DownloadRequest, opts ...client.CallOption) (*DownloadResponse, error) {
+	req := c.c.NewRequest(c.name, "Space.Download", in)
+	out := new(DownloadResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Space service
 
 type SpaceHandler interface {
@@ -131,6 +142,7 @@ type SpaceHandler interface {
 	List(context.Context, *ListRequest, *ListResponse) error
 	Head(context.Context, *HeadRequest, *HeadResponse) error
 	Read(context.Context, *ReadRequest, *ReadResponse) error
+	Download(context.Context, *DownloadRequest, *DownloadResponse) error
 }
 
 func RegisterSpaceHandler(s server.Server, hdlr SpaceHandler, opts ...server.HandlerOption) error {
@@ -141,6 +153,7 @@ func RegisterSpaceHandler(s server.Server, hdlr SpaceHandler, opts ...server.Han
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Head(ctx context.Context, in *HeadRequest, out *HeadResponse) error
 		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
+		Download(ctx context.Context, in *DownloadRequest, out *DownloadResponse) error
 	}
 	type Space struct {
 		space
@@ -175,4 +188,8 @@ func (h *spaceHandler) Head(ctx context.Context, in *HeadRequest, out *HeadRespo
 
 func (h *spaceHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
 	return h.SpaceHandler.Read(ctx, in, out)
+}
+
+func (h *spaceHandler) Download(ctx context.Context, in *DownloadRequest, out *DownloadResponse) error {
+	return h.SpaceHandler.Download(ctx, in, out)
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"net/url"
 	"strings"
 
 	"github.com/micro/micro/v3/service/errors"
@@ -22,6 +23,39 @@ func New(apiKey string) *Youtube {
 	return &Youtube{
 		Client: yt,
 	}
+}
+
+func (y *Youtube) Embed(ctx context.Context, req *pb.EmbedRequest, rsp *pb.EmbedResponse) error {
+	if len(req.Url) == 0 {
+		return errors.BadRequest("youtube.embed", "missing url")
+	}
+
+	var id string
+
+	if strings.HasPrefix(req.Url, "https://youtu.be/") {
+		id = strings.TrimPrefix(req.Url, "https://youtu.be/")
+	} else if !strings.HasPrefix(req.Url, "https://www.youtube.com/watch") {
+		return errors.BadRequest("youtube.embed", "invalid url")
+	} else {
+		uri, err := url.Parse(req.Url)
+		if err != nil {
+			return errors.BadRequest("youtube.embed", "invalid url")
+		}
+
+		vals := uri.Query()
+		id = vals.Get("v")
+
+		if len(id) == 0 {
+			return errors.BadRequest("youtube.embed", "invalid url")
+		}
+	}
+
+	rsp.LongUrl = "https://www.youtube.com/watch?v="+id
+	rsp.ShortUrl = "https://youtu.be/" + id
+	rsp.EmbedUrl = "https://www.youtube.com/embed/" + id
+	rsp.HtmlScript = `<iframe width="560" height="315" src="` + rsp.EmbedUrl + `" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+
+	return nil
 }
 
 func (y *Youtube) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.SearchResponse) error {
