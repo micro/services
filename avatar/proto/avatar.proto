@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package avatar;
+
+option go_package = "./proto;avatar";
+
+service Avatar {
+  rpc Generate(GenerateRequest) returns (GenerateResponse) {}
+}
+
+message GenerateRequest {
+  // avatar's gender, `male` or `female`, default is `male`
+  string gender = 1;
+  // avatar's username, unique username will generates the unique avatar;
+  // if you keep username empty, then it'll generates a random avatar in every request
+  string username = 2;
+  // encode format of avatar image, `png` or `jpeg`, default is `jpeg`
+  string format = 3;
+}
+
+message GenerateResponse {
+  // format of the avatar image
+  string format = 1;
+  // avatar image data in base64encode string
+  string avatar = 2;
+}
