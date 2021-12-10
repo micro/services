@@ -4,6 +4,6 @@
   "category": "language",
   "display_name": "Translate",
   "pricing": {
-    "Translate.Text" 
+    "Translate.Text": 10000
   }
 }

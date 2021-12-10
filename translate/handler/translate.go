@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	me "github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/pkg/errors"
@@ -16,10 +17,10 @@ import (
 
 type translation struct {
 	ApiKey string
+	Limit int
 }
 
 func NewTranslation() *translation {
-
 	v, err := config.Get("translate.google.api_key")
 	if err != nil {
 		logger.Fatalf("translate.google.api_key config not found: %v", err)
@@ -30,8 +31,15 @@ func NewTranslation() *translation {
 		logger.Fatalf("translate.google.api_key config can not be an empty string")
 	}
 
+	v, err = config.Get("translate.text.char_limit")
+	if err != nil {
+		logger.Fatalf("translate.text.char_limit config not found: %v", err)
+	}
+	limit := v.Int(0)
+
 	return &translation{
 		ApiKey: key,
+		Limit: limit,
 	}
 }
 
@@ -54,7 +62,12 @@ func (t *translation) Text(ctx context.Context, req *pb.TextRequest, rsp *pb.Tex
 		return errors.Wrap(err, "google translation parse target language error")
 	}
 
-	result, err := client.Translate(ctx, req.Contents, target, &translate.Options{
+	// TODO: configurable char limit
+	if t.Limit > 0 && len(req.Content) > t.Limit {
+		return me.BadRequest("google.translate", "Exceeds char limit %d", t.Limit)
+	}
+
+	result, err := client.Translate(ctx, []string{req.Content}, target, &translate.Options{
 		Source: source,
 		Format: translate.Format(req.Format),
 		Model:  req.Model,
@@ -64,12 +77,14 @@ func (t *translation) Text(ctx context.Context, req *pb.TextRequest, rsp *pb.Tex
 		return errors.Wrap(err, "get google translation error")
 	}
 
-	for _, v := range result {
-		rsp.Translations = append(rsp.Translations, &pb.BasicTranslation{
-			Text:   v.Text,
-			Source: v.Source.String(),
-			Model:  v.Model,
-		})
+	if len(result) == 0 {
+		return nil
+	}
+
+	rsp.Translation = &pb.Translation{
+		Text:   result[0].Text,
+		Source: result[0].Source.String(),
+		Model:  result[0].Model,
 	}
 
 	return nil
