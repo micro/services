@@ -1,3 +1,5 @@
+Generate an avatar
+
 # Avatar Service
 
 This is the Avatar service
