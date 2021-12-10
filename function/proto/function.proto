@@ -89,7 +89,7 @@ message Func {
 	// eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
 	string status = 7;
 	// associated env vars
-	map<string,string> env_Vars = 8;
+	map<string,string> env_vars = 8;
 }
 
 message ListResponse {
