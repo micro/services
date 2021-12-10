@@ -1,67 +1,74 @@
-
 {
-    "add": [{
-        "title": "Add a new feed",
-        "description": "Add a new rss feed to the crawler",
-        "run_check": true,
-        "request": {
-            "name": "bbc",
-            "url": "http://feeds.bbci.co.uk/news/rss.xml",
-            "category": "news"
-        },
-        "response": {}
-    }],
-    "feed": [{
-        "title": "Read a feed",
-        "description": "Read an rss feed by name",
-        "run_check": true,
-        "request": {
-            "name": "bbc"
-        },
-        "response": {
-            "entries": [
-                {
-                    "id": "eae9563e0a017c02ba6fcb38bbb6f5d5",
-                    "feed": "http://feeds.bbci.co.uk/news/rss.xml",
-                    "link": "https://www.bbc.co.uk/sport/cricket/57190558",
-                    "title": "Jofra Archer: England bowler to have surgery on elbow injury",
-                    "summary": "England fast bowler Jofra Archer will have surgery on his troublesome right elbow on Friday - with a timeframe on his recovery yet to be given.",
-                    "date": "2021-05-20T14:00:08Z"
-                },
-                {
-                    "id": "bf774b0274930dd9efcfc5182cc41e48",
-                    "feed": "http://feeds.bbci.co.uk/news/rss.xml",
-                    "link": "https://www.bbc.co.uk/sport/football/57188305",
-                    "title": "Home nations openers to be shown live on BBC - how to follow Euro 2020 ",
-                    "summary": "The BBC will give audiences 24/7 access to all of the action, analysis, insight and entertainment from this summer's European Championship.",
-                    "date": "2021-05-20T13:37:21Z"
-                }
-            ]
+    "add": [
+        {
+            "title": "Add a new feed",
+            "description": "Add a new rss feed to the crawler",
+            "run_check": true,
+            "request": {
+                "name": "bbc",
+                "url": "http://feeds.bbci.co.uk/news/rss.xml",
+                "category": "news"
+            },
+            "response": {}
         }
-    }],
-    "list": [{
-        "title": "List rss feeds",
-        "description": "List the saved rss feeds",
-        "run_check": true,
-        "request": {},
-        "response": {
-	    "feeds": [
-		{
-		    "id": "micro/asim/18882020881032690",
-		    "name": "bbc",
-		    "url": "http://feeds.bbci.co.uk/news/rss.xml",
-		    "category": "news"
-		}
-	    ]
+    ],
+    "feed": [
+        {
+            "title": "Read a feed",
+            "description": "Read an rss feed by name",
+            "run_check": true,
+            "request": {
+                "name": "bbc"
+            },
+            "response": {
+                "entries": [
+                    {
+                        "id": "eae9563e0a017c02ba6fcb38bbb6f5d5",
+                        "feed": "http://feeds.bbci.co.uk/news/rss.xml",
+                        "link": "https://www.bbc.co.uk/sport/cricket/57190558",
+                        "title": "Jofra Archer: England bowler to have surgery on elbow injury",
+                        "summary": "England fast bowler Jofra Archer will have surgery on his troublesome right elbow on Friday - with a timeframe on his recovery yet to be given.",
+                        "date": "2021-05-20T14:00:08Z"
+                    },
+                    {
+                        "id": "bf774b0274930dd9efcfc5182cc41e48",
+                        "feed": "http://feeds.bbci.co.uk/news/rss.xml",
+                        "link": "https://www.bbc.co.uk/sport/football/57188305",
+                        "title": "Home nations openers to be shown live on BBC - how to follow Euro 2020 ",
+                        "summary": "The BBC will give audiences 24/7 access to all of the action, analysis, insight and entertainment from this summer's European Championship.",
+                        "date": "2021-05-20T13:37:21Z"
+                    }
+                ]
+            }
         }
-    }],
-    "remove": [{
-        "title": "Remove a feed",
-        "description": "Remove an rss feed from the crawler",
-        "run_check": true,
-        "request": {
-            "name": "bbc"
-        },
-        "response": {}
-    }]
+    ],
+    "list": [
+        {
+            "title": "List rss feeds",
+            "description": "List the saved rss feeds",
+            "run_check": true,
+            "request": {},
+            "response": {
+                "feeds": [
+                    {
+                        "id": "micro/asim/18882020881032690",
+                        "name": "bbc",
+                        "url": "http://feeds.bbci.co.uk/news/rss.xml",
+                        "category": "news"
+                    }
+                ]
+            }
+        }
+    ],
+    "remove": [
+        {
+            "title": "Remove a feed",
+            "description": "Remove an rss feed from the crawler",
+            "run_check": true,
+            "request": {
+                "name": "bbc"
+            },
+            "response": {}
+        }
+    ]
 }
