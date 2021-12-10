@@ -1,32 +1,22 @@
 {
   "text": [
     {
-      "title": "Translate String",
+      "title": "Translate Text",
       "run_check": false,
       "description": "Google Basic Edition Translation",
       "request": {
-        "contents": [
-          "pen",
-          "pencil"
-        ],
+        "content": "hello",
         "model": "nmt",
         "format": "text",
         "source": "en",
-        "target": "zh"
+        "target": "fr"
       },
       "response": {
-        "translations": [
-          {
-            "text": "钢笔",
+        "translation": {
+            "text": "Bonjour",
             "source": "und",
             "model": "nmt"
-          },
-          {
-            "text": "铅笔",
-            "source": "und",
-            "model": "nmt"
-          }
-        ]
+        }
       }
     }
   ]
