@@ -492,7 +492,11 @@ func (s Space) Upload(ctx context.Context, request *pb.UploadRequest, response *
 	// store the metadata for easy retrieval for listing
 	if err := store.Write(store.NewRecord(
 		fmt.Sprintf("%s/%s", prefixByUser, objectName),
-		meta{Visibility: request.Visibility, CreateTime: *createTime, ModifiedTime: time.Now().Format(time.RFC3339Nano)})); err != nil {
+		meta{
+			Visibility:   request.Visibility,
+			CreateTime:   *createTime,
+			ModifiedTime: time.Now().Format(time.RFC3339Nano),
+		})); err != nil {
 		log.Errorf("Error writing object to store %s", err)
 		return errors.InternalServerError(method, "Error creating upload URL")
 	}
