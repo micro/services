@@ -21,14 +21,36 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Function struct {
+type GoogleFunction struct {
 	project string
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
 	limit   int
 }
 
-func NewFunction() *Function {
+var (
+	GoogleRuntimes = []string{
+		"nodejs16",
+		"nodejs14",
+		"nodejs12",
+		"nodejs10",
+		"nodejs8",
+		"nodejs6",
+		"python39",
+		"python38",
+		"python37",
+		"go116",
+		"go113",
+		"go111",
+		"java11",
+		"dotnet3",
+		"ruby27",
+		"ruby26",
+		"php74",
+	}
+)
+
+func NewFunction() *GoogleFunction {
 	v, err := config.Get("function.service_account_json")
 	if err != nil {
 		log.Fatalf("function.service_account_json: %v", err)
@@ -95,10 +117,10 @@ func NewFunction() *Function {
 		log.Fatalf(string(outp))
 	}
 	log.Info(string(outp))
-	return &Function{project: project, address: address, limit: limit}
+	return &GoogleFunction{project: project, address: address, limit: limit}
 }
 
-func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
+func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
 	log.Info("Received Function.Deploy request")
 
 	if len(req.Name) == 0 {
@@ -108,8 +130,20 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	if len(req.Repo) == 0 {
 		return errors.BadRequest("function.deploy", "Missing repo")
 	}
-	if req.Runtime == "" {
-		return fmt.Errorf("missing runtime field, please specify nodejs14, go116 etc")
+	if len(req.Runtime) == 0 {
+		return errors.BadRequest("function.deploy", "invalid runtime")
+	}
+
+	var match bool
+	for _, r := range GoogleRuntimes {
+		if r == req.Runtime {
+			match = true
+			break
+		}
+	}
+
+	if !match {
+		return errors.BadRequest("function.deploy", "invalid runtime")
 	}
 
 	gitter := git.NewGitter(map[string]string{})
@@ -209,7 +243,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	return store.Write(rec)
 }
 
-func (e *Function) Update(ctx context.Context, req *function.UpdateRequest, rsp *function.UpdateResponse) error {
+func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest, rsp *function.UpdateResponse) error {
 	log.Info("Received Function.Update request")
 
 	if len(req.Name) == 0 {
@@ -305,7 +339,7 @@ func (e *Function) Update(ctx context.Context, req *function.UpdateRequest, rsp 
 	return store.Write(rec)
 }
 
-func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *function.CallResponse) error {
+func (e *GoogleFunction) Call(ctx context.Context, req *function.CallRequest, rsp *function.CallResponse) error {
 	log.Info("Received Function.Call request")
 
 	if len(req.Name) == 0 {
@@ -354,7 +388,7 @@ func (e *Function) Call(ctx context.Context, req *function.CallRequest, rsp *fun
 	return nil
 }
 
-func (e *Function) Delete(ctx context.Context, req *function.DeleteRequest, rsp *function.DeleteResponse) error {
+func (e *GoogleFunction) Delete(ctx context.Context, req *function.DeleteRequest, rsp *function.DeleteResponse) error {
 	log.Info("Received Function.Delete request")
 
 	if len(req.Name) == 0 {
@@ -384,7 +418,7 @@ func (e *Function) Delete(ctx context.Context, req *function.DeleteRequest, rsp 
 	return store.Delete(key)
 }
 
-func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
+func (e *GoogleFunction) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
 	log.Info("Received Function.List request")
 
 	tenantId, ok := tenant.FromContext(ctx)
@@ -436,7 +470,7 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 	return nil
 }
 
-func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, rsp *function.DescribeResponse) error {
+func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeRequest, rsp *function.DescribeResponse) error {
 	if len(req.Name) == 0 {
 		return errors.BadRequest("function.describe", "Missing function name")
 	}
