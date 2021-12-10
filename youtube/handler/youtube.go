@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 	"strings"
 
@@ -16,10 +15,6 @@ import (
 type Youtube struct {
 	Client *youtube.Service
 }
-
-var (
-	iframe = `<iframe width="560" height="315" src="%s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-)
 
 func New(apiKey string) *Youtube {
 	ctx := context.TODO()
@@ -35,35 +30,30 @@ func (y *Youtube) Embed(ctx context.Context, req *pb.EmbedRequest, rsp *pb.Embed
 		return errors.BadRequest("youtube.embed", "missing url")
 	}
 
+	var id string
+
 	if strings.HasPrefix(req.Url, "https://youtu.be/") {
-		id := strings.TrimPrefix(req.Url, "https://youtu.be/")
-
-		rsp.Link = "https://www.youtube.com/embed/" + id
-		rsp.Script = fmt.Sprintf(iframe, rsp.Link)
-		rsp.ShortUrl = req.Url
-
-		return nil
-	}
-
-	if !strings.HasPrefix(req.Url, "https://www.youtube.com/watch") {
+		id = strings.TrimPrefix(req.Url, "https://youtu.be/")
+	} else if !strings.HasPrefix(req.Url, "https://www.youtube.com/watch") {
 		return errors.BadRequest("youtube.embed", "invalid url")
+	} else {
+		uri, err := url.Parse(req.Url)
+		if err != nil {
+			return errors.BadRequest("youtube.embed", "invalid url")
+		}
+
+		vals := uri.Query()
+		id = vals.Get("v")
+
+		if len(id) == 0 {
+			return errors.BadRequest("youtube.embed", "invalid url")
+		}
 	}
 
-	uri, err := url.Parse(req.Url)
-	if err != nil {
-		return errors.BadRequest("youtube.embed", "invalid url")
-	}
-
-	vals := uri.Query()
-	id := vals.Get("v")
-
-	if len(id) == 0 {
-		return errors.BadRequest("youtube.embed", "invalid url")
-	}
-
-	rsp.Link = "https://www.youtube.com/embed/" + id
-	rsp.Script = fmt.Sprintf(iframe, rsp.Link)
+	rsp.LongUrl = "https://www.youtube.com/watch?v="+id
 	rsp.ShortUrl = "https://youtu.be/" + id
+	rsp.EmbedUrl = "https://www.youtube.com/embed/" + id
+	rsp.HtmlScript = `<iframe width="560" height="315" src="` + rsp.EmbedUrl + `" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
 
 	return nil
 }
