@@ -35,7 +35,6 @@ message TextRequest {
   string model = 5;
 }
 
-
 // TextResponse is the basic edition response
 message TextResponse {
   repeated BasicTranslation translations = 1;
