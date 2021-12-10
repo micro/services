@@ -11,7 +11,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
-
 	"github.com/o1egl/govatar"
 
 	pb "github.com/micro/services/avatar/proto"
