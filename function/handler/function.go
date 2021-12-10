@@ -28,12 +28,6 @@ type Function struct {
 	limit   int
 }
 
-type Func struct {
-	Name    string `json:"name"`
-	Tenant  string `json:"tenant"`
-	Project string `json:"project"`
-}
-
 func NewFunction() *Function {
 	v, err := config.Get("function.service_account_json")
 	if err != nil {
