@@ -42,7 +42,7 @@ func NewTranslateEndpoints() []*api.Endpoint {
 // Client API for Translate service
 
 type TranslateService interface {
-	Text(ctx context.Context, in *BasicTranslationRequest, opts ...client.CallOption) (*BasicTranslationResponse, error)
+	Text(ctx context.Context, in *TextRequest, opts ...client.CallOption) (*TextResponse, error)
 }
 
 type translateService struct {
@@ -57,9 +57,9 @@ func NewTranslateService(name string, c client.Client) TranslateService {
 	}
 }
 
-func (c *translateService) Text(ctx context.Context, in *BasicTranslationRequest, opts ...client.CallOption) (*BasicTranslationResponse, error) {
+func (c *translateService) Text(ctx context.Context, in *TextRequest, opts ...client.CallOption) (*TextResponse, error) {
 	req := c.c.NewRequest(c.name, "Translate.Text", in)
-	out := new(BasicTranslationResponse)
+	out := new(TextResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +70,12 @@ func (c *translateService) Text(ctx context.Context, in *BasicTranslationRequest
 // Server API for Translate service
 
 type TranslateHandler interface {
-	Text(context.Context, *BasicTranslationRequest, *BasicTranslationResponse) error
+	Text(context.Context, *TextRequest, *TextResponse) error
 }
 
 func RegisterTranslateHandler(s server.Server, hdlr TranslateHandler, opts ...server.HandlerOption) error {
 	type translate interface {
-		Text(ctx context.Context, in *BasicTranslationRequest, out *BasicTranslationResponse) error
+		Text(ctx context.Context, in *TextRequest, out *TextResponse) error
 	}
 	type Translate struct {
 		translate
@@ -88,6 +88,6 @@ type translateHandler struct {
 	TranslateHandler
 }
 
-func (h *translateHandler) Text(ctx context.Context, in *BasicTranslationRequest, out *BasicTranslationResponse) error {
+func (h *translateHandler) Text(ctx context.Context, in *TextRequest, out *TextResponse) error {
 	return h.TranslateHandler.Text(ctx, in, out)
 }

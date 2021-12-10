@@ -37,7 +37,7 @@ func NewTranslation() *translation {
 
 // Text calls Google Cloud Translation Basic edition API
 // For more information: https://cloud.google.com/translate/docs/samples/translate-text-with-model
-func (t *translation) Text(ctx context.Context, req *pb.BasicTranslationRequest, rsp *pb.BasicTranslationResponse) error {
+func (t *translation) Text(ctx context.Context, req *pb.TextRequest, rsp *pb.TextResponse) error {
 	client, err := translate.NewClient(ctx, option.WithAPIKey(t.ApiKey))
 	if err != nil {
 		return errors.Wrap(err, "new google translation client error")

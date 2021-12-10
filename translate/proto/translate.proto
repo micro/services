@@ -5,7 +5,7 @@ package translate;
 option go_package = "./proto;translate";
 
 service Translate {
-  rpc Text(BasicTranslationRequest) returns (BasicTranslationResponse) {}
+  rpc Text(TextRequest) returns (TextResponse) {}
   // TODO: implement Google Translation Advanced Edition, See https://cloud.google.com/translate/docs/advanced/translating-text-v3
 }
 
@@ -18,8 +18,8 @@ message BasicTranslation {
   string model = 3;
 }
 
-// BasicTranslationRequest is the basic edition request
-message BasicTranslationRequest {
+// TextRequest is the basic edition request
+message TextRequest {
   // The contents to be translated
   repeated string contents = 1;
   // Source language, format in ISO-639-1 codes
@@ -36,7 +36,7 @@ message BasicTranslationRequest {
 }
 
 
-// BasicTranslationResponse is the basic edition response
-message BasicTranslationResponse {
+// TextResponse is the basic edition response
+message TextResponse {
   repeated BasicTranslation translations = 1;
 }
