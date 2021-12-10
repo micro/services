@@ -83,29 +83,28 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 
 	path := filepath.Join("file", tenantId, req.Project, req.Path)
 
-	var opts []store.ReadOption
-
-	if strings.HasSuffix(req.Path, "/") {
-		opts = append(opts, store.ReadPrefix())
-	}
-
-	records, err := store.Read(path, opts...)
+	records, err := store.Read(path)
 	if err != nil {
 		return err
 	}
 
-	// filter the file
-	for _, rec := range records {
-		file := new(file.Record)
-
-		if err := rec.Decode(file); err != nil {
-			continue
-		}
-
-		// strip the tenant id
-		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-		file.Path = strings.TrimPrefix(file.Path, filepath.Join(tenantId, req.Project))
+	if len(records) == 0 {
+		return errors.NotFound("file.read", "file not found")
 	}
+
+	// filter the file
+	rec := records[0]
+	file := new(file.Record)
+
+	if err := rec.Decode(file); err != nil {
+		return err
+	}
+
+	// strip the tenant id
+	file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+	file.Path = strings.TrimPrefix(file.Path, filepath.Join(tenantId, req.Project))
+
+	rsp.File = file
 
 	return nil
 }
