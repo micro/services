@@ -475,7 +475,7 @@ func (s Space) Upload(ctx context.Context, request *pb.UploadRequest, response *
 		return errors.BadRequest(method, "Invalid name")
 	}
 
-	hoo, err := s.client.HeadObject(&sthree.HeadObjectInput{
+	_, err := s.client.HeadObject(&sthree.HeadObjectInput{
 		Bucket: aws.String(s.conf.SpaceName),
 		Key:    aws.String(objectName),
 	})
