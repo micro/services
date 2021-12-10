@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
@@ -37,6 +38,9 @@ const (
 	visibilityPublic  = "public"
 
 	prefixByUser = "byUser"
+
+	// max read 5mb for small objects
+	maxReadSize = 5 * 1024 * 1024
 )
 
 type Space struct {
@@ -311,8 +315,88 @@ func (s Space) Head(ctx context.Context, request *pb.HeadRequest, response *pb.H
 	return nil
 }
 
-func (s *Space) Read(ctx context.Context, req *api.Request, rsp *api.Response) error {
+func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
 	method := "space.Read"
+	tnt, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized(method, "Unauthorized")
+	}
+
+	name := req.Name
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest(method, "Missing name param")
+	}
+
+	objectName := fmt.Sprintf("%s/%s", tnt, name)
+
+	goo, err := s.client.HeadObject(&sthree.HeadObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if ok && aerr.Code() == "NotFound" {
+			return errors.BadRequest(method, "Object not found")
+		}
+		log.Errorf("Error s3 %s", err)
+		return errors.InternalServerError(method, "Error reading object")
+	}
+
+	_, gooreq := s.client.GetObjectRequest(&sthree.GetObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+
+
+	vis := visibilityPrivate
+	if md, ok := goo.Metadata[mdVisibility]; ok && len(*md) > 0 {
+		vis = *md
+	}
+
+	var created string
+	if md, ok := goo.Metadata[mdCreated]; ok && len(*md) > 0 {
+		t, err := time.Parse(time.RFC3339Nano, *md)
+		if err != nil {
+			// try as unix ts
+			createdI, err := strconv.ParseInt(*md, 10, 64)
+			if err != nil {
+				log.Errorf("Error %s", err)
+			} else {
+				t = time.Unix(createdI, 0)
+			}
+		}
+		created = t.Format(time.RFC3339Nano)
+	}
+
+	url := ""
+	if vis == "public" {
+		url = fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName)
+	}
+
+	if *gooreq.ContentLength > maxReadSize {
+		return errors.BadRequest(method, "Exceeds max read size: %v bytes", maxReadSize)
+	}
+
+	b, err := ioutil.ReadAll(gooreq.Body)
+	if err != nil {
+		return errors.InternalServerError(method, "Failed to read data")
+	}
+
+	rsp.Object = &pb.Object{
+		Name:       req.Name,
+		Modified:   goo.LastModified.Format(time.RFC3339Nano),
+		Created:    created,
+		Visibility: vis,
+		Url:        url,
+		Data:       b,
+	}
+
+	return nil
+}
+
+func (s *Space) Download(ctx context.Context, req *api.Request, rsp *api.Response) error {
+	method := "space.Download"
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
@@ -367,6 +451,13 @@ func (s *Space) Read(ctx context.Context, req *api.Request, rsp *api.Response) e
 		},
 	}
 	rsp.StatusCode = 302
+
+	resp := map[string]interface{}{
+		"url": urlStr,
+	}
+
+	b, _ := json.Marshal(resp)
+	rsp.Body = string(b)
 
 	return nil
 }
