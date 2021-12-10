@@ -105,8 +105,6 @@ func TestCreate(t *testing.T) {
 			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(input.ACL).To(BeNil())
-				g.Expect(*input.Metadata[mdVisibility]).To(Equal(visibilityPrivate))
-				g.Expect(input.Metadata[mdCreated]).To(Not(BeNil()))
 				return &sthree.PutObjectOutput{}, nil
 			},
 		},
@@ -121,8 +119,6 @@ func TestCreate(t *testing.T) {
 			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.ACL).To(Equal(mdACLPublic))
-				g.Expect(*input.Metadata[mdVisibility]).To(Equal(visibilityPublic))
-				g.Expect(input.Metadata[mdCreated]).To(Not(BeNil()))
 				return &sthree.PutObjectOutput{}, nil
 			},
 		},
@@ -206,8 +202,6 @@ func TestUpdate(t *testing.T) {
 			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(input.ACL).To(BeNil())
-				g.Expect(*input.Metadata[mdVisibility]).To(Equal(visibilityPrivate))
-				g.Expect(input.Metadata[mdCreated]).To(Not(BeNil()))
 				return &sthree.PutObjectOutput{}, nil
 			},
 		},
@@ -222,8 +216,6 @@ func TestUpdate(t *testing.T) {
 			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.ACL).To(Equal(mdACLPublic))
-				g.Expect(*input.Metadata[mdVisibility]).To(Equal(visibilityPublic))
-				g.Expect(input.Metadata[mdCreated]).To(Not(BeNil()))
 				return &sthree.PutObjectOutput{}, nil
 			},
 		},
@@ -238,19 +230,11 @@ func TestUpdate(t *testing.T) {
 			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
-				return &sthree.HeadObjectOutput{
-					Metadata: map[string]*string{
-						mdCreated:    aws.String("1638541918"),
-						mdVisibility: aws.String(visibilityPrivate),
-					},
-				}, nil
+				return &sthree.HeadObjectOutput{}, nil
 			},
 			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(input.ACL).To(BeNil())
-				g.Expect(*input.Metadata[mdVisibility]).To(Equal(visibilityPrivate))
-				// created shouuld be copied from the previous
-				g.Expect(*input.Metadata[mdCreated]).To(Equal("1638541918"))
 				return &sthree.PutObjectOutput{}, nil
 			},
 			url: "",
@@ -261,19 +245,11 @@ func TestUpdate(t *testing.T) {
 			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
-				return &sthree.HeadObjectOutput{
-					Metadata: map[string]*string{
-						mdCreated:    aws.String("1638541918"),
-						mdVisibility: aws.String(visibilityPrivate),
-					},
-				}, nil
+				return &sthree.HeadObjectOutput{}, nil
 			},
 			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.ACL).To(Equal(mdACLPublic))
-				g.Expect(*input.Metadata[mdVisibility]).To(Equal(visibilityPublic))
-				// created shouuld be copied from the previous
-				g.Expect(*input.Metadata[mdCreated]).To(Equal("1638541918"))
 				return &sthree.PutObjectOutput{}, nil
 			},
 			url:        "https://my-space.ams3.example.com/micro/123/foo.jpg",
@@ -404,10 +380,10 @@ func TestList(t *testing.T) {
 			name: "Empty prefix",
 		},
 	}
-	store.DefaultStore = memory.NewStore()
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			store.DefaultStore = memory.NewStore()
 			store.Write(
 				store.NewRecord(fmt.Sprintf("%s/micro/123/file.jpg", prefixByUser),
 					meta{
@@ -444,7 +420,7 @@ func TestList(t *testing.T) {
 								},
 								{
 									Key:          aws.String("micro/123/file2.jpg"),
-									LastModified: aws.Time(time.Unix(1257894000, 0)),
+									LastModified: aws.Time(time.Unix(1257894001, 0)),
 								},
 							},
 						}, nil
@@ -469,9 +445,16 @@ func TestList(t *testing.T) {
 				g.Expect(err).To(BeNil())
 				g.Expect(rsp.Objects).To(HaveLen(2))
 				g.Expect(rsp.Objects[0].Name).To(Equal("file.jpg"))
+				g.Expect(rsp.Objects[0].Visibility).To(Equal("public"))
+				g.Expect(rsp.Objects[0].Created).To(Equal("2009-11-10T23:00:00Z"))
+				g.Expect(rsp.Objects[0].Modified).To(Equal("2009-11-10T23:00:00Z"))
 				g.Expect(rsp.Objects[0].Url).To(Equal("https://my-space.ams3.example.com/micro/123/file.jpg"))
 				g.Expect(rsp.Objects[1].Name).To(Equal("file2.jpg"))
 				g.Expect(rsp.Objects[1].Url).To(Equal(""))
+				g.Expect(rsp.Objects[1].Visibility).To(Equal("private"))
+				g.Expect(rsp.Objects[1].Created).To(Equal("2009-11-10T23:00:01Z"))
+				g.Expect(rsp.Objects[1].Modified).To(Equal("2009-11-10T23:00:01Z"))
+
 			}
 
 		})
@@ -504,10 +487,6 @@ func TestHead(t *testing.T) {
 
 				return &sthree.HeadObjectOutput{
 					LastModified: aws.Time(time.Unix(1257894000, 0)),
-					Metadata: map[string]*string{
-						mdCreated:    aws.String("1257894000"),
-						mdVisibility: aws.String(visibilityPublic),
-					},
 				}, nil
 			},
 		},
@@ -524,10 +503,6 @@ func TestHead(t *testing.T) {
 
 				return &sthree.HeadObjectOutput{
 					LastModified: aws.Time(time.Unix(1257894000, 0)),
-					Metadata: map[string]*string{
-						mdCreated:    aws.String("2009-11-10T23:00:00Z"),
-						mdVisibility: aws.String("private"),
-					},
 				}, nil
 			},
 		},
@@ -544,10 +519,15 @@ func TestHead(t *testing.T) {
 			},
 		},
 	}
-	store.DefaultStore = memory.NewStore()
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			store.DefaultStore = memory.NewStore()
+			store.Write(store.NewRecord(fmt.Sprintf("%s/micro/123/%s", prefixByUser, tc.objectName), meta{
+				Visibility:   tc.visibility,
+				CreateTime:   tc.created,
+				ModifiedTime: tc.modified,
+			}))
 			handler := Space{
 				conf: conf{
 					AccessKey: "access",

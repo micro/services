@@ -109,5 +109,17 @@
           "url": "https://example.com/foo/bar/images/file.jpg"
       }
     }
+  ],
+  "upload": [
+    {
+      "title": "Upload an object",
+      "run_check": false,
+      "request": {
+        "name": "images/file.jpg"
+      },
+      "response": {
+        "url": "https://example.com/foo/bar/images/file.jpg"
+      }
+    }
   ]
 }
