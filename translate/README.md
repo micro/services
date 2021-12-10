@@ -1,8 +1,6 @@
-Translate service powered by google translation
+Language translation service
 
 # Translate Service
 
-1. Create a Google Cloud Translation App followed
-   by [https://cloud.google.com/translate/](https://cloud.google.com/translate/)
-2. Create an API Key for m3o request
-   here: [https://console.cloud.google.com/apis/credentials](https://console.cloud.google.com/apis/credentials)
+Translate basic text from any language. A simple API powered by Google Translate. 
+Translation text character limit is 500.
