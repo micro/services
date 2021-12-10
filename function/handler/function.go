@@ -142,7 +142,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 		project = "default"
 	}
 
-	key := fmt.Sprintf("%s/%s/%s", tenantId, project, req.Name)
+	key := fmt.Sprintf("function/%s/%s/%s", tenantId, project, req.Name)
 
 	records, err := store.Read(key)
 	if err != nil && err != store.ErrNotFound {
@@ -156,7 +156,7 @@ func (e *Function) Deploy(ctx context.Context, req *function.DeployRequest, rsp 
 	// check for function limit
 	if e.limit > 0 {
 		// read all the records for the user
-		records, err := store.Read(tenantId+"/", store.ReadPrefix())
+		records, err := store.Read("function/"+tenantId+"/", store.ReadPrefix())
 		if err != nil {
 			return err
 		}
@@ -238,7 +238,7 @@ func (e *Function) Update(ctx context.Context, req *function.UpdateRequest, rsp 
 		project = "default"
 	}
 
-	key := fmt.Sprintf("%s/%s/%s", tenantId, project, req.Name)
+	key := fmt.Sprintf("function/%s/%s/%s", tenantId, project, req.Name)
 
 	records, err := store.Read(key)
 	if err != nil {
@@ -379,7 +379,7 @@ func (e *Function) Delete(ctx context.Context, req *function.DeleteRequest, rsp 
 		return err
 	}
 
-	key := fmt.Sprintf("%v/%v/%v", tenantId, project, req.Name)
+	key := fmt.Sprintf("function/%v/%v/%v", tenantId, project, req.Name)
 
 	return store.Delete(key)
 }
@@ -392,7 +392,7 @@ func (e *Function) List(ctx context.Context, req *function.ListRequest, rsp *fun
 		tenantId = "micro"
 	}
 
-	key := tenantId + "/"
+	key := "function/" + tenantId + "/"
 
 	project := req.Project
 	if len(project) > 0 {
@@ -452,7 +452,7 @@ func (e *Function) Describe(ctx context.Context, req *function.DescribeRequest, 
 	}
 
 	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
-	key := fmt.Sprintf("%v/%v/%v", tenantId, project, req.Name)
+	key := fmt.Sprintf("function/%v/%v/%v", tenantId, project, req.Name)
 
 	records, err := store.Read(key)
 	if err != nil {
