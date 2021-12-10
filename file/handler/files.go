@@ -16,27 +16,7 @@ import (
 type File struct{}
 
 func NewFile() *File {
-	f := &File{}
-	go f.Migrate()
-	return f
-}
-
-func (e *File) Migrate() {
-	records, err := store.Read("file.Record:eqByProjectUnordByProject:", store.ReadPrefix())
-	if err != nil {
-		log.Errorf("failed to migrate: %v", err)
-		return
-	}
-
-	for _, rec := range records {
-		parts := strings.Split(rec.Key, ":")
-		if len(parts) != 4 {
-			continue
-		}
-		key := "file/" + parts[3]
-		log.Infof("Migrating %v to %v\n", rec.Key, key)
-		store.Write(&store.Record{Key: key, Value: rec.Value})
-	}
+	return &File{}
 }
 
 func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.DeleteResponse) error {
