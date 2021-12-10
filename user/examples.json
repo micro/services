@@ -229,7 +229,7 @@
   ],
   "sendMagicLink": [
     {
-      "title": "Send a MagicLink",
+      "title": "Send a Magic Link",
       "run_check": false,
       "request": {
         "email": "joe@example.com",
