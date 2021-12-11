@@ -72,6 +72,8 @@ func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.Sho
 		return err
 	}
 
+	rsp.ShortURL = val.ShortURL
+
 	return nil
 }
 
