@@ -34,6 +34,7 @@ require (
 	github.com/micro/micro/v3 v3.8.0
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/minio/minio-go/v7 v7.0.16
+	github.com/o1egl/govatar v0.3.0
 	github.com/onsi/gomega v1.10.5
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -58,7 +59,6 @@ require (
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 	golang.org/x/text v0.3.6
 	google.golang.org/api v0.59.0
-	google.golang.org/genproto v0.0.0-20211008145708-270636b82663 // indirect
 	google.golang.org/grpc/examples v0.0.0-20211103202053-3b94303f3754 // indirect
 	google.golang.org/protobuf v1.27.1
 	googlemaps.github.io/maps v1.3.1
