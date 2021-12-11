@@ -2,24 +2,5 @@ Generate an avatar
 
 # Avatar Service
 
-This is the Avatar service
-
-Generated with
-
-```
-micro new avatar
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+Generate a unique avatar for your user profiles, 
+NFT crypto punks and much more.
