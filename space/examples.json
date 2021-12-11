@@ -87,6 +87,38 @@
         "name": "images/file.jpg"
       },
       "response": {
+        "object": {
+          "name": "images/file.jpg",
+          "modified": 1638549232,
+          "created": 1638546232,
+          "url": "https://example.com/foo/bar/images/file.jpg",
+          "visibility": "public",
+          "data": "<file bytes>"
+        }
+      }
+    }
+  ],
+  "download": [
+    {
+      "title": "Download an object",
+      "run_check": false,
+      "request": {
+        "name": "images/file.jpg"
+      },
+      "response": {
+          "url": "https://example.com/foo/bar/images/file.jpg"
+      }
+    }
+  ],
+  "upload": [
+    {
+      "title": "Upload an object",
+      "run_check": false,
+      "request": {
+        "name": "images/file.jpg"
+      },
+      "response": {
+        "url": "https://example.com/foo/bar/images/file.jpg"
       }
     }
   ]

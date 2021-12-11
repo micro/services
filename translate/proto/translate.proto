@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package translate;
+
+option go_package = "./proto;translate";
+
+service Translate {
+	rpc Text(TextRequest) returns (TextResponse) {}
+	// TODO: implement Google Translation Advanced Edition, See https://cloud.google.com/translate/docs/advanced/translating-text-v3
+}
+
+message Translation {
+	// The translation result
+	string text = 1;
+	// The source of the query string
+	string source = 2;
+	// The model used in translation
+	string model = 3;
+}
+
+// Basic text translation
+message TextRequest {
+	// The contents to be translated
+	string content = 1;
+	// Source language, format in ISO-639-1 codes
+	// See https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for more information
+	string source = 2;
+	// Target language, format in ISO-639-1 codes
+	// See https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for more information
+	string target = 3;
+	// The string format, `text` or `html`
+	string format = 4;
+	// The model to use for translation, `nmt` or `base`,
+	// See https://cloud.google.com/translate/docs/advanced/translating-text-v3#comparing-models for more information
+	string model = 5;
+}
+
+// TextResponse is the basic edition response
+message TextResponse {
+	// The translated text
+	Translation translation = 1;
+}

@@ -1,0 +1,9 @@
+{
+  "name": "translate",
+  "icon": "📖",
+  "category": "language",
+  "display_name": "Translate",
+  "pricing": {
+    "Translate.Text": 10000
+  }
+}

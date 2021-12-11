@@ -8,30 +8,15 @@ import (
 
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/model"
+	"github.com/micro/micro/v3/service/store"
 	file "github.com/micro/services/file/proto"
 	"github.com/micro/services/pkg/tenant"
 )
 
-type File struct {
-	db model.Model
-}
+type File struct{}
 
 func NewFile() *File {
-	i := model.ByEquality("project")
-	i.Order.Type = model.OrderTypeUnordered
-
-	db := model.New(
-		file.Record{},
-		&model.Options{
-			Key:     "Path",
-			Indexes: []model.Index{i},
-		},
-	)
-
-	return &File{
-		db: db,
-	}
+	return &File{}
 }
 
 func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.DeleteResponse) error {
@@ -44,32 +29,21 @@ func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.De
 		tenantId = "micro"
 	}
 
-	path := filepath.Join(tenantId, req.Project, req.Path)
-	project := tenantId + "/" + req.Project
+	path := filepath.Join("file", tenantId, req.Project, req.Path)
 
 	// delete one file
 	if !strings.HasSuffix(req.Path, "/") {
-		return e.db.Delete(model.QueryEquals("Path", path))
+		return store.Delete(path)
 	}
 
-	var files []*file.Record
-
 	// read all the files for the project
-	err := e.db.Read(model.QueryEquals("project", project), &files)
+	records, err := store.List(store.ListPrefix(path))
 	if err != nil {
 		return err
 	}
 
-	for _, file := range files {
-		// delete a list of files
-		if file.Project != project {
-			continue
-		}
-		if !strings.HasPrefix(file.Path, path) {
-			continue
-		}
-		// delete the file
-		e.db.Delete(model.QueryEquals("Path", file.Path))
+	for _, file := range records {
+		store.Delete(file)
 	}
 
 	return nil
@@ -87,32 +61,30 @@ func (e *File) Read(ctx context.Context, req *file.ReadRequest, rsp *file.ReadRe
 		tenantId = "micro"
 	}
 
-	var files []*file.Record
+	path := filepath.Join("file", tenantId, req.Project, req.Path)
 
-	project := tenantId + "/" + req.Project
-
-	// read all the files for the project
-	err := e.db.Read(model.QueryEquals("project", project), &files)
+	records, err := store.Read(path)
 	if err != nil {
 		return err
 	}
 
-	// filter the file
-	for _, file := range files {
-		// check project matches tenants
-		if file.Project != project {
-			continue
-		}
-
-		// strip the tenant id
-		file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
-		file.Path = strings.TrimPrefix(file.Path, filepath.Join(tenantId, req.Project))
-
-		// check the path matches the request
-		if req.Path == file.Path {
-			rsp.File = file
-		}
+	if len(records) == 0 {
+		return errors.NotFound("file.read", "file not found")
 	}
+
+	// filter the file
+	rec := records[0]
+	file := new(file.Record)
+
+	if err := rec.Decode(file); err != nil {
+		return err
+	}
+
+	// strip the tenant id
+	file.Project = strings.TrimPrefix(file.Project, tenantId+"/")
+	file.Path = strings.TrimPrefix(file.Path, filepath.Join(tenantId, req.Project))
+
+	rsp.File = file
 
 	return nil
 }
@@ -123,11 +95,13 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 		tenantId = "micro"
 	}
 
+	if req.File == nil {
+		return errors.BadRequest("file.save", "missing file")
+	}
+
 	log.Info("Received File.Save request")
 
-	// prefix the tenant
-	req.File.Project = filepath.Join(tenantId, req.File.Project)
-	req.File.Path = filepath.Join(req.File.Project, req.File.Path)
+	path := filepath.Join("file", tenantId, req.File.Project, req.File.Path)
 
 	if len(req.File.Created) == 0 {
 		req.File.Created = time.Now().Format(time.RFC3339Nano)
@@ -137,35 +111,7 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 	req.File.Updated = time.Now().Format(time.RFC3339Nano)
 
 	// create the file
-	err := e.db.Create(req.File)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (e *File) BatchSave(ctx context.Context, req *file.BatchSaveRequest, rsp *file.BatchSaveResponse) error {
-	tenantId, ok := tenant.FromContext(ctx)
-	if !ok {
-		tenantId = "micro"
-	}
-
-	log.Info("Received File.BatchSave request")
-
-	for _, reqFile := range req.Files {
-		// prefix the tenant
-		reqFile.Project = filepath.Join(tenantId, reqFile.Project)
-		reqFile.Path = filepath.Join(reqFile.Project, reqFile.Project)
-
-		// create the file
-		err := e.db.Create(reqFile)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return store.Write(store.NewRecord(path, req.File))
 }
 
 func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListResponse) error {
@@ -177,20 +123,17 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 	}
 
 	// prefix tenant id
-	project := tenantId + "/" + req.Project
+	path := filepath.Join("file", tenantId, req.Project, req.Path)
 
-	var files []*file.Record
-
-	// read all the files for the project
-	if err := e.db.Read(model.QueryEquals("project", project), &files); err != nil {
+	records, err := store.Read(path, store.ReadPrefix())
+	if err != nil {
 		return err
 	}
 
-	// @todo funnily while this is the archetypical
-	// query for the KV store interface, it's not supported by the model
-	// so we do client side filtering here
-	for _, file := range files {
-		if file.Project != project {
+	for _, rec := range records {
+		file := new(file.Record)
+
+		if err := rec.Decode(file); err != nil {
 			continue
 		}
 
@@ -202,14 +145,7 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 		// no file listing ever contains it
 		file.Content = ""
 
-		// if requesting all files or path matches
-		if req.Path != "" {
-			if strings.HasPrefix(file.Path, req.Path) {
-				rsp.Files = append(rsp.Files, file)
-			}
-		} else {
-			rsp.Files = append(rsp.Files, file)
-		}
+		rsp.Files = append(rsp.Files, file)
 	}
 
 	return nil

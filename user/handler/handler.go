@@ -479,15 +479,15 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 	// check if token is valid
 	topic, email, err := s.domain.CacheReadToken(ctx, token)
 	if err.Error() == "token not found" {
-		rsp.Isvalid = false
+		rsp.IsValid = false
 		rsp.Message = err.Error()
 		return nil
 	} else if err.Error() == "token expired" {
-		rsp.Isvalid = false
+		rsp.IsValid = false
 		rsp.Message = err.Error()
 		return nil
 	} else if err.Error() == "token empty" {
-		rsp.Isvalid = false
+		rsp.IsValid = false
 		rsp.Message = err.Error()
 		return nil
 	} else if err != nil {
@@ -500,7 +500,7 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 		return err
 	}
 	if len(accounts) == 0 {
-		rsp.Isvalid = false
+		rsp.IsValid = false
 		rsp.Message = "account not found"
 		return nil
 	}
@@ -537,7 +537,7 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 		return errors.InternalServerError("VerifyToken.publish", "Ooops something went wrong, please try again")
 	}
 
-	rsp.Isvalid = true
+	rsp.IsValid = true
 	rsp.Message = ""
 
 	return nil

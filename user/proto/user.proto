@@ -253,8 +253,8 @@ message SendMagicLinkRequest {
 	// Your web site address, example www.example.com or user.example.com
 	string address = 5;
 	// Endpoint name where your http request handler handles MagicLink by 
-	// calling M3O VerifyToken endpoint. You can return as a result a success 
-	// page, a faild page or redirect. 
+	// calling M3O VerifyToken endpoint. You can return as a result a success, 
+	// failed or redirect to another page. 
 	string endpoint = 6;
 }
 
@@ -262,11 +262,15 @@ message SendMagicLinkResponse {
 	Session session = 1;
 }
 
+// Check whether the token attached to MagicLink is valid or not.
+// Ideally, you need to call this endpoint from your http request  
+// handler that handles the endpoint which is specified in the 
+// SendMagicLink request. 
 message VerifyTokenRequest {
 	string token = 1;
 }
 
 message VerifyTokenResponse {
-	bool isvalid = 1;
+	bool is_valid = 1;
 	string message = 2;
 }

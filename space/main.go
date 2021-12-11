@@ -22,10 +22,10 @@ func main() {
 			handler.NewSpace(srv),
 			api.WithEndpoint(
 				&api.Endpoint{
-					Name:    "Space.Read",
+					Name:    "Space.Download",
 					Handler: "api",
 					Method:  []string{"POST", "GET"},
-					Path:    []string{"/space/read"},
+					Path:    []string{"/space/download"},
 				}),
 		))
 

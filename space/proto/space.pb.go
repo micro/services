@@ -254,13 +254,13 @@ func (x *UpdateResponse) GetUrl() string {
 	return ""
 }
 
-// Delete an object
+// Delete an object from space
 type DeleteRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
+	// Name of the object
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -341,7 +341,7 @@ func (*DeleteResponse) Descriptor() ([]byte, []int) {
 	return file_proto_space_proto_rawDescGZIP(), []int{5}
 }
 
-// List the objects in the space
+// List the objects in space
 type ListRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -696,7 +696,100 @@ func (x *HeadObject) GetUrl() string {
 	return ""
 }
 
-// Read an object in storage. Use for private objects.
+type Object struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// name of object
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// when was this last modified
+	Modified string `protobuf:"bytes,2,opt,name=modified,proto3" json:"modified,omitempty"`
+	// when was this created
+	Created string `protobuf:"bytes,3,opt,name=created,proto3" json:"created,omitempty"`
+	// is this public or private
+	Visibility string `protobuf:"bytes,4,opt,name=visibility,proto3" json:"visibility,omitempty"`
+	// URL to access the object if it is public
+	Url string `protobuf:"bytes,5,opt,name=url,proto3" json:"url,omitempty"`
+	// the data within the object
+	Data []byte `protobuf:"bytes,6,opt,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *Object) Reset() {
+	*x = Object{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_space_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Object) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Object) ProtoMessage() {}
+
+func (x *Object) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_space_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Object.ProtoReflect.Descriptor instead.
+func (*Object) Descriptor() ([]byte, []int) {
+	return file_proto_space_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *Object) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Object) GetModified() string {
+	if x != nil {
+		return x.Modified
+	}
+	return ""
+}
+
+func (x *Object) GetCreated() string {
+	if x != nil {
+		return x.Created
+	}
+	return ""
+}
+
+func (x *Object) GetVisibility() string {
+	if x != nil {
+		return x.Visibility
+	}
+	return ""
+}
+
+func (x *Object) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *Object) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+// Read an object in space
 type ReadRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -709,7 +802,7 @@ type ReadRequest struct {
 func (x *ReadRequest) Reset() {
 	*x = ReadRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_space_proto_msgTypes[12]
+		mi := &file_proto_space_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -722,7 +815,7 @@ func (x *ReadRequest) String() string {
 func (*ReadRequest) ProtoMessage() {}
 
 func (x *ReadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_space_proto_msgTypes[12]
+	mi := &file_proto_space_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -735,7 +828,7 @@ func (x *ReadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadRequest.ProtoReflect.Descriptor instead.
 func (*ReadRequest) Descriptor() ([]byte, []int) {
-	return file_proto_space_proto_rawDescGZIP(), []int{12}
+	return file_proto_space_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ReadRequest) GetName() string {
@@ -751,14 +844,14 @@ type ReadResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Returns the response as raw data
-	Object string `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
+	// The object itself
+	Object *Object `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
 }
 
 func (x *ReadResponse) Reset() {
 	*x = ReadResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_space_proto_msgTypes[13]
+		mi := &file_proto_space_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -771,7 +864,7 @@ func (x *ReadResponse) String() string {
 func (*ReadResponse) ProtoMessage() {}
 
 func (x *ReadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_space_proto_msgTypes[13]
+	mi := &file_proto_space_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -784,12 +877,214 @@ func (x *ReadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadResponse.ProtoReflect.Descriptor instead.
 func (*ReadResponse) Descriptor() ([]byte, []int) {
-	return file_proto_space_proto_rawDescGZIP(), []int{13}
+	return file_proto_space_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *ReadResponse) GetObject() string {
+func (x *ReadResponse) GetObject() *Object {
 	if x != nil {
 		return x.Object
+	}
+	return nil
+}
+
+// Download an object via a presigned url
+type DownloadRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// name of object
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *DownloadRequest) Reset() {
+	*x = DownloadRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_space_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DownloadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DownloadRequest) ProtoMessage() {}
+
+func (x *DownloadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_space_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DownloadRequest.ProtoReflect.Descriptor instead.
+func (*DownloadRequest) Descriptor() ([]byte, []int) {
+	return file_proto_space_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *DownloadRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type DownloadResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// presigned url
+	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
+}
+
+func (x *DownloadResponse) Reset() {
+	*x = DownloadResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_space_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DownloadResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DownloadResponse) ProtoMessage() {}
+
+func (x *DownloadResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_space_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DownloadResponse.ProtoReflect.Descriptor instead.
+func (*DownloadResponse) Descriptor() ([]byte, []int) {
+	return file_proto_space_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *DownloadResponse) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+// Upload a large object. Returns a time limited presigned URL to be used for uploading the object
+type UploadRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// is this object public or private
+	Visibility string `protobuf:"bytes,2,opt,name=visibility,proto3" json:"visibility,omitempty"`
+}
+
+func (x *UploadRequest) Reset() {
+	*x = UploadRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_space_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UploadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadRequest) ProtoMessage() {}
+
+func (x *UploadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_space_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadRequest.ProtoReflect.Descriptor instead.
+func (*UploadRequest) Descriptor() ([]byte, []int) {
+	return file_proto_space_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *UploadRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UploadRequest) GetVisibility() string {
+	if x != nil {
+		return x.Visibility
+	}
+	return ""
+}
+
+type UploadResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// a presigned url to be used for uploading
+	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+}
+
+func (x *UploadResponse) Reset() {
+	*x = UploadResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_space_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UploadResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadResponse) ProtoMessage() {}
+
+func (x *UploadResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_space_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadResponse.ProtoReflect.Descriptor instead.
+func (*UploadResponse) Descriptor() ([]byte, []int) {
+	return file_proto_space_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *UploadResponse) GetUrl() string {
+	if x != nil {
+		return x.Url
 	}
 	return ""
 }
@@ -847,12 +1142,34 @@ var file_proto_space_proto_rawDesc = []byte{
 	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x1e, 0x0a, 0x0a, 0x76, 0x69, 0x73,
 	0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x76,
 	0x69, 0x73, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c,
-	0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x21, 0x0a, 0x0b, 0x52,
-	0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61,
-	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x26,
-	0x0a, 0x0c, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x16,
-	0x0a, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06,
-	0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x32, 0xcb, 0x02, 0x0a, 0x05, 0x53, 0x70, 0x61, 0x63, 0x65,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x98, 0x01, 0x0a, 0x06,
+	0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x6f,
+	0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x6f,
+	0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64,
+	0x12, 0x1e, 0x0a, 0x0a, 0x76, 0x69, 0x73, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x76, 0x69, 0x73, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79,
+	0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75,
+	0x72, 0x6c, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0c,
+	0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x21, 0x0a, 0x0b, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x35, 0x0a, 0x0c, 0x52, 0x65, 0x61,
+	0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x6f, 0x62, 0x6a,
+	0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x73, 0x70, 0x61, 0x63,
+	0x65, 0x2e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x22, 0x25, 0x0a, 0x0f, 0x44, 0x6f, 0x77, 0x6e, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x24, 0x0a, 0x10, 0x44, 0x6f, 0x77, 0x6e, 0x6c,
+	0x6f, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x75,
+	0x72, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x43, 0x0a,
+	0x0d, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12,
+	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x76, 0x69, 0x73, 0x69, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x76, 0x69, 0x73, 0x69, 0x62, 0x69, 0x6c, 0x69,
+	0x74, 0x79, 0x22, 0x22, 0x0a, 0x0e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x32, 0xc3, 0x03, 0x0a, 0x05, 0x53, 0x70, 0x61, 0x63, 0x65,
 	0x12, 0x37, 0x0a, 0x06, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x14, 0x2e, 0x73, 0x70, 0x61,
 	0x63, 0x65, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
 	0x1a, 0x15, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52,
@@ -873,8 +1190,16 @@ var file_proto_space_proto_rawDesc = []byte{
 	0x00, 0x12, 0x31, 0x0a, 0x04, 0x52, 0x65, 0x61, 0x64, 0x12, 0x12, 0x2e, 0x73, 0x70, 0x61, 0x63,
 	0x65, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e,
 	0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x00, 0x42, 0x0f, 0x5a, 0x0d, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b,
-	0x73, 0x70, 0x61, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x65, 0x22, 0x00, 0x12, 0x3d, 0x0a, 0x08, 0x44, 0x6f, 0x77, 0x6e, 0x6c, 0x6f, 0x61, 0x64,
+	0x12, 0x16, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x44, 0x6f, 0x77, 0x6e, 0x6c, 0x6f, 0x61,
+	0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65,
+	0x2e, 0x44, 0x6f, 0x77, 0x6e, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x12, 0x37, 0x0a, 0x06, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x12, 0x14, 0x2e,
+	0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x55, 0x70, 0x6c, 0x6f,
+	0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x0f, 0x5a, 0x0d,
+	0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -889,43 +1214,53 @@ func file_proto_space_proto_rawDescGZIP() []byte {
 	return file_proto_space_proto_rawDescData
 }
 
-var file_proto_space_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_proto_space_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_proto_space_proto_goTypes = []interface{}{
-	(*CreateRequest)(nil),  // 0: space.CreateRequest
-	(*CreateResponse)(nil), // 1: space.CreateResponse
-	(*UpdateRequest)(nil),  // 2: space.UpdateRequest
-	(*UpdateResponse)(nil), // 3: space.UpdateResponse
-	(*DeleteRequest)(nil),  // 4: space.DeleteRequest
-	(*DeleteResponse)(nil), // 5: space.DeleteResponse
-	(*ListRequest)(nil),    // 6: space.ListRequest
-	(*ListResponse)(nil),   // 7: space.ListResponse
-	(*ListObject)(nil),     // 8: space.ListObject
-	(*HeadRequest)(nil),    // 9: space.HeadRequest
-	(*HeadResponse)(nil),   // 10: space.HeadResponse
-	(*HeadObject)(nil),     // 11: space.HeadObject
-	(*ReadRequest)(nil),    // 12: space.ReadRequest
-	(*ReadResponse)(nil),   // 13: space.ReadResponse
+	(*CreateRequest)(nil),    // 0: space.CreateRequest
+	(*CreateResponse)(nil),   // 1: space.CreateResponse
+	(*UpdateRequest)(nil),    // 2: space.UpdateRequest
+	(*UpdateResponse)(nil),   // 3: space.UpdateResponse
+	(*DeleteRequest)(nil),    // 4: space.DeleteRequest
+	(*DeleteResponse)(nil),   // 5: space.DeleteResponse
+	(*ListRequest)(nil),      // 6: space.ListRequest
+	(*ListResponse)(nil),     // 7: space.ListResponse
+	(*ListObject)(nil),       // 8: space.ListObject
+	(*HeadRequest)(nil),      // 9: space.HeadRequest
+	(*HeadResponse)(nil),     // 10: space.HeadResponse
+	(*HeadObject)(nil),       // 11: space.HeadObject
+	(*Object)(nil),           // 12: space.Object
+	(*ReadRequest)(nil),      // 13: space.ReadRequest
+	(*ReadResponse)(nil),     // 14: space.ReadResponse
+	(*DownloadRequest)(nil),  // 15: space.DownloadRequest
+	(*DownloadResponse)(nil), // 16: space.DownloadResponse
+	(*UploadRequest)(nil),    // 17: space.UploadRequest
+	(*UploadResponse)(nil),   // 18: space.UploadResponse
 }
 var file_proto_space_proto_depIdxs = []int32{
 	8,  // 0: space.ListResponse.objects:type_name -> space.ListObject
 	11, // 1: space.HeadResponse.object:type_name -> space.HeadObject
-	0,  // 2: space.Space.Create:input_type -> space.CreateRequest
-	2,  // 3: space.Space.Update:input_type -> space.UpdateRequest
-	4,  // 4: space.Space.Delete:input_type -> space.DeleteRequest
-	6,  // 5: space.Space.List:input_type -> space.ListRequest
-	9,  // 6: space.Space.Head:input_type -> space.HeadRequest
-	12, // 7: space.Space.Read:input_type -> space.ReadRequest
-	1,  // 8: space.Space.Create:output_type -> space.CreateResponse
-	3,  // 9: space.Space.Update:output_type -> space.UpdateResponse
-	5,  // 10: space.Space.Delete:output_type -> space.DeleteResponse
-	7,  // 11: space.Space.List:output_type -> space.ListResponse
-	10, // 12: space.Space.Head:output_type -> space.HeadResponse
-	13, // 13: space.Space.Read:output_type -> space.ReadResponse
-	8,  // [8:14] is the sub-list for method output_type
-	2,  // [2:8] is the sub-list for method input_type
-	2,  // [2:2] is the sub-list for extension type_name
-	2,  // [2:2] is the sub-list for extension extendee
-	0,  // [0:2] is the sub-list for field type_name
+	12, // 2: space.ReadResponse.object:type_name -> space.Object
+	0,  // 3: space.Space.Create:input_type -> space.CreateRequest
+	2,  // 4: space.Space.Update:input_type -> space.UpdateRequest
+	4,  // 5: space.Space.Delete:input_type -> space.DeleteRequest
+	6,  // 6: space.Space.List:input_type -> space.ListRequest
+	9,  // 7: space.Space.Head:input_type -> space.HeadRequest
+	13, // 8: space.Space.Read:input_type -> space.ReadRequest
+	15, // 9: space.Space.Download:input_type -> space.DownloadRequest
+	17, // 10: space.Space.Upload:input_type -> space.UploadRequest
+	1,  // 11: space.Space.Create:output_type -> space.CreateResponse
+	3,  // 12: space.Space.Update:output_type -> space.UpdateResponse
+	5,  // 13: space.Space.Delete:output_type -> space.DeleteResponse
+	7,  // 14: space.Space.List:output_type -> space.ListResponse
+	10, // 15: space.Space.Head:output_type -> space.HeadResponse
+	14, // 16: space.Space.Read:output_type -> space.ReadResponse
+	16, // 17: space.Space.Download:output_type -> space.DownloadResponse
+	18, // 18: space.Space.Upload:output_type -> space.UploadResponse
+	11, // [11:19] is the sub-list for method output_type
+	3,  // [3:11] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_proto_space_proto_init() }
@@ -1079,7 +1414,7 @@ func file_proto_space_proto_init() {
 			}
 		}
 		file_proto_space_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReadRequest); i {
+			switch v := v.(*Object); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1091,7 +1426,67 @@ func file_proto_space_proto_init() {
 			}
 		}
 		file_proto_space_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ReadRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_space_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ReadResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_space_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DownloadRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_space_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DownloadResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_space_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UploadRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_space_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UploadResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1109,7 +1504,7 @@ func file_proto_space_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_space_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

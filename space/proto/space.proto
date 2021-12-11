@@ -11,9 +11,11 @@ service Space {
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Head(HeadRequest) returns (HeadResponse) {}
 	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc Download(DownloadRequest) returns (DownloadResponse) {}
+	rpc Upload(UploadRequest) returns (UploadResponse) {}
 }
 
-// Create an object. Returns error if object with this name already exists. If you want to update an existing object use the `Update` endpoint
+// Create an object. Returns error if object with this name already exists. Max object size of 10MB, see Upload endpoint for larger objects. If you want to update an existing object use the `Update` endpoint
 // You need to send the request as a multipart/form-data rather than the usual application/json
 // with each parameter as a form field.
 message CreateRequest {
@@ -96,7 +98,22 @@ message HeadObject {
 	string url = 5;
 }
 
-// Read an object in space. Use for private objects.
+message Object {
+	// name of object
+	string name = 1;
+	// when was this last modified
+	string modified = 2;
+	// when was this created
+	string created = 3;
+	// is this public or private
+	string visibility = 4;
+	// URL to access the object if it is public
+	string url = 5;
+	// the data within the object
+	bytes data = 6;
+}
+
+// Read an object in space
 message ReadRequest {
 	// name of the object
 	string name = 1;
@@ -104,6 +121,29 @@ message ReadRequest {
 
 // Returns the raw object
 message ReadResponse {
-	// Returns the object as raw data
-	string object = 1;
+	// The object itself
+	Object object = 1;
+}
+
+// Download an object via a presigned url
+message DownloadRequest {
+	// name of object
+	string name = 1;
+}
+
+message DownloadResponse {
+	// presigned url
+	string url = 2;
+}
+
+// Upload a large object (> 10MB). Returns a time limited presigned URL to be used for uploading the object
+message UploadRequest {
+	string name = 1;
+	// is this object public or private
+	string visibility = 2;
+}
+
+message UploadResponse {
+	// a presigned url to be used for uploading. To use the URL call it with HTTP PUT and pass the object as the request data
+	string url = 1;
 }

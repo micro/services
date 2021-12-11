@@ -11,6 +11,7 @@ service Function {
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Describe(DescribeRequest) returns (DescribeResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 }
 
 // Call a function by name
@@ -87,6 +88,8 @@ message Func {
 	string runtime = 6;
 	// eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
 	string status = 7;
+	// associated env vars
+	map<string,string> env_vars = 8;
 }
 
 message ListResponse {
@@ -121,4 +124,33 @@ message DescribeResponse {
 	string updated_at = 2;
 	// The timeout for requests to the function
 	string timeout = 3;
+}
+
+message UpdateRequest {
+	// function name
+	string name = 1;
+	// github url to repo
+	string repo = 2;
+	// optional subfolder path
+	string subfolder = 3;
+	// entry point, ie. handler name in the source code 
+	// if not provided, defaults to the name parameter
+	string entrypoint = 4;
+	// project is used for namespacing your functions
+	// optional. defaults to "default".
+	string project = 5;
+	// runtime/language of the function
+	// eg: php74,
+	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
+	// dotnet3
+	// java11
+	// ruby26, ruby27
+	// go111, go113, go116
+	// python37, python38, python39
+	string runtime = 6;
+	// environment variables to pass in at runtime
+	map<string,string> env_vars = 7;
+}
+
+message UpdateResponse {
 }
