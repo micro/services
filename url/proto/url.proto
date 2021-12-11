@@ -37,7 +37,7 @@ message ListRequest {
 }
 
 message ListResponse {
-	repeated URLPair urls = 1;
+	repeated URLPair urlPairs = 1;
 }
 
 // Proxy returns the destination URL of a short URL.

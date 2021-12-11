@@ -83,7 +83,6 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 		return errors.Unauthorized("url.shorten", "not authorized")
 	}
 
-	rsp.Urls = []*url.URLPair{}
 	var err error
 
 	key := "urlOwner/" + tenantId + "/"
@@ -109,7 +108,7 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 			continue
 		}
 
-		rsp.Urls = append(rsp.Urls, uri)
+		rsp.UrlPairs = append(rsp.UrlPairs, uri)
 	}
 
 	return nil
