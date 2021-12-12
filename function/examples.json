@@ -11,6 +11,18 @@
       "response": {}
     }
   ],
+  "update": [
+    {
+      "title": "Update a function",
+      "request": {
+        "repo": "github.com/m3o/nodejs-function-example",
+        "name": "helloworld",
+        "entrypoint": "helloworld",
+        "runtime": "nodejs14"
+      },
+      "response": {}
+    }
+  ],
   "call": [
     {
       "title": "Call a function",
