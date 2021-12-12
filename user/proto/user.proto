@@ -230,10 +230,10 @@ message ResetPasswordResponse {}
 
 // List all users. Returns a paged list of results
 message ListRequest {
-	int32 offset = 1;
+	uint32 offset = 1;
 	// Maximum number of records to return. Default limit is 25.
 	// Maximum limit is 1000. Anything higher will return an error.
-	int32 limit = 2;
+	uint32 limit = 2;
 }
 
 message ListResponse {

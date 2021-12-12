@@ -14,6 +14,7 @@ import (
 	"github.com/asim/mq/broker"
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/events/store"
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	otp "github.com/micro/services/otp/proto"
@@ -52,7 +53,7 @@ type User struct {
 
 func NewUser(db db.DbService, otp otp.OtpService) *User {
 	return &User{
-		domain: domain.New(db),
+		domain: ,
 		Otp:    otp,
 	}
 }

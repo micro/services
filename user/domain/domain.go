@@ -8,12 +8,14 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"sync"
 	"time"
 
-	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/micro/micro/v3/service/config"
 	microerr "github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
+
 	db "github.com/micro/services/db/proto"
 	"github.com/micro/services/pkg/cache"
 	user "github.com/micro/services/user/proto"
@@ -27,26 +29,44 @@ var (
 )
 
 type pw struct {
-	ID       string `json:"id"`
 	Password string `json:"password"`
 	Salt     string `json:"salt"`
 }
 
 type verificationToken struct {
-	ID     string `json:"id"`
 	UserID string `json:"userId"`
 	Token  string `json:"token"`
 }
 
 type passwordResetCode struct {
-	ID      string    `json:"id"`
 	Expires time.Time `json:"expires"`
 	UserID  string    `json:"userId"`
 	Code    string    `json:"code"`
 }
 
+func generatePasswordResetCodeStoreKey(userId, code string) string {
+	return fmt.Sprintf("user/password-reset-codes/%s-%s", userId, code)
+}
+
+func generateSessionStoreKey(sessionId string) string {
+	return fmt.Sprintf("user/session/%s", sessionId)
+}
+
+func generateVerificationsTokenStoreKey(userId, token string) string {
+	return fmt.Sprintf("user/verifycation-token/%s-%s", userId, token)
+}
+
+func generateAccountStoreKey(userId string) string {
+	return fmt.Sprintf("user/account/%s", userId)
+}
+
+func generatePasswordStoreKey(userId string) string {
+	return fmt.Sprintf("user/password/%s", userId)
+}
+
 type Domain struct {
-	db         db.DbService
+	store store.Store
+	//db         db.DbService
 	sengridKey string
 	fromEmail  string
 }
@@ -56,7 +76,7 @@ var (
 	defaultSender = "noreply@email.m3ocontent.com"
 )
 
-func New(db db.DbService) *Domain {
+func New(st store.Store) *Domain {
 	var key, email string
 	cfg, err := config.Get("micro.user.sendgrid.api_key")
 	if err == nil {
@@ -73,7 +93,7 @@ func New(db db.DbService) *Domain {
 	}
 	return &Domain{
 		sengridKey: key,
-		db:         db,
+		store:      st,
 		fromEmail:  email,
 	}
 }
@@ -97,66 +117,52 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	return err
 }
 
-func (domain *Domain) SavePasswordResetCode(ctx context.Context, userID, code string) (*passwordResetCode, error) {
+func (domain *Domain) SavePasswordResetCode(_ context.Context, userId, code string) (*passwordResetCode, error) {
 	pwcode := passwordResetCode{
-		ID:      userID + "-" + code,
 		Expires: time.Now().Add(24 * time.Hour),
-		UserID:  userID,
+		UserID:  userId,
 		Code:    code,
 	}
 
-	s := &_struct.Struct{}
-	jso, _ := json.Marshal(pwcode)
-	err := s.UnmarshalJSON(jso)
+	val, err := json.Marshal(pwcode)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = domain.db.Create(ctx, &db.CreateRequest{
-		Table:  "password-reset-codes",
-		Record: s,
-	})
+	record := store.NewRecord(generatePasswordResetCodeStoreKey(userId, code), val)
+	err = domain.store.Write(record)
 
 	return &pwcode, err
 }
 
-func (domain *Domain) DeletePasswordResetCode(ctx context.Context, userId, code string) error {
-	_, err := domain.db.Delete(ctx, &db.DeleteRequest{
-		Table: "password-reset-codes",
-		Id:    userId + "-" + code,
-	})
-	return err
+func (domain *Domain) DeletePasswordResetCode(_ context.Context, userId, code string) error {
+	return domain.store.Delete(generatePasswordResetCodeStoreKey(userId, code))
 }
 
-// ReadToken returns the user id
-func (domain *Domain) ReadPasswordResetCode(ctx context.Context, userId, code string) (*passwordResetCode, error) {
-	// generate the key
-	id := userId + "-" + code
+// ReadPasswordResetCode returns the user reset code
+func (domain *Domain) ReadPasswordResetCode(_ context.Context, userId, code string) (*passwordResetCode, error) {
+	key := generatePasswordResetCodeStoreKey(userId, code)
 
-	if id == "" {
-		return nil, errors.New("password reset code id is empty")
-	}
-	token := &passwordResetCode{}
-
-	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "password-reset-codes",
-		Query: fmt.Sprintf("id == '%v'", id),
-	})
+	records, err := domain.store.Read(key)
 	if err != nil {
 		return nil, err
 	}
-	if len(rsp.Records) == 0 {
+
+	if len(records) == 0 {
 		return nil, errors.New("password reset code not found")
 	}
-	m, _ := rsp.Records[0].MarshalJSON()
-	json.Unmarshal(m, token)
+
+	resetCode := &passwordResetCode{}
+	if err := json.Unmarshal(records[0].Value, resetCode); err != nil {
+		return nil, err
+	}
 
 	// check the expiry
-	if token.Expires.Before(time.Now()) {
+	if resetCode.Expires.Before(time.Now()) {
 		return nil, errors.New("password reset code expired")
 	}
 
-	return token, nil
+	return resetCode, nil
 }
 
 func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeStr, fromName, toAddress, toUsername, subject, textContent string) error {
@@ -187,7 +193,7 @@ func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeSt
 	return err
 }
 
-func (domain *Domain) CreateSession(ctx context.Context, sess *user.Session) error {
+func (domain *Domain) CreateSession(_ context.Context, sess *user.Session) error {
 	if sess.Created == 0 {
 		sess.Created = time.Now().Unix()
 	}
@@ -196,97 +202,84 @@ func (domain *Domain) CreateSession(ctx context.Context, sess *user.Session) err
 		sess.Expires = time.Now().Add(time.Hour * 24 * 7).Unix()
 	}
 
-	s := &_struct.Struct{}
-	jso, _ := json.Marshal(sess)
-	err := s.UnmarshalJSON(jso)
+	val, err := json.Marshal(sess)
 	if err != nil {
 		return err
 	}
-	_, err = domain.db.Create(ctx, &db.CreateRequest{
-		Table:  "sessions",
-		Record: s,
-	})
-	return err
+	record := &store.Record{
+		Key:   generateSessionStoreKey(sess.Id),
+		Value: val,
+	}
+
+	return domain.store.Write(record)
 }
 
-func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
-	_, err := domain.db.Delete(ctx, &db.DeleteRequest{
-		Table: "sessions",
-		Id:    id,
-	})
-	return err
+func (domain *Domain) DeleteSession(_ context.Context, id string) error {
+	return domain.store.Delete(generateSessionStoreKey(id))
 }
 
 // ReadToken returns the user id
-func (domain *Domain) ReadToken(ctx context.Context, userId, token string) (string, error) {
-	id := userId + "-" + token
-
+func (domain *Domain) ReadToken(_ context.Context, userId, token string) (string, error) {
 	if token == "" {
 		return "", errors.New("token id empty")
 	}
 
-	tk := &verificationToken{}
-
-	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "tokens",
-		Query: fmt.Sprintf("id == '%v'", id),
-	})
+	records, err := domain.store.Read(generateVerificationsTokenStoreKey(userId, token))
 	if err != nil {
 		return "", err
 	}
 
-	if len(rsp.Records) == 0 {
+	if len(records) == 0 {
 		return "", errors.New("token not found")
 	}
 
-	m, _ := rsp.Records[0].MarshalJSON()
-	json.Unmarshal(m, tk)
-
+	tk := &verificationToken{}
+	err = json.Unmarshal(records[0].Value, tk)
+	if err != nil {
+		return "", err
+	}
 	return tk.UserID, nil
 }
 
 // CreateToken returns the created and saved token
 func (domain *Domain) CreateToken(ctx context.Context, userId, token string) (string, error) {
-	s := &_struct.Struct{}
-	jso, _ := json.Marshal(verificationToken{
-		ID:     userId + "-" + token,
+	tk, err := json.Marshal(verificationToken{
 		UserID: userId,
 		Token:  token,
 	})
 
-	err := s.UnmarshalJSON(jso)
 	if err != nil {
 		return "", err
 	}
 
-	_, err = domain.db.Create(ctx, &db.CreateRequest{
-		Table:  "tokens",
-		Record: s,
-	})
+	record := &store.Record{
+		Key:   generateVerificationsTokenStoreKey(userId, token),
+		Value: tk,
+	}
+	err = domain.store.Write(record)
+	if err != nil {
+		return "", err
+	}
 
 	return token, err
 }
 
 func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session, error) {
-	sess := &user.Session{}
-	if len(id) == 0 {
-		return nil, fmt.Errorf("no id provided")
-	}
-	q := fmt.Sprintf("id == '%v'", id)
-	logger.Infof("Running query: %v", q)
-
-	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "sessions",
-		Query: q,
-	})
+	records, err := domain.store.Read(generateSessionStoreKey(id))
 	if err != nil {
 		return nil, err
 	}
-	if len(rsp.Records) == 0 {
+
+	if len(records) == 0 {
 		return nil, ErrNotFound
 	}
-	m, _ := rsp.Records[0].MarshalJSON()
-	json.Unmarshal(m, sess)
+
+	sess := &user.Session{}
+	err = json.Unmarshal(records[0].Value, sess)
+	if err != nil {
+		return nil, err
+	}
+
 	return sess, nil
 }
 
@@ -294,85 +287,82 @@ func (domain *Domain) Create(ctx context.Context, user *user.Account, salt strin
 	user.Created = time.Now().Unix()
 	user.Updated = time.Now().Unix()
 
-	s := &_struct.Struct{}
-	jso, _ := json.Marshal(user)
-	err := s.UnmarshalJSON(jso)
-	if err != nil {
-		return err
-	}
-	_, err = domain.db.Create(ctx, &db.CreateRequest{
-		Table:  "users",
-		Record: s,
-	})
-	if err != nil {
-		return err
-	}
+	records := make([]*store.Record, 2)
 
-	pass := pw{
-		ID:       user.Id,
+	// user account record
+	val, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+	records = append(records, &store.Record{
+		Key:   generateAccountStoreKey(user.Id),
+		Value: val,
+	})
+
+	// password record
+	val, err = json.Marshal(pw{
 		Password: password,
 		Salt:     salt,
-	}
-	s = &_struct.Struct{}
-	jso, _ = json.Marshal(pass)
-	err = s.UnmarshalJSON(jso)
+	})
 	if err != nil {
 		return err
 	}
-	_, err = domain.db.Create(ctx, &db.CreateRequest{
-		Table:  "passwords",
-		Record: s,
+	records = append(records, &store.Record{
+		Key:   generatePasswordStoreKey(user.Id),
+		Value: val,
 	})
 
-	return err
+	wg := sync.WaitGroup{}
+	errs := make([]error, 0)
+	for _, v := range records {
+		wg.Add(1)
+		go func(r *store.Record) {
+			defer wg.Done()
+			if err := store.Write(r); err != nil {
+				errs = append(errs, err)
+			}
+		}(v)
+	}
+	wg.Wait()
+
+	if len(errs) != 0 {
+		return errs[0]
+	}
+
+	return nil
 }
 
-func (domain *Domain) Delete(ctx context.Context, id string) error {
-	_, err := domain.db.Delete(ctx, &db.DeleteRequest{
-		Table: "users",
-		Id:    id,
-	})
-	return err
+func (domain *Domain) Delete(_ context.Context, id string) error {
+	return domain.store.Delete(generateAccountStoreKey(id))
 }
 
 func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 	user.Updated = time.Now().Unix()
-
-	s := &_struct.Struct{}
-	jso, _ := json.Marshal(user)
-	err := s.UnmarshalJSON(jso)
+	val, err := json.Marshal(user)
 	if err != nil {
 		return err
 	}
-	_, err = domain.db.Update(ctx, &db.UpdateRequest{
-		Table:  "users",
-		Record: s,
+
+	return domain.store.Write(&store.Record{
+		Key:   generateAccountStoreKey(user.Id),
+		Value: val,
 	})
-	return err
 }
 
-func (domain *Domain) Read(ctx context.Context, userId string) (*user.Account, error) {
-	user := &user.Account{}
-	if len(userId) == 0 {
-		return nil, fmt.Errorf("no id provided")
-	}
-	q := fmt.Sprintf("id == '%v'", userId)
-	logger.Infof("Running query: %v", q)
-	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "users",
-		Query: q,
-	})
+func (domain *Domain) Read(_ context.Context, userId string) (*user.Account, error) {
+	records, err := domain.store.Read(generateAccountStoreKey(userId))
 	if err != nil {
 		return nil, err
 	}
-	if len(rsp.Records) == 0 {
+	if len(records) == 0 {
 		return nil, ErrNotFound
 	}
-	m, _ := rsp.Records[0].MarshalJSON()
-	json.Unmarshal(m, user)
-	return user, nil
+	result := &user.Account{}
+	err = json.Unmarshal(records[0].Value, result)
+	return result, err
 }
 
+// TODO: search
 func (domain *Domain) Search(ctx context.Context, username, email string) ([]*user.Account, error) {
 	var query string
 	if len(username) > 0 {
@@ -400,70 +390,59 @@ func (domain *Domain) Search(ctx context.Context, username, email string) ([]*us
 	return []*user.Account{usr}, nil
 }
 
-func (domain *Domain) UpdatePassword(ctx context.Context, id string, salt string, password string) error {
-	pass := pw{
-		ID:       id,
+func (domain *Domain) UpdatePassword(ctx context.Context, userId string, salt string, password string) error {
+	val, err := json.Marshal(pw{
 		Password: password,
 		Salt:     salt,
-	}
-	s := &_struct.Struct{}
-	jso, _ := json.Marshal(pass)
-	err := s.UnmarshalJSON(jso)
+	})
+
 	if err != nil {
 		return err
 	}
-	_, err = domain.db.Update(ctx, &db.UpdateRequest{
-		Table:  "passwords",
-		Record: s,
-	})
-	return err
+
+	record := &store.Record{
+		Key:   generatePasswordStoreKey(userId),
+		Value: val,
+	}
+
+	return domain.store.Write(record)
 }
 
-func (domain *Domain) SaltAndPassword(ctx context.Context, userId string) (string, string, error) {
-	password := &pw{}
-
-	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table: "passwords",
-		Query: fmt.Sprintf("id == '%v'", userId),
-	})
+func (domain *Domain) SaltAndPassword(_ context.Context, userId string) (string, string, error) {
+	records, err := domain.store.Read(generatePasswordStoreKey(userId))
 	if err != nil {
 		return "", "", err
 	}
-	if len(rsp.Records) == 0 {
+	if len(records) == 0 {
 		return "", "", ErrNotFound
 	}
-	m, _ := rsp.Records[0].MarshalJSON()
-	json.Unmarshal(m, password)
+
+	password := &pw{}
+	if err := json.Unmarshal(records[0].Value, password); err != nil {
+		return "", "", err
+	}
+
 	return password.Salt, password.Password, nil
 }
 
-func (domain *Domain) List(ctx context.Context, o, l int32) ([]*user.Account, error) {
-	var limit int32 = 25
-	var offset int32 = 0
-	if l > 0 {
-		limit = l
-	}
-	if o > 0 {
-		offset = o
-	}
-	rsp, err := domain.db.Read(ctx, &db.ReadRequest{
-		Table:  "users",
-		Limit:  limit,
-		Offset: offset,
-	})
+func (domain *Domain) List(_ context.Context, o, l uint32) ([]*user.Account, error) {
+	records, err := store.Read("user/account/", store.ReadLimit(uint(l)), store.ReadLimit(uint(o)))
+
 	if err != nil {
 		return nil, err
 	}
-	if len(rsp.Records) == 0 {
+	if len(records) == 0 {
 		return nil, ErrNotFound
 	}
-	ret := make([]*user.Account, len(rsp.Records))
-	for i, v := range rsp.Records {
-		m, _ := v.MarshalJSON()
-		var user user.Account
-		json.Unmarshal(m, &user)
-		ret[i] = &user
+
+	ret := make([]*user.Account, len(records))
+
+	for i, v := range records {
+		account := &user.Account{}
+		json.Unmarshal(v.Value, account)
+		ret[i] = account
 	}
+
 	return ret, nil
 }
 
@@ -506,7 +485,7 @@ func (domain *Domain) CacheReadToken(ctx context.Context, token string) (string,
 	expires, err := cache.Context(ctx).Get(token, obj)
 
 	if err == cache.ErrNotFound {
-		return "", "", errors.New("token not found")
+		return "", "", ErrNotFound
 	} else if time.Until(expires).Seconds() < 0 {
 		return "", "", errors.New("token expired")
 	} else if err != nil {
