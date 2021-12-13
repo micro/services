@@ -29,15 +29,6 @@
             ]
           }
     }],
-    "delete": [{
-        "title": "Delete file",
-        "run_check": true,
-        "request": {
-            "project": "examples",
-            "path": "/document/text-files/file.txt"
-        },
-        "response": {}
-    }],
     "read": [{
         "title": "Read file",
         "run_check": true,
@@ -54,5 +45,14 @@
               }
             ]
           }
+    }],
+    "delete": [{
+        "title": "Delete file",
+        "run_check": true,
+        "request": {
+            "project": "examples",
+            "path": "/document/text-files/file.txt"
+        },
+        "response": {}
     }]
 }
