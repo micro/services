@@ -33,7 +33,12 @@ func generateFeedKey(ctx context.Context, name string) string {
 		tenantID = "micro"
 	}
 
-	return fmt.Sprintf("rss/feed/%s/%s", tenantID, feedIdFromName(name))
+	feedId := feedIdFromName(name)
+	if name == "" {
+		feedId = ""
+	}
+
+	return fmt.Sprintf("rss/feed/%s/%s", tenantID, feedId)
 }
 
 func NewRss(st store.Store, cr Crawler) *Rss {
