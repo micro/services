@@ -48,6 +48,7 @@ type FunctionService interface {
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Describe(ctx context.Context, in *DescribeRequest, opts ...client.CallOption) (*DescribeResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 }
 
 type functionService struct {
@@ -112,6 +113,16 @@ func (c *functionService) Describe(ctx context.Context, in *DescribeRequest, opt
 	return out, nil
 }
 
+func (c *functionService) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error) {
+	req := c.c.NewRequest(c.name, "Function.Update", in)
+	out := new(UpdateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Function service
 
 type FunctionHandler interface {
@@ -120,6 +131,7 @@ type FunctionHandler interface {
 	List(context.Context, *ListRequest, *ListResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Describe(context.Context, *DescribeRequest, *DescribeResponse) error
+	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 }
 
 func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...server.HandlerOption) error {
@@ -129,6 +141,7 @@ func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...serv
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Describe(ctx context.Context, in *DescribeRequest, out *DescribeResponse) error
+		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 	}
 	type Function struct {
 		function
@@ -159,4 +172,8 @@ func (h *functionHandler) Delete(ctx context.Context, in *DeleteRequest, out *De
 
 func (h *functionHandler) Describe(ctx context.Context, in *DescribeRequest, out *DescribeResponse) error {
 	return h.FunctionHandler.Describe(ctx, in, out)
+}
+
+func (h *functionHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {
+	return h.FunctionHandler.Update(ctx, in, out)
 }

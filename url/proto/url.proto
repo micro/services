@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package url;
 
-option go_package = "github.com/micro/services/url/proto;url";
+option go_package = "./proto;url";
 
 service Url {
 	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
@@ -10,27 +10,27 @@ service Url {
 	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
 }
 
-// Shortens a destination URL and returns a full short URL.
+// Shorten a long URL
 message ShortenRequest {
+	// the url to shorten
 	string destinationURL = 1;
 }
 
 message ShortenResponse {
+	// the shortened url
 	string shortURL = 1;
 }
 
 message URLPair {
+	// destination url
 	string destinationURL = 1;
+	// shortened url
 	string shortURL = 2;
-	string owner = 3;
-	int64 created = 4;
-	// HitCount keeps track many times the short URL has been resolved.
-	// Hitcount only gets saved to disk (database) after every 10th hit, so
-	// its not intended to be 100% accurate, more like an almost correct estimate.
-	int64 hitCount = 5;
+	// time of creation
+	string created = 4;
 }
 
-// List information on all the shortened URLs that you have created
+// List all the shortened URLs
 message ListRequest {
 	// filter by short URL, optional
 	string shortURL = 2;

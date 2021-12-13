@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"strings"
 	"time"
 
@@ -29,10 +28,8 @@ import (
 )
 
 const (
-	mdACL        = "X-Amz-Acl"
-	mdACLPublic  = "public-read"
-	mdCreated    = "Micro-Created"
-	mdVisibility = "Micro-Visibility"
+	mdACL       = "X-Amz-Acl"
+	mdACLPublic = "public-read"
 
 	visibilityPrivate = "private"
 	visibilityPublic  = "public"
@@ -115,7 +112,7 @@ func (s Space) upsert(ctx context.Context, object []byte, name, visibility, meth
 	}
 
 	exists := false
-	hoo, err := s.client.HeadObject(&sthree.HeadObjectInput{
+	_, err := s.client.HeadObject(&sthree.HeadObjectInput{
 		Bucket: aws.String(s.conf.SpaceName),
 		Key:    aws.String(objectName),
 	})
@@ -132,24 +129,30 @@ func (s Space) upsert(ctx context.Context, object []byte, name, visibility, meth
 		return "", errors.BadRequest(method, "Object already exists")
 	}
 
-	createTime := aws.String(time.Now().Format(time.RFC3339Nano))
-	if exists {
-		createTime = hoo.Metadata[mdCreated]
-	}
-
 	if len(visibility) == 0 {
 		visibility = visibilityPrivate
 	}
+
+	now := time.Now().Format(time.RFC3339Nano)
+	md := meta{
+		CreateTime:   now,
+		ModifiedTime: now,
+		Visibility:   visibility,
+	}
+	if exists {
+		m, err := s.objectMeta(objectName)
+		if err != nil {
+			log.Errorf("Error reading object meta %s", err)
+			return "", errors.BadRequest(method, "Error creating object")
+		}
+		md.CreateTime = m.CreateTime
+	}
+
 	putInput := &sthree.PutObjectInput{
 		Body:   bytes.NewReader(object),
 		Key:    aws.String(objectName),
 		Bucket: aws.String(s.conf.SpaceName),
-		Metadata: map[string]*string{
-			mdVisibility: aws.String(visibility),
-			mdCreated:    createTime,
-		},
 	}
-	// TODO flesh out options - might want to do content-type for better serving of object
 	if visibility == visibilityPublic {
 		putInput.ACL = aws.String(mdACLPublic)
 	}
@@ -160,14 +163,12 @@ func (s Space) upsert(ctx context.Context, object []byte, name, visibility, meth
 	}
 
 	// store the metadata for easy retrieval for listing
-	if err := store.Write(store.NewRecord(
-		fmt.Sprintf("%s/%s", prefixByUser, objectName),
-		meta{Visibility: visibility, CreateTime: *createTime, ModifiedTime: time.Now().Format(time.RFC3339Nano)})); err != nil {
+	if err := store.Write(store.NewRecord(fmt.Sprintf("%s/%s", prefixByUser, objectName), md)); err != nil {
 		log.Errorf("Error writing object to store %s", err)
 		return "", errors.InternalServerError(method, "Error creating object")
 	}
 	retUrl := ""
-	if visibility == "public" {
+	if visibility == visibilityPublic {
 		retUrl = fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName)
 	}
 
@@ -281,38 +282,37 @@ func (s Space) Head(ctx context.Context, request *pb.HeadRequest, response *pb.H
 		return errors.InternalServerError(method, "Error reading object")
 	}
 
-	vis := visibilityPrivate
-	if md, ok := goo.Metadata[mdVisibility]; ok && len(*md) > 0 {
-		vis = *md
-	}
-	var created string
-	if md, ok := goo.Metadata[mdCreated]; ok && len(*md) > 0 {
-		t, err := time.Parse(time.RFC3339Nano, *md)
-		if err != nil {
-			// try as unix ts
-			createdI, err := strconv.ParseInt(*md, 10, 64)
-			if err != nil {
-				log.Errorf("Error %s", err)
-			} else {
-				t = time.Unix(createdI, 0)
-			}
-		}
-		created = t.Format(time.RFC3339Nano)
+	md, err := s.objectMeta(objectName)
+	if err != nil {
+		log.Errorf("Error reading object meta %s", err)
+		return errors.InternalServerError(method, "Error reading object")
 	}
 
 	url := ""
-	if vis == "public" {
+	if md.Visibility == visibilityPublic {
 		url = fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName)
 	}
 	response.Object = &pb.HeadObject{
 		Name:       request.Name,
 		Modified:   goo.LastModified.Format(time.RFC3339Nano),
-		Created:    created,
-		Visibility: vis,
+		Created:    md.CreateTime,
+		Visibility: md.Visibility,
 		Url:        url,
 	}
 
 	return nil
+}
+
+func (s *Space) objectMeta(objName string) (*meta, error) {
+	recs, err := store.Read(fmt.Sprintf("%s/%s", prefixByUser, objName))
+	if err != nil {
+		return nil, err
+	}
+	var me meta
+	if err := json.Unmarshal(recs[0].Value, &me); err != nil {
+		return nil, err
+	}
+	return &me, nil
 }
 
 func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
@@ -330,55 +330,35 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 
 	objectName := fmt.Sprintf("%s/%s", tnt, name)
 
-	goo, err := s.client.HeadObject(&sthree.HeadObjectInput{
+	goo, err := s.client.GetObject(&sthree.GetObjectInput{
 		Bucket: aws.String(s.conf.SpaceName),
 		Key:    aws.String(objectName),
 	})
 	if err != nil {
 		aerr, ok := err.(awserr.Error)
-		if ok && aerr.Code() == "NotFound" {
+		if ok && aerr.Code() == "NotSuchKey" {
 			return errors.BadRequest(method, "Object not found")
 		}
 		log.Errorf("Error s3 %s", err)
 		return errors.InternalServerError(method, "Error reading object")
 	}
 
-	_, gooreq := s.client.GetObjectRequest(&sthree.GetObjectInput{
-		Bucket: aws.String(s.conf.SpaceName),
-		Key:    aws.String(objectName),
-	})
-
-
-	vis := visibilityPrivate
-	if md, ok := goo.Metadata[mdVisibility]; ok && len(*md) > 0 {
-		vis = *md
-	}
-
-	var created string
-	if md, ok := goo.Metadata[mdCreated]; ok && len(*md) > 0 {
-		t, err := time.Parse(time.RFC3339Nano, *md)
-		if err != nil {
-			// try as unix ts
-			createdI, err := strconv.ParseInt(*md, 10, 64)
-			if err != nil {
-				log.Errorf("Error %s", err)
-			} else {
-				t = time.Unix(createdI, 0)
-			}
-		}
-		created = t.Format(time.RFC3339Nano)
+	md, err := s.objectMeta(objectName)
+	if err != nil {
+		log.Errorf("Error reading meta %s", err)
+		return errors.InternalServerError(method, "Error reading object")
 	}
 
 	url := ""
-	if vis == "public" {
+	if md.Visibility == visibilityPublic {
 		url = fmt.Sprintf("%s/%s", s.conf.BaseURL, objectName)
 	}
 
-	if *gooreq.ContentLength > maxReadSize {
+	if *goo.ContentLength > maxReadSize {
 		return errors.BadRequest(method, "Exceeds max read size: %v bytes", maxReadSize)
 	}
 
-	b, err := ioutil.ReadAll(gooreq.Body)
+	b, err := ioutil.ReadAll(goo.Body)
 	if err != nil {
 		return errors.InternalServerError(method, "Failed to read data")
 	}
@@ -386,8 +366,8 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	rsp.Object = &pb.Object{
 		Name:       req.Name,
 		Modified:   goo.LastModified.Format(time.RFC3339Nano),
-		Created:    created,
-		Visibility: vis,
+		Created:    md.CreateTime,
+		Visibility: md.Visibility,
 		Url:        url,
 		Data:       b,
 	}
@@ -458,6 +438,68 @@ func (s *Space) Download(ctx context.Context, req *api.Request, rsp *api.Respons
 
 	b, _ := json.Marshal(resp)
 	rsp.Body = string(b)
+
+	return nil
+}
+
+func (s Space) Upload(ctx context.Context, request *pb.UploadRequest, response *pb.UploadResponse) error {
+	method := "space.Upload"
+	tnt, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized(method, "Unauthorized")
+	}
+	if len(request.Name) == 0 {
+		return errors.BadRequest(method, "Missing name param")
+	}
+	objectName := fmt.Sprintf("%s/%s", tnt, request.Name)
+	if err := s3utils.CheckValidObjectName(objectName); err != nil {
+		return errors.BadRequest(method, "Invalid name")
+	}
+
+	_, err := s.client.HeadObject(&sthree.HeadObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if !ok || aerr.Code() != "NotFound" {
+			return errors.InternalServerError(method, "Error creating upload URL")
+		}
+	} else {
+		return errors.BadRequest(method, "Object already exists")
+	}
+
+	createTime := aws.String(time.Now().Format(time.RFC3339Nano))
+
+	if len(request.Visibility) == 0 {
+		request.Visibility = visibilityPrivate
+	}
+	putInput := &sthree.PutObjectInput{
+		Key:    aws.String(objectName),
+		Bucket: aws.String(s.conf.SpaceName),
+	}
+	if request.Visibility == visibilityPublic {
+		putInput.ACL = aws.String(mdACLPublic)
+	}
+
+	req, _ := s.client.PutObjectRequest(putInput)
+	url, err := req.Presign(5 * time.Minute)
+	if err != nil {
+		return errors.InternalServerError(method, "Error creating upload URL")
+	}
+	response.Url = url
+
+	// store the metadata for easy retrieval for listing
+	if err := store.Write(store.NewRecord(
+		fmt.Sprintf("%s/%s", prefixByUser, objectName),
+		meta{
+			Visibility:   request.Visibility,
+			CreateTime:   *createTime,
+			ModifiedTime: time.Now().Format(time.RFC3339Nano),
+		})); err != nil {
+		log.Errorf("Error writing object to store %s", err)
+		return errors.InternalServerError(method, "Error creating upload URL")
+	}
 
 	return nil
 }
