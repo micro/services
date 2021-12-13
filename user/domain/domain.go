@@ -479,7 +479,7 @@ func (domain *Domain) SaltAndPassword(_ context.Context, userId string) (string,
 }
 
 func (domain *Domain) List(_ context.Context, o, l uint32) ([]*user.Account, error) {
-	records, err := store.Read("user/account/",
+	records, err := store.Read("user/account/id/",
 		store.ReadPrefix(),
 		store.ReadLimit(uint(l)),
 		store.ReadLimit(uint(o)))
@@ -494,9 +494,9 @@ func (domain *Domain) List(_ context.Context, o, l uint32) ([]*user.Account, err
 	ret := make([]*user.Account, len(records))
 
 	for i, v := range records {
-		account := &user.Account{}
-		json.Unmarshal(v.Value, account)
-		ret[i] = account
+		account := user.Account{}
+		json.Unmarshal(v.Value, &account)
+		ret[i] = &account
 	}
 
 	return ret, nil
