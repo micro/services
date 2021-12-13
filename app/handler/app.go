@@ -20,7 +20,8 @@ type App struct{}
 var (
 	mtx sync.Mutex
 
-	ReservationKey = "reservedApp/"
+	ServiceKey     = "app/service/"
+	ReservationKey = "app/reservation/"
 	NameFormat     = regexp.MustCompilePOSIX("[a-z0-9]+")
 )
 

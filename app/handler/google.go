@@ -10,15 +10,15 @@ import (
 	"strings"
 	"time"
 
-	_struct "github.com/golang/protobuf/ptypes/struct"
 	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/runtime/source/git"
+	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/app/proto"
-	db "github.com/micro/services/db/proto"
+	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
 )
 
@@ -26,8 +26,7 @@ type GoogleApp struct {
 	project string
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
-	db      db.DbService
-	limit int
+	limit   int
 	regions []string
 
 	// Embed the app handler
@@ -58,7 +57,7 @@ func random(i int) string {
 	return fmt.Sprintf("%d", time.Now().Unix())
 }
 
-func New(db db.DbService) *GoogleApp {
+func New() *GoogleApp {
 	v, err := config.Get("app.service_account_json")
 	if err != nil {
 		log.Fatalf("app.service_account_json: %v", err)
@@ -127,7 +126,7 @@ func New(db db.DbService) *GoogleApp {
 	}
 	log.Info(string(outp))
 
-	return &GoogleApp{project: project, address: address, db: db, limit: limit, App: new(App)}
+	return &GoogleApp{project: project, address: address, limit: limit, App: new(App)}
 }
 
 func (e *GoogleApp) Regions(ctx context.Context, req *pb.RegionsRequest, rsp *pb.RegionsResponse) error {
@@ -153,6 +152,11 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	// validations
 	if !NameFormat.MatchString(req.Name) {
 		return errors.BadRequest("app.run", "invalidate name format")
+	}
+
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "micro"
 	}
 
 	var validRepo bool
@@ -208,31 +212,19 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		return errors.InternalServerError("app.run", "Failed to download source")
 	}
 
-	// check for the existing app
-	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
-		Table: "apps",
-		Id:    req.Name,
-	})
-	if err != nil {
-		return err
-	}
+	key := ServiceKey + id + "/" + req.Name
 
-	// app is already running
-	if len(readRsp.Records) > 0 {
+	// look for the existing service
+	recs, err := store.Read(key)
+	if err == nil && len(recs) > 0 {
 		return errors.BadRequest("app.run", "%s already exists", req.Name)
 	}
 
 	// check for app limit
 	if e.limit > 0 {
-		// check for the existing app
-		countRsp, err := e.db.Count(ctx, &db.CountRequest{
-			Table: "apps",
-		})
-		if err != nil {
-			return err
-		}
-
-		if int(countRsp.Count) >= e.limit {
+		prefixKey := ServiceKey + id + "/"
+		recs, err := store.Read(prefixKey, store.ReadPrefix())
+		if err == nil && len(recs) >= e.limit {
 			return errors.BadRequest("app.run", "deployment limit reached")
 		}
 	}
@@ -253,11 +245,11 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	}
 
 	sid = strings.ToLower(sid)
-	id := req.Name + "-" + strings.Replace(sid, "-", "", -1)
+	srvId := req.Name + "-" + strings.Replace(sid, "-", "", -1)
 
 	service := &pb.Service{
 		Name:    req.Name,
-		Id:      id,
+		Id:      srvId,
 		Repo:    req.Repo,
 		Branch:  req.Branch,
 		Region:  req.Region,
@@ -266,20 +258,9 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		EnvVars: req.EnvVars,
 	}
 
-	s := &_struct.Struct{}
-	b, _ := json.Marshal(service)
-	err = s.UnmarshalJSON(b)
-	if err != nil {
-		return err
-	}
+	rec := store.NewRecord(key, service)
 
-	// write the app to the db
-	_, err = e.db.Create(ctx, &db.CreateRequest{
-		Table:  "apps",
-		Record: s,
-		Id:     req.Name,
-	})
-	if err != nil {
+	if err := store.Write(rec); err != nil {
 		log.Error(err)
 	}
 
@@ -317,7 +298,6 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			return
 		}
 
-
 		errString := string(outp)
 
 		log.Error(fmt.Errorf(errString))
@@ -331,22 +311,11 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			service.Status += ": Build failed"
 		}
 
-		// crazy garbage structs
-		s := &_struct.Struct{}
-		b, _ := json.Marshal(service)
+		key := ServiceKey + id + "/" + req.Name
 
-		if err = s.UnmarshalJSON(b); err != nil {
-			log.Error(err)
-			return
-		}
-
-		// write the app to the db
-		_, err = e.db.Update(ctx, &db.UpdateRequest{
-			Table:  "apps",
-			Record: s,
-			Id:     req.Name,
-		})
-		if err != nil {
+		// save the record
+		rec := store.NewRecord(key, service)
+		if err := store.Write(rec); err != nil {
 			log.Error(err)
 		}
 	}(service)
@@ -360,25 +329,30 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	log.Info("Received App.Delete request")
 
+	if len(req.Name) == 0 {
+		return errors.BadRequest("app.delete", "missing name")
+	}
+
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "micro"
+	}
+
 	// read the app from the db
-	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
-		Table: "apps",
-		Id:    req.Name,
-	})
+	key := ServiceKey + id + "/" + req.Name
+	recs, err := store.Read(key)
 	if err != nil {
 		return err
 	}
 
 	// not running
-	if len(readRsp.Records) == 0 {
+	if len(recs) == 0 {
 		return nil
 	}
 
-	record := readRsp.Records[0]
-	b, _ := json.Marshal(record.AsMap())
+	// decode the service
 	srv := new(pb.Service)
-
-	if err := json.Unmarshal(b, srv); err != nil {
+	if err := recs[0].Decode(srv); err != nil {
 		return err
 	}
 
@@ -392,33 +366,31 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 	}
 
 	// delete from the db
-	_, err = e.db.Delete(ctx, &db.DeleteRequest{
-		Table: "apps",
-		Id:    req.Name,
-	})
-	return err
+	return store.Delete(key)
 }
 
 func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	log.Info("Received App.List request")
 
-	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
-		Table: "apps",
-	})
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "micro"
+	}
+
+	key := ServiceKey + id
+
+	recs, err := store.Read(key, store.ReadPrefix())
 	if err != nil {
 		return err
 	}
 
 	rsp.Services = []*pb.Service{}
 
-	for _, record := range readRsp.Records {
-		b, _ := json.Marshal(record.AsMap())
+	for _, rec := range recs {
 		srv := new(pb.Service)
-
-		if err = json.Unmarshal(b, srv); err != nil {
-			return err
+		if err := rec.Decode(srv); err != nil {
+			continue
 		}
-
 		rsp.Services = append(rsp.Services, srv)
 	}
 
@@ -426,22 +398,24 @@ func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListR
 }
 
 func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.StatusResponse) error {
-	readRsp, err := e.db.Read(ctx, &db.ReadRequest{
-		Table: "apps",
-		Id:    req.Name,
-	})
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "micro"
+	}
+
+	key := ServiceKey + id + "/" + req.Name
+
+	recs, err := store.Read(key)
 	if err != nil {
 		return err
 	}
 
-	if len(readRsp.Records) == 0 {
+	if len(recs) == 0 {
 		return errors.NotFound("app.status", "app not found")
 	}
 
 	srv := new(pb.Service)
-
-	b, _ := json.Marshal(readRsp.Records[0].AsMap())
-	if err = json.Unmarshal(b, srv); err != nil {
+	if err := recs[0].Decode(srv); err != nil {
 		return err
 	}
 
@@ -488,21 +462,8 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	}
 
 	// update built in status
-
-	s := &_struct.Struct{}
-	b, _ = json.Marshal(srv)
-
-	if err = s.UnmarshalJSON(b); err != nil {
-		log.Error(err)
-		return err
-	}
+	rec := store.NewRecord(key, srv)
 
 	// write the app to the db
-	_, err = e.db.Update(ctx, &db.UpdateRequest{
-		Table:  "apps",
-		Record: s,
-		Id:     req.Name,
-	})
-
-	return err
+	return store.Write(rec)
 }

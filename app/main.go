@@ -5,7 +5,6 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/app/handler"
 	pb "github.com/micro/services/app/proto"
-	db "github.com/micro/services/db/proto"
 )
 
 func main() {
@@ -16,9 +15,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterAppHandler(srv.Server(), handler.New(
-		db.NewDbService("db", srv.Client()),
-	))
+	pb.RegisterAppHandler(srv.Server(), handler.New())
 
 	// Run service
 	if err := srv.Run(); err != nil {
