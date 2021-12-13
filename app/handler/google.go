@@ -310,7 +310,10 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 		if err == nil {
 			// populate the app status
-			e.Status(ctx, &pb.StatusRequest{Name: req.Name}, &pb.StatusResponse{})
+			err = e.Status(ctx, &pb.StatusRequest{Name: req.Name}, &pb.StatusResponse{})
+			if err != nil {
+				log.Error(err)
+			}
 			return
 		}
 
