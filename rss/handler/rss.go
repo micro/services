@@ -33,7 +33,12 @@ func generateFeedKey(ctx context.Context, name string) string {
 		tenantID = "micro"
 	}
 
-	return fmt.Sprintf("rss/feed/%s/%s", tenantID, feedIdFromName(name))
+	var feedId string
+	if name != "" {
+		feedId = feedIdFromName(name)
+	}
+
+	return fmt.Sprintf("rss/feed/%s/%s", tenantID, feedId)
 }
 
 func NewRss(st store.Store, cr Crawler) *Rss {
@@ -104,6 +109,7 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 		req.Limit = int64(25)
 	}
 
+	var enough bool
 	for _, v := range records {
 		// decode feed
 		feed := pb.Feed{}
@@ -128,9 +134,14 @@ func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedRespons
 			}
 
 			rsp.Entries = append(rsp.Entries, &entry)
+
+			if len(rsp.Entries) >= int(req.Limit) {
+				enough = true
+				break
+			}
 		}
 
-		if len(rsp.Entries) >= int(req.Limit) {
+		if enough {
 			break
 		}
 	}
