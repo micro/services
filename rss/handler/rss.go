@@ -33,9 +33,9 @@ func generateFeedKey(ctx context.Context, name string) string {
 		tenantID = "micro"
 	}
 
-	feedId := feedIdFromName(name)
-	if name == "" {
-		feedId = ""
+	var feedId string
+	if name != "" {
+		feedId = feedIdFromName(name)
 	}
 
 	return fmt.Sprintf("rss/feed/%s/%s", tenantID, feedId)
