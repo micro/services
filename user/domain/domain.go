@@ -479,7 +479,10 @@ func (domain *Domain) SaltAndPassword(_ context.Context, userId string) (string,
 }
 
 func (domain *Domain) List(_ context.Context, o, l uint32) ([]*user.Account, error) {
-	records, err := store.Read("user/account/", store.ReadLimit(uint(l)), store.ReadLimit(uint(o)))
+	records, err := store.Read("user/account/",
+		store.ReadPrefix(),
+		store.ReadLimit(uint(l)),
+		store.ReadLimit(uint(o)))
 
 	if err != nil {
 		return nil, err
