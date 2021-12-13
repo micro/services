@@ -270,6 +270,6 @@ message VerifyTokenRequest {
 
 message VerifyTokenResponse {
 	bool is_valid = 1;
-	Session sessino = 2;
+	Session session = 2;
 	string message = 3;
 }

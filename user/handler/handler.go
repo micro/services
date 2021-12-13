@@ -482,7 +482,7 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 	}
 
 	rsp.IsValid = true
-	rsp.Sessino = sess
+	rsp.Session = sess
 
 	return nil
 }

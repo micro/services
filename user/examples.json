@@ -250,9 +250,14 @@
         "token": "EdsUiidouJJJLldjlloofUiorkojflsWWdld"
       },
       "response": {
-        "is_valid": false,
+        "is_valid": true,
         "message": "",
-        "session": {}
+        "session": {
+          "id": "df91a612-5b24-4634-99ff-240220ab8f55",
+          "created": "1623677579",
+          "expires": "1623699579",
+          "userId": "8b98acbe-0b6a-4d66-a414-5ffbf666786f"
+        }
       }
     }
   ]
