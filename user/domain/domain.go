@@ -373,6 +373,7 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 	}
 
 	// update user
+	user.Created = old.Created
 	user.Updated = time.Now().Unix()
 	val, err := json.Marshal(user)
 	if err != nil {
@@ -400,14 +401,16 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 
 // readUserByKey read user account in store by key
 func (domain *Domain) readUserByKey(_ context.Context, key string) (*user.Account, error) {
+	var result = &user.Account{}
 	records, err := domain.store.Read(key)
 	if err != nil {
-		return nil, err
+		return result, err
 	}
+
 	if len(records) == 0 {
-		return nil, ErrNotFound
+		return result, ErrNotFound
 	}
-	result := &user.Account{}
+
 	err = json.Unmarshal(records[0].Value, result)
 	return result, err
 }
@@ -436,11 +439,10 @@ func (domain *Domain) Search(ctx context.Context, username, email string) ([]*us
 	}
 
 	if err != nil {
-		return nil, err
+		return []*user.Account{}, err
 	}
 
 	return []*user.Account{account}, nil
-
 }
 
 func (domain *Domain) UpdatePassword(_ context.Context, userId string, salt string, password string) error {
@@ -478,7 +480,7 @@ func (domain *Domain) SaltAndPassword(_ context.Context, userId string) (string,
 	return password.Salt, password.Password, nil
 }
 
-func (domain *Domain) List(_ context.Context, o, l uint32) ([]*user.Account, error) {
+func (domain *Domain) List(_ context.Context, o, l uint32) (result []*user.Account, err error) {
 	records, err := domain.store.Read(generateAccountStoreKey(""),
 		store.ReadPrefix(),
 		store.ReadLimit(uint(l)),
@@ -487,8 +489,9 @@ func (domain *Domain) List(_ context.Context, o, l uint32) ([]*user.Account, err
 	if err != nil {
 		return nil, err
 	}
+
 	if len(records) == 0 {
-		return nil, ErrNotFound
+		return result, ErrNotFound
 	}
 
 	ret := make([]*user.Account, len(records))

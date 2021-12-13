@@ -59,37 +59,45 @@ func NewUser(st store.Store, otp otp.OtpService) *User {
 	}
 }
 
-func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
-	req.Username = strings.TrimSpace(strings.ToLower(req.Username))
-	req.Email = strings.TrimSpace(strings.ToLower(req.Email))
+func (s *User) validCheck(ctx context.Context, userId, username, email string) error {
+	username = strings.TrimSpace(strings.ToLower(username))
+	email = strings.TrimSpace(strings.ToLower(email))
 
-	if req.Username == "" || req.Email == "" {
-		return errors.BadRequest("create.params-check", "missing email or username")
-	}
-
-	if !emailFormat.MatchString(req.Email) {
+	if !emailFormat.MatchString(email) {
 		return errors.BadRequest("create.email-format-check", "email has wrong format")
 	}
+
+	if userId == "" || username == "" || email == "" {
+		return errors.BadRequest("valid-check", "missing id or username or email")
+	}
+
+	account, err := s.domain.SearchByUsername(ctx, username)
+	if err != nil && err.Error() != domain.ErrNotFound.Error() {
+		return err
+	}
+
+	if account.Id != "" && account.Id != userId {
+		return errors.BadRequest("username-check", "username already exists")
+	}
+
+	account, err = s.domain.SearchByEmail(ctx, email)
+	if err != nil && err.Error() != domain.ErrNotFound.Error() {
+		return err
+	}
+	if account.Id != "" && account.Id != userId {
+		return errors.BadRequest("email-check", "email already exists")
+	}
+
+	return nil
+}
+
+func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
 	if len(req.Password) < 8 {
 		return errors.InternalServerError("user.Create.Check", "Password is less than 8 characters")
 	}
 
-	account, err := s.domain.SearchByUsername(ctx, req.Username)
-	if err != nil && err.Error() != domain.ErrNotFound.Error() {
+	if err := s.validCheck(ctx, req.Id, req.Username, req.Email); err != nil {
 		return err
-	}
-
-	if len(account.Id) > 0 {
-		return errors.BadRequest("create.username-check", "username already exists")
-	}
-
-	// TODO: don't error out here
-	account, err = s.domain.SearchByEmail(ctx, req.Email)
-	if err != nil && err.Error() != domain.ErrNotFound.Error() {
-		return err
-	}
-	if len(account.Email) > 0 {
-		return errors.BadRequest("create.email-check", "email already exists")
 	}
 
 	salt := random(16)
@@ -104,8 +112,8 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 
 	acc := &pb.Account{
 		Id:       req.Id,
-		Username: req.Username,
-		Email:    req.Email,
+		Username: strings.ToLower(req.Username),
+		Email:    strings.ToLower(req.Email),
 		Profile:  req.Profile,
 	}
 
@@ -142,6 +150,10 @@ func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 }
 
 func (s *User) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
+	if err := s.validCheck(ctx, req.Id, req.Username, req.Email); err != nil {
+		return err
+	}
+
 	return s.domain.Update(ctx, &pb.Account{
 		Id:       req.Id,
 		Username: strings.ToLower(req.Username),

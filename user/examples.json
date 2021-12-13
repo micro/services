@@ -28,7 +28,7 @@
       "title": "Update the account password",
       "run_check": false,
       "request": {
-        "id": "user-1",
+        "userId": "user-1",
         "oldPassword": "Password1",
         "newPassword": "Password2",
         "confirmPassword": "Password2"
