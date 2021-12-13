@@ -126,6 +126,7 @@ message DescribeResponse {
 	string timeout = 3;
 }
 
+// Update a function
 message UpdateRequest {
 	// function name
 	string name = 1;
