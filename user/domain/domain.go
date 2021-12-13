@@ -271,7 +271,7 @@ func (domain *Domain) batchWrite(records []*store.Record) error {
 		wg.Add(1)
 		go func(r *store.Record) {
 			defer wg.Done()
-			if err := store.Write(r); err != nil {
+			if err := domain.store.Write(r); err != nil {
 				errs = append(errs, err.Error())
 			}
 		}(v)
@@ -479,7 +479,7 @@ func (domain *Domain) SaltAndPassword(_ context.Context, userId string) (string,
 }
 
 func (domain *Domain) List(_ context.Context, o, l uint32) ([]*user.Account, error) {
-	records, err := store.Read(generateAccountStoreKey(""),
+	records, err := domain.store.Read(generateAccountStoreKey(""),
 		store.ReadPrefix(),
 		store.ReadLimit(uint(l)),
 		store.ReadLimit(uint(o)))
