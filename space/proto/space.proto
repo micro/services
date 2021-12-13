@@ -16,10 +16,8 @@ service Space {
 }
 
 // Create an object. Returns error if object with this name already exists. Max object size of 10MB, see Upload endpoint for larger objects. If you want to update an existing object use the `Update` endpoint
-// You need to send the request as a multipart/form-data rather than the usual application/json
-// with each parameter as a form field.
 message CreateRequest {
-	// The contents of the object
+	// The contents of the object. Either base64 encoded if sending request as application/json or raw bytes if using multipart/form-data format
 	bytes object = 1;
 	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
 	string name = 2;
@@ -33,10 +31,8 @@ message CreateResponse {
 }
 
 // Update an object. If an object with this name does not exist, creates a new one.
-// You need to send the request as a multipart/form-data rather than the usual application/json
-// with each parameter as a form field.
 message UpdateRequest {
-	// The contents of the object
+	// The contents of the object. Either base64 encoded if sending request as application/json or raw bytes if using multipart/form-data format
 	bytes object = 1;
 	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
 	string name = 2;

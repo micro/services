@@ -20,15 +20,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Create an object. Returns error if object with this name already exists. If you want to update an existing object use the `Update` endpoint
-// You need to send the request as a multipart/form-data rather than the usual application/json
-// with each parameter as a form field.
+// Create an object. Returns error if object with this name already exists. Max object size of 10MB, see Upload endpoint for larger objects. If you want to update an existing object use the `Update` endpoint
 type CreateRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The contents of the object
+	// The contents of the object. Either base64 encoded if sending request as application/json or raw bytes if using multipart/form-data format
 	Object []byte `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
 	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
@@ -138,14 +136,12 @@ func (x *CreateResponse) GetUrl() string {
 }
 
 // Update an object. If an object with this name does not exist, creates a new one.
-// You need to send the request as a multipart/form-data rather than the usual application/json
-// with each parameter as a form field.
 type UpdateRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The contents of the object
+	// The contents of the object. Either base64 encoded if sending request as application/json or raw bytes if using multipart/form-data format
 	Object []byte `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
 	// The name of the object. Use forward slash delimiter to implement a nested directory-like structure e.g. images/foo.jpg
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
@@ -984,7 +980,7 @@ func (x *DownloadResponse) GetUrl() string {
 	return ""
 }
 
-// Upload a large object. Returns a time limited presigned URL to be used for uploading the object
+// Upload a large object (> 10MB). Returns a time limited presigned URL to be used for uploading the object
 type UploadRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1046,7 +1042,7 @@ type UploadResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// a presigned url to be used for uploading
+	// a presigned url to be used for uploading. To use the URL call it with HTTP PUT and pass the object as the request data
 	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
 }
 
