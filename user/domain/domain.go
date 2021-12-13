@@ -501,7 +501,7 @@ func (domain *Domain) CacheReadToken(ctx context.Context, token string) (string,
 
 	expires, err := cache.Context(ctx).Get(token, email)
 
-	if err == cache.ErrNotFound {
+	if err != nil && err == cache.ErrNotFound {
 		return "", errors.New("token not found")
 	} else if time.Until(expires).Seconds() < 0 {
 		return "", errors.New("token expired")

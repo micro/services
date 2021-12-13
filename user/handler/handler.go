@@ -437,15 +437,15 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 
 	// check if token is valid
 	email, err := s.domain.CacheReadToken(ctx, token)
-	if err.Error() == "token not found" {
+	if err != nil && err.Error() == "token not found" {
 		rsp.IsValid = false
 		rsp.Message = err.Error()
 		return nil
-	} else if err.Error() == "token expired" {
+	} else if err != nil && err.Error() == "token expired" {
 		rsp.IsValid = false
 		rsp.Message = err.Error()
 		return nil
-	} else if err.Error() == "token empty" {
+	} else if err != nil && err.Error() == "token empty" {
 		rsp.IsValid = false
 		rsp.Message = err.Error()
 		return nil
