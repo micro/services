@@ -4,20 +4,15 @@ import (
 	goctx "context"
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
-	"path"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/asim/mq/broker"
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
 	otp "github.com/micro/services/otp/proto"
-	"github.com/micro/services/pkg/tenant"
 	"github.com/micro/services/user/domain"
 	pb "github.com/micro/services/user/proto"
 	"golang.org/x/crypto/bcrypt"
@@ -401,7 +396,7 @@ func (s *User) List(ctx goctx.Context, request *pb.ListRequest, response *pb.Lis
 	return nil
 }
 
-func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, stream pb.User_SendMagicLinkStream) error {
+func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, rsp *pb.SendMagicLinkResponse) error {
 	// check if the email has the correct format
 	if !emailFormat.MatchString(req.Email) {
 		return errors.BadRequest("SendMagicLink.email-format-check", "email has wrong format")
@@ -421,11 +416,8 @@ func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, 
 	// set ttl to 60 seconds
 	ttl := 60
 
-	// uuid part of the topic
-	topic := uuid.New().String()
-
 	// save token, so we can retrieve it later
-	err = s.domain.CacheToken(ctx, token, topic, req.Email, ttl)
+	err = s.domain.CacheToken(ctx, token, req.Email, ttl)
 	if err != nil {
 		return errors.BadRequest("SendMagicLink.cacheToken", "Oooops something went wrong")
 	}
@@ -436,39 +428,6 @@ func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, 
 		return errors.BadRequest("SendMagicLink.sendEmail", "Oooops something went wrong")
 	}
 
-	// subscribe to the topic
-	id, ok := tenant.FromContext(ctx)
-	if !ok {
-		id = "default"
-	}
-
-	// create tenant based topics
-	topic = path.Join("stream", id, topic)
-
-	logger.Infof("Tenant %v subscribing to %v\n", id, topic)
-
-	sub, err := broker.Subscribe(topic)
-	if err != nil {
-		return errors.InternalServerError("SendMagicLink.subscribe", "failed to subscribe to topic")
-	}
-	defer broker.Unsubscribe(topic, sub)
-
-	// range over the messages until the subscriber is closed
-	for msg := range sub {
-		// unmarshal the message into a struct
-		s := &pb.Session{}
-		err = json.Unmarshal(msg, s)
-		if err != nil {
-			return errors.InternalServerError("SendMgicLink.unmarshal", "faild to unmarshal the message")
-		}
-
-		if err := stream.Send(&pb.SendMagicLinkResponse{
-			Session: s,
-		}); err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -477,7 +436,7 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 	token := req.Token
 
 	// check if token is valid
-	topic, email, err := s.domain.CacheReadToken(ctx, token)
+	email, err := s.domain.CacheReadToken(ctx, token)
 	if err.Error() == "token not found" {
 		rsp.IsValid = false
 		rsp.Message = err.Error()
@@ -491,12 +450,16 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 		rsp.Message = err.Error()
 		return nil
 	} else if err != nil {
+		rsp.IsValid = false
+		rsp.Message = err.Error()
 		return errors.BadRequest("VerifyToken.CacheReadToken", err.Error())
 	}
 
 	// save session
 	accounts, err := s.domain.Search(ctx, "", email)
 	if err != nil {
+		rsp.IsValid = false
+		rsp.Message = "account not found"
 		return err
 	}
 	if len(accounts) == 0 {
@@ -513,32 +476,13 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 	}
 
 	if err := s.domain.CreateSession(ctx, sess); err != nil {
+		rsp.IsValid = false
+		rsp.Message = "Creation of a new session has failed"
 		return errors.InternalServerError("VerifyToken.createSession", err.Error())
 	}
 
-	// publish a message which holds the session value.
-	// get the tenant
-	id, ok := tenant.FromContext(ctx)
-	if !ok {
-		id = "default"
-	}
-
-	// create tenant based topics
-	topic = path.Join("stream", id, topic)
-
-	// marshal the data
-	b, _ := json.Marshal(sess)
-
-	logger.Infof("Tenant %v publishing to %v\n", id, topic)
-
-	// publish the message
-	err = broker.Publish(topic, b)
-	if err != nil {
-		return errors.InternalServerError("VerifyToken.publish", "Ooops something went wrong, please try again")
-	}
-
 	rsp.IsValid = true
-	rsp.Message = ""
+	rsp.Session = sess
 
 	return nil
 }

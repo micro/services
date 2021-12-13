@@ -18,7 +18,7 @@ service User {
 	rpc SendPasswordResetEmail(SendPasswordResetEmailRequest) returns (SendPasswordResetEmailResponse) {}
 	rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {}
 	rpc List(ListRequest) returns(ListResponse) {}
-	rpc SendMagicLink(SendMagicLinkRequest) returns (stream SendMagicLinkResponse) {}
+	rpc SendMagicLink(SendMagicLinkRequest) returns (SendMagicLinkResponse) {}
 	rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse) {}
 }
 
@@ -258,9 +258,7 @@ message SendMagicLinkRequest {
 	string endpoint = 6;
 }
 
-message SendMagicLinkResponse {
-	Session session = 1;
-}
+message SendMagicLinkResponse {}
 
 // Check whether the token attached to MagicLink is valid or not.
 // Ideally, you need to call this endpoint from your http request  
@@ -272,5 +270,6 @@ message VerifyTokenRequest {
 
 message VerifyTokenResponse {
 	bool is_valid = 1;
-	string message = 2;
+	Session session = 2;
+	string message = 3;
 }

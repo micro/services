@@ -2,13 +2,15 @@ package handler
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
-	"net/url"
 	"sync"
 	"time"
 
 	"github.com/SlyMarbo/rss"
 	log "github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
+
 	"github.com/micro/services/rss/parser"
 	pb "github.com/micro/services/rss/proto"
 )
@@ -18,28 +20,53 @@ var (
 	rssFeeds = map[string]*rss.Feed{}
 )
 
-func (e *Rss) fetchAll() {
-	fs := []*pb.Feed{}
-	err := e.feeds.Read(e.feedsNameIndex.ToQuery(nil), &fs)
+type Crawler interface {
+	Fetch(f *pb.Feed) error
+	FetchAll()
+}
+
+type crawl struct {
+	store store.Store
+}
+
+func NewCrawl(st store.Store) *crawl {
+	return &crawl{store: st}
+}
+
+func generateEntryKey(feedUrl, id string) string {
+	return fmt.Sprintf("rss/entry/%s/%s", feedUrl, id)
+}
+
+func (e *crawl) FetchAll() {
+	prefix := "rss/feed/"
+	records, err := e.store.Read(prefix, store.ReadPrefix())
+
 	if err != nil {
-		log.Errorf("Error listing pb: %v", err)
+		log.Errorf("get feeds list error: %v", err)
 		return
 	}
-	if len(fs) == 0 {
+
+	if len(records) == 0 {
 		log.Infof("No pb to fetch")
 		return
 	}
-	for _, feed := range fs {
-		err = e.fetch(feed)
+
+	for _, v := range records {
+		feed := pb.Feed{}
+		if err := json.Unmarshal(v.Value, &feed); err != nil {
+			log.Errorf("crawl.fetchAll json unmarshal feed error: %v", err)
+			continue
+		}
+
+		err = e.Fetch(&feed)
 		if err != nil {
 			log.Errorf("Error saving post: %v", err)
 		}
 	}
 }
 
-func (e *Rss) fetch(f *pb.Feed) error {
-	url := f.Url
-	log.Infof("Fetching address %v", url)
+func (e *crawl) Fetch(f *pb.Feed) error {
+	log.Infof("Fetching address %v", f.Url)
 
 	// see if there's an existing rss feed
 	rssSync.RLock()
@@ -51,18 +78,18 @@ func (e *Rss) fetch(f *pb.Feed) error {
 		var err error
 		fd, err = rss.Fetch(f.Url)
 		if err != nil {
-			return fmt.Errorf("Error fetching address %v: %v", url, err)
+			return fmt.Errorf("error fetching address %v: %v", f.Url, err)
 		}
 		// save the feed
 		rssSync.Lock()
 		rssFeeds[f.Url] = fd
 		rssSync.Unlock()
 	} else {
-		// otherwise update the existing feed
+		// otherwise, update the existing feed
 		fd.Items = []*rss.Item{}
 		fd.Unread = 0
 		if err := fd.Update(); err != nil {
-			return fmt.Errorf("Error updating address %v: %v", url, err)
+			return fmt.Errorf("error updating address %v: %v", f.Url, err)
 		}
 	}
 
@@ -77,13 +104,13 @@ func (e *Rss) fetch(f *pb.Feed) error {
 		content := item.Content
 
 		// if we have a parser which returns content use it
-		// e.g cnbc
+		// e.g. cnbc
 		c, err := parser.Parse(item.Link)
 		if err == nil && len(c) > 0 {
 			content = c
 		}
 
-		err = e.entries.Create(pb.Entry{
+		val, err := json.Marshal(&pb.Entry{
 			Id:      id,
 			Title:   item.Title,
 			Summary: item.Summary,
@@ -92,16 +119,22 @@ func (e *Rss) fetch(f *pb.Feed) error {
 			Content: content,
 			Date:    item.Date.Format(time.RFC3339Nano),
 		})
+
 		if err != nil {
-			return fmt.Errorf("Error saving item: %v", err)
+			log.Errorf("json marshal entry error: %v", err)
+			continue
+		}
+
+		// save
+		err = e.store.Write(&store.Record{
+			Key:   generateEntryKey(f.Url, id),
+			Value: val,
+		})
+		if err != nil {
+			return fmt.Errorf("error saving item: %v", err)
 		}
 
 	}
 
 	return nil
-}
-
-func getDomain(address string) string {
-	uri, _ := url.Parse(address)
-	return uri.Host
 }
