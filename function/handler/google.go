@@ -200,21 +200,6 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		}
 	}
 
-	// check for function limit
-	if e.limit > 0 {
-		// check for the existing app
-		countRsp, err := e.db.Count(ctx, &db.CountRequest{
-			Table: "functions",
-		})
-		if err != nil {
-			return err
-		}
-
-		if int(countRsp.Count) >= e.limit {
-			return errors.BadRequest("function.deploy", "deployment limit reached")
-		}
-	}
-
 	// process the env vars to the required format
 	var envVars []string
 
