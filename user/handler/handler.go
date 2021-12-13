@@ -404,7 +404,7 @@ func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, 
 
 	// check if the email exist in the DB
 	users, err := s.domain.Search(ctx, "", req.Email)
-	if err.Error() == "not found" {
+	if err != nil && err.Error() == "not found" {
 		return errors.BadRequest("SendMagicLink.email-check", "email doesn't exist")
 	} else if err != nil {
 		return errors.BadRequest("SendMagicLink.email-check", err.Error())
