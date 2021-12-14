@@ -159,6 +159,8 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		id = "micro"
 	}
 
+	var reservedApp bool
+
 	// check if the name is reserved by a different owner
 	reservedKey := ReservationKey + req.Name
 
@@ -169,6 +171,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		if res.Owner != id && res.Expires.After(time.Now()) {
 			return errors.BadRequest("app.run", "name %s is reserved", req.Name)
 		}
+		reservedApp = true
 	}
 
 	var validRepo bool
@@ -251,7 +254,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	}
 
 	// check for app limit
-	if e.limit > 0 {
+	if e.limit > 0 && !reservedApp {
 		ownerKey := OwnerKey + id + "/"
 		recs, err := store.Read(ownerKey, store.ReadPrefix())
 		if err == nil && len(recs) >= e.limit {
@@ -372,7 +375,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	// set the service in the response
 	rsp.Service = service
 
-	return err
+	return nil
 }
 
 func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
