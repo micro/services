@@ -166,7 +166,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	if err == nil && len(recs) > 0 {
 		res := new(Reservation)
 		recs[0].Decode(res)
-		if res.Owner != id {
+		if res.Owner != id && res.Expires.After(time.Now()) {
 			return errors.BadRequest("app.run", "name %s is reserved", req.Name)
 		}
 	}
