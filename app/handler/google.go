@@ -28,6 +28,7 @@ type GoogleApp struct {
 	address string
 	limit   int
 	regions []string
+	domain string
 
 	// Embed the app handler
 	*App
@@ -75,6 +76,12 @@ func New() *GoogleApp {
 	if len(address) == 0 {
 		log.Fatalf("empty address")
 	}
+
+	v, err = config.Get("app.domain")
+	if err != nil {
+		log.Fatalf("app.domain: %v", err)
+	}
+	domain := v.String("")
 
 	v, err = config.Get("app.project")
 	if err != nil {
@@ -126,7 +133,7 @@ func New() *GoogleApp {
 	}
 	log.Info(string(outp))
 
-	return &GoogleApp{project: project, address: address, limit: limit, App: new(App)}
+	return &GoogleApp{project: project, address: address, limit: limit, App: new(App), domain: domain}
 }
 
 func (e *GoogleApp) Regions(ctx context.Context, req *pb.RegionsRequest, rsp *pb.RegionsResponse) error {
@@ -579,6 +586,12 @@ func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListR
 		if err := rec.Decode(srv); err != nil {
 			continue
 		}
+
+		// set the custom domain
+		if len(e.domain) > 0 {
+			srv.Url = fmt.Sprintf("%s.%s", srv.Id, e.domain)
+		}
+
 		rsp.Services = append(rsp.Services, srv)
 	}
 
@@ -666,6 +679,11 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 			log.Error(err)
 			return err
 		}
+	}
+
+	// set the custom domain
+	if len(e.domain) > 0 {
+		rsp.Service.Url = fmt.Sprintf("%s.%s", srv.Id, e.domain)
 	}
 
 	return nil

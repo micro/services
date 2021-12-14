@@ -38,6 +38,8 @@ message Service {
 	string updated = 10;
 	// associated env vars
 	map<string,string> env_vars = 11;
+	// custom domains
+	repeated string custom_domains = 12;
 }
 
 // Delete an app
@@ -141,13 +143,13 @@ message StatusResponse {
 	Service service = 1;
 }
 
-// Resolve an app id to its url
+// Resolve an app id to its raw provider url
 message ResolveRequest {
 	// the service id
 	string id = 1;
 }
 
 message ResolveResponse {
-	// the url
+	// the end provider url
 	string url = 1;
 }
