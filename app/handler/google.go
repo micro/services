@@ -159,6 +159,18 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		id = "micro"
 	}
 
+	// check if the name is reserved by a different owner
+	reservedKey := ReservationKey + req.Name
+
+	recs, err := store.Read(reservedKey, store.ReadLimit(1))
+	if err == nil && len(recs) > 0 {
+		res := new(Reservation)
+		recs[0].Decode(res)
+		if res.Owner != id {
+			return errors.BadRequest("app.run", "name %s is reserved", req.Name)
+		}
+	}
+
 	var validRepo bool
 
 	// only support github and gitlab
@@ -205,28 +217,28 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		req.Branch = "master"
 	}
 
-	gitter := git.NewGitter(map[string]string{})
-	err := gitter.Checkout(req.Repo, req.Branch)
-	if err != nil {
-		log.Errorf("Failed to download %s@%s\n", req.Repo, req.Branch)
-		return errors.InternalServerError("app.run", "Failed to download source")
-	}
-
 	key := ServiceKey + id + "/" + req.Name
 
 	// look for the existing service
-	recs, err := store.Read(key)
+	recs, err = store.Read(key, store.ReadLimit(1))
 	if err == nil && len(recs) > 0 {
 		return errors.BadRequest("app.run", "%s already exists", req.Name)
 	}
 
 	// check for app limit
 	if e.limit > 0 {
-		prefixKey := ServiceKey + id + "/"
-		recs, err := store.Read(prefixKey, store.ReadPrefix())
+		ownerKey := OwnerKey + id + "/"
+		recs, err := store.Read(ownerKey, store.ReadPrefix())
 		if err == nil && len(recs) >= e.limit {
 			return errors.BadRequest("app.run", "deployment limit reached")
 		}
+	}
+
+	// checkout the code
+	gitter := git.NewGitter(map[string]string{})
+	if err := gitter.Checkout(req.Repo, req.Branch); err != nil {
+		log.Errorf("Failed to download %s@%s\n", req.Repo, req.Branch)
+		return errors.InternalServerError("app.run", "Failed to download source")
 	}
 
 	// TODO validate name and use custom domain name
@@ -259,10 +271,21 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		Created: time.Now().Format(time.RFC3339Nano),
 	}
 
-	rec := store.NewRecord(key, service)
+	keys := []string{
+		// service key
+		ServiceKey + req.Name,
+		// owner key
+		OwnerKey + id + "/" + req.Name,
+	}
 
-	if err := store.Write(rec); err != nil {
-		log.Error(err)
+	// write the keys for the service
+	for _, key := range keys {
+		rec := store.NewRecord(key, service)
+
+		if err := store.Write(rec); err != nil {
+			log.Error(err)
+			return err
+		}
 	}
 
 	go func(service *pb.Service) {
@@ -312,12 +335,21 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			service.Status += ": Build failed"
 		}
 
-		key := ServiceKey + id + "/" + req.Name
+		keys := []string{
+			// service key
+			ServiceKey + req.Name,
+			// owner key
+			OwnerKey + id + "/" + req.Name,
+		}
 
-		// save the record
-		rec := store.NewRecord(key, service)
-		if err := store.Write(rec); err != nil {
-			log.Error(err)
+		// write the keys for the service
+		for _, key := range keys {
+			rec := store.NewRecord(key, service)
+
+			if err := store.Write(rec); err != nil {
+				log.Error(err)
+				return
+			}
 		}
 	}(service)
 
@@ -339,8 +371,8 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 		id = "micro"
 	}
 
-	// read the app from the db
-	key := ServiceKey + id + "/" + req.Name
+	// read the app for the owner
+	key := OwnerKey + id + "/" + req.Name
 	recs, err := store.Read(key)
 	if err != nil {
 		return err
@@ -353,21 +385,39 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 
 	// decode the service
 	srv := new(pb.Service)
+
 	if err := recs[0].Decode(srv); err != nil {
 		return err
 	}
 
 	// execute the delete async
-	// delete the app
-	cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
-	outp, err := cmd.CombinedOutput()
-	if err != nil && !strings.Contains(string(outp), "could not be found") {
-		log.Error(fmt.Errorf(string(outp)))
-		return err
-	}
+	go func(srv *pb.Service) {
+		cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
+		outp, err := cmd.CombinedOutput()
+		if err != nil && !strings.Contains(string(outp), "could not be found") {
+			log.Error(fmt.Errorf(string(outp)))
+			return
+		}
 
-	// delete from the db
-	return store.Delete(key)
+		// delete from the db
+		keys := []string{
+			// service key
+			ServiceKey + req.Name,
+			// owner key
+			OwnerKey + id + "/" + req.Name,
+		}
+
+		// delete the keys for the service
+		for _, key := range keys {
+			if err := store.Delete(key); err != nil {
+				log.Error(err)
+				return
+			}
+		}
+
+	}(srv)
+
+	return nil
 }
 
 func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
@@ -378,7 +428,7 @@ func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListR
 		id = "micro"
 	}
 
-	key := ServiceKey + id
+	key := OwnerKey + id
 
 	recs, err := store.Read(key, store.ReadPrefix())
 	if err != nil {
@@ -404,7 +454,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 		id = "micro"
 	}
 
-	key := ServiceKey + id + "/" + req.Name
+	key := OwnerKey + id + "/" + req.Name
 
 	recs, err := store.Read(key)
 	if err != nil {
@@ -439,7 +489,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 
 	currentStatus := srv.Status
 	currentUrl := srv.Url
-	deployedAt := srv.Updated
+	updatedAt := srv.Updated
 
 	// get the service status
 	status := output["status"].(map[string]interface{})
@@ -458,13 +508,28 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	rsp.Service = srv
 
 	// no change in status and we have a pre-existing url
-	if srv.Status == currentStatus && srv.Url == currentUrl && srv.Updated == deployedAt {
+	if srv.Status == currentStatus && srv.Url == currentUrl && srv.Updated == updatedAt {
 		return nil
 	}
 
 	// update built in status
-	rec := store.NewRecord(key, srv)
+	// delete from the db
+	keys := []string{
+		// global key
+		OwnerKey + req.Name,
+		// owner key
+		OwnerKey + id + "/" + req.Name,
+	}
 
-	// write the app to the db
-	return store.Write(rec)
+	// delete the keys for the service
+	for _, key := range keys {
+		rec := store.NewRecord(key, srv)
+		// write the app to the db
+		if err := store.Write(rec); err != nil {
+			log.Error(err)
+			return err
+		}
+	}
+
+	return nil
 }
