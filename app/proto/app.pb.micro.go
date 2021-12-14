@@ -45,6 +45,7 @@ type AppService interface {
 	Reserve(ctx context.Context, in *ReserveRequest, opts ...client.CallOption) (*ReserveResponse, error)
 	Regions(ctx context.Context, in *RegionsRequest, opts ...client.CallOption) (*RegionsResponse, error)
 	Run(ctx context.Context, in *RunRequest, opts ...client.CallOption) (*RunResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Status(ctx context.Context, in *StatusRequest, opts ...client.CallOption) (*StatusResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
@@ -92,6 +93,16 @@ func (c *appService) Run(ctx context.Context, in *RunRequest, opts ...client.Cal
 	return out, nil
 }
 
+func (c *appService) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Update", in)
+	out := new(UpdateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *appService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
 	req := c.c.NewRequest(c.name, "App.Delete", in)
 	out := new(DeleteResponse)
@@ -128,6 +139,7 @@ type AppHandler interface {
 	Reserve(context.Context, *ReserveRequest, *ReserveResponse) error
 	Regions(context.Context, *RegionsRequest, *RegionsResponse) error
 	Run(context.Context, *RunRequest, *RunResponse) error
+	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Status(context.Context, *StatusRequest, *StatusResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
@@ -138,6 +150,7 @@ func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.Handler
 		Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error
 		Regions(ctx context.Context, in *RegionsRequest, out *RegionsResponse) error
 		Run(ctx context.Context, in *RunRequest, out *RunResponse) error
+		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Status(ctx context.Context, in *StatusRequest, out *StatusResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
@@ -163,6 +176,10 @@ func (h *appHandler) Regions(ctx context.Context, in *RegionsRequest, out *Regio
 
 func (h *appHandler) Run(ctx context.Context, in *RunRequest, out *RunResponse) error {
 	return h.AppHandler.Run(ctx, in, out)
+}
+
+func (h *appHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {
+	return h.AppHandler.Update(ctx, in, out)
 }
 
 func (h *appHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {

@@ -217,12 +217,37 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		req.Branch = "master"
 	}
 
-	key := ServiceKey + id + "/" + req.Name
-
 	// look for the existing service
+	key := OwnerKey + id + "/" + req.Name
+
+	// check the owner isn't already running it
 	recs, err = store.Read(key, store.ReadLimit(1))
 	if err == nil && len(recs) > 0 {
-		return errors.BadRequest("app.run", "%s already exists", req.Name)
+		return errors.BadRequest("app.run", "%s already running", req.Name)
+	}
+
+	// check the global namespace
+	// look for the existing service
+	key = ServiceKey + req.Name
+
+	// set the id
+	appId := req.Name
+
+	// check the owner isn't already running it
+	recs, err = store.Read(key, store.ReadLimit(1))
+
+	// if there's an existing service then generate a unique id
+	if err == nil && len(recs) > 0 {
+		// generate an id for the service
+		sid, err := shortid.Generate()
+		if err != nil || len(sid) == 0 {
+			sid = random(8)
+		}
+
+		sid = strings.ToLower(sid)
+		sid = strings.Replace(sid, "-", "", -1)
+		sid = strings.Replace(sid, "_", "", -1)
+		appId = req.Name + "-" + sid
 	}
 
 	// check for app limit
@@ -250,20 +275,9 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		envVars = append(envVars, k+"="+v)
 	}
 
-	// generate an id for the service
-	sid, err := shortid.Generate()
-	if err != nil || len(sid) == 0 {
-		sid = random(8)
-	}
-
-	sid = strings.ToLower(sid)
-	sid = strings.Replace(sid, "-", "", -1)
-	sid = strings.Replace(sid, "_", "", -1)
-	srvId := req.Name + "-" + sid
-
 	service := &pb.Service{
 		Name:    req.Name,
-		Id:      srvId,
+		Id:      appId,
 		Repo:    req.Repo,
 		Branch:  req.Branch,
 		Region:  req.Region,
@@ -275,7 +289,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 	keys := []string{
 		// service key
-		ServiceKey + req.Name,
+		ServiceKey + service.Id,
 		// owner key
 		OwnerKey + id + "/" + req.Name,
 	}
@@ -292,7 +306,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 	go func(service *pb.Service) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Name, "--region", req.Region,
+		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
@@ -339,7 +353,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 		keys := []string{
 			// service key
-			ServiceKey + req.Name,
+			ServiceKey + service.Id,
 			// owner key
 			OwnerKey + id + "/" + req.Name,
 		}
@@ -361,6 +375,124 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	return err
 }
 
+func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
+	log.Info("Received App.Update request")
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest("app.update", "missing name")
+	}
+
+	// validations
+	if !NameFormat.MatchString(req.Name) {
+		return errors.BadRequest("app.run", "invalidate name format")
+	}
+
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "micro"
+	}
+
+	key := OwnerKey + id + "/" + req.Name
+
+	// look for the existing service
+	recs, err := store.Read(key, store.ReadLimit(1))
+	if err != nil && err == store.ErrNotFound {
+		return errors.BadRequest("app.update", "%s does not exist", req.Name)
+	}
+
+	if len(recs) == 0 {
+		return errors.BadRequest("app.update", "%s does not exist", req.Name)
+	}
+
+	srv := new(pb.Service)
+
+	if err := recs[0].Decode(srv); err != nil {
+		return err
+	}
+
+	// checkout the code
+	gitter := git.NewGitter(map[string]string{})
+	if err := gitter.Checkout(req.Repo, req.Branch); err != nil {
+		log.Errorf("Failed to download %s@%s\n", req.Repo, req.Branch)
+		return errors.InternalServerError("app.run", "Failed to download source")
+	}
+
+	// TODO validate name and use custom domain name
+
+	// process the env vars to the required format
+	var envVars []string
+
+	for k, v := range srv.EnvVars {
+		envVars = append(envVars, k+"="+v)
+	}
+
+	go func(service *pb.Service) {
+		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
+		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", service.Region,
+			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", service.Port),
+			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
+		)
+
+		// if env vars exist then set them
+		if len(envVars) > 0 {
+			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
+		}
+
+		// set the command dir
+		cmd.Dir = gitter.RepoDir()
+
+		// execute the command
+		outp, err := cmd.CombinedOutput()
+
+		// by this point the context may have been cancelled
+		acc, _ := auth.AccountFromContext(ctx)
+		md, _ := metadata.FromContext(ctx)
+
+		ctx = metadata.NewContext(context.Background(), md)
+		ctx = auth.ContextWithAccount(ctx, acc)
+
+		if err == nil {
+			// populate the app status
+			err = e.Status(ctx, &pb.StatusRequest{Name: service.Name}, &pb.StatusResponse{})
+			if err != nil {
+				log.Error(err)
+			}
+			return
+		}
+
+		errString := string(outp)
+
+		log.Error(fmt.Errorf(errString))
+
+		// set the error status
+		service.Status = "DeploymentError"
+
+		if strings.Contains(errString, "Failed to start and then listen on the port defined by the PORT environment variable") {
+			service.Status += ": Failed to start and listen on port " + fmt.Sprintf("%d", service.Port)
+		} else if strings.Contains(errString, "Build failed") {
+			service.Status += ": Build failed"
+		}
+
+		keys := []string{
+			// service key
+			ServiceKey + service.Id,
+			// owner key
+			OwnerKey + id + "/" + req.Name,
+		}
+
+		// write the keys for the service
+		for _, key := range keys {
+			rec := store.NewRecord(key, service)
+
+			if err := store.Write(rec); err != nil {
+				log.Error(err)
+				return
+			}
+		}
+	}(srv)
+
+	return err
+}
 func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	log.Info("Received App.Delete request")
 
@@ -394,7 +526,7 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 
 	// execute the delete async
 	go func(srv *pb.Service) {
-		cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Name)
+		cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
 		outp, err := cmd.CombinedOutput()
 		if err != nil && !strings.Contains(string(outp), "could not be found") {
 			log.Error(fmt.Errorf(string(outp)))
@@ -404,7 +536,7 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 		// delete from the db
 		keys := []string{
 			// service key
-			ServiceKey + req.Name,
+			ServiceKey + srv.Id,
 			// owner key
 			OwnerKey + id + "/" + req.Name,
 		}
@@ -430,7 +562,7 @@ func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListR
 		id = "micro"
 	}
 
-	key := OwnerKey + id
+	key := OwnerKey + id + "/"
 
 	recs, err := store.Read(key, store.ReadPrefix())
 	if err != nil {
@@ -473,7 +605,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	}
 
 	// get the current app status
-	cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "services", "describe", "--region", srv.Region, srv.Name)
+	cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "services", "describe", "--region", srv.Region, srv.Id)
 	outp, err := cmd.CombinedOutput()
 	if err != nil && srv.Status == "Deploying" {
 		log.Error(fmt.Errorf(string(outp)))
@@ -518,7 +650,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	// delete from the db
 	keys := []string{
 		// global key
-		OwnerKey + req.Name,
+		ServiceKey + srv.Id,
 		// owner key
 		OwnerKey + id + "/" + req.Name,
 	}
