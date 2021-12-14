@@ -257,7 +257,9 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	}
 
 	sid = strings.ToLower(sid)
-	srvId := req.Name + "-" + strings.Replace(sid, "-", "", -1)
+	sid = strings.Replace(sid, "-", "", -1)
+	sid = strings.Replace(sid, "_", "", -1)
+	srvId := req.Name + "-" + sid
 
 	service := &pb.Service{
 		Name:    req.Name,
