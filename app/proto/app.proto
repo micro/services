@@ -8,6 +8,7 @@ service App {
 	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
 	rpc Regions(RegionsRequest) returns (RegionsResponse) {}
 	rpc Run(RunRequest) returns (RunResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Status(StatusRequest) returns (StatusResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
@@ -30,10 +31,12 @@ message Service {
 	string status = 7;
 	// app url
 	string url = 8;
-	// last deployed time
-	string deployed_at = 9;
+	// time of creation
+	string created = 9;
+	// last updated
+	string updated = 10;
 	// associated env vars
-	map<string,string> env_vars = 10;
+	map<string,string> env_vars = 11;
 }
 
 // Delete an app
@@ -73,6 +76,28 @@ message RunResponse {
 	// The running service
 	Service service = 1;
 }
+
+// Update the app
+message UpdateRequest {
+	// name of the app
+	string name = 1;
+	// source repository
+	string repo = 2;
+	// branch. defaults to master
+	string branch = 3;
+	// region to run in
+	string region = 4;
+	// port to run on
+	int32 port = 5;
+	// associatede env vars to pass in
+	map<string,string> env_vars = 6;
+}
+
+message RunResponse {
+	// The running service
+	Service service = 1;
+}
+
 
 // Return the support regions
 message RegionsRequest {}

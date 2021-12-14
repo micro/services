@@ -256,6 +256,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		Port:    req.Port,
 		Status:  "Deploying",
 		EnvVars: req.EnvVars,
+		Created: time.Now().Format(time.RFC3339Nano),
 	}
 
 	rec := store.NewRecord(key, service)
@@ -438,12 +439,12 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 
 	currentStatus := srv.Status
 	currentUrl := srv.Url
-	deployedAt := srv.DeployedAt
+	deployedAt := srv.Updated
 
 	// get the service status
 	status := output["status"].(map[string]interface{})
 	deployed := status["conditions"].([]interface{})[0].(map[string]interface{})
-	srv.DeployedAt = deployed["lastTransitionTime"].(string)
+	srv.Updated = deployed["lastTransitionTime"].(string)
 
 	switch deployed["status"].(string) {
 	case "True":
@@ -457,7 +458,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	rsp.Service = srv
 
 	// no change in status and we have a pre-existing url
-	if srv.Status == currentStatus && srv.Url == currentUrl && srv.DeployedAt == deployedAt {
+	if srv.Status == currentStatus && srv.Url == currentUrl && srv.Updated == deployedAt {
 		return nil
 	}
 
