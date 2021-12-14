@@ -118,7 +118,7 @@ message Reservation {
 	string expires = 5;
 }
 
-// Reserve your app name
+// Reserve apps beyond the free quota. Call Run after.
 message ReserveRequest {
 	// name of your app e.g helloworld
 	string name = 1;
