@@ -54,7 +54,8 @@ func NewUser(st store.Store, otp otp.OtpService) *User {
 	}
 }
 
-func (s *User) validCheck(ctx context.Context, userId, username, email string) error {
+// validatePostUserData checks userId, username, email post data are valid and in right format
+func (s *User) validatePostUserData(ctx context.Context, userId, username, email string) error {
 	username = strings.TrimSpace(strings.ToLower(username))
 	email = strings.TrimSpace(strings.ToLower(email))
 
@@ -91,7 +92,7 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 		return errors.InternalServerError("user.Create.Check", "Password is less than 8 characters")
 	}
 
-	if err := s.validCheck(ctx, req.Id, req.Username, req.Email); err != nil {
+	if err := s.validatePostUserData(ctx, req.Id, req.Username, req.Email); err != nil {
 		return err
 	}
 
@@ -145,7 +146,7 @@ func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 }
 
 func (s *User) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
-	if err := s.validCheck(ctx, req.Id, req.Username, req.Email); err != nil {
+	if err := s.validatePostUserData(ctx, req.Id, req.Username, req.Email); err != nil {
 		return err
 	}
 
