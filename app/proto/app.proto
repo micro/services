@@ -12,6 +12,7 @@ service App {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Status(StatusRequest) returns (StatusResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Resolve(ResolveRequest) returns (ResolveResponse) {}
 }
 
 message Service {
@@ -138,4 +139,15 @@ message StatusRequest {
 message StatusResponse {
 	// running service info
 	Service service = 1;
+}
+
+// Resolve an app id to its url
+message ResolveRequest {
+	// the service id
+	string id = 1;
+}
+
+message ResolveResponse {
+	// the url
+	string url = 1;
 }

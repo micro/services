@@ -670,3 +670,26 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 
 	return nil
 }
+
+func (a *App) Resolve(ctx context.Context, req *pb.ResolveRequest, rsp *pb.ResolveResponse) error {
+	if len(req.Id) == 0 {
+		return errors.BadRequest("app.resolve", "missing id")
+	}
+
+	key := ServiceKey + req.Id
+
+	recs, err := store.Read(key, store.ReadLimit(1))
+	if err != nil {
+		return err
+	}
+
+	if len(recs) == 0 {
+		return errors.BadRequest("app.resolve", "app does not exist")
+	}
+
+	srv := new(pb.Service)
+	recs[0].Decode(srv)
+
+	rsp.Url = srv.Url
+	return nil
+}

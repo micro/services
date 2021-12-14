@@ -49,6 +49,7 @@ type AppService interface {
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Status(ctx context.Context, in *StatusRequest, opts ...client.CallOption) (*StatusResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
+	Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error)
 }
 
 type appService struct {
@@ -133,6 +134,16 @@ func (c *appService) List(ctx context.Context, in *ListRequest, opts ...client.C
 	return out, nil
 }
 
+func (c *appService) Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Resolve", in)
+	out := new(ResolveResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for App service
 
 type AppHandler interface {
@@ -143,6 +154,7 @@ type AppHandler interface {
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Status(context.Context, *StatusRequest, *StatusResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
+	Resolve(context.Context, *ResolveRequest, *ResolveResponse) error
 }
 
 func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.HandlerOption) error {
@@ -154,6 +166,7 @@ func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.Handler
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Status(ctx context.Context, in *StatusRequest, out *StatusResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
+		Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error
 	}
 	type App struct {
 		app
@@ -192,4 +205,8 @@ func (h *appHandler) Status(ctx context.Context, in *StatusRequest, out *StatusR
 
 func (h *appHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
 	return h.AppHandler.List(ctx, in, out)
+}
+
+func (h *appHandler) Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error {
+	return h.AppHandler.Resolve(ctx, in, out)
 }
