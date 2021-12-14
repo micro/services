@@ -290,7 +290,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 	go func(service *pb.Service) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
+		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Name, "--region", req.Region,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
@@ -392,7 +392,7 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 
 	// execute the delete async
 	go func(srv *pb.Service) {
-		cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Id)
+		cmd := exec.Command("gcloud", "--quiet", "--project", e.project, "run", "services", "delete", "--region", srv.Region, srv.Name)
 		outp, err := cmd.CombinedOutput()
 		if err != nil && !strings.Contains(string(outp), "could not be found") {
 			log.Error(fmt.Errorf(string(outp)))
@@ -471,7 +471,7 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	}
 
 	// get the current app status
-	cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "services", "describe", "--region", srv.Region, srv.Id)
+	cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "services", "describe", "--region", srv.Region, srv.Name)
 	outp, err := cmd.CombinedOutput()
 	if err != nil && srv.Status == "Deploying" {
 		log.Error(fmt.Errorf(string(outp)))
