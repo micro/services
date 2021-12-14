@@ -2,76 +2,52 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"hash/fnv"
-	"strings"
-	"time"
 
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/model"
+	"github.com/micro/micro/v3/service/store"
+
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/rss/proto"
 )
 
 type Rss struct {
-	feeds            model.Model
-	entries          model.Model
-	feedsIdIndex     model.Index
-	feedsNameIndex   model.Index
-	entriesDateIndex model.Index
-	entriesURLIndex  model.Index
+	store store.Store
+	crawl Crawler
 }
 
-func idFromName(name string) string {
+// feedIdFromName generates md5 id by feed's name
+func feedIdFromName(name string) string {
 	hash := fnv.New64a()
 	hash.Write([]byte(name))
 	return fmt.Sprintf("%d", hash.Sum64())
 }
 
-func NewRss() *Rss {
-	idIndex := model.ByEquality("id")
-	idIndex.Order.Type = model.OrderTypeUnordered
-
-	nameIndex := model.ByEquality("name")
-	nameIndex.Order.Type = model.OrderTypeUnordered
-
-	dateIndex := model.ByEquality("date")
-	dateIndex.Order.Type = model.OrderTypeDesc
-
-	entriesURLIndex := model.ByEquality("feed")
-	entriesURLIndex.Order.Type = model.OrderTypeDesc
-	entriesURLIndex.Order.FieldName = "date"
-
-	f := &Rss{
-		feeds: model.NewModel(
-			model.WithNamespace("feeds"),
-			model.WithIndexes(idIndex, nameIndex),
-		),
-		entries: model.NewModel(
-			model.WithNamespace("entries"),
-			model.WithIndexes(dateIndex, entriesURLIndex),
-		),
-		feedsIdIndex:     idIndex,
-		feedsNameIndex:   nameIndex,
-		entriesDateIndex: dateIndex,
-		entriesURLIndex:  entriesURLIndex,
+// generateFeedKey returns feed key in store
+func generateFeedKey(ctx context.Context, name string) string {
+	tenantID, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantID = "micro"
 	}
 
-	// register model instances
-	f.feeds.Register(new(pb.Feed))
-	f.entries.Register(new(pb.Entry))
+	var feedId string
+	if name != "" {
+		feedId = feedIdFromName(name)
+	}
 
-	go f.crawl()
-	return f
+	return fmt.Sprintf("rss/feed/%s/%s", tenantID, feedId)
 }
 
-func (e *Rss) crawl() {
-	e.fetchAll()
-	tick := time.NewTicker(1 * time.Minute)
-	for _ = range tick.C {
-		e.fetchAll()
+func NewRss(st store.Store, cr Crawler) *Rss {
+	f := &Rss{
+		store: st,
+		crawl: cr,
 	}
+
+	return f
 }
 
 func (e *Rss) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) error {
@@ -81,24 +57,28 @@ func (e *Rss) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) 
 		return errors.BadRequest("rss.add", "require name")
 	}
 
-	// get the tenantID
-	tenantID, ok := tenant.FromContext(ctx)
-	if !ok {
-		tenantID = "micro"
-	}
-
-	f := pb.Feed{
-		Id:       tenantID + "/" + idFromName(req.Name),
+	key := generateFeedKey(ctx, req.Name)
+	f := &pb.Feed{
+		Id:       key,
 		Name:     req.Name,
 		Url:      req.Url,
 		Category: req.Category,
 	}
 
 	// create the feed
-	e.feeds.Create(f)
+	val, err := json.Marshal(f)
+	if err != nil {
+		return err
+	}
+
+	if err := e.store.Write(&store.Record{Key: key, Value: val}); err != nil {
+		return err
+	}
 
 	// schedule immediate fetch
-	go e.fetch(&f)
+	go func() {
+		_ = e.crawl.Fetch(f)
+	}()
 
 	return nil
 }
@@ -106,116 +86,83 @@ func (e *Rss) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse) 
 func (e *Rss) Feed(ctx context.Context, req *pb.FeedRequest, rsp *pb.FeedResponse) error {
 	log.Info("Received Rss.Entries request")
 
-	// get the tenantID
-	tenantID, ok := tenant.FromContext(ctx)
-	if !ok {
-		tenantID = "micro"
+	prefix := generateFeedKey(ctx, req.Name)
+	var records []*store.Record
+	var err error
+
+	// get records with prefix
+	if len(req.Name) > 0 {
+		records, err = e.store.Read(prefix)
+	} else {
+		records, err = e.store.Read(prefix, store.ReadPrefix())
 	}
 
-	// feeds by url
-	feedUrls := map[string]bool{}
-	var feed *pb.Feed
+	if err != nil {
+		return err
+	}
 
-	if len(req.Name) > 0 {
-		id := tenantID + "/" + idFromName(req.Name)
-		q := model.QueryEquals("ID", id)
-
-		// get the feed
-		if err := e.feeds.Read(q, &feed); err != nil {
-			return errors.InternalServerError("rss.feeds", "could not read feed")
-		}
-
-		feedUrls[feed.Url] = true
-	} else {
-		// get all the feeds for a user
-		var feeds []*pb.Feed
-		q := model.QueryAll()
-		if err := e.feeds.Read(q, &feeds); err != nil {
-			return errors.InternalServerError("rss.feeds", "could not read feed")
-		}
-		for _, feed := range feeds {
-			if !strings.HasPrefix(feed.Id, tenantID+"/") {
-				continue
-			}
-			feedUrls[feed.Url] = true
-		}
+	if len(records) == 0 {
+		return nil
 	}
 
 	if req.Limit == 0 {
 		req.Limit = int64(25)
 	}
 
-	// default query all
-	q := e.entriesDateIndex.ToQuery(nil)
-
-	// if the need is not nil, then use one url
-	if feed != nil {
-		q = e.entriesURLIndex.ToQuery(feed.Url)
-	}
-
-	q.Limit = req.Limit
-	q.Offset = req.Offset
-
-	// iterate until entries hits the limit
-	for len(rsp.Entries) < int(req.Limit) {
-		var entries []*pb.Entry
-		// get the entries for each
-		err := e.entries.Read(q, &entries)
-		if err != nil {
-			return errors.InternalServerError("rss.feeds", "could not read feed")
+	var enough bool
+	for _, v := range records {
+		// decode feed
+		feed := pb.Feed{}
+		if err := json.Unmarshal(v.Value, &feed); err != nil {
+			log.Errorf("json unmarshal feed error: %v", err)
+			continue
 		}
 
-		// find the relevant entries
-		for _, entry := range entries {
-			// check its a url we care about
-			if _, ok := feedUrls[entry.Feed]; !ok {
+		// read entries with prefix
+		entryPrefix := generateEntryKey(feed.Url, "")
+		entries, err := e.store.Read(entryPrefix, store.ReadPrefix())
+		if err != nil {
+			log.Errorf("read feed entry from store error: %v", err)
+			continue
+		}
+
+		for _, val := range entries {
+			var entry pb.Entry
+			if err := json.Unmarshal(val.Value, &entry); err != nil {
+				log.Errorf("json unmarshal entry error: %v", err)
 				continue
 			}
 
-			// add the entry
-			rsp.Entries = append(rsp.Entries, entry)
+			rsp.Entries = append(rsp.Entries, &entry)
 
-			// once you hit the limit return
-			if len(rsp.Entries) == int(req.Limit) {
-				return nil
+			if len(rsp.Entries) >= int(req.Limit) {
+				enough = true
+				break
 			}
 		}
 
-		// no more entries or less than the limit
-		if len(entries) == 0 || len(entries) < int(req.Limit) {
-			return nil
+		if enough {
+			break
 		}
-
-		// increase the offset
-		q.Offset += q.Limit
 	}
 
 	return nil
 }
 
 func (e *Rss) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
-	var feeds []*pb.Feed
-	q := model.QueryAll()
+	prefix := generateFeedKey(ctx, "")
+	records, err := e.store.Read(prefix, store.ReadPrefix())
 
-	// TODO: find a way to query only by tenant
-	err := e.feeds.Read(q, &feeds)
 	if err != nil {
-		return errors.InternalServerError("rss.list", "failed to read list of feeds: %v", err)
+		return err
 	}
 
-	// get the tenantID
-	tenantID, ok := tenant.FromContext(ctx)
-	if !ok {
-		tenantID = "micro"
-	}
-
-	for _, feed := range feeds {
-		// filter for the tenant
-		if !strings.HasPrefix(feed.Id, tenantID+"/") {
+	for _, val := range records {
+		var feed = pb.Feed{}
+		if err := json.Unmarshal(val.Value, &feed); err != nil {
 			continue
 		}
-
-		rsp.Feeds = append(rsp.Feeds, feed)
+		rsp.Feeds = append(rsp.Feeds, &feed)
 	}
 
 	return nil
@@ -223,17 +170,8 @@ func (e *Rss) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespons
 
 func (e *Rss) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.RemoveResponse) error {
 	if len(req.Name) == 0 {
-		return errors.BadRequest("rss.remove", "blank name provided")
+		return errors.BadRequest("rss.remove", "name is required")
 	}
 
-	// get the tenantID
-	tenantID, ok := tenant.FromContext(ctx)
-	if !ok {
-		tenantID = "micro"
-	}
-
-	id := tenantID + "/" + idFromName(req.Name)
-
-	e.feeds.Delete(model.QueryEquals("ID", id))
-	return nil
+	return e.store.Delete(generateFeedKey(ctx, req.Name))
 }

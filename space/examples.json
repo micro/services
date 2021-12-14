@@ -10,7 +10,8 @@
       },
       "response": {
 	    "url": "https://example.com/foo/bar/file.jpg"
-      }
+      },
+      "shell_request": "curl \"https://api.m3o.com/v1/space/Create\" \\\n-H \"Authorization: Bearer $M3O_API_TOKEN\" \\\n-Fobject=@file.jpg -Fname=images/file.jpg -Fvisibility=public"
     }
   ],
   "update": [
@@ -22,6 +23,7 @@
         "name": "images/file.jpg",
         "visibility": "public"
       },
+      "shell_request": "curl \"https://api.m3o.com/v1/space/Update\" \\\n-H \"Authorization: Bearer $M3O_API_TOKEN\" \\\n-Fobject=@file.jpg -Fname=images/file.jpg -Fvisibility=public",
       "response": {
         "url": "https://example.com/foo/bar/images/file.jpg"
       }
@@ -49,12 +51,16 @@
         "objects": [
           {
             "name": "images/file.jpg",
-            "modified": 1638549232,
+            "modified": "2021-12-10T14:28:23.220874511Z",
+            "created": "2021-12-10T14:28:23.220874511Z",
+            "visibility": "public",
             "url": "https://example.com/foo/bar/images/file.jpg"
           },
           {
             "name": "images/file2.jpg",
-            "modified": 1638547232,
+            "modified": "2021-12-10T14:27:23.220874511Z",
+            "created": "2021-12-10T14:27:23.220874511Z",
+            "visibility": "public",
             "url": "https://example.com/foo/bar/images/file2.jpg"
           }
         ]
@@ -71,8 +77,8 @@
       "response": {
         "object": {
           "name": "images/file.jpg",
-          "modified": 1638549232,
-          "created": 1638546232,
+          "modified": "2021-12-10T14:28:23.220874511Z",
+          "created": "2021-12-10T14:28:23.220874511Z",
           "url": "https://example.com/foo/bar/images/file.jpg",
           "visibility": "public"
         }
@@ -89,8 +95,8 @@
       "response": {
         "object": {
           "name": "images/file.jpg",
-          "modified": 1638549232,
-          "created": 1638546232,
+          "modified": "2021-12-10T14:28:23.220874511Z",
+          "created": "2021-12-10T14:28:23.220874511Z",
           "url": "https://example.com/foo/bar/images/file.jpg",
           "visibility": "public",
           "data": "<file bytes>"

@@ -55,7 +55,7 @@ type UserService interface {
 	SendPasswordResetEmail(ctx context.Context, in *SendPasswordResetEmailRequest, opts ...client.CallOption) (*SendPasswordResetEmailResponse, error)
 	ResetPassword(ctx context.Context, in *ResetPasswordRequest, opts ...client.CallOption) (*ResetPasswordResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
-	SendMagicLink(ctx context.Context, in *SendMagicLinkRequest, opts ...client.CallOption) (User_SendMagicLinkService, error)
+	SendMagicLink(ctx context.Context, in *SendMagicLinkRequest, opts ...client.CallOption) (*SendMagicLinkResponse, error)
 	VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...client.CallOption) (*VerifyTokenResponse, error)
 }
 
@@ -201,53 +201,14 @@ func (c *userService) List(ctx context.Context, in *ListRequest, opts ...client.
 	return out, nil
 }
 
-func (c *userService) SendMagicLink(ctx context.Context, in *SendMagicLinkRequest, opts ...client.CallOption) (User_SendMagicLinkService, error) {
-	req := c.c.NewRequest(c.name, "User.SendMagicLink", &SendMagicLinkRequest{})
-	stream, err := c.c.Stream(ctx, req, opts...)
+func (c *userService) SendMagicLink(ctx context.Context, in *SendMagicLinkRequest, opts ...client.CallOption) (*SendMagicLinkResponse, error) {
+	req := c.c.NewRequest(c.name, "User.SendMagicLink", in)
+	out := new(SendMagicLinkResponse)
+	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	if err := stream.Send(in); err != nil {
-		return nil, err
-	}
-	return &userServiceSendMagicLink{stream}, nil
-}
-
-type User_SendMagicLinkService interface {
-	Context() context.Context
-	SendMsg(interface{}) error
-	RecvMsg(interface{}) error
-	Close() error
-	Recv() (*SendMagicLinkResponse, error)
-}
-
-type userServiceSendMagicLink struct {
-	stream client.Stream
-}
-
-func (x *userServiceSendMagicLink) Close() error {
-	return x.stream.Close()
-}
-
-func (x *userServiceSendMagicLink) Context() context.Context {
-	return x.stream.Context()
-}
-
-func (x *userServiceSendMagicLink) SendMsg(m interface{}) error {
-	return x.stream.Send(m)
-}
-
-func (x *userServiceSendMagicLink) RecvMsg(m interface{}) error {
-	return x.stream.Recv(m)
-}
-
-func (x *userServiceSendMagicLink) Recv() (*SendMagicLinkResponse, error) {
-	m := new(SendMagicLinkResponse)
-	err := x.stream.Recv(m)
-	if err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 func (c *userService) VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...client.CallOption) (*VerifyTokenResponse, error) {
@@ -276,7 +237,7 @@ type UserHandler interface {
 	SendPasswordResetEmail(context.Context, *SendPasswordResetEmailRequest, *SendPasswordResetEmailResponse) error
 	ResetPassword(context.Context, *ResetPasswordRequest, *ResetPasswordResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
-	SendMagicLink(context.Context, *SendMagicLinkRequest, User_SendMagicLinkStream) error
+	SendMagicLink(context.Context, *SendMagicLinkRequest, *SendMagicLinkResponse) error
 	VerifyToken(context.Context, *VerifyTokenRequest, *VerifyTokenResponse) error
 }
 
@@ -295,7 +256,7 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		SendPasswordResetEmail(ctx context.Context, in *SendPasswordResetEmailRequest, out *SendPasswordResetEmailResponse) error
 		ResetPassword(ctx context.Context, in *ResetPasswordRequest, out *ResetPasswordResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
-		SendMagicLink(ctx context.Context, stream server.Stream) error
+		SendMagicLink(ctx context.Context, in *SendMagicLinkRequest, out *SendMagicLinkResponse) error
 		VerifyToken(ctx context.Context, in *VerifyTokenRequest, out *VerifyTokenResponse) error
 	}
 	type User struct {
@@ -361,44 +322,8 @@ func (h *userHandler) List(ctx context.Context, in *ListRequest, out *ListRespon
 	return h.UserHandler.List(ctx, in, out)
 }
 
-func (h *userHandler) SendMagicLink(ctx context.Context, stream server.Stream) error {
-	m := new(SendMagicLinkRequest)
-	if err := stream.Recv(m); err != nil {
-		return err
-	}
-	return h.UserHandler.SendMagicLink(ctx, m, &userSendMagicLinkStream{stream})
-}
-
-type User_SendMagicLinkStream interface {
-	Context() context.Context
-	SendMsg(interface{}) error
-	RecvMsg(interface{}) error
-	Close() error
-	Send(*SendMagicLinkResponse) error
-}
-
-type userSendMagicLinkStream struct {
-	stream server.Stream
-}
-
-func (x *userSendMagicLinkStream) Close() error {
-	return x.stream.Close()
-}
-
-func (x *userSendMagicLinkStream) Context() context.Context {
-	return x.stream.Context()
-}
-
-func (x *userSendMagicLinkStream) SendMsg(m interface{}) error {
-	return x.stream.Send(m)
-}
-
-func (x *userSendMagicLinkStream) RecvMsg(m interface{}) error {
-	return x.stream.Recv(m)
-}
-
-func (x *userSendMagicLinkStream) Send(m *SendMagicLinkResponse) error {
-	return x.stream.Send(m)
+func (h *userHandler) SendMagicLink(ctx context.Context, in *SendMagicLinkRequest, out *SendMagicLinkResponse) error {
+	return h.UserHandler.SendMagicLink(ctx, in, out)
 }
 
 func (h *userHandler) VerifyToken(ctx context.Context, in *VerifyTokenRequest, out *VerifyTokenResponse) error {

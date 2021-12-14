@@ -505,15 +505,11 @@ func (domain *Domain) List(_ context.Context, o, l uint32) (result []*user.Accou
 	return ret, nil
 }
 
-func (domain *Domain) CacheToken(ctx context.Context, token, id, email string, ttl int) error {
-	obj := &tokenObject{
-		Id:    id,
-		Email: email,
-	}
+func (domain *Domain) CacheToken(ctx context.Context, token, email string, ttl int) error {
 
 	expires := time.Now().Add(time.Duration(ttl) * time.Second)
 
-	err := cache.Context(ctx).Set(token, obj, expires)
+	err := cache.Context(ctx).Set(token, email, expires)
 
 	return err
 }
@@ -533,28 +529,22 @@ func (domain *Domain) SendMLE(fromName, toAddress, toUsername, subject, textCont
 	return err
 }
 
-type tokenObject struct {
-	Id    string
-	Email string
-}
-
-func (domain *Domain) CacheReadToken(ctx context.Context, token string) (string, string, error) {
-
+func (domain *Domain) CacheReadToken(ctx context.Context, token string) (string, error) {
 	if token == "" {
-		return "", "", errors.New("token empty")
+		return "", errors.New("token empty")
 	}
 
-	var obj tokenObject
+	var email string
 
-	expires, err := cache.Context(ctx).Get(token, obj)
+	expires, err := cache.Context(ctx).Get(token, email)
 
-	if err == cache.ErrNotFound {
-		return "", "", errors.New("token not found")
+	if err != nil && err == cache.ErrNotFound {
+		return "", errors.New("token not found")
 	} else if time.Until(expires).Seconds() < 0 {
-		return "", "", errors.New("token expired")
+		return "", errors.New("token expired")
 	} else if err != nil {
-		return "", "", microerr.InternalServerError("CacheReadToken", err.Error())
+		return "", microerr.InternalServerError("CacheReadToken", err.Error())
 	}
 
-	return obj.Id, obj.Email, nil
+	return email, nil
 }
