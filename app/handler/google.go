@@ -415,8 +415,8 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 
 	// checkout the code
 	gitter := git.NewGitter(map[string]string{})
-	if err := gitter.Checkout(req.Repo, req.Branch); err != nil {
-		log.Errorf("Failed to download %s@%s\n", req.Repo, req.Branch)
+	if err := gitter.Checkout(srv.Repo, srv.Branch); err != nil {
+		log.Errorf("Failed to download %s@%s\n", srv.Repo, srv.Branch)
 		return errors.InternalServerError("app.run", "Failed to download source")
 	}
 
