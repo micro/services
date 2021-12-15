@@ -20,7 +20,9 @@ type App struct{}
 var (
 	mtx sync.Mutex
 
-	ReservationKey = "reservedApp/"
+	OwnerKey       = "app/owner/"
+	ServiceKey     = "app/service/"
+	ReservationKey = "app/reservation/"
 	NameFormat     = regexp.MustCompilePOSIX("[a-z0-9]+")
 )
 
@@ -83,14 +85,29 @@ func (a *App) Reserve(ctx context.Context, req *pb.ReserveRequest, rsp *pb.Reser
 			return errors.BadRequest("app.reserve", "name already reserved")
 		}
 
-		// check the owner matches
-		if rsrv.Owner != id {
+		// check the owner matches or if the reservation expired
+		if rsrv.Owner != id && rsrv.Expires.After(time.Now()) {
 			return errors.BadRequest("app.reserve", "name already reserved")
 		}
 
-		// update the reservation
+		// update the owner
+		rsrv.Owner = id
+
+		// update the reservation expiry
 		rsrv.Expires = time.Now().AddDate(1, 0, 0)
 	} else {
+		// check if its already running
+		key := ServiceKey + req.Name
+		recs, err := store.Read(key, store.ReadLimit(1))
+		if err != nil && err != store.ErrNotFound {
+			return errors.InternalServerError("app.reserve", "failed to reserve name")
+		}
+
+		// existing service is running by that name
+		if len(recs) > 0 {
+			return errors.BadRequest("app.reserve", "service already exists")
+		}
+
 		// not reserved
 		rsrv = &Reservation{
 			Name:    req.Name,
