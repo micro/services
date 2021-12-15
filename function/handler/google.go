@@ -26,7 +26,7 @@ type GoogleFunction struct {
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
 	// max functions deployed
-	limit   int
+	limit int
 	// function identity
 	identity string
 }
@@ -51,6 +51,9 @@ var (
 		"ruby26",
 		"php74",
 	}
+
+	// hardcoded list of supported regions
+	GoogleRegions = []string{"europe-west1", "us-east1", "us-west1"}
 )
 
 func NewFunction() *GoogleFunction {
@@ -124,11 +127,13 @@ func NewFunction() *GoogleFunction {
 	if err != nil {
 		log.Fatalf(string(outp))
 	}
+
 	log.Info(string(outp))
+
 	return &GoogleFunction{
-		project: project,
-		address: address,
-		limit: limit,
+		project:  project,
+		address:  address,
+		limit:    limit,
 		identity: identity,
 	}
 }
@@ -157,6 +162,27 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 
 	if !match {
 		return errors.BadRequest("function.deploy", "invalid runtime")
+	}
+
+	var supportedRegion bool
+
+	if len(req.Region) == 0 {
+		// set to default region
+		req.Region = GoogleRegions[0]
+		supportedRegion = true
+	}
+
+	// check if its in the supported regions
+	for _, reg := range GoogleRegions {
+		if req.Region == reg {
+			supportedRegion = true
+			break
+		}
+	}
+
+	// unsupported region requested
+	if !supportedRegion {
+		return errors.BadRequest("function.deploy", "Unsupported region")
 	}
 
 	gitter := git.NewGitter(map[string]string{})
@@ -223,7 +249,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "functions", "deploy",
-			multitenantPrefix+"-"+req.Name, "--region", "europe-west1", "--service-account", e.identity,
+			multitenantPrefix+"-"+req.Name, "--region", req.Region, "--service-account", e.identity,
 			"--allow-unauthenticated", "--entry-point", req.Entrypoint,
 			"--trigger-http", "--project", e.project, "--runtime", req.Runtime)
 
@@ -250,6 +276,8 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		"entrypoint": req.Entrypoint,
 		"runtime":    req.Runtime,
 		"env_vars":   envVars,
+		"region":     req.Region,
+		"branch":     req.Branch,
 	})
 
 	// write the record
@@ -263,22 +291,12 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 		return errors.BadRequest("function.update", "Missing name")
 	}
 
-	if len(req.Repo) == 0 {
-		return errors.BadRequest("function.update", "Missing repo")
-	}
-	if req.Runtime == "" {
-		return fmt.Errorf("missing runtime field, please specify nodejs14, go116 etc")
-	}
-
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
 		tenantId = "micro"
 	}
 
 	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
-	if req.Entrypoint == "" {
-		req.Entrypoint = req.Name
-	}
 
 	project := req.Project
 	if project == "" {
@@ -296,60 +314,52 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 		return errors.BadRequest("function.deploy", "function does not exist")
 	}
 
-	gitter := git.NewGitter(map[string]string{})
-
-	for _, branch := range []string{"master", "main"} {
-		err = gitter.Checkout(req.Repo, branch)
-		if err == nil {
-			break
-		}
+	fn := new(function.Func)
+	if err := records[0].Decode(fn); err != nil {
+		return err
 	}
 
-	if err != nil {
+	if len(fn.Region) == 0 {
+		fn.Region = GoogleRegions[0]
+	}
+
+	if len(fn.Branch) == 0 {
+		fn.Branch = "master"
+	}
+
+	gitter := git.NewGitter(map[string]string{})
+	if err := gitter.Checkout(fn.Repo, fn.Branch); err != nil {
 		return errors.InternalServerError("function.update", err.Error())
 	}
 
 	// process the env vars to the required format
 	var envVars []string
 
-	for k, v := range req.EnvVars {
+	for k, v := range fn.EnvVars {
 		envVars = append(envVars, k+"="+v)
 	}
 
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "functions", "deploy",
-			multitenantPrefix+"-"+req.Name, "--region", "europe-west1", "--service-account", e.identity,
-			"--allow-unauthenticated", "--entry-point", req.Entrypoint,
-			"--trigger-http", "--project", e.project, "--runtime", req.Runtime)
+			multitenantPrefix+"-"+fn.Name, "--region", fn.Region, "--service-account", e.identity,
+			"--allow-unauthenticated", "--entry-point", fn.Entrypoint,
+			"--trigger-http", "--project", e.project, "--runtime", fn.Runtime)
 
 		// if env vars exist then set them
 		if len(envVars) > 0 {
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
 
-		cmd.Dir = filepath.Join(gitter.RepoDir(), req.Subfolder)
+		cmd.Dir = filepath.Join(gitter.RepoDir(), fn.Subfolder)
 		outp, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))
 		}
 	}()
 
-	id := fmt.Sprintf("%v-%v-%v", tenantId, project, req.Name)
-	rec := store.NewRecord(key, map[string]interface{}{
-		"id":         id,
-		"project":    project,
-		"name":       req.Name,
-		"tenantId":   tenantId,
-		"repo":       req.Repo,
-		"subfolder":  req.Subfolder,
-		"entrypoint": req.Entrypoint,
-		"runtime":    req.Runtime,
-		"env_vars":   envVars,
-	})
-
-	// write the record
-	return store.Write(rec)
+	// TODO: allow updating of branch and related?
+	return nil
 }
 
 func (e *GoogleFunction) Call(ctx context.Context, req *function.CallRequest, rsp *function.CallResponse) error {
@@ -412,23 +422,42 @@ func (e *GoogleFunction) Delete(ctx context.Context, req *function.DeleteRequest
 	if !ok {
 		tenantId = "micro"
 	}
-	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
 
 	project := req.Project
 	if project == "" {
 		project = "default"
 	}
 
-	cmd := exec.Command("gcloud", "functions", "delete", "--project", e.project, "--region", "europe-west1", multitenantPrefix+"-"+req.Name)
-	outp, err := cmd.CombinedOutput()
-	if err != nil && !strings.Contains(string(outp), "does not exist") {
-		log.Error(fmt.Errorf(string(outp)))
+	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
+	key := fmt.Sprintf("function/%v/%v/%v", tenantId, project, req.Name)
+
+	records, err := store.Read(key)
+	if err != nil && err == store.ErrNotFound {
+		return nil
+	}
+
+	if len(records) == 0 {
+		return nil
+	}
+
+	fn := new(function.Func)
+	if err := records[0].Decode(fn); err != nil {
 		return err
 	}
 
-	key := fmt.Sprintf("function/%v/%v/%v", tenantId, project, req.Name)
+	// async delete
+	go func() {
+		cmd := exec.Command("gcloud", "functions", "delete", "--project", e.project, "--region", fn.Region, multitenantPrefix+"-"+req.Name)
+		outp, err := cmd.CombinedOutput()
+		if err != nil && !strings.Contains(string(outp), "does not exist") {
+			log.Error(fmt.Errorf(string(outp)))
+			return
+		}
 
-	return store.Delete(key)
+		store.Delete(key)
+	}()
+
+	return nil
 }
 
 func (e *GoogleFunction) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
@@ -472,12 +501,19 @@ func (e *GoogleFunction) List(ctx context.Context, req *function.ListRequest, rs
 	rsp.Functions = []*function.Func{}
 
 	for _, record := range records {
-		f := new(function.Func)
-		if err := record.Decode(f); err != nil {
+		fn := new(function.Func)
+		if err := record.Decode(fn); err != nil {
 			return err
 		}
-		f.Status = statuses[multitenantPrefix+"-"+f.Name]
-		rsp.Functions = append(rsp.Functions, f)
+		if len(fn.Region) == 0 {
+			fn.Region = GoogleRegions[0]
+		}
+
+		if len(fn.Branch) == 0 {
+			fn.Branch = "master"
+		}
+		fn.Status = statuses[multitenantPrefix+"-"+fn.Name]
+		rsp.Functions = append(rsp.Functions, fn)
 	}
 
 	return nil
@@ -525,6 +561,13 @@ func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeReq
 		if err := records[0].Decode(f); err != nil {
 			return err
 		}
+		if len(f.Region) == 0 {
+			f.Region = GoogleRegions[0]
+		}
+
+		if len(f.Branch) == 0 {
+			f.Branch = "master"
+		}
 		rsp.Function = f
 	} else {
 		rsp.Function = &function.Func{
@@ -538,5 +581,14 @@ func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeReq
 	rsp.Timeout = m["timeout"].(string)
 	rsp.UpdatedAt = m["updateTime"].(string)
 
+	return nil
+}
+
+func (g *GoogleFunction) Proxy(ctx context.Context, req *function.ProxyRequest, rsp *function.ProxyResponse) error {
+	return nil
+}
+
+func (e *GoogleFunction) Regions(ctx context.Context, req *function.RegionsRequest, rsp *function.RegionsResponse) error {
+	rsp.Regions = GoogleRegions
 	return nil
 }

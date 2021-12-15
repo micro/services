@@ -12,6 +12,8 @@ service Function {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Describe(DescribeRequest) returns (DescribeResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
+	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
+	rpc Regions(RegionsRequest) returns (RegionsResponse) {}
 }
 
 // Call a function by name
@@ -52,6 +54,10 @@ message DeployRequest {
 	string runtime = 6;
 	// environment variables to pass in at runtime
 	map<string,string> env_vars = 7;
+	// branch to deploy. defaults to master
+	string branch = 8;
+	// region to deploy in. defaults to europe-west1
+	string region = 9;
 }
 
 message DeployResponse {
@@ -90,6 +96,10 @@ message Func {
 	string status = 7;
 	// associated env vars
 	map<string,string> env_vars = 8;
+	// branch to deploy. defaults to master
+	string branch = 9;
+	// region to deploy in. defaults to europe-west1
+	string region = 10;
 }
 
 message ListResponse {
@@ -126,32 +136,32 @@ message DescribeResponse {
 	string timeout = 3;
 }
 
-// Update a function
+// Update a function. Downloads the source, builds and redeploys
 message UpdateRequest {
 	// function name
 	string name = 1;
-	// github url to repo
-	string repo = 2;
-	// optional subfolder path
-	string subfolder = 3;
-	// entry point, ie. handler name in the source code 
-	// if not provided, defaults to the name parameter
-	string entrypoint = 4;
-	// project is used for namespacing your functions
-	// optional. defaults to "default".
-	string project = 5;
-	// runtime/language of the function
-	// eg: php74,
-	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
-	// dotnet3
-	// java11
-	// ruby26, ruby27
-	// go111, go113, go116
-	// python37, python38, python39
-	string runtime = 6;
-	// environment variables to pass in at runtime
-	map<string,string> env_vars = 7;
+	// optional project name
+	string project = 2;
 }
 
 message UpdateResponse {
+}
+
+// Return the backend url for proxying
+message ProxyRequest {
+	// id of the function
+	string id = 1;
+}
+
+message ProxyResponse {
+	// backend url
+	string url = 1;
+}
+
+// Return a list of supported regions
+message RegionsRequest {
+}
+
+message RegionsResponse {
+	repeated string regions = 1;
 }
