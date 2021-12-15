@@ -1,8 +1,8 @@
 {
   "name": "app",
   "icon": "☁️",
-  "category": "coming soon",
-  "display_name": "Apps (Coming Soon)",
+  "category": "hosting",
+  "display_name": "Apps",
   "pricing": {
     "App.Reserve": 10000000
   }
