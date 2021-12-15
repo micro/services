@@ -448,6 +448,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 	go func(service *pb.Service) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", service.Region,
+			"--service-account", "app-service-identity-"+service.Id,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", service.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
