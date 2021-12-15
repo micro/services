@@ -421,7 +421,7 @@ func (e *GoogleFunction) Delete(ctx context.Context, req *function.DeleteRequest
 
 	cmd := exec.Command("gcloud", "functions", "delete", "--project", e.project, "--region", "europe-west1", multitenantPrefix+"-"+req.Name)
 	outp, err := cmd.CombinedOutput()
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "does not exist") {
 		log.Error(fmt.Errorf(string(outp)))
 		return err
 	}
