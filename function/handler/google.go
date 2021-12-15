@@ -25,7 +25,10 @@ type GoogleFunction struct {
 	project string
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
+	// max functions deployed
 	limit   int
+	// function identity
+	identity string
 }
 
 var (
@@ -90,6 +93,11 @@ func NewFunction() *GoogleFunction {
 		log.Fatalf("function.service_account: %v", err)
 	}
 	accName := v.String("")
+	v, err = config.Get("function.service_identity")
+	if err != nil {
+		log.Fatalf("function.service_identity: %v", err)
+	}
+	identity := v.String("")
 
 	m := map[string]interface{}{}
 	err = json.Unmarshal(keyfile, &m)
@@ -117,7 +125,12 @@ func NewFunction() *GoogleFunction {
 		log.Fatalf(string(outp))
 	}
 	log.Info(string(outp))
-	return &GoogleFunction{project: project, address: address, limit: limit}
+	return &GoogleFunction{
+		project: project,
+		address: address,
+		limit: limit,
+		identity: identity,
+	}
 }
 
 func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
@@ -210,7 +223,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "functions", "deploy",
-			multitenantPrefix+"-"+req.Name, "--region", "europe-west1",
+			multitenantPrefix+"-"+req.Name, "--region", "europe-west1", "--service-account", e.identity,
 			"--allow-unauthenticated", "--entry-point", req.Entrypoint,
 			"--trigger-http", "--project", e.project, "--runtime", req.Runtime)
 
@@ -306,7 +319,7 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "functions", "deploy",
-			multitenantPrefix+"-"+req.Name, "--region", "europe-west1",
+			multitenantPrefix+"-"+req.Name, "--region", "europe-west1", "--service-account", e.identity,
 			"--allow-unauthenticated", "--entry-point", req.Entrypoint,
 			"--trigger-http", "--project", e.project, "--runtime", req.Runtime)
 
