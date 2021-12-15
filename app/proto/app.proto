@@ -59,7 +59,7 @@ message ListResponse {
 	repeated Service services = 1;
 }
 
-// Run an app
+// Run an app from a source repo. Specify region etc.
 message RunRequest {
 	// name of the app
 	string name = 1;
@@ -80,7 +80,7 @@ message RunResponse {
 	Service service = 1;
 }
 
-// Update the app
+// Update the app. The latest source code will be downloaded, built and deployed.
 message UpdateRequest {
 	// name of the app
 	string name = 1;

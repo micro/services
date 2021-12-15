@@ -49,7 +49,7 @@
         "repo": "github.com/asim/helloworld",
         "branch": "master",
         "port": 8080,
-        "region": "eu-west-1"
+        "region": "europe-west1"
       },
       "response": {
           "service": {
