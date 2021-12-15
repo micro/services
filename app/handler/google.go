@@ -315,8 +315,17 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	}
 
 	go func(service *pb.Service) {
+		// generate a unique service account for the app
+		outp, err := exec.Command("gcloud", "iam", "service-accounts", "create", "--project", e.project, "app-service-identity-"+service.Id).CombinedOutput()
+		if err != nil {
+			log.Error(string(outp), err.Error())
+			return
+		}
+
+
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
+			"--service-account", "app-service-identity-"+service.Id,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
@@ -330,7 +339,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		cmd.Dir = gitter.RepoDir()
 
 		// execute the command
-		outp, err := cmd.CombinedOutput()
+		outp, err = cmd.CombinedOutput()
 
 		// by this point the context may have been cancelled
 		acc, _ := auth.AccountFromContext(ctx)
@@ -541,6 +550,12 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 		if err != nil && !strings.Contains(string(outp), "could not be found") {
 			log.Error(fmt.Errorf(string(outp)))
 			return
+		}
+
+		// delete the service account
+		outp, err = exec.Command("gcloud", "iam", "service-accounts", "delete", "--project", e.project, "app-service-identity-"+srv.Id).CombinedOutput()
+		if err != nil {
+			log.Error(string(outp), err.Error())
 		}
 
 		// delete from the db
