@@ -97,17 +97,7 @@ message RegionsResponse {
 	repeated string regions = 1;
 }
 
-// Vote to have the App api launched faster!
-message VoteRequest {
-        // optional message
-        string message = 1;
-}
-
-message VoteResponse {
-        // response message
-        string message = 2;
-}
-
+// Reservation represents a reserved app instance
 message Reservation {
 	// name of the app
 	string name = 1;
@@ -143,7 +133,7 @@ message StatusResponse {
 	Service service = 1;
 }
 
-// Resolve an app id to its raw provider url
+// Resolve an app by id to its raw backend endpoint
 message ResolveRequest {
 	// the service id
 	string id = 1;
