@@ -2,23 +2,41 @@
   "deploy": [
     {
       "title": "Deploy a function",
+      "run_check": false,
       "request": {
-        "repo": "github.com/m3o/nodejs-function-example",
-        "name": "helloworld",
-        "entrypoint": "helloworld",
-        "runtime": "nodejs14"
+	"name": "helloworld",
+	"repo": "https://github.com/m3o/m3o",
+	"branch": "main",
+	"entrypoint": "Helloworld",
+	"subfolder": "examples/go-function",
+	"runtime": "go116",
+	"region": "europe-west1"
       },
-      "response": {}
+      "response": {
+        "function": {
+                "id": "helloworld",
+                "name": "helloworld",
+                "repo": "https://github.com/m3o/m3o",
+                "branch": "main",
+                "entrypoint": "Helloworld",
+                "subfolder": "examples/go-function",
+                "runtime": "go116",
+                "region": "europe-west1",
+                "env_vars": {},
+                "status": "Deploying",
+                "url": "https://helloworld.m3o.sh",
+                "created": "2021-12-16T17:27:09.230134479Z",
+                "updated": ""
+        }
+      }
     }
   ],
   "update": [
     {
       "title": "Update a function",
+      "run_check": false,
       "request": {
-        "repo": "github.com/m3o/nodejs-function-example",
-        "name": "helloworld",
-        "entrypoint": "helloworld",
-        "runtime": "nodejs14"
+        "name": "helloworld"
       },
       "response": {}
     }
@@ -26,13 +44,16 @@
   "call": [
     {
       "title": "Call a function",
+      "run_check": false,
       "request": {
         "name": "helloworld",
-        "request": {}
+        "request": {
+          "name": "Alice"
+        }
       },
       "response": {
         "response": {
-          "message": "Hello World!"
+          "message": "Hello Alice!"
         }
       }
     }
@@ -40,24 +61,31 @@
   "list": [
     {
       "title": "List functions",
+      "run_check": false,
       "request": {},
       "response": {
-        "functions": [
-          {
-            "name": "helloworld",
-            "entrypoint": "helloworld",
-            "repo": "github.com/m3o/nodejs-function-example",
-            "subfolder": "",
-            "runtime": "nodejs14",
-            "status": "DEPLOY_IN_PROGRESS"
-          }
-        ]
+        "functions": [{
+                "id": "helloworld",
+                "name": "helloworld",
+                "repo": "https://github.com/m3o/m3o",
+                "branch": "main",
+                "entrypoint": "Helloworld",
+                "subfolder": "examples/go-function",
+                "runtime": "go116",
+                "region": "europe-west1",
+                "env_vars": {},
+                "status": "Deploying",
+                "url": "https://helloworld.m3o.sh",
+                "created": "2021-12-16T17:27:09.230134479Z",
+                "updated": ""
+        }]
       }
     }
   ],
   "delete": [
     {
       "title": "Delete a function",
+      "run_check": false,
       "request": {
         "name": "helloworld"
       },
@@ -67,20 +95,72 @@
   "describe": [
     {
       "title": "Describe function status",
+      "run_check": false,
       "request": {
         "name": "helloworld"
       },
       "response": {
         "function": {
-            "name": "helloworld",
-            "entrypoint": "helloworld",
-            "repo": "github.com/m3o/nodejs-function-example",
-            "subfolder": "",
-            "runtime": "nodejs14",
-            "status": "ACTIVE"
-        },
-        "updated_at": "2021-10-08T10:17:34.914Z",
-        "timeout": "60s"
+                "id": "helloworld",
+                "name": "helloworld",
+                "repo": "https://github.com/m3o/m3o",
+                "branch": "main",
+                "entrypoint": "Helloworld",
+                "subfolder": "examples/go-function",
+                "runtime": "go116",
+                "region": "europe-west1",
+                "env_vars": {},
+                "status": "Deploying",
+                "url": "https://helloworld.m3o.sh",
+                "created": "2021-12-16T17:27:09.230134479Z",
+                "updated": ""
+        }
+      }
+    }
+  ],
+  "regions": [
+    {
+      "title": "List regions",
+      "run_check": false,
+      "request": {},
+      "response": {
+        "regions": [
+                "asia-east1",
+                "europe-west1",
+                "us-central1",
+                "us-east1",
+                "us-west1"
+        ]
+      }
+    }
+  ],
+  "reserve": [
+    {
+      "title": "Reserve a function",
+      "run_check": false,
+      "request": {
+        "name": "helloworld"
+      },
+      "response": {
+        "reservation": {
+                "name": "helloworld",
+                "owner": "micro/40e5d9aa-1185-4add-b248-ce4d72ff7947",
+                "token": "c580be106204d103df461bb3a3075aefedda5f85",
+                "created": "2021-12-16T19:19:29.615737412Z",
+                "expires": "2022-12-16T19:19:29.615737502Z"
+        }
+      }
+    }
+  ],
+  "proxy": [
+    {
+      "title": "Proxy URL",
+      "run_check": false,
+      "request": {
+        "id": "helloworld"
+      },
+      "response": {
+        "url": "https://europe-west1-m3o-apis.cloudfunctions.net/helloworld"
       }
     }
   ]
