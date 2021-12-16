@@ -61,6 +61,7 @@ message DeployRequest {
 }
 
 message DeployResponse {
+	Func function = 1;
 }
 
 // List all the deployed functions
@@ -70,19 +71,20 @@ message ListRequest {
 }
 
 message Func {
+	string id = 1;
 	// project of function, optional
 	// defaults to literal "default"
 	// used to namespace functions
-	string project = 1;
+	string project = 2;
 	// function name
 	// limitation: must be unique across projects
-	string name = 2;
+	string name = 3;
 	// name of handler in source code
-	string entrypoint = 3;
+	string entrypoint = 4;
 	// git repo address
-	string repo = 4;
+	string repo = 5;
 	// subfolder path to entrypoint
-	string subfolder = 5;
+	string subfolder = 6;
 	// runtime/language of the function
 	// eg: php74,
 	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
@@ -91,15 +93,21 @@ message Func {
 	// ruby26, ruby27
 	// go111, go113, go116
 	// python37, python38, python39
-	string runtime = 6;
+	string runtime = 7;
 	// eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
-	string status = 7;
+	string status = 8;
 	// associated env vars
-	map<string,string> env_vars = 8;
+	map<string,string> env_vars = 9;
 	// branch to deploy. defaults to master
-	string branch = 9;
+	string branch = 10;
 	// region to deploy in. defaults to europe-west1
-	string region = 10;
+	string region = 11;
+	// unique url of the function
+	string url = 12;
+	// time of creation
+	string created = 13;
+	// time it was updated
+	string updated = 14;
 }
 
 message ListResponse {
@@ -130,10 +138,6 @@ message DescribeRequest {
 message DescribeResponse {
 	// The function requested
 	Func function = 1;
-	// The time at which the function was updated
-	string updated_at = 2;
-	// The timeout for requests to the function
-	string timeout = 3;
 }
 
 // Update a function. Downloads the source, builds and redeploys
