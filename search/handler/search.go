@@ -198,7 +198,7 @@ func recurseParseQueryDef(qd *pb.QueryDef) *simplejson.Json {
 	for _, v := range qd.Fields {
 		matchType := "match"
 		if qd.Prefix {
-			matchType = "match_prefix"
+			matchType = "match_bool_prefix"
 		}
 		js := simplejson.New()
 		js.SetPath([]string{matchType, v.FieldName}, v.Value)
