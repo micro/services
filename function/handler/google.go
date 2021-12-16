@@ -314,6 +314,11 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		return err
 	}
 
+	// set the custom domain
+	if len(e.domain) > 0 {
+		fn.Url = fmt.Sprintf("https://%s.%s", fn.Id, e.domain)
+	}
+
 	// set the response
 	rsp.Function = fn
 
@@ -364,6 +369,8 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 
 			if v := trigger["url"].(string); len(v) > 0 {
 				fn.Url = v
+			} else {
+				fn.Url = fmt.Sprintf("https://%s-%s.cloudfunctions.net/%s", fn.Region, e.project, fn.Id)
 			}
 
 			v := m["status"].(string)
@@ -471,6 +478,8 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 			trigger := m["httpsTrigger"].(map[string]interface{})
 			if v := trigger["url"].(string); len(v) > 0 {
 				fn.Url = v
+			} else {
+				fn.Url = fmt.Sprintf("https://%s-%s.cloudfunctions.net/%s", fn.Region, e.project, fn.Id)
 			}
 
 			v := m["status"].(string)
