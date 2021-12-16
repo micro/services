@@ -51,6 +51,7 @@ type FunctionService interface {
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Proxy(ctx context.Context, in *ProxyRequest, opts ...client.CallOption) (*ProxyResponse, error)
 	Regions(ctx context.Context, in *RegionsRequest, opts ...client.CallOption) (*RegionsResponse, error)
+	Reserve(ctx context.Context, in *ReserveRequest, opts ...client.CallOption) (*ReserveResponse, error)
 }
 
 type functionService struct {
@@ -145,6 +146,16 @@ func (c *functionService) Regions(ctx context.Context, in *RegionsRequest, opts 
 	return out, nil
 }
 
+func (c *functionService) Reserve(ctx context.Context, in *ReserveRequest, opts ...client.CallOption) (*ReserveResponse, error) {
+	req := c.c.NewRequest(c.name, "Function.Reserve", in)
+	out := new(ReserveResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Function service
 
 type FunctionHandler interface {
@@ -156,6 +167,7 @@ type FunctionHandler interface {
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Proxy(context.Context, *ProxyRequest, *ProxyResponse) error
 	Regions(context.Context, *RegionsRequest, *RegionsResponse) error
+	Reserve(context.Context, *ReserveRequest, *ReserveResponse) error
 }
 
 func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...server.HandlerOption) error {
@@ -168,6 +180,7 @@ func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...serv
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Proxy(ctx context.Context, in *ProxyRequest, out *ProxyResponse) error
 		Regions(ctx context.Context, in *RegionsRequest, out *RegionsResponse) error
+		Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error
 	}
 	type Function struct {
 		function
@@ -210,4 +223,8 @@ func (h *functionHandler) Proxy(ctx context.Context, in *ProxyRequest, out *Prox
 
 func (h *functionHandler) Regions(ctx context.Context, in *RegionsRequest, out *RegionsResponse) error {
 	return h.FunctionHandler.Regions(ctx, in, out)
+}
+
+func (h *functionHandler) Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error {
+	return h.FunctionHandler.Reserve(ctx, in, out)
 }

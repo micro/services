@@ -33,6 +33,8 @@ type GoogleFunction struct {
 	identity string
 	// custom domain
 	domain string
+
+	*Function
 }
 
 var (
@@ -161,6 +163,7 @@ func NewFunction() *GoogleFunction {
 		limit:    limit,
 		identity: identity,
 		domain:   domain,
+		Function: new(Function),
 	}
 }
 
@@ -315,7 +318,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 
 	go func(fn *function.Func) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id,
+		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id, "--quiet",
 			"--region", fn.Region, "--service-account", e.identity,
 			"--allow-unauthenticated", "--entry-point", fn.Entrypoint,
 			"--trigger-http", "--project", e.project, "--runtime", fn.Runtime)
@@ -416,7 +419,7 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id,
+		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id, "--quiet",
 			"--region", fn.Region, "--service-account", e.identity,
 			"--allow-unauthenticated", "--entry-point", fn.Entrypoint,
 			"--trigger-http", "--project", e.project, "--runtime", fn.Runtime)
@@ -470,7 +473,6 @@ func (e *GoogleFunction) Call(ctx context.Context, req *function.CallRequest, rs
 	}
 
 	url := e.address + fn.Id
-	fmt.Println("URL:>", url)
 
 	js, _ := json.Marshal(req.Request)
 	if req.Request == nil || len(req.Request.Fields) == 0 {
@@ -535,7 +537,7 @@ func (e *GoogleFunction) Delete(ctx context.Context, req *function.DeleteRequest
 
 	// async delete
 	go func() {
-		cmd := exec.Command("gcloud", "functions", "delete", "--project", e.project, "--region", fn.Region, fn.Id)
+		cmd := exec.Command("gcloud", "functions", "delete", "--quiet", "--project", e.project, "--region", fn.Region, fn.Id)
 		outp, err := cmd.CombinedOutput()
 		if err != nil && !strings.Contains(string(outp), "does not exist") {
 			log.Error(fmt.Errorf(string(outp)))

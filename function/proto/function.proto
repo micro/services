@@ -14,6 +14,7 @@ service Function {
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
 	rpc Regions(RegionsRequest) returns (RegionsResponse) {}
+	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
 }
 
 // Call a function by name
@@ -147,3 +148,29 @@ message RegionsRequest {
 message RegionsResponse {
 	repeated string regions = 1;
 }
+
+// Reservation represents a reserved function
+message Reservation {
+        // name of the app
+        string name = 1;
+        // owner id
+        string owner = 2;
+        // associated token
+        string token = 3;
+        // time of reservation
+        string created = 4;
+        // time reservation expires
+        string expires = 5;
+}
+
+// Reserve function names and resources beyond free quota
+message ReserveRequest {
+        // name of your app e.g helloworld
+        string name = 1;
+}
+
+message ReserveResponse {
+        // The app reservation
+        Reservation reservation = 1;
+}
+
