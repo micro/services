@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os/exec"
-	"math/rand"
 	"path/filepath"
 	"strings"
 	"time"
@@ -63,19 +63,19 @@ var (
 )
 
 var (
-        alphanum = "abcdefghijklmnopqrstuvwxyz0123456789"
+	alphanum = "abcdefghijklmnopqrstuvwxyz0123456789"
 )
 
 func random(i int) string {
-        bytes := make([]byte, i)
-        for {
-                rand.Read(bytes)
-                for i, b := range bytes {
-                        bytes[i] = alphanum[b%byte(len(alphanum))]
-                }
-                return string(bytes)
-        }
-        return fmt.Sprintf("%d", time.Now().Unix())
+	bytes := make([]byte, i)
+	for {
+		rand.Read(bytes)
+		for i, b := range bytes {
+			bytes[i] = alphanum[b%byte(len(alphanum))]
+		}
+		return string(bytes)
+	}
+	return fmt.Sprintf("%d", time.Now().Unix())
 }
 
 func NewFunction() *GoogleFunction {
@@ -299,6 +299,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		Branch:     req.Branch,
 		Created:    time.Now().Format(time.RFC3339Nano),
 		Status:     "Deploying",
+		Url:        fmt.Sprintf("https://%s-%s.cloudfunctions.net/%s", req.Region, e.project, id),
 	}
 
 	// write the owner key
@@ -337,26 +338,53 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 			return
 		}
 
-		cmd = exec.Command("gcloud", "functions", "describe", "--format", "json",
-			"--region", fn.Region, "--project", e.project, fn.Id)
+		var status string
 
-		outp, err = cmd.CombinedOutput()
-		if err != nil {
-			log.Error(fmt.Errorf(string(outp)))
-			return
+		// wait for the deployment and status update
+		for i := 0; i < 120; i++ {
+			cmd = exec.Command("gcloud", "functions", "describe", "--format", "json",
+				"--region", fn.Region, "--project", e.project, fn.Id)
+
+			outp, err = cmd.CombinedOutput()
+			if err != nil {
+				log.Error(fmt.Errorf(string(outp)))
+				return
+			}
+
+			log.Info(string(outp))
+
+			var m map[string]interface{}
+			if err := json.Unmarshal(outp, &m); err != nil {
+				log.Error(err)
+				return
+			}
+
+			// write back the url
+			trigger := m["httpsTrigger"].(map[string]interface{})
+
+			if v := trigger["url"].(string); len(v) > 0 {
+				fn.Url = v
+			}
+
+			v := m["status"].(string)
+
+			switch v {
+			case "ACTIVE":
+				status = "Deployed"
+				break
+			case "DEPLOY_IN_PROGRESS":
+				status = "Deploying"
+			case "OFFLINE":
+				status = "DeploymentError"
+				break
+			}
+
+			// we need to try get the url again
+			time.Sleep(time.Second)
 		}
 
-		log.Info(string(outp))
-		m := map[string]interface{}{}
-		if err := json.Unmarshal(outp, m); err != nil {
-			return
-		}
-
-		// write back the url
-		trigger := m["httpsTrigger"].(map[string]interface{})
-		fn.Url = trigger["url"].(string)
 		fn.Updated = time.Now().Format(time.RFC3339Nano)
-		fn.Status = "Deployed"
+		fn.Status = status
 
 		// write the owners key
 		store.Write(store.NewRecord(key, fn))
@@ -417,25 +445,52 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 		envVars = append(envVars, k+"="+v)
 	}
 
+	var status string
+
 	go func() {
-		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id, "--quiet",
-			"--region", fn.Region, "--service-account", e.identity,
-			"--allow-unauthenticated", "--entry-point", fn.Entrypoint,
-			"--trigger-http", "--project", e.project, "--runtime", fn.Runtime)
+		// wait for the deployment and status update
+		for i := 0; i < 120; i++ {
+			cmd := exec.Command("gcloud", "functions", "describe", "--quiet", "--format", "json",
+				"--region", fn.Region, "--project", e.project, fn.Id)
 
-		// if env vars exist then set them
-		if len(envVars) > 0 {
-			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
+			outp, err := cmd.CombinedOutput()
+			if err != nil {
+				log.Error(fmt.Errorf(string(outp)))
+				return
+			}
+
+			log.Info(string(outp))
+
+			var m map[string]interface{}
+			if err := json.Unmarshal(outp, &m); err != nil {
+				log.Error(err)
+				return
+			}
+
+			// write back the url
+			trigger := m["httpsTrigger"].(map[string]interface{})
+			if v := trigger["url"].(string); len(v) > 0 {
+				fn.Url = v
+			}
+
+			v := m["status"].(string)
+
+			switch v {
+			case "ACTIVE":
+				status = "Deployed"
+				break
+			case "DEPLOY_IN_PROGRESS":
+				status = "Deploying"
+			case "OFFLINE":
+				status = "DeploymentError"
+				break
+			}
+
+			// we need to try get the url again
+			time.Sleep(time.Second)
 		}
 
-		cmd.Dir = filepath.Join(gitter.RepoDir(), fn.Subfolder)
-		outp, err := cmd.CombinedOutput()
-		if err != nil {
-			log.Error(fmt.Errorf(string(outp)))
-		}
-
-		fn.Status = "Deployed"
+		fn.Status = status
 		fn.Updated = time.Now().Format(time.RFC3339Nano)
 		store.Write(store.NewRecord(key, fn))
 	}()
@@ -472,7 +527,11 @@ func (e *GoogleFunction) Call(ctx context.Context, req *function.CallRequest, rs
 		return errors.NotFound("function.call", "not found")
 	}
 
-	url := e.address + fn.Id
+	url := fn.Url
+
+	if len(url) == 0 {
+		url = fmt.Sprintf("https://%s-%s.cloudfunctions.net/%s", fn.Region, e.project, fn.Id)
+	}
 
 	js, _ := json.Marshal(req.Request)
 	if req.Request == nil || len(req.Request.Fields) == 0 {
@@ -646,7 +705,7 @@ func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeReq
 	log.Info(string(outp))
 	m := map[string]interface{}{}
 
-	if err := json.Unmarshal(outp, m); err != nil {
+	if err := json.Unmarshal(outp, &m); err != nil {
 		return err
 	}
 
@@ -654,6 +713,17 @@ func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeReq
 	status := m["status"].(string)
 	status = strings.Replace(status, "_", " ", -1)
 	status = strings.Title(strings.ToLower(status))
+	fn.Status = status
+
+	// set the url
+	if len(fn.Url) == 0 && status == "Active" {
+		v := m["httpsTrigger"].(map[string]interface{})
+		fn.Url = v["url"].(string)
+	}
+
+	// write it back
+	go store.Write(store.NewRecord(key, fn))
+
 	rsp.Function.Status = status
 
 	return nil
@@ -680,7 +750,15 @@ func (g *GoogleFunction) Proxy(ctx context.Context, req *function.ProxyRequest, 
 	fn := new(function.Func)
 	recs[0].Decode(fn)
 
-	rsp.Url = fn.Url
+	url := fn.Url
+
+	// backup plan is to construct https://region-project.cloudfunctions.net/function-name
+	if len(url) == 0 {
+		url = fmt.Sprintf("https://%s-%s.cloudfunctions.net/%s", fn.Region, g.project, fn.Id)
+	}
+
+	rsp.Url = url
+
 	return nil
 }
 
