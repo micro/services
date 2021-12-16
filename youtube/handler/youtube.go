@@ -50,7 +50,7 @@ func (y *Youtube) Embed(ctx context.Context, req *pb.EmbedRequest, rsp *pb.Embed
 		}
 	}
 
-	rsp.LongUrl = "https://www.youtube.com/watch?v="+id
+	rsp.LongUrl = "https://www.youtube.com/watch?v=" + id
 	rsp.ShortUrl = "https://youtu.be/" + id
 	rsp.EmbedUrl = "https://www.youtube.com/embed/" + id
 	rsp.HtmlScript = `<iframe width="560" height="315" src="` + rsp.EmbedUrl + `" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/micro/services/nft/handler"
-	pb "github.com/micro/services/nft/proto"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/nft/handler"
+	pb "github.com/micro/services/nft/proto"
 )
 
 func main() {

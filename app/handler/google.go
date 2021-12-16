@@ -28,7 +28,7 @@ type GoogleApp struct {
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
 	// max number of apps per user
-	limit   int
+	limit int
 	// custom domain for apps
 	domain string
 	// the service account for the app
@@ -39,7 +39,7 @@ type GoogleApp struct {
 
 var (
 	// hardcoded list of supported regions
-	GoogleRegions = []string{"europe-west1", "us-east1", "us-west1"}
+	GoogleRegions = []string{"asia-east1", "europe-west1", "us-central1", "us-east1", "us-west1"}
 
 	// hardcoded list of valid repos
 	GitRepos = []string{"github.com", "gitlab.org", "bitbucket.org"}
@@ -143,12 +143,12 @@ func New() *GoogleApp {
 	log.Info(string(outp))
 
 	return &GoogleApp{
-		domain: domain,
-		project: project,
-		address: address,
-		limit: limit,
+		domain:   domain,
+		project:  project,
+		address:  address,
+		limit:    limit,
 		identity: identity,
-		App: new(App),
+		App:      new(App),
 	}
 }
 
@@ -678,6 +678,10 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 
 	// no change in status and we have a pre-existing url
 	if srv.Status == currentStatus && srv.Url == currentUrl && srv.Updated == updatedAt {
+		// set the custom domain
+		if len(e.domain) > 0 {
+			rsp.Service.Url = fmt.Sprintf("https://%s.%s", srv.Id, e.domain)
+		}
 		return nil
 	}
 

@@ -9,58 +9,58 @@ type CollectionsResponse struct {
 }
 
 type Asset struct {
-	Id int32 `json:"id"`
-	TokenId string `json:"token_id"`
-	Sales int32 `json:"num_sales"`
-	ImageUrl string `json:"image_url"`
-	Name string `json:"name"`
-	Description string `json:"description"`
-	Permalink string `json:"permalink"`
-	Contract *Contract `json:"asset_contract"`
-	Collection *Collection `json:"collection"`
-	Creator *User `json:"creator"`
-	Owner *User `json:"owner"`
-	LastSale *Sale `json:"last_sale,omitempty"`
-	Presale bool `json:"is_presale"`
-	ListingDate string `json:"listing_date,omitempty"`
+	Id          int32       `json:"id"`
+	TokenId     string      `json:"token_id"`
+	Sales       int32       `json:"num_sales"`
+	ImageUrl    string      `json:"image_url"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Permalink   string      `json:"permalink"`
+	Contract    *Contract   `json:"asset_contract"`
+	Collection  *Collection `json:"collection"`
+	Creator     *User       `json:"creator"`
+	Owner       *User       `json:"owner"`
+	LastSale    *Sale       `json:"last_sale,omitempty"`
+	Presale     bool        `json:"is_presale"`
+	ListingDate string      `json:"listing_date,omitempty"`
 }
 
 type Contract struct {
-        // name of contract
-        Name string `json:"name,omitempty"`
-        // ethereum address
-        Address string `json:"address,omitempty"`
-        // type of contract e.g "semi-fungible"
-        Type string `json:"asset_contract_type,omitempty"`
-        // timestamp of creation
-        CreatedAt string `json:"created_date,omitempty"`
-        // owner id
-        Owner int32 `json:"owner,omitempty"`
-        // aka "ERC1155"
-        Schema string `json:"schema_name,omitempty"`
-        // related symbol
-        Symbol string `json:"symbol,omitempty"`
-        // description of contract
-        Description string `json:"description,omitempty"`
-        // payout address
-        PayoutAddress string `json:"payout_address,omitempty"`
-        // seller fees
-        SellerFees string `json:"seller_fees_basis_points,omitempty"`
+	// name of contract
+	Name string `json:"name,omitempty"`
+	// ethereum address
+	Address string `json:"address,omitempty"`
+	// type of contract e.g "semi-fungible"
+	Type string `json:"asset_contract_type,omitempty"`
+	// timestamp of creation
+	CreatedAt string `json:"created_date,omitempty"`
+	// owner id
+	Owner int32 `json:"owner,omitempty"`
+	// aka "ERC1155"
+	Schema string `json:"schema_name,omitempty"`
+	// related symbol
+	Symbol string `json:"symbol,omitempty"`
+	// description of contract
+	Description string `json:"description,omitempty"`
+	// payout address
+	PayoutAddress string `json:"payout_address,omitempty"`
+	// seller fees
+	SellerFees string `json:"seller_fees_basis_points,omitempty"`
 }
 
 type Collection struct {
-        Name          string `json:"name,omitempty"`
-        Description   string `json:"description,omitempty"`
-        Slug          string `json:"slug,omitempty"`
-        ImageUrl      string `json:"image_url,omitempty"`
-        CreatedAt     string `json:"created_date,omitempty"`
-        PayoutAddress string `json:"payout_address,omitempty"`
+	Name          string `json:"name,omitempty"`
+	Description   string `json:"description,omitempty"`
+	Slug          string `json:"slug,omitempty"`
+	ImageUrl      string `json:"image_url,omitempty"`
+	CreatedAt     string `json:"created_date,omitempty"`
+	PayoutAddress string `json:"payout_address,omitempty"`
 }
 
 type User struct {
-	User *Username `json:"user"`
-        ProfileUrl string `json:"profile_img_url,omitempty"`
-        Address    string `json:"address,omitempty"`
+	User       *Username `json:"user"`
+	ProfileUrl string    `json:"profile_img_url,omitempty"`
+	Address    string    `json:"address,omitempty"`
 }
 
 type Username struct {
@@ -68,40 +68,39 @@ type Username struct {
 }
 
 type SaleAsset struct {
-	TokenId string `json:"token_id"`
+	TokenId  string `json:"token_id"`
 	Decimals int32  `json:"decimals"`
 }
 
 type Sale struct {
-	Asset *SaleAsset `json:"asset"`
-        EventType      string       `json:"event_type,omitempty"`
-        EventTimestamp string       `json:"event_timestamp,omitempty"`
-        TotalPrice     string        `json:"total_price,omitempty"`
-        Quantity       string       `json:"quantity,omitempty"`
-        CreatedAt      string       `json:"created_date,omitempty"`
-        Transaction    *Transaction `json:"transaction,omitempty"`
-        PaymentToken   *Token       `json:"payment_token,omitempty"`
+	Asset          *SaleAsset   `json:"asset"`
+	EventType      string       `json:"event_type,omitempty"`
+	EventTimestamp string       `json:"event_timestamp,omitempty"`
+	TotalPrice     string       `json:"total_price,omitempty"`
+	Quantity       string       `json:"quantity,omitempty"`
+	CreatedAt      string       `json:"created_date,omitempty"`
+	Transaction    *Transaction `json:"transaction,omitempty"`
+	PaymentToken   *Token       `json:"payment_token,omitempty"`
 }
 
 type Transaction struct {
-        Id               int32  `json:"id,omitempty"`
-        Timestamp        string `json:"timestamp,omitempty"`
-        BlockHash        string `json:"block_hash,omitempty"`
-        BlockNumber      string  `json:"block_number,omitempty"`
-        FromAccount      *User  `json:"from_account,omitempty"`
-        ToAccount        *User  `json:"to_account,omitempty"`
-        TransactionHash  string `json:"transaction_hash,omitempty"`
-        TransactionIndex string  `json:"transaction_index,omitempty"`
+	Id               int32  `json:"id,omitempty"`
+	Timestamp        string `json:"timestamp,omitempty"`
+	BlockHash        string `json:"block_hash,omitempty"`
+	BlockNumber      string `json:"block_number,omitempty"`
+	FromAccount      *User  `json:"from_account,omitempty"`
+	ToAccount        *User  `json:"to_account,omitempty"`
+	TransactionHash  string `json:"transaction_hash,omitempty"`
+	TransactionIndex string `json:"transaction_index,omitempty"`
 }
 
 type Token struct {
-        Id       int32   `json:"id,omitempty"`
-        Name     string  `json:"name,omitempty"`
-        Symbol   string  `json:"symbol,omitempty"`
-        Address  string  `json:"address,omitempty"`
-        ImageUrl string  `json:"image_url,omitempty"`
-        Decimals int32   `json:"decimals,omitempty"`
-        EthPrice string `json:"eth_price,omitempty"`
-        UsdPrice string `json:"usd_price,omitempty"`
+	Id       int32  `json:"id,omitempty"`
+	Name     string `json:"name,omitempty"`
+	Symbol   string `json:"symbol,omitempty"`
+	Address  string `json:"address,omitempty"`
+	ImageUrl string `json:"image_url,omitempty"`
+	Decimals int32  `json:"decimals,omitempty"`
+	EthPrice string `json:"eth_price,omitempty"`
+	UsdPrice string `json:"usd_price,omitempty"`
 }
-
