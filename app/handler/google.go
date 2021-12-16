@@ -39,7 +39,7 @@ type GoogleApp struct {
 
 var (
 	// hardcoded list of supported regions
-	GoogleRegions = []string{"asia-east1", "europe-west1", "us-central1", "us-east1", "us-west1"}
+	GoogleRegions = []string{"europe-west1", "us-central1", "us-east1", "us-west1", "asia-east1"}
 
 	// hardcoded list of valid repos
 	GitRepos = []string{"github.com", "gitlab.org", "bitbucket.org"}
