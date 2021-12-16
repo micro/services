@@ -678,6 +678,10 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 
 	// no change in status and we have a pre-existing url
 	if srv.Status == currentStatus && srv.Url == currentUrl && srv.Updated == updatedAt {
+		// set the custom domain
+		if len(e.domain) > 0 {
+			rsp.Service.Url = fmt.Sprintf("https://%s.%s", srv.Id, e.domain)
+		}
 		return nil
 	}
 
