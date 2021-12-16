@@ -133,5 +133,35 @@
         ]
       }
     }
+  ],
+  "reserve": [
+    {
+      "title": "Reserve a function",
+      "run_check": false,
+      "request": {
+        "name": "helloworld"
+      },
+      "response": {
+        "reservation": {
+                "name": "helloworld",
+                "owner": "micro/40e5d9aa-1185-4add-b248-ce4d72ff7947",
+                "token": "c580be106204d103df461bb3a3075aefedda5f85",
+                "created": "2021-12-16T19:19:29.615737412Z",
+                "expires": "2022-12-16T19:19:29.615737502Z"
+        }
+      }
+    }
+  ],
+  "proxy": [
+    {
+      "title": "Proxy URL",
+      "run_check": false,
+      "request": {
+        "id": "helloworld"
+      },
+      "response": {
+        "url": "https://europe-west1-m3o-apis.cloudfunctions.net/helloworld"
+      }
+    }
   ]
 }
