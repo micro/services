@@ -76,7 +76,9 @@
       "request": {},
       "response": {
         "regions": [
+		"asia-east1",
                 "europe-west1",
+		"us-central1",
                 "us-east1",
                 "us-west1"
         ]
