@@ -345,6 +345,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 
 		var status string
 
+LOOP:
 		// wait for the deployment and status update
 		for i := 0; i < 120; i++ {
 			cmd = exec.Command("gcloud", "functions", "describe", "--format", "json",
@@ -378,12 +379,12 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 			switch v {
 			case "ACTIVE":
 				status = "Deployed"
-				break
+				break LOOP
 			case "DEPLOY_IN_PROGRESS":
 				status = "Deploying"
 			case "OFFLINE":
 				status = "DeploymentError"
-				break
+				break LOOP
 			}
 
 			// we need to try get the url again
@@ -455,6 +456,8 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 	var status string
 
 	go func() {
+
+LOOP:
 		// wait for the deployment and status update
 		for i := 0; i < 120; i++ {
 			cmd := exec.Command("gcloud", "functions", "describe", "--quiet", "--format", "json",
@@ -487,12 +490,12 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 			switch v {
 			case "ACTIVE":
 				status = "Deployed"
-				break
+				break LOOP
 			case "DEPLOY_IN_PROGRESS":
 				status = "Deploying"
 			case "OFFLINE":
 				status = "DeploymentError"
-				break
+				break LOOP
 			}
 
 			// we need to try get the url again
