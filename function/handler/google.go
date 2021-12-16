@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os/exec"
+	"math/rand"
 	"path/filepath"
 	"strings"
 	"time"
@@ -19,7 +20,7 @@ import (
 	"github.com/micro/micro/v3/service/store"
 	function "github.com/micro/services/function/proto"
 	"github.com/micro/services/pkg/tenant"
-	"gopkg.in/yaml.v2"
+	"github.com/teris-io/shortid"
 )
 
 type GoogleFunction struct {
@@ -56,8 +57,24 @@ var (
 	}
 
 	// hardcoded list of supported regions
-	GoogleRegions = []string{"europe-west1", "us-east1", "us-west1"}
+	GoogleRegions = []string{"asia-east1", "europe-west1", "us-central1", "us-east1", "us-west1"}
 )
+
+var (
+        alphanum = "abcdefghijklmnopqrstuvwxyz0123456789"
+)
+
+func random(i int) string {
+        bytes := make([]byte, i)
+        for {
+                rand.Read(bytes)
+                for i, b := range bytes {
+                        bytes[i] = alphanum[b%byte(len(alphanum))]
+                }
+                return string(bytes)
+        }
+        return fmt.Sprintf("%d", time.Now().Unix())
+}
 
 func NewFunction() *GoogleFunction {
 	v, err := config.Get("function.service_account_json")
@@ -212,18 +229,12 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		tenantId = "micro"
 	}
 
-	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
 	if req.Entrypoint == "" {
 		req.Entrypoint = req.Name
 	}
 
-	project := req.Project
-	if project == "" {
-		project = "default"
-	}
-
-	key := fmt.Sprintf("function/%s/%s/%s", tenantId, project, req.Name)
-
+	// read the function by owner
+	key := fmt.Sprintf(OwnerKey+"%s/%s", tenantId, req.Name)
 	records, err := store.Read(key)
 	if err != nil && err != store.ErrNotFound {
 		return err
@@ -236,7 +247,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 	// check for function limit
 	if e.limit > 0 {
 		// read all the records for the user
-		records, err := store.Read("function/"+tenantId+"/", store.ReadPrefix())
+		records, err := store.Read(OwnerKey+tenantId+"/", store.ReadPrefix())
 		if err != nil {
 			return err
 		}
@@ -246,6 +257,26 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		}
 	}
 
+	// set the id
+	id := req.Name
+
+	// check the owner isn't already running it
+	recs, err := store.Read(FunctionKey+req.Name, store.ReadLimit(1))
+
+	// if there's an existing function then generate a unique id
+	if err == nil && len(recs) > 0 {
+		// generate an id for the service
+		sid, err := shortid.Generate()
+		if err != nil || len(sid) == 0 {
+			sid = random(8)
+		}
+
+		sid = strings.ToLower(sid)
+		sid = strings.Replace(sid, "-", "", -1)
+		sid = strings.Replace(sid, "_", "", -1)
+		id = req.Name + "-" + sid
+	}
+
 	// process the env vars to the required format
 	var envVars []string
 
@@ -253,31 +284,39 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		envVars = append(envVars, k+"="+v)
 	}
 
-	id := fmt.Sprintf("%v-%v", multitenantPrefix, req.Name)
 	fn := &function.Func{
-		Id: id,
-		Name: req.Name,
-		Project: project,
-		Repo: req.Repo,
-		Subfolder: req.Subfolder,
+		Id:         id,
+		Name:       req.Name,
+		Repo:       req.Repo,
+		Subfolder:  req.Subfolder,
 		Entrypoint: req.Entrypoint,
-		Runtime: req.Runtime,
-		EnvVars: req.EnvVars,
-		Region: req.Region,
-		Branch: req.Branch,
-		Created: time.Now().Format(time.RFC3339Nano),
-		Status: "Deploying",
+		Runtime:    req.Runtime,
+		EnvVars:    req.EnvVars,
+		Region:     req.Region,
+		Branch:     req.Branch,
+		Created:    time.Now().Format(time.RFC3339Nano),
+		Status:     "Deploying",
 	}
 
+	// write the owner key
 	rec := store.NewRecord(key, fn)
-	store.Write(rec)
+	if err := store.Write(rec); err != nil {
+		return err
+	}
 
+	// write the global key
+	rec = store.NewRecord(FunctionKey+fn.Id, fn)
+	if err := store.Write(rec); err != nil {
+		return err
+	}
+
+	// set the response
 	rsp.Function = fn
 
 	go func(fn *function.Func) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "functions", "deploy",
-			multitenantPrefix+"-"+fn.Name, "--region", fn.Region, "--service-account", e.identity,
+		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id,
+			"--region", fn.Region, "--service-account", e.identity,
 			"--allow-unauthenticated", "--entry-point", fn.Entrypoint,
 			"--trigger-http", "--project", e.project, "--runtime", fn.Runtime)
 
@@ -296,7 +335,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		}
 
 		cmd = exec.Command("gcloud", "functions", "describe", "--format", "json",
-			"--region", fn.Region, "--project", e.project, multitenantPrefix+"-"+fn.Name)
+			"--region", fn.Region, "--project", e.project, fn.Id)
 
 		outp, err = cmd.CombinedOutput()
 		if err != nil {
@@ -314,7 +353,14 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		trigger := m["httpsTrigger"].(map[string]interface{})
 		fn.Url = trigger["url"].(string)
 		fn.Updated = time.Now().Format(time.RFC3339Nano)
+		fn.Status = "Deployed"
+
+		// write the owners key
 		store.Write(store.NewRecord(key, fn))
+
+		// write the global key
+		rec = store.NewRecord(FunctionKey+fn.Id, fn)
+		store.Write(rec)
 	}(fn)
 
 	return nil
@@ -332,14 +378,7 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 		tenantId = "micro"
 	}
 
-	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
-
-	project := req.Project
-	if project == "" {
-		project = "default"
-	}
-
-	key := fmt.Sprintf("function/%s/%s/%s", tenantId, project, req.Name)
+	key := fmt.Sprintf(OwnerKey+"%s/%s", tenantId, req.Name)
 
 	records, err := store.Read(key)
 	if err != nil {
@@ -377,8 +416,8 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 
 	go func() {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "functions", "deploy",
-			multitenantPrefix+"-"+fn.Name, "--region", fn.Region, "--service-account", e.identity,
+		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id,
+			"--region", fn.Region, "--service-account", e.identity,
 			"--allow-unauthenticated", "--entry-point", fn.Entrypoint,
 			"--trigger-http", "--project", e.project, "--runtime", fn.Runtime)
 
@@ -393,6 +432,7 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 			log.Error(fmt.Errorf(string(outp)))
 		}
 
+		fn.Status = "Deployed"
 		fn.Updated = time.Now().Format(time.RFC3339Nano)
 		store.Write(store.NewRecord(key, fn))
 	}()
@@ -412,9 +452,24 @@ func (e *GoogleFunction) Call(ctx context.Context, req *function.CallRequest, rs
 	if !ok {
 		tenantId = "micro"
 	}
-	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
 
-	url := e.address + multitenantPrefix + "-" + req.Name
+	// get the function id based on the tenant
+	recs, err := store.Read(OwnerKey + tenantId + "/" + req.Name)
+	if err != nil {
+		return err
+	}
+	if len(recs) == 0 {
+		return errors.NotFound("function.call", "not found")
+	}
+
+	fn := new(function.Func)
+	recs[0].Decode(fn)
+
+	if len(fn.Id) == 0 {
+		return errors.NotFound("function.call", "not found")
+	}
+
+	url := e.address + fn.Id
 	fmt.Println("URL:>", url)
 
 	js, _ := json.Marshal(req.Request)
@@ -462,13 +517,7 @@ func (e *GoogleFunction) Delete(ctx context.Context, req *function.DeleteRequest
 		tenantId = "micro"
 	}
 
-	project := req.Project
-	if project == "" {
-		project = "default"
-	}
-
-	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
-	key := fmt.Sprintf("function/%v/%v/%v", tenantId, project, req.Name)
+	key := fmt.Sprintf(OwnerKey+"%v/%v", tenantId, req.Name)
 
 	records, err := store.Read(key)
 	if err != nil && err == store.ErrNotFound {
@@ -486,14 +535,18 @@ func (e *GoogleFunction) Delete(ctx context.Context, req *function.DeleteRequest
 
 	// async delete
 	go func() {
-		cmd := exec.Command("gcloud", "functions", "delete", "--project", e.project, "--region", fn.Region, multitenantPrefix+"-"+req.Name)
+		cmd := exec.Command("gcloud", "functions", "delete", "--project", e.project, "--region", fn.Region, fn.Id)
 		outp, err := cmd.CombinedOutput()
 		if err != nil && !strings.Contains(string(outp), "does not exist") {
 			log.Error(fmt.Errorf(string(outp)))
 			return
 		}
 
+		// delete the owner key
 		store.Delete(key)
+
+		// delete the global key
+		store.Delete(FunctionKey + fn.Id)
 	}()
 
 	return nil
@@ -507,44 +560,17 @@ func (e *GoogleFunction) List(ctx context.Context, req *function.ListRequest, rs
 		tenantId = "micro"
 	}
 
-	key := "function/" + tenantId + "/"
-
-	project := req.Project
-	if len(project) > 0 {
-		key = key + "/" + project + "/"
-	}
+	key := OwnerKey + tenantId + "/"
 
 	records, err := store.Read(key, store.ReadPrefix())
 	if err != nil {
 		return err
 	}
 
-	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
-	cmd := exec.Command("gcloud", "functions", "list", "--project", e.project, "--filter", "name~"+multitenantPrefix+"*")
-	outp, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Error(fmt.Errorf(string(outp)))
-	}
-
-	lines := strings.Split(string(outp), "\n")
-	statuses := map[string]string{}
-
-	for _, line := range lines {
-		fields := strings.Fields(line)
-		if len(fields) < 2 {
-			continue
-		}
-		status := strings.Replace(fields[1], "_", " ", -1)
-		status = strings.Title(strings.ToLower(status))
-		statuses[fields[0]] = status
-	}
-
-	rsp.Functions = []*function.Func{}
-
 	for _, record := range records {
 		fn := new(function.Func)
 		if err := record.Decode(fn); err != nil {
-			return err
+			continue
 		}
 		if len(fn.Region) == 0 {
 			fn.Region = GoogleRegions[0]
@@ -558,7 +584,6 @@ func (e *GoogleFunction) List(ctx context.Context, req *function.ListRequest, rs
 			fn.Url = fmt.Sprintf("https://%s.%s", fn.Id, e.domain)
 		}
 
-		fn.Status = statuses[multitenantPrefix+"-"+fn.Name]
 		rsp.Functions = append(rsp.Functions, fn)
 	}
 
@@ -575,13 +600,7 @@ func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeReq
 		tenantId = "micro"
 	}
 
-	project := req.Project
-	if project == "" {
-		project = "default"
-	}
-
-	multitenantPrefix := strings.Replace(tenantId, "/", "-", -1)
-	key := fmt.Sprintf("function/%v/%v/%v", tenantId, project, req.Name)
+	key := fmt.Sprintf(OwnerKey+"%v/%v", tenantId, req.Name)
 
 	records, err := store.Read(key)
 	if err != nil {
@@ -615,7 +634,7 @@ func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeReq
 	rsp.Function = fn
 
 	// get the current status
-	cmd := exec.Command("gcloud", "functions", "describe", "--region", fn.Region, "--project", e.project, multitenantPrefix+"-"+req.Name)
+	cmd := exec.Command("gcloud", "functions", "describe", "--format", "json", "--region", fn.Region, "--project", e.project, fn.Id)
 	outp, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
@@ -624,8 +643,8 @@ func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeReq
 
 	log.Info(string(outp))
 	m := map[string]interface{}{}
-	err = yaml.Unmarshal(outp, m)
-	if err != nil {
+
+	if err := json.Unmarshal(outp, m); err != nil {
 		return err
 	}
 
@@ -647,9 +666,7 @@ func (g *GoogleFunction) Proxy(ctx context.Context, req *function.ProxyRequest, 
 		return errors.BadRequest("function.proxy", "invalid id")
 	}
 
-	key := FunctionKey + req.Id
-
-	recs, err := store.Read(key, store.ReadLimit(1))
+	recs, err := store.Read(FunctionKey+req.Id, store.ReadLimit(1))
 	if err != nil {
 		return err
 	}
