@@ -333,7 +333,8 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	go func(service *pb.Service) {
 		// generate a unique service account for the app
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
+		cmd := exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run",
+			"deploy", service.Id, "--region", req.Region,
 			"--service-account", e.identity,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
@@ -456,8 +457,8 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 
 	go func(service *pb.Service) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", service.Region,
-			"--service-account", e.identity,
+		cmd := exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run", "deploy",
+			service.Id, "--region", service.Region, "--service-account", e.identity,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", service.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
