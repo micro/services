@@ -28,7 +28,7 @@ type GoogleApp struct {
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
 	// max number of apps per user
-	limit   int
+	limit int
 	// custom domain for apps
 	domain string
 	// the service account for the app
@@ -143,12 +143,12 @@ func New() *GoogleApp {
 	log.Info(string(outp))
 
 	return &GoogleApp{
-		domain: domain,
-		project: project,
-		address: address,
-		limit: limit,
+		domain:   domain,
+		project:  project,
+		address:  address,
+		limit:    limit,
 		identity: identity,
-		App: new(App),
+		App:      new(App),
 	}
 }
 

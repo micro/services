@@ -26,7 +26,7 @@ type GoogleFunction struct {
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
 	// max functions deployed
-	limit   int
+	limit int
 	// function identity
 	identity string
 }
@@ -126,9 +126,9 @@ func NewFunction() *GoogleFunction {
 	}
 	log.Info(string(outp))
 	return &GoogleFunction{
-		project: project,
-		address: address,
-		limit: limit,
+		project:  project,
+		address:  address,
+		limit:    limit,
 		identity: identity,
 	}
 }
