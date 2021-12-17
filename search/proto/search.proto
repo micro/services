@@ -27,14 +27,14 @@ message IndexRequest {
 }
 
 message Document {
-	// The ID for this document
+	// The ID for this document. If blank, one will be generated
 	string id = 1;
 	// The JSON contents of the document
 	google.protobuf.Struct contents = 2;
 }
 
 message IndexResponse {
-
+	string id = 1;
 }
 
 // Delete a document given its ID

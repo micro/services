@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/bitly/go-simplejson"
+	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
@@ -140,7 +141,7 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 		return errors.BadRequest(method, "Missing document param")
 	}
 	if len(request.Document.Id) == 0 {
-		return errors.BadRequest(method, "Missing document.id param")
+		request.Document.Id = uuid.New().String()
 	}
 	if len(request.IndexName) == 0 {
 		return errors.BadRequest(method, "Missing index_name param")
@@ -171,6 +172,7 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 		log.Errorf("Error indexing doc %s", rsp.String())
 		return errors.InternalServerError(method, "Error indexing document")
 	}
+	response.Id = req.DocumentID
 	return nil
 }
 

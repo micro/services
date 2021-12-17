@@ -29,9 +29,9 @@
       "title": "Index a document",
       "run_check": false,
       "request": {
+        "index_name": "customers",
         "document": {
           "id": "1234",
-          "index_name": "customers",
           "contents": {
             "name": "John Doe",
             "age": 37,
@@ -62,7 +62,6 @@
         "documents": [
           {
             "id": "1234",
-            "index_name": "customers",
             "contents": {
               "name": "John Doe",
               "age": 37,
@@ -95,7 +94,6 @@
         "documents": [
           {
             "id": "1234",
-            "index_name": "customers",
             "contents": {
               "name": "John Doe",
               "age": 37,
@@ -128,7 +126,6 @@
         "documents": [
           {
             "id": "1234",
-            "index_name": "customers",
             "contents": {
               "name": "John Doe",
               "age": 37,
@@ -157,7 +154,6 @@
         "documents": [
           {
             "id": "1234",
-            "index_name": "customers",
             "contents": {
               "name": "John Doe",
               "age": 37,
