@@ -59,7 +59,7 @@ message SearchRequest {
 }
 
 message QueryDef {
-	// The fields to search on
+	// The fields to search/match on
 	repeated FieldQuery fields = 2;
 	// Boolean operator for the fields be combined with - `and` or `or`
 	string operator = 3;
@@ -73,7 +73,7 @@ message QueryDef {
 message FieldQuery {
 	// The name of the field
 	string field_name = 1;
-	// The value to search for
+	// The value to look for
 	string value = 2;
 
 	// TODO add an operator field for complex things like >, <, etc.

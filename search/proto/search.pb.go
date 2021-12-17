@@ -333,7 +333,7 @@ type QueryDef struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The fields to search on
+	// The fields to search/match on
 	Fields []*FieldQuery `protobuf:"bytes,2,rep,name=fields,proto3" json:"fields,omitempty"`
 	// Boolean operator for the fields be combined with - `and` or `or`
 	Operator string `protobuf:"bytes,3,opt,name=operator,proto3" json:"operator,omitempty"`
@@ -401,7 +401,7 @@ type FieldQuery struct {
 
 	// The name of the field
 	FieldName string `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
-	// The value to search for
+	// The value to look for
 	Value string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 }
 
