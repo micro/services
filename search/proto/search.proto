@@ -40,13 +40,12 @@ message DeleteResponse {}
 // Search for documents in a given in index
 message SearchRequest {
 	string index_name = 1;
-//	string keyword = 2;
-	bool fuzzy = 4;
+	bool fuzzy = 4; // TODO
 	QueryDef query = 5;
 }
 
 message QueryDef {
-	repeated QueryDef queries = 1;
+//	repeated QueryDef queries = 1; // TODO reinstate once we fix protoc openapi3 recursive generation
 	repeated FieldQuery fields = 2;
 	string operator = 3;
 	bool prefix = 4;

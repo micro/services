@@ -204,9 +204,10 @@ func recurseParseQueryDef(qd *pb.QueryDef) *simplejson.Json {
 		js.SetPath([]string{matchType, v.FieldName}, v.Value)
 		terms = append(terms, js)
 	}
-	for _, v := range qd.Queries {
-		terms = append(terms, recurseParseQueryDef(v))
-	}
+	// TODO reinstate once we fix protoc openapi3 recursive generation
+	//for _, v := range qd.Queries {
+	//	terms = append(terms, recurseParseQueryDef(v))
+	//}
 
 	qs.SetPath([]string{"bool", boolean}, terms)
 	return qs

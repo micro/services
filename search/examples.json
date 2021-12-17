@@ -1,14 +1,192 @@
 {
-  "vote": [
+  "createIndex": [
     {
-      "title": "Vote for the API",
+      "title": "Create an index",
       "run_check": false,
       "request": {
-        "message": "Launch it!"
+        "index_name": "customers",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "age",
+            "type": "integer"
+          },
+          {
+            "name": "starsign",
+            "type": "string"
+          }
+        ]
       },
       "response": {
-	"message": "Thanks for the vote!"
       }
+    }
+  ],
+  "index": [
+    {
+      "title": "Index a document",
+      "run_check": false,
+      "request": {
+        "document": {
+          "id": "1234",
+          "index_name": "customers",
+          "contents": {
+            "name": "John Doe",
+            "age": 37,
+            "starsign": "Leo"
+          }
+        }
+      },
+      "response": {
+      }
+    }
+  ],
+  "search": [
+    {
+      "title": "Search for a document",
+      "run_check": false,
+      "request": {
+        "index_name": "customers",
+        "query": {
+          "fields": [
+            {
+              "field_name": "name",
+              "value": "John"
+            }
+          ]
+        }
+      },
+      "response": {
+        "documents": [
+          {
+            "id": "1234",
+            "index_name": "customers",
+            "contents": {
+              "name": "John Doe",
+              "age": 37,
+              "starsign": "Leo"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "title": "Search on multiple fields (AND)",
+      "run_check": false,
+      "request": {
+        "index_name": "customers",
+        "query": {
+          "operator": "and",
+          "fields": [
+            {
+              "field_name": "name",
+              "value": "John"
+            },
+            {
+              "field_name": "starsign",
+              "value": "Leo"
+            }
+          ]
+        }
+      },
+      "response": {
+        "documents": [
+          {
+            "id": "1234",
+            "index_name": "customers",
+            "contents": {
+              "name": "John Doe",
+              "age": 37,
+              "starsign": "Leo"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "title": "Search on multiple fields (OR)",
+      "run_check": false,
+      "request": {
+        "index_name": "customers",
+        "query": {
+          "operator": "or",
+          "fields": [
+            {
+              "field_name": "name",
+              "value": "John"
+            },
+            {
+              "field_name": "starsign",
+              "value": "Leo"
+            }
+          ]
+        }
+      },
+      "response": {
+        "documents": [
+          {
+            "id": "1234",
+            "index_name": "customers",
+            "contents": {
+              "name": "John Doe",
+              "age": 37,
+              "starsign": "Leo"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "title": "Search on prefix",
+      "run_check": false,
+      "request": {
+        "index_name": "customers",
+        "query": {
+          "fields": [
+            {
+              "field_name": "name",
+              "value": "Jo"
+            }
+          ],
+          "prefix": true
+        }
+      },
+      "response": {
+        "documents": [
+          {
+            "id": "1234",
+            "index_name": "customers",
+            "contents": {
+              "name": "John Doe",
+              "age": 37,
+              "starsign": "Leo"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "delete": [
+    {
+      "title": "Delete a document",
+      "run_check": false,
+      "request": {
+        "id": "1234",
+        "index_name": "customers"
+      },
+      "response": {}
+    }
+  ],
+  "deleteIndex": [
+    {
+      "title": "Delete an index",
+      "run_check": false,
+      "request": {
+        "index_name": "customers"
+      },
+      "response": {}
     }
   ]
 }
