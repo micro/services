@@ -105,11 +105,11 @@ func (s *Search) CreateIndex(ctx context.Context, request *pb.CreateIndexRequest
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
 	}
-	if !isValidIndexName(request.IndexName) {
+	if !isValidIndexName(request.Index) {
 		return errors.BadRequest(method, "Index name should contain only alphanumerics and hyphens")
 	}
 	req := openapi.CreateRequest{
-		Index: indexName(tnt, request.IndexName),
+		Index: indexName(tnt, request.Index),
 		Body:  nil, // TODO populate with fields and their types
 	}
 	rsp, err := req.Do(ctx, s.client)
@@ -143,10 +143,10 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 	if len(request.Document.Id) == 0 {
 		request.Document.Id = uuid.New().String()
 	}
-	if len(request.IndexName) == 0 {
+	if len(request.Index) == 0 {
 		return errors.BadRequest(method, "Missing index_name param")
 	}
-	if !isValidIndexName(request.IndexName) {
+	if !isValidIndexName(request.Index) {
 		return errors.BadRequest(method, "Index name should contain only alphanumerics and hyphens")
 	}
 	if request.Document.Contents == nil {
@@ -158,7 +158,7 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 		return errors.BadRequest(method, "Error processing document")
 	}
 	req := openapi.IndexRequest{
-		Index:      indexName(tnt, request.IndexName),
+		Index:      indexName(tnt, request.Index),
 		DocumentID: request.Document.Id,
 		Body:       bytes.NewBuffer(b),
 	}
@@ -183,7 +183,7 @@ func (s *Search) Delete(ctx context.Context, request *pb.DeleteRequest, response
 		return errors.Unauthorized(method, "Unauthorized")
 	}
 	req := openapi.DeleteRequest{
-		Index:      indexName(tnt, request.IndexName),
+		Index:      indexName(tnt, request.Index),
 		DocumentID: request.Id,
 	}
 	rsp, err := req.Do(ctx, s.client)
@@ -234,7 +234,7 @@ func recurseParseQueryDef(qd *pb.QueryDef) *simplejson.Json {
 
 func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response *pb.SearchResponse) error {
 	method := "search.Search"
-	if len(request.IndexName) == 0 {
+	if len(request.Index) == 0 {
 		return errors.BadRequest(method, "Missing index_name param")
 	}
 
@@ -257,7 +257,7 @@ func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response
 	qs := parseQueryDef(request.Query)
 	b, _ := qs.MarshalJSON()
 	req := openapi.SearchRequest{
-		Index: []string{indexName(tnt, request.IndexName)},
+		Index: []string{indexName(tnt, request.Index)},
 		Body:  bytes.NewBuffer(b),
 	}
 	rsp, err := req.Do(ctx, s.client)
@@ -305,7 +305,7 @@ func (s *Search) DeleteIndex(ctx context.Context, request *pb.DeleteIndexRequest
 		return errors.Unauthorized(method, "Unauthorized")
 	}
 	req := openapi.DeleteRequest{
-		Index: indexName(tnt, request.IndexName),
+		Index: indexName(tnt, request.Index),
 	}
 	rsp, err := req.Do(ctx, s.client)
 	if err != nil {
