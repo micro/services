@@ -126,8 +126,8 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 	if len(request.Document.Id) == 0 {
 		return errors.BadRequest(method, "Missing document.id param")
 	}
-	if len(request.Document.IndexName) == 0 {
-		return errors.BadRequest(method, "Missing document.index_name param")
+	if len(request.IndexName) == 0 {
+		return errors.BadRequest(method, "Missing index_name param")
 	}
 	if request.Document.Contents == nil {
 		return errors.BadRequest(method, "Missing document.contents param")
@@ -138,7 +138,7 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 		return errors.BadRequest(method, "Error processing document")
 	}
 	req := openapi.IndexRequest{
-		Index:      indexName(tnt, request.Document.IndexName),
+		Index:      indexName(tnt, request.IndexName),
 		DocumentID: request.Document.Id,
 		Body:       bytes.NewBuffer(b),
 	}
@@ -278,9 +278,8 @@ func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response
 			return errors.InternalServerError(method, "Error searching documents")
 		}
 		response.Documents = append(response.Documents, &pb.Document{
-			Id:        v.ID,
-			IndexName: request.IndexName,
-			Contents:  vs,
+			Id:       v.ID,
+			Contents: vs,
 		})
 	}
 	return nil

@@ -17,19 +17,20 @@ service Search {
 
 }
 
-// Index a document i.e. insert a document to search for
+// Index a document i.e. insert a document to search for. If the index for the document does not exist it will be created on the fly.
 message IndexRequest {
 	// The document to index
-	Document document = 2;
+	Document document = 1;
+	// The index this document belongs to
+	string index_name = 2;
+
 }
 
 message Document {
 	// The ID for this document
 	string id = 1;
-	// The index this document belongs to
-	string index_name = 2;
 	// The JSON contents of the document
-	google.protobuf.Struct contents = 3;
+	google.protobuf.Struct contents = 2;
 }
 
 message IndexResponse {
@@ -74,6 +75,8 @@ message FieldQuery {
 	string field_name = 1;
 	// The value to search for
 	string value = 2;
+
+	// TODO add an operator field for complex things like >, <, etc.
 }
 
 message SearchResponse {
@@ -97,7 +100,7 @@ message Field {
 
 message CreateIndexResponse {}
 
-// Delete an index
+// Delete an index.
 message DeleteIndexRequest {
 	// The name of the index to delete
 	string index_name = 1;
