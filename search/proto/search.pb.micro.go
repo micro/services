@@ -43,7 +43,6 @@ func NewSearchEndpoints() []*api.Endpoint {
 // Client API for Search service
 
 type SearchService interface {
-	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...client.CallOption) (*CreateIndexResponse, error)
 	Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
@@ -60,16 +59,6 @@ func NewSearchService(name string, c client.Client) SearchService {
 		c:    c,
 		name: name,
 	}
-}
-
-func (c *searchService) CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...client.CallOption) (*CreateIndexResponse, error) {
-	req := c.c.NewRequest(c.name, "Search.CreateIndex", in)
-	out := new(CreateIndexResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *searchService) Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error) {
@@ -115,7 +104,6 @@ func (c *searchService) DeleteIndex(ctx context.Context, in *DeleteIndexRequest,
 // Server API for Search service
 
 type SearchHandler interface {
-	CreateIndex(context.Context, *CreateIndexRequest, *CreateIndexResponse) error
 	Index(context.Context, *IndexRequest, *IndexResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Search(context.Context, *SearchRequest, *SearchResponse) error
@@ -124,7 +112,6 @@ type SearchHandler interface {
 
 func RegisterSearchHandler(s server.Server, hdlr SearchHandler, opts ...server.HandlerOption) error {
 	type search interface {
-		CreateIndex(ctx context.Context, in *CreateIndexRequest, out *CreateIndexResponse) error
 		Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
@@ -139,10 +126,6 @@ func RegisterSearchHandler(s server.Server, hdlr SearchHandler, opts ...server.H
 
 type searchHandler struct {
 	SearchHandler
-}
-
-func (h *searchHandler) CreateIndex(ctx context.Context, in *CreateIndexRequest, out *CreateIndexResponse) error {
-	return h.SearchHandler.CreateIndex(ctx, in, out)
 }
 
 func (h *searchHandler) Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error {

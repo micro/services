@@ -218,7 +218,7 @@ func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response
 	// TODO validation
 	// TODO validate name https://opensearch.org/docs/latest/opensearch/rest-api/index-apis/create-index/#index-naming-restrictions
 	if len(request.IndexName) == 0 {
-		return errors.BadRequest(method, "Missing document.index_name param")
+		return errors.BadRequest(method, "Missing index_name param")
 	}
 
 	// Search models to support https://opensearch.org/docs/latest/opensearch/ux/
