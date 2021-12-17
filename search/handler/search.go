@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/bitly/go-simplejson"
@@ -20,6 +21,11 @@ import (
 	open "github.com/opensearch-project/opensearch-go"
 	openapi "github.com/opensearch-project/opensearch-go/opensearchapi"
 	"google.golang.org/protobuf/types/known/structpb"
+)
+
+var (
+	indexNameRegex      = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]$`)
+	shortIndexNameRegex = regexp.MustCompile(`[a-zA-Z0-9]`)
 )
 
 type Search struct {
@@ -83,6 +89,13 @@ func New(srv *service.Service) *Search {
 	}
 }
 
+func isValidIndexName(s string) bool {
+	if len(s) > 1 {
+		return indexNameRegex.MatchString(s)
+	}
+	return shortIndexNameRegex.MatchString(s)
+}
+
 func (s *Search) CreateIndex(ctx context.Context, request *pb.CreateIndexRequest, response *pb.CreateIndexResponse) error {
 	method := "search.CreateIndex"
 
@@ -90,6 +103,9 @@ func (s *Search) CreateIndex(ctx context.Context, request *pb.CreateIndexRequest
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
+	}
+	if !isValidIndexName(request.IndexName) {
+		return errors.BadRequest(method, "Index name should contain only alphanumerics and hyphens")
 	}
 	req := openapi.CreateRequest{
 		Index: indexName(tnt, request.IndexName),
@@ -129,6 +145,9 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 	if len(request.IndexName) == 0 {
 		return errors.BadRequest(method, "Missing index_name param")
 	}
+	if !isValidIndexName(request.IndexName) {
+		return errors.BadRequest(method, "Index name should contain only alphanumerics and hyphens")
+	}
 	if request.Document.Contents == nil {
 		return errors.BadRequest(method, "Missing document.contents param")
 	}
@@ -157,8 +176,6 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 
 func (s *Search) Delete(ctx context.Context, request *pb.DeleteRequest, response *pb.DeleteResponse) error {
 	method := "search.Delete"
-	// TODO validation
-	// TODO validate name https://opensearch.org/docs/latest/opensearch/rest-api/index-apis/create-index/#index-naming-restrictions
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
@@ -215,8 +232,6 @@ func recurseParseQueryDef(qd *pb.QueryDef) *simplejson.Json {
 
 func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response *pb.SearchResponse) error {
 	method := "search.Search"
-	// TODO validation
-	// TODO validate name https://opensearch.org/docs/latest/opensearch/rest-api/index-apis/create-index/#index-naming-restrictions
 	if len(request.IndexName) == 0 {
 		return errors.BadRequest(method, "Missing index_name param")
 	}
@@ -238,18 +253,14 @@ func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response
 	}
 
 	qs := parseQueryDef(request.Query)
-	// https://opensearch.org/docs/latest/opensearch/query-dsl/index/
-	//q := fmt.Sprintf(`{"query": {"simple_query_string": {"query": "%s"} }}`, request.Query)
 	b, _ := qs.MarshalJSON()
-	log.Infof("Querying %v", string(b))
 	req := openapi.SearchRequest{
 		Index: []string{indexName(tnt, request.IndexName)},
-		Body:  bytes.NewBuffer(b), // TODO - do we create our own DSL or just pass through the user string? support both?? simple and complex query
-
+		Body:  bytes.NewBuffer(b),
 	}
 	rsp, err := req.Do(ctx, s.client)
 	if err != nil {
-		log.Errorf("Error indexing doc %s", err)
+		log.Errorf("Error searching index %s", err)
 		return errors.InternalServerError(method, "Error searching documents")
 	}
 	defer rsp.Body.Close()
@@ -287,8 +298,6 @@ func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response
 
 func (s *Search) DeleteIndex(ctx context.Context, request *pb.DeleteIndexRequest, response *pb.DeleteIndexResponse) error {
 	method := "search.DeleteIndex"
-	// TODO validation
-	// TODO validate name https://opensearch.org/docs/latest/opensearch/rest-api/index-apis/create-index/#index-naming-restrictions
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
