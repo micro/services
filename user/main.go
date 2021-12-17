@@ -7,6 +7,8 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 
+	authPb "github.com/micro/micro/v3/proto/auth"
+
 	db "github.com/micro/services/db/proto"
 	otp "github.com/micro/services/otp/proto"
 	"github.com/micro/services/pkg/tracing"
@@ -15,7 +17,7 @@ import (
 	proto "github.com/micro/services/user/proto"
 )
 
-func migrateData(from db.DbService, to store.Store) {
+func migrateData(from db.DbService, to store.Store, authAccount authPb.AccountsService) {
 	startTime := time.Now()
 	logger.Info("start migrate ...")
 	defer func() {
@@ -23,7 +25,7 @@ func migrateData(from db.DbService, to store.Store) {
 	}()
 
 	// users
-	u := migrate.NewUserMigration(from, to)
+	u := migrate.NewUserMigration(from, to, authAccount)
 	err := u.Do()
 	if err != nil {
 		logger.Errorf("migrate users data error: %v", err)
@@ -41,7 +43,8 @@ func main() {
 	srv.Init()
 
 	from := db.NewDbService("db", srv.Client())
-	go migrateData(from, store.DefaultStore)
+	authAccount := authPb.NewAccountsService("auth", srv.Client())
+	go migrateData(from, store.DefaultStore, authAccount)
 
 	hd := handler.NewUser(
 		store.DefaultStore,
