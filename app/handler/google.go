@@ -191,10 +191,11 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	if err == nil && len(recs) > 0 {
 		res := new(Reservation)
 		recs[0].Decode(res)
-		if res.Owner != id && res.Expires.After(time.Now()) {
-			return errors.BadRequest("app.run", "name %s is reserved", req.Name)
+
+		// if its the owners app and there's still time left
+		if res.Owner == id && res.Expires.After(time.Now()) {
+			reservedApp = true
 		}
-		reservedApp = true
 	}
 
 	var validRepo bool
@@ -259,7 +260,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	// set the id
 	appId := req.Name
 
-	// check the owner isn't already running it
+	// check the app isn't already running it
 	recs, err = store.Read(key, store.ReadLimit(1))
 
 	// if there's an existing service then generate a unique id
