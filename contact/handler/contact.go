@@ -12,10 +12,10 @@ import (
 )
 
 type contact struct {
-	contact domain.ContactIface
+	contact domain.Contact
 }
 
-func NewContact(c domain.ContactIface) *contact {
+func NewContact(c domain.Contact) *contact {
 	return &contact{
 		contact: c,
 	}

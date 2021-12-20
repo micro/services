@@ -12,7 +12,7 @@ import (
 	pb "github.com/micro/services/contact/proto"
 )
 
-type ContactIface interface {
+type Contact interface {
 	Create(ctx context.Context, info *pb.ContactInfo) error
 	Update(ctx context.Context, id string, info *pb.ContactInfo) error
 	Read(ctx context.Context, id string) (result *pb.ContactInfo, err error)
