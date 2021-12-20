@@ -331,6 +331,18 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		}
 	}
 
+	// make copy
+	srv := new(pb.Service)
+	*srv = *service
+
+	// set the custom domain
+	if len(e.domain) > 0 {
+		srv.Url = fmt.Sprintf("https://%s.%s", srv.Id, e.domain)
+	}
+
+	// set the service in the response
+	rsp.Service = srv
+
 	go func(service *pb.Service) {
 		// generate a unique service account for the app
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
@@ -398,9 +410,6 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			}
 		}
 	}(service)
-
-	// set the service in the response
-	rsp.Service = service
 
 	return nil
 }
@@ -553,6 +562,10 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 
 	if err := recs[0].Decode(srv); err != nil {
 		return err
+	}
+
+	if srv.Status == "Deploying" {
+		return errors.BadRequest("app.run", "app is being deployed")
 	}
 
 	// execute the delete async
