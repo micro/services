@@ -21,6 +21,7 @@ func NewContact(c domain.Contact) *contact {
 	}
 }
 
+// Create a contact
 func (c *contact) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
 	req.Name = strings.TrimSpace(req.Name)
 	if len(req.Name) == 0 {
@@ -53,6 +54,7 @@ func (c *contact) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Cre
 	return nil
 }
 
+// Update information of the contact submitted
 func (c *contact) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
 	req.Name = strings.TrimSpace(req.Name)
 	if len(req.Name) == 0 {
@@ -86,6 +88,7 @@ func (c *contact) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Upd
 	return nil
 }
 
+// Read a contact by id
 func (c *contact) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
 	info, err := c.contact.Read(ctx, req.Id)
 	if err != nil {
@@ -97,6 +100,7 @@ func (c *contact) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRes
 	return nil
 }
 
+// Delete contact by id
 func (c *contact) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	err := c.contact.Delete(ctx, req.Id)
 	if err != nil {
@@ -106,6 +110,7 @@ func (c *contact) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Del
 	return nil
 }
 
+// List contacts with offset and limit
 func (c *contact) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	if req.Limit == 0 {
 		req.Limit = 30

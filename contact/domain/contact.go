@@ -30,14 +30,17 @@ func NewContactDomain(s store.Store) *contact {
 	}
 }
 
+// contactIdPrefix return the contact prefix of the store key
 func contactIdPrefix() string {
 	return "contact/id/"
 }
 
+// contactIdPrefix return the store key of one contact
 func contactIdKey(id string) string {
 	return fmt.Sprintf("%s%s", contactIdPrefix(), id)
 }
 
+// Create a contact
 func (c *contact) Create(ctx context.Context, info *pb.ContactInfo) error {
 	info.CreatedAt = time.Now().Unix()
 	info.UpdatedAt = time.Now().Unix()
@@ -53,6 +56,7 @@ func (c *contact) Create(ctx context.Context, info *pb.ContactInfo) error {
 	})
 }
 
+// Update contact information by id
 func (c *contact) Update(ctx context.Context, id string, info *pb.ContactInfo) error {
 	info.UpdatedAt = time.Now().Unix()
 
@@ -67,6 +71,7 @@ func (c *contact) Update(ctx context.Context, id string, info *pb.ContactInfo) e
 	})
 }
 
+// Read one contact by id
 func (c *contact) Read(ctx context.Context, id string) (*pb.ContactInfo, error) {
 	records, err := c.store.Read(contactIdKey(id))
 	if err != nil {
@@ -85,10 +90,12 @@ func (c *contact) Read(ctx context.Context, id string) (*pb.ContactInfo, error) 
 	return info, err
 }
 
+// Delete one contact by id
 func (c *contact) Delete(ctx context.Context, id string) error {
 	return c.store.Delete(contactIdKey(id))
 }
 
+// List contacts by offset and limit
 func (c *contact) List(ctx context.Context, offset, limit uint) (result []*pb.ContactInfo, err error) {
 	records, err := c.store.Read(contactIdPrefix(),
 		store.ReadPrefix(),
