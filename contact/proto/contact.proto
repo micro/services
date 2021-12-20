@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package contact;
+
+option go_package = "./proto;contact";
+
+service Contact {
+  rpc Create(CreateRequest) returns (CreateResponse) {}
+  rpc Read(ReadRequest) returns (ReadResponse) {}
+  rpc Update(UpdateRequest) returns (UpdateResponse) {}
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+  rpc List(ListRequest) returns (ListResponse) {}
+  //  rpc Search(Request) returns (Response) {}
+}
+
+message Phone {
+  string label = 1;
+  string number = 2;
+}
+
+message Email {
+  string label = 1;
+  string address = 2;
+}
+
+message Link {
+  string label = 1;
+  string url = 2;
+}
+
+message Address {
+  string label = 1;
+  string address = 2;
+}
+
+message SocialMedia {
+  string label = 1;
+  string username = 2;
+}
+
+message ContactInfo {
+  string id = 1;
+  string name = 2;
+  repeated Phone phones = 3;
+  repeated Email emails = 4;
+  repeated Link links = 5;
+  string birthday = 6;
+  repeated Address addresses = 7;
+  repeated SocialMedia social_medias = 8;
+  string note = 9;
+  int64 created_at = 10;
+  int64 updated_at = 11;
+}
+
+message CreateRequest {
+  string name = 1;
+  repeated Phone phones = 2;
+  repeated Email emails = 3;
+  repeated Link links = 4;
+  string birthday = 5;
+  repeated Address addresses = 6;
+  repeated SocialMedia social_medias = 7;
+  string note = 8;
+}
+
+message CreateResponse {
+  ContactInfo contact = 1;
+}
+
+message ReadRequest {
+  string id = 1;
+}
+
+message ReadResponse {
+  ContactInfo contact = 1;
+}
+
+message DeleteRequest {
+  string id = 1;
+}
+
+message DeleteResponse {
+}
+
+
+message UpdateRequest {
+  string id = 1;
+  string name = 2;
+  repeated Phone phones = 3;
+  repeated Email emails = 4;
+  repeated Link links = 5;
+  string birthday = 6;
+  repeated Address addresses = 7;
+  repeated SocialMedia social_medias = 8;
+  string note = 9;
+}
+
+message UpdateResponse {
+  ContactInfo contact = 1;
+}
+
+message ListRequest {
+  uint32 offset = 1;
+  uint32 limit = 2;
+}
+
+message ListResponse {
+  repeated ContactInfo contacts = 1;
+}

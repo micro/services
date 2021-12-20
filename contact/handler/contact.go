@@ -1,0 +1,113 @@
+package handler
+
+import (
+	"context"
+	"strings"
+
+	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/errors"
+
+	"github.com/micro/services/contact/domain"
+	pb "github.com/micro/services/contact/proto"
+)
+
+type contact struct {
+	contact domain.ContactIface
+}
+
+func NewContact(c domain.ContactIface) *contact {
+	return &contact{
+		contact: c,
+	}
+}
+
+func (c *contact) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
+	req.Name = strings.TrimSpace(req.Name)
+	if len(req.Name) == 0 {
+		return errors.BadRequest("contact.create", "contact name is required")
+	}
+
+	uid, err := uuid.NewUUID()
+	if err != nil {
+		return errors.InternalServerError("contact.create", "generate contact id error: %v", err)
+	}
+
+	info := &pb.ContactInfo{
+		Id:           uid.String(),
+		Name:         req.Name,
+		Phones:       req.Phones,
+		Emails:       req.Emails,
+		Links:        req.Links,
+		Birthday:     req.Birthday,
+		Addresses:    req.Addresses,
+		SocialMedias: req.SocialMedias,
+		Note:         req.Note,
+	}
+
+	if err := c.contact.Create(ctx, info); err != nil {
+		return errors.InternalServerError("contact.create", "create contact error: %v", err)
+	}
+
+	rsp.Contact = info
+
+	return nil
+}
+
+func (c *contact) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
+	old, err := c.contact.Read(ctx, req.Id)
+	if err != nil {
+		return errors.InternalServerError("contact.update", "get contact info error: %v", err)
+	}
+
+	info := &pb.ContactInfo{
+		Id:           req.Id,
+		Name:         req.Name,
+		Phones:       req.Phones,
+		Emails:       req.Emails,
+		Links:        req.Links,
+		Birthday:     req.Birthday,
+		Addresses:    req.Addresses,
+		SocialMedias: req.SocialMedias,
+		Note:         req.Note,
+		CreatedAt:    old.CreatedAt,
+	}
+
+	if err := c.contact.Update(ctx, req.Id, info); err != nil {
+		return errors.InternalServerError("contact.update", "update contact error: %v", err)
+	}
+
+	rsp.Contact = info
+
+	return nil
+}
+
+func (c *contact) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
+	info, err := c.contact.Read(ctx, req.Id)
+	if err != nil {
+		return errors.InternalServerError("contact.read", "get contact info error: %v", err)
+	}
+
+	rsp.Contact = info
+
+	return nil
+}
+
+func (c *contact) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
+	err := c.contact.Delete(ctx, req.Id)
+	if err != nil {
+		return errors.InternalServerError("contact.delete", "delete contact error: %v", err)
+	}
+
+	return nil
+}
+
+func (c *contact) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+	list, err := c.contact.List(ctx, uint(req.Offset), uint(req.Limit))
+	if err != nil {
+		return errors.InternalServerError("contact.list", "get contact info error: %v", err)
+	}
+
+	rsp.Contacts = list
+
+	return nil
+}
