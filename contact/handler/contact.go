@@ -54,6 +54,11 @@ func (c *contact) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Cre
 }
 
 func (c *contact) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
+	req.Name = strings.TrimSpace(req.Name)
+	if len(req.Name) == 0 {
+		return errors.BadRequest("contact.create", "contact name is required")
+	}
+
 	old, err := c.contact.Read(ctx, req.Id)
 	if err != nil {
 		return errors.InternalServerError("contact.update", "get contact info error: %v", err)
@@ -102,6 +107,10 @@ func (c *contact) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Del
 }
 
 func (c *contact) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+	if req.Limit == 0 {
+		req.Limit = 30
+	}
+
 	list, err := c.contact.List(ctx, uint(req.Offset), uint(req.Limit))
 	if err != nil {
 		return errors.InternalServerError("contact.list", "get contact info error: %v", err)

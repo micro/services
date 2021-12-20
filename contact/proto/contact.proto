@@ -10,56 +10,86 @@ service Contact {
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
+  // TODO: wait for the search API
 	//  rpc Search(Request) returns (Response) {}
 }
 
 message Phone {
+  // the label of the phone number
 	string label = 1;
+  // phone number
 	string number = 2;
 }
 
 message Email {
+  // the label of the email
 	string label = 1;
+  // the email address
 	string address = 2;
 }
 
 message Link {
+  // the label of the link
 	string label = 1;
+  // the url of the contact
 	string url = 2;
 }
 
 message Address {
+  // the label of the address
 	string label = 1;
+  // the address
 	string address = 2;
 }
 
 message SocialMedia {
+  // the label of the social
 	string label = 1;
+	// the username of social media
 	string username = 2;
 }
 
 message ContactInfo {
+	// contact id
 	string id = 1;
+	// the contact name
 	string name = 2;
+	// the phone numbers
 	repeated Phone phones = 3;
+	// the emails
 	repeated Email emails = 4;
+	// the contact links
 	repeated Link links = 5;
+	// the birthday
 	string birthday = 6;
+	// the address
 	repeated Address addresses = 7;
+	// the social media username
 	repeated SocialMedia social_medias = 8;
+	// note of the contact
 	string note = 9;
+	// create date in timestamp
 	int64 created_at = 10;
+	// update date in timestamp
 	int64 updated_at = 11;
 }
 
 message CreateRequest {
+	// required, the name of the contact
 	string name = 1;
+	// optional, phone numbers
 	repeated Phone phones = 2;
+	// optional, emails
 	repeated Email emails = 3;
+	// optional, links
 	repeated Link links = 4;
+	// optional, birthday
 	string birthday = 5;
+	// optional, address
 	repeated Address addresses = 6;
+	// optional, social media
 	repeated SocialMedia social_medias = 7;
+	// optional, note of the contact
 	string note = 8;
 }
 
@@ -76,6 +106,7 @@ message ReadResponse {
 }
 
 message DeleteRequest {
+	// the id of the contact
 	string id = 1;
 }
 
@@ -84,14 +115,23 @@ message DeleteResponse {
 
 
 message UpdateRequest {
+	// required, the contact id
 	string id = 1;
+	// required, the name
 	string name = 2;
+	// optional, phone number
 	repeated Phone phones = 3;
+	// optional, emails
 	repeated Email emails = 4;
+	// optional, links
 	repeated Link links = 5;
+	// optional, birthday
 	string birthday = 6;
+	// optional, addresses
 	repeated Address addresses = 7;
+	// optional, social media
 	repeated SocialMedia social_medias = 8;
+	// optional, note
 	string note = 9;
 }
 
@@ -100,7 +140,9 @@ message UpdateResponse {
 }
 
 message ListRequest {
+	// optional
 	uint32 offset = 1;
+	// optional, default is 30
 	uint32 limit = 2;
 }
 

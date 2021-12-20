@@ -25,7 +25,9 @@ type Phone struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Label  string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// the label of the phone number
+	Label string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// phone number
 	Number string `protobuf:"bytes,2,opt,name=number,proto3" json:"number,omitempty"`
 }
 
@@ -80,7 +82,9 @@ type Email struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Label   string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// the label of the email
+	Label string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// the email address
 	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 }
 
@@ -135,8 +139,10 @@ type Link struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// the label of the link
 	Label string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
-	Url   string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
+	// the url of the contact
+	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 }
 
 func (x *Link) Reset() {
@@ -190,7 +196,9 @@ type Address struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Label   string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// the label of the address
+	Label string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// the address
 	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 }
 
@@ -245,7 +253,9 @@ type SocialMedia struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Label    string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// the label of the social
+	Label string `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
+	// the username of social media
 	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 }
 
@@ -300,17 +310,28 @@ type ContactInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id           string         `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name         string         `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Phones       []*Phone       `protobuf:"bytes,3,rep,name=phones,proto3" json:"phones,omitempty"`
-	Emails       []*Email       `protobuf:"bytes,4,rep,name=emails,proto3" json:"emails,omitempty"`
-	Links        []*Link        `protobuf:"bytes,5,rep,name=links,proto3" json:"links,omitempty"`
-	Birthday     string         `protobuf:"bytes,6,opt,name=birthday,proto3" json:"birthday,omitempty"`
-	Addresses    []*Address     `protobuf:"bytes,7,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	// contact id
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// the contact name
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// the phone numbers
+	Phones []*Phone `protobuf:"bytes,3,rep,name=phones,proto3" json:"phones,omitempty"`
+	// the emails
+	Emails []*Email `protobuf:"bytes,4,rep,name=emails,proto3" json:"emails,omitempty"`
+	// the contact links
+	Links []*Link `protobuf:"bytes,5,rep,name=links,proto3" json:"links,omitempty"`
+	// the birthday
+	Birthday string `protobuf:"bytes,6,opt,name=birthday,proto3" json:"birthday,omitempty"`
+	// the address
+	Addresses []*Address `protobuf:"bytes,7,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	// the social media username
 	SocialMedias []*SocialMedia `protobuf:"bytes,8,rep,name=social_medias,json=socialMedias,proto3" json:"social_medias,omitempty"`
-	Note         string         `protobuf:"bytes,9,opt,name=note,proto3" json:"note,omitempty"`
-	CreatedAt    int64          `protobuf:"varint,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt    int64          `protobuf:"varint,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	// note of the contact
+	Note string `protobuf:"bytes,9,opt,name=note,proto3" json:"note,omitempty"`
+	// create date in timestamp
+	CreatedAt int64 `protobuf:"varint,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	// update date in timestamp
+	UpdatedAt int64 `protobuf:"varint,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 }
 
 func (x *ContactInfo) Reset() {
@@ -427,14 +448,22 @@ type CreateRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Name         string         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Phones       []*Phone       `protobuf:"bytes,2,rep,name=phones,proto3" json:"phones,omitempty"`
-	Emails       []*Email       `protobuf:"bytes,3,rep,name=emails,proto3" json:"emails,omitempty"`
-	Links        []*Link        `protobuf:"bytes,4,rep,name=links,proto3" json:"links,omitempty"`
-	Birthday     string         `protobuf:"bytes,5,opt,name=birthday,proto3" json:"birthday,omitempty"`
-	Addresses    []*Address     `protobuf:"bytes,6,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	// required, the name of the contact
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// optional, phone numbers
+	Phones []*Phone `protobuf:"bytes,2,rep,name=phones,proto3" json:"phones,omitempty"`
+	// optional, emails
+	Emails []*Email `protobuf:"bytes,3,rep,name=emails,proto3" json:"emails,omitempty"`
+	// optional, links
+	Links []*Link `protobuf:"bytes,4,rep,name=links,proto3" json:"links,omitempty"`
+	// optional, birthday
+	Birthday string `protobuf:"bytes,5,opt,name=birthday,proto3" json:"birthday,omitempty"`
+	// optional, address
+	Addresses []*Address `protobuf:"bytes,6,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	// optional, social media
 	SocialMedias []*SocialMedia `protobuf:"bytes,7,rep,name=social_medias,json=socialMedias,proto3" json:"social_medias,omitempty"`
-	Note         string         `protobuf:"bytes,8,opt,name=note,proto3" json:"note,omitempty"`
+	// optional, note of the contact
+	Note string `protobuf:"bytes,8,opt,name=note,proto3" json:"note,omitempty"`
 }
 
 func (x *CreateRequest) Reset() {
@@ -671,6 +700,7 @@ type DeleteRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// the id of the contact
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
@@ -756,15 +786,24 @@ type UpdateRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id           string         `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name         string         `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Phones       []*Phone       `protobuf:"bytes,3,rep,name=phones,proto3" json:"phones,omitempty"`
-	Emails       []*Email       `protobuf:"bytes,4,rep,name=emails,proto3" json:"emails,omitempty"`
-	Links        []*Link        `protobuf:"bytes,5,rep,name=links,proto3" json:"links,omitempty"`
-	Birthday     string         `protobuf:"bytes,6,opt,name=birthday,proto3" json:"birthday,omitempty"`
-	Addresses    []*Address     `protobuf:"bytes,7,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	// required, the contact id
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// required, the name
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// optional, phone number
+	Phones []*Phone `protobuf:"bytes,3,rep,name=phones,proto3" json:"phones,omitempty"`
+	// optional, emails
+	Emails []*Email `protobuf:"bytes,4,rep,name=emails,proto3" json:"emails,omitempty"`
+	// optional, links
+	Links []*Link `protobuf:"bytes,5,rep,name=links,proto3" json:"links,omitempty"`
+	// optional, birthday
+	Birthday string `protobuf:"bytes,6,opt,name=birthday,proto3" json:"birthday,omitempty"`
+	// optional, addresses
+	Addresses []*Address `protobuf:"bytes,7,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	// optional, social media
 	SocialMedias []*SocialMedia `protobuf:"bytes,8,rep,name=social_medias,json=socialMedias,proto3" json:"social_medias,omitempty"`
-	Note         string         `protobuf:"bytes,9,opt,name=note,proto3" json:"note,omitempty"`
+	// optional, note
+	Note string `protobuf:"bytes,9,opt,name=note,proto3" json:"note,omitempty"`
 }
 
 func (x *UpdateRequest) Reset() {
@@ -914,8 +953,10 @@ type ListRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// optional, default is 0
 	Offset uint32 `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
-	Limit  uint32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	// optional, default is 20
+	Limit uint32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 }
 
 func (x *ListRequest) Reset() {
