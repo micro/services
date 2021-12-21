@@ -1,31 +1,48 @@
 package domain
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+	"strings"
 
-func generateAccountStoreKey(userId string) string {
-	return fmt.Sprintf("user/account/id/%s", userId)
+	"github.com/micro/services/pkg/tenant"
+)
+
+func getStoreKeyPrefix(ctx context.Context) string {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+
+	return fmt.Sprintf("user/%s/", tenantId)
 }
 
-func generateAccountEmailStoreKey(email string) string {
-	return fmt.Sprintf("user/acccount/email/%s", email)
+func generateAccountStoreKey(ctx context.Context, userId string) string {
+	return fmt.Sprintf("%saccount/id/%s", getStoreKeyPrefix(ctx), userId)
 }
 
-func generateAccountUsernameStoreKey(username string) string {
-	return fmt.Sprintf("user/account/username/%s", username)
+func generateAccountEmailStoreKey(ctx context.Context, email string) string {
+	return fmt.Sprintf("%sacccount/email/%s", getStoreKeyPrefix(ctx), email)
 }
 
-func generatePasswordStoreKey(userId string) string {
-	return fmt.Sprintf("user/password/%s", userId)
+func generateAccountUsernameStoreKey(ctx context.Context, username string) string {
+	return fmt.Sprintf("%saccount/username/%s", getStoreKeyPrefix(ctx), username)
 }
 
-func generatePasswordResetCodeStoreKey(userId, code string) string {
-	return fmt.Sprintf("user/password-reset-codes/%s-%s", userId, code)
+func generatePasswordStoreKey(ctx context.Context, userId string) string {
+	return fmt.Sprintf("%spassword/%s", getStoreKeyPrefix(ctx), userId)
 }
 
-func generateSessionStoreKey(sessionId string) string {
-	return fmt.Sprintf("user/session/%s", sessionId)
+func generatePasswordResetCodeStoreKey(ctx context.Context, userId, code string) string {
+	return fmt.Sprintf("%spassword-reset-codes/%s-%s", getStoreKeyPrefix(ctx), userId, code)
 }
 
-func generateVerificationsTokenStoreKey(userId, token string) string {
-	return fmt.Sprintf("user/verifycation-token/%s-%s", userId, token)
+func generateSessionStoreKey(ctx context.Context, sessionId string) string {
+	return fmt.Sprintf("%ssession/%s", getStoreKeyPrefix(ctx), sessionId)
+}
+
+func generateVerificationsTokenStoreKey(ctx context.Context, userId, token string) string {
+	return fmt.Sprintf("%sverifycation-token/%s-%s", getStoreKeyPrefix(ctx), userId, token)
 }

@@ -20,16 +20,20 @@ import (
 	user "github.com/micro/services/user/proto"
 )
 
-func generateAccountStoreKey(userId string) string {
-	return fmt.Sprintf("user/account/id/%s", userId)
+func getStoreKeyPrefix(tenantId string) string {
+	return fmt.Sprintf("user/%s/", tenantId)
 }
 
-func generateAccountEmailStoreKey(email string) string {
-	return fmt.Sprintf("user/acccount/email/%s", email)
+func generateAccountStoreKey(tenantId, userId string) string {
+	return fmt.Sprintf("%saccount/id/%s", getStoreKeyPrefix(tenantId), userId)
 }
 
-func generateAccountUsernameStoreKey(username string) string {
-	return fmt.Sprintf("user/account/username/%s", username)
+func generateAccountEmailStoreKey(tenantId, email string) string {
+	return fmt.Sprintf("%sacccount/email/%s", getStoreKeyPrefix(tenantId), email)
+}
+
+func generateAccountUsernameStoreKey(tenantId, username string) string {
+	return fmt.Sprintf("%saccount/username/%s", getStoreKeyPrefix(tenantId), username)
 }
 
 type userMigration struct {
@@ -115,6 +119,9 @@ func (u *userMigration) migratePerAccountUser(authAccount *auth.Account) error {
 		return err
 	}
 
+	// TODO
+	tenantId := "micro"
+
 	for _, rec := range list {
 		val, err := json.Marshal(rec)
 		if err != nil {
@@ -123,9 +130,9 @@ func (u *userMigration) migratePerAccountUser(authAccount *auth.Account) error {
 		}
 
 		keys := []string{
-			generateAccountStoreKey(rec.Id),
-			generateAccountEmailStoreKey(rec.Email),
-			generateAccountUsernameStoreKey(rec.Username),
+			generateAccountStoreKey(tenantId, rec.Id),
+			generateAccountEmailStoreKey(tenantId, rec.Email),
+			generateAccountUsernameStoreKey(tenantId, rec.Username),
 		}
 
 		if err := u.batchWrite(keys, val); err != nil {

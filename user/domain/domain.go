@@ -95,7 +95,7 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	return err
 }
 
-func (domain *Domain) SavePasswordResetCode(_ context.Context, userId, code string) (*passwordResetCode, error) {
+func (domain *Domain) SavePasswordResetCode(ctx context.Context, userId, code string) (*passwordResetCode, error) {
 	pwcode := passwordResetCode{
 		Expires: time.Now().Add(24 * time.Hour),
 		UserID:  userId,
@@ -107,19 +107,19 @@ func (domain *Domain) SavePasswordResetCode(_ context.Context, userId, code stri
 		return nil, err
 	}
 
-	record := store.NewRecord(generatePasswordResetCodeStoreKey(userId, code), val)
+	record := store.NewRecord(generatePasswordResetCodeStoreKey(ctx, userId, code), val)
 	err = domain.store.Write(record)
 
 	return &pwcode, err
 }
 
-func (domain *Domain) DeletePasswordResetCode(_ context.Context, userId, code string) error {
-	return domain.store.Delete(generatePasswordResetCodeStoreKey(userId, code))
+func (domain *Domain) DeletePasswordResetCode(ctx context.Context, userId, code string) error {
+	return domain.store.Delete(generatePasswordResetCodeStoreKey(ctx, userId, code))
 }
 
 // ReadPasswordResetCode returns the user reset code
-func (domain *Domain) ReadPasswordResetCode(_ context.Context, userId, code string) (*passwordResetCode, error) {
-	records, err := domain.store.Read(generatePasswordResetCodeStoreKey(userId, code))
+func (domain *Domain) ReadPasswordResetCode(ctx context.Context, userId, code string) (*passwordResetCode, error) {
+	records, err := domain.store.Read(generatePasswordResetCodeStoreKey(ctx, userId, code))
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +169,7 @@ func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeSt
 	return err
 }
 
-func (domain *Domain) CreateSession(_ context.Context, sess *user.Session) error {
+func (domain *Domain) CreateSession(ctx context.Context, sess *user.Session) error {
 	if sess.Created == 0 {
 		sess.Created = time.Now().Unix()
 	}
@@ -183,24 +183,24 @@ func (domain *Domain) CreateSession(_ context.Context, sess *user.Session) error
 		return err
 	}
 	record := &store.Record{
-		Key:   generateSessionStoreKey(sess.Id),
+		Key:   generateSessionStoreKey(ctx, sess.Id),
 		Value: val,
 	}
 
 	return domain.store.Write(record)
 }
 
-func (domain *Domain) DeleteSession(_ context.Context, id string) error {
-	return domain.store.Delete(generateSessionStoreKey(id))
+func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
+	return domain.store.Delete(generateSessionStoreKey(ctx, id))
 }
 
 // ReadToken returns the user id
-func (domain *Domain) ReadToken(_ context.Context, userId, token string) (string, error) {
+func (domain *Domain) ReadToken(ctx context.Context, userId, token string) (string, error) {
 	if token == "" {
 		return "", errors.New("token id empty")
 	}
 
-	records, err := domain.store.Read(generateVerificationsTokenStoreKey(userId, token))
+	records, err := domain.store.Read(generateVerificationsTokenStoreKey(ctx, userId, token))
 	if err != nil {
 		return "", err
 	}
@@ -229,7 +229,7 @@ func (domain *Domain) CreateToken(ctx context.Context, userId, token string) (st
 	}
 
 	record := &store.Record{
-		Key:   generateVerificationsTokenStoreKey(userId, token),
+		Key:   generateVerificationsTokenStoreKey(ctx, userId, token),
 		Value: tk,
 	}
 	err = domain.store.Write(record)
@@ -241,7 +241,7 @@ func (domain *Domain) CreateToken(ctx context.Context, userId, token string) (st
 }
 
 func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session, error) {
-	records, err := domain.store.Read(generateSessionStoreKey(id))
+	records, err := domain.store.Read(generateSessionStoreKey(ctx, id))
 	if err != nil {
 		return nil, err
 	}
@@ -305,10 +305,10 @@ func (domain *Domain) Create(ctx context.Context, user *user.Account, salt strin
 	}
 
 	records := []*store.Record{
-		{Key: generateAccountStoreKey(user.Id), Value: accountVal},
-		{Key: generateAccountUsernameStoreKey(user.Username), Value: accountVal},
-		{Key: generateAccountEmailStoreKey(user.Email), Value: accountVal},
-		{Key: generatePasswordStoreKey(user.Id), Value: passwordVal},
+		{Key: generateAccountStoreKey(ctx, user.Id), Value: accountVal},
+		{Key: generateAccountUsernameStoreKey(ctx, user.Username), Value: accountVal},
+		{Key: generateAccountEmailStoreKey(ctx, user.Email), Value: accountVal},
+		{Key: generatePasswordStoreKey(ctx, user.Id), Value: passwordVal},
 	}
 
 	return domain.batchWrite(records)
@@ -348,9 +348,9 @@ func (domain *Domain) Delete(ctx context.Context, userId string) error {
 	}
 
 	keys := []string{
-		generateAccountStoreKey(userId),
-		generateAccountEmailStoreKey(account.Email),
-		generateAccountUsernameStoreKey(account.Username),
+		generateAccountStoreKey(ctx, userId),
+		generateAccountEmailStoreKey(ctx, account.Email),
+		generateAccountUsernameStoreKey(ctx, account.Username),
 	}
 
 	return domain.batchDelete(keys)
@@ -365,11 +365,11 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 
 	keysToDelete := make([]string, 0)
 	if old.Email != user.Email {
-		keysToDelete = append(keysToDelete, generateAccountEmailStoreKey(old.Email))
+		keysToDelete = append(keysToDelete, generateAccountEmailStoreKey(ctx, old.Email))
 	}
 
 	if old.Username != user.Username {
-		keysToDelete = append(keysToDelete, generateAccountUsernameStoreKey(old.Username))
+		keysToDelete = append(keysToDelete, generateAccountUsernameStoreKey(ctx, old.Username))
 	}
 
 	// update user
@@ -381,9 +381,9 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 	}
 
 	records := []*store.Record{
-		{Key: generateAccountStoreKey(user.Id), Value: val},
-		{Key: generateAccountUsernameStoreKey(user.Username), Value: val},
-		{Key: generateAccountEmailStoreKey(user.Email), Value: val},
+		{Key: generateAccountStoreKey(ctx, user.Id), Value: val},
+		{Key: generateAccountUsernameStoreKey(ctx, user.Username), Value: val},
+		{Key: generateAccountEmailStoreKey(ctx, user.Email), Value: val},
 	}
 
 	// update
@@ -400,7 +400,7 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 }
 
 // readUserByKey read user account in store by key
-func (domain *Domain) readUserByKey(_ context.Context, key string) (*user.Account, error) {
+func (domain *Domain) readUserByKey(ctx context.Context, key string) (*user.Account, error) {
 	var result = &user.Account{}
 	records, err := domain.store.Read(key)
 	if err != nil {
@@ -416,15 +416,15 @@ func (domain *Domain) readUserByKey(_ context.Context, key string) (*user.Accoun
 }
 
 func (domain *Domain) Read(ctx context.Context, userId string) (*user.Account, error) {
-	return domain.readUserByKey(ctx, generateAccountStoreKey(userId))
+	return domain.readUserByKey(ctx, generateAccountStoreKey(ctx, userId))
 }
 
 func (domain *Domain) SearchByUsername(ctx context.Context, username string) (*user.Account, error) {
-	return domain.readUserByKey(ctx, generateAccountUsernameStoreKey(username))
+	return domain.readUserByKey(ctx, generateAccountUsernameStoreKey(ctx, username))
 }
 
 func (domain *Domain) SearchByEmail(ctx context.Context, email string) (*user.Account, error) {
-	return domain.readUserByKey(ctx, generateAccountEmailStoreKey(email))
+	return domain.readUserByKey(ctx, generateAccountEmailStoreKey(ctx, email))
 }
 
 func (domain *Domain) Search(ctx context.Context, username, email string) ([]*user.Account, error) {
@@ -445,7 +445,7 @@ func (domain *Domain) Search(ctx context.Context, username, email string) ([]*us
 	return []*user.Account{account}, nil
 }
 
-func (domain *Domain) UpdatePassword(_ context.Context, userId string, salt string, password string) error {
+func (domain *Domain) UpdatePassword(ctx context.Context, userId string, salt string, password string) error {
 	val, err := json.Marshal(pw{
 		Password: password,
 		Salt:     salt,
@@ -456,15 +456,15 @@ func (domain *Domain) UpdatePassword(_ context.Context, userId string, salt stri
 	}
 
 	record := &store.Record{
-		Key:   generatePasswordStoreKey(userId),
+		Key:   generatePasswordStoreKey(ctx, userId),
 		Value: val,
 	}
 
 	return domain.store.Write(record)
 }
 
-func (domain *Domain) SaltAndPassword(_ context.Context, userId string) (string, string, error) {
-	records, err := domain.store.Read(generatePasswordStoreKey(userId))
+func (domain *Domain) SaltAndPassword(ctx context.Context, userId string) (string, string, error) {
+	records, err := domain.store.Read(generatePasswordStoreKey(ctx, userId))
 	if err != nil {
 		return "", "", err
 	}
@@ -480,8 +480,8 @@ func (domain *Domain) SaltAndPassword(_ context.Context, userId string) (string,
 	return password.Salt, password.Password, nil
 }
 
-func (domain *Domain) List(_ context.Context, o, l uint32) (result []*user.Account, err error) {
-	records, err := domain.store.Read(generateAccountStoreKey(""),
+func (domain *Domain) List(ctx context.Context, o, l uint32) (result []*user.Account, err error) {
+	records, err := domain.store.Read(generateAccountStoreKey(ctx, ""),
 		store.ReadPrefix(),
 		store.ReadLimit(uint(l)),
 		store.ReadLimit(uint(o)))
