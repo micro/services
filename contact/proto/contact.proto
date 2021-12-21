@@ -35,11 +35,11 @@ message Link {
 	string url = 2;
 }
 
-message Address {
+message Location {
 	// the label of the address
 	string label = 1;
 	// the street address
-	string street = 2;
+	string address = 2;
 }
 
 message SocialMedia {
@@ -63,7 +63,7 @@ message ContactInfo {
 	// the birthday
 	string birthday = 6;
 	// the address
-	repeated Address addresses = 7;
+	repeated Location locations = 7;
 	// the social media username
 	repeated SocialMedia social_medias = 8;
 	// note of the contact
@@ -85,8 +85,8 @@ message CreateRequest {
 	repeated Link links = 4;
 	// optional, birthday
 	string birthday = 5;
-	// optional, address
-	repeated Address addresses = 6;
+	// optional, location
+	repeated Location locations = 6;
 	// optional, social media
 	repeated SocialMedia social_medias = 7;
 	// optional, note of the contact
@@ -127,8 +127,8 @@ message UpdateRequest {
 	repeated Link links = 5;
 	// optional, birthday
 	string birthday = 6;
-	// optional, addresses
-	repeated Address addresses = 7;
+	// optional, locations
+	repeated Location locations = 7;
 	// optional, social media
 	repeated SocialMedia social_medias = 8;
 	// optional, note

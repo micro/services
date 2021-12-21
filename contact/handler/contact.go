@@ -40,7 +40,7 @@ func (c *contact) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Cre
 		Emails:       req.Emails,
 		Links:        req.Links,
 		Birthday:     req.Birthday,
-		Addresses:    req.Addresses,
+		Locations:    req.Locations,
 		SocialMedias: req.SocialMedias,
 		Note:         req.Note,
 	}
@@ -73,7 +73,7 @@ func (c *contact) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Upd
 		Emails:       req.Emails,
 		Links:        req.Links,
 		Birthday:     req.Birthday,
-		Addresses:    req.Addresses,
+		Locations:    req.Locations,
 		SocialMedias: req.SocialMedias,
 		Note:         req.Note,
 		CreatedAt:    old.CreatedAt,

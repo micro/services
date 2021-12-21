@@ -33,10 +33,10 @@
           }
         ],
         "birthday": "1995-01-01",
-        "addresses": [
+        "locations": [
           {
             "label": "company address",
-            "address": "https://company.of.joe.com"
+            "address": "123 street address"
           }
         ],
         "social_medias": [
@@ -82,10 +82,10 @@
             }
           ],
           "birthday": "1995-01-01",
-          "addresses": [
+          "locations": [
             {
               "label": "company address",
-              "address": "https://company.of.joe.com"
+              "address": "123 street address"
             }
           ],
           "social_medias": [
@@ -140,10 +140,10 @@
           }
         ],
         "birthday": "1995-01-01",
-        "addresses": [
+        "locations": [
           {
             "label": "company address",
-            "address": "https://company.of.joe.com"
+            "address": "123 street address"
           }
         ],
         "social_medias": [
@@ -189,10 +189,10 @@
             }
           ],
           "birthday": "1995-01-01",
-          "addresses": [
+          "locations": [
             {
               "label": "company address",
-              "address": "https://company.of.joe.com"
+              "address": "123 street address"
             }
           ],
           "social_medias": [
@@ -251,10 +251,10 @@
             }
           ],
           "birthday": "1995-01-01",
-          "addresses": [
+          "locations": [
             {
               "label": "company address",
-              "address": "https://company.of.joe.com"
+              "address": "123 street address"
             }
           ],
           "social_medias": [
@@ -307,7 +307,7 @@
             "emails": [],
             "links": [],
             "birthday": "",
-            "addresses": [],
+            "locations": [],
             "social_medias": [],
             "note": "",
             "created_at": "2021-12-21T17:28:15+08:00",
@@ -325,7 +325,7 @@
             "emails": [],
             "links": [],
             "birthday": "",
-            "addresses": [],
+            "locations": [],
             "social_medias": [],
             "note": "",
             "created_at": "2021-12-21T17:28:15+08:00",
@@ -343,7 +343,7 @@
             "emails": [],
             "links": [],
             "birthday": "",
-            "addresses": [],
+            "locations": [],
             "social_medias": [],
             "note": "",
             "created_at": "2021-12-21T17:28:15+08:00",
@@ -374,7 +374,7 @@
             "emails": [],
             "links": [],
             "birthday": "",
-            "addresses": [],
+            "locations": [],
             "social_medias": [],
             "note": "",
             "created_at": "2021-12-21T17:28:15+08:00",
