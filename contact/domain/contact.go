@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 
 	pb "github.com/micro/services/contact/proto"
+	"github.com/micro/services/pkg/tenant"
 )
 
 type Contact interface {
@@ -31,13 +32,18 @@ func NewContactDomain(s store.Store) *contact {
 }
 
 // contactIdPrefix return the contact prefix of the store key
-func contactIdPrefix() string {
-	return "contact/id/"
+func contactIdPrefix(ctx context.Context) string {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+
+	return fmt.Sprintf("contact/%s/id/", tenantId)
 }
 
 // contactIdPrefix return the store key of one contact
-func contactIdKey(id string) string {
-	return fmt.Sprintf("%s%s", contactIdPrefix(), id)
+func contactIdKey(ctx context.Context, id string) string {
+	return fmt.Sprintf("%s%s", contactIdPrefix(ctx), id)
 }
 
 // Create a contact
@@ -51,7 +57,7 @@ func (c *contact) Create(ctx context.Context, info *pb.ContactInfo) error {
 	}
 
 	return store.Write(&store.Record{
-		Key:   contactIdKey(info.Id),
+		Key:   contactIdKey(ctx, info.Id),
 		Value: val,
 	})
 }
@@ -66,14 +72,14 @@ func (c *contact) Update(ctx context.Context, id string, info *pb.ContactInfo) e
 	}
 
 	return store.Write(&store.Record{
-		Key:   contactIdKey(id),
+		Key:   contactIdKey(ctx, id),
 		Value: val,
 	})
 }
 
 // Read one contact by id
 func (c *contact) Read(ctx context.Context, id string) (*pb.ContactInfo, error) {
-	records, err := c.store.Read(contactIdKey(id))
+	records, err := c.store.Read(contactIdKey(ctx, id))
 	if err != nil {
 		return nil, err
 	}
@@ -92,12 +98,12 @@ func (c *contact) Read(ctx context.Context, id string) (*pb.ContactInfo, error) 
 
 // Delete one contact by id
 func (c *contact) Delete(ctx context.Context, id string) error {
-	return c.store.Delete(contactIdKey(id))
+	return c.store.Delete(contactIdKey(ctx, id))
 }
 
 // List contacts by offset and limit
 func (c *contact) List(ctx context.Context, offset, limit uint) (result []*pb.ContactInfo, err error) {
-	records, err := c.store.Read(contactIdPrefix(),
+	records, err := c.store.Read(contactIdPrefix(ctx),
 		store.ReadPrefix(),
 		store.ReadOffset(offset),
 		store.ReadLimit(limit))
