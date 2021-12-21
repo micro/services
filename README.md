@@ -33,7 +33,3 @@ We welcome contributions of additional services which are then hosted on [m3o.co
 - Services must be built using the Micro platform
 - Any dependency must be configured using the Micro Config
 - All services to be published must include a `publicapi.json` file
-
-## License
-
-[Apache 2.0](LICENSE)

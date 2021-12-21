@@ -43,7 +43,13 @@ func NewAppEndpoints() []*api.Endpoint {
 
 type AppService interface {
 	Reserve(ctx context.Context, in *ReserveRequest, opts ...client.CallOption) (*ReserveResponse, error)
-	Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error)
+	Regions(ctx context.Context, in *RegionsRequest, opts ...client.CallOption) (*RegionsResponse, error)
+	Run(ctx context.Context, in *RunRequest, opts ...client.CallOption) (*RunResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
+	Status(ctx context.Context, in *StatusRequest, opts ...client.CallOption) (*StatusResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
+	Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error)
 }
 
 type appService struct {
@@ -68,9 +74,69 @@ func (c *appService) Reserve(ctx context.Context, in *ReserveRequest, opts ...cl
 	return out, nil
 }
 
-func (c *appService) Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error) {
-	req := c.c.NewRequest(c.name, "App.Vote", in)
-	out := new(VoteResponse)
+func (c *appService) Regions(ctx context.Context, in *RegionsRequest, opts ...client.CallOption) (*RegionsResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Regions", in)
+	out := new(RegionsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appService) Run(ctx context.Context, in *RunRequest, opts ...client.CallOption) (*RunResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Run", in)
+	out := new(RunResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appService) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Update", in)
+	out := new(UpdateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Delete", in)
+	out := new(DeleteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appService) Status(ctx context.Context, in *StatusRequest, opts ...client.CallOption) (*StatusResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Status", in)
+	out := new(StatusResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "App.List", in)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appService) Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Resolve", in)
+	out := new(ResolveResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -82,13 +148,25 @@ func (c *appService) Vote(ctx context.Context, in *VoteRequest, opts ...client.C
 
 type AppHandler interface {
 	Reserve(context.Context, *ReserveRequest, *ReserveResponse) error
-	Vote(context.Context, *VoteRequest, *VoteResponse) error
+	Regions(context.Context, *RegionsRequest, *RegionsResponse) error
+	Run(context.Context, *RunRequest, *RunResponse) error
+	Update(context.Context, *UpdateRequest, *UpdateResponse) error
+	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
+	Status(context.Context, *StatusRequest, *StatusResponse) error
+	List(context.Context, *ListRequest, *ListResponse) error
+	Resolve(context.Context, *ResolveRequest, *ResolveResponse) error
 }
 
 func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.HandlerOption) error {
 	type app interface {
 		Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error
-		Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error
+		Regions(ctx context.Context, in *RegionsRequest, out *RegionsResponse) error
+		Run(ctx context.Context, in *RunRequest, out *RunResponse) error
+		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
+		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
+		Status(ctx context.Context, in *StatusRequest, out *StatusResponse) error
+		List(ctx context.Context, in *ListRequest, out *ListResponse) error
+		Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error
 	}
 	type App struct {
 		app
@@ -105,6 +183,30 @@ func (h *appHandler) Reserve(ctx context.Context, in *ReserveRequest, out *Reser
 	return h.AppHandler.Reserve(ctx, in, out)
 }
 
-func (h *appHandler) Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error {
-	return h.AppHandler.Vote(ctx, in, out)
+func (h *appHandler) Regions(ctx context.Context, in *RegionsRequest, out *RegionsResponse) error {
+	return h.AppHandler.Regions(ctx, in, out)
+}
+
+func (h *appHandler) Run(ctx context.Context, in *RunRequest, out *RunResponse) error {
+	return h.AppHandler.Run(ctx, in, out)
+}
+
+func (h *appHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {
+	return h.AppHandler.Update(ctx, in, out)
+}
+
+func (h *appHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
+	return h.AppHandler.Delete(ctx, in, out)
+}
+
+func (h *appHandler) Status(ctx context.Context, in *StatusRequest, out *StatusResponse) error {
+	return h.AppHandler.Status(ctx, in, out)
+}
+
+func (h *appHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
+	return h.AppHandler.List(ctx, in, out)
+}
+
+func (h *appHandler) Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error {
+	return h.AppHandler.Resolve(ctx, in, out)
 }

@@ -17,16 +17,129 @@
       }
     }
   ],
-  "vote": [
+  "list": [
     {
-      "title": "Vote for the API",
+      "title": "List the apps",
+      "run_check": false,
+      "request": {},
+      "response": {
+          "services": [{
+		"id": "helloworld",
+		"name": "helloworld",
+		"repo": "github.com/asim/helloworld",
+		"branch": "master",
+		"region": "europe-west1",
+		"port": 8080,
+		"status": "Running",
+		"url": "https://helloworld.m3o.app",
+		"created": "2021-12-15T09:48:50.864124234Z",
+		"updated": "2021-12-15T09:50:13.722008Z",
+		"env_vars": {},
+		"custom_domains": []
+          }]
+      }
+    }
+  ],
+  "run": [
+    {
+      "title": "Run an app",
       "run_check": false,
       "request": {
-        "message": "Launch it!"
+        "name": "helloworld",
+        "repo": "github.com/asim/helloworld",
+        "branch": "master",
+        "port": 8080,
+        "region": "europe-west1"
       },
       "response": {
-        "message": "Thanks for the vote!"
+          "service": {
+		"id": "helloworld",
+		"name": "helloworld",
+		"repo": "github.com/asim/helloworld",
+		"branch": "master",
+		"region": "europe-west1",
+		"port": 8080,
+		"status": "Deploying",
+		"url": "https://helloworld.m3o.app",
+		"created": "2021-12-15T09:48:50.864124234Z",
+		"updated": "",
+		"env_vars": {},
+		"custom_domains": []
+          }
       }
+    }
+  ],
+  "regions": [
+    {
+      "title": "List regions",
+      "run_check": false,
+      "request": {},
+      "response": {
+        "regions": [
+		"asia-east1",
+                "europe-west1",
+		"us-central1",
+                "us-east1",
+                "us-west1"
+        ]
+      }
+    }
+  ],
+  "status": [
+    {
+      "title": "Get the status of an app",
+      "run_check": false,
+      "request": {
+        "name": "helloworld"
+      },
+      "response": {
+          "service": {
+		"id": "helloworld",
+		"name": "helloworld",
+		"repo": "github.com/asim/helloworld",
+		"branch": "master",
+		"region": "europe-west1",
+		"port": 8080,
+		"status": "Deploying",
+		"url": "https://helloworld.m3o.app",
+		"created": "2021-12-15T09:48:50.864124234Z",
+		"updated": "",
+		"env_vars": {},
+		"custom_domains": []
+          }
+      }
+    }
+  ],
+  "resolve": [
+    {
+      "title": "Resolve app by id",
+      "run_check": false,
+      "request": {
+        "id": "helloworld"
+      },
+      "response": {
+	"url": "https://helloworld-jn5gitv2pa-ew.a.run.app"
+      }
+    }
+  ],
+  "update": [
+    {
+      "title": "Update an app",
+      "run_check": false,
+      "request": {
+        "name": "helloworld"
+      },
+      "response": {}
+    }
+  ],
+  "delete": [
+    {
+      "title": "Delete an app",
+      "run_check": false,
+      "request": {
+        "name": "helloworld"
+      },
+      "response": {}
     }
   ]
 }

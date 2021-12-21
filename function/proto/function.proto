@@ -12,6 +12,9 @@ service Function {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Describe(DescribeRequest) returns (DescribeResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
+	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
+	rpc Regions(RegionsRequest) returns (RegionsResponse) {}
+	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
 }
 
 // Call a function by name
@@ -33,63 +36,63 @@ message DeployRequest {
 	string name = 1;
 	// github url to repo
 	string repo = 2;
+	// branch to deploy. defaults to master
+	string branch = 3;
 	// optional subfolder path
-	string subfolder = 3;
+	string subfolder = 4;
 	// entry point, ie. handler name in the source code 
 	// if not provided, defaults to the name parameter
-	string entrypoint = 4;
-	// project is used for namespacing your functions
-	// optional. defaults to "default".
-	string project = 5;
-	// runtime/language of the function
-	// eg: php74,
-	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
-	// dotnet3
-	// java11
-	// ruby26, ruby27
-	// go111, go113, go116
+	string entrypoint = 5;
+	// runtime/lanaguage of the function e.g php74,
+	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16,
+	// dotnet3, java11, ruby26, ruby27, go111, go113, go116,
 	// python37, python38, python39
 	string runtime = 6;
+	// region to deploy in. defaults to europe-west1
+	string region = 7;
 	// environment variables to pass in at runtime
-	map<string,string> env_vars = 7;
+	map<string,string> env_vars = 8;
 }
 
 message DeployResponse {
+	Func function = 1;
 }
 
 // List all the deployed functions
 message ListRequest {
-	// optional project name
-	string project = 1;
 }
 
 message Func {
-	// project of function, optional
-	// defaults to literal "default"
-	// used to namespace functions
-	string project = 1;
+	// id of the function
+	string id = 1;
 	// function name
 	// limitation: must be unique across projects
 	string name = 2;
-	// name of handler in source code
-	string entrypoint = 3;
 	// git repo address
-	string repo = 4;
+	string repo = 3;
+	// branch to deploy. defaults to master
+	string branch = 4;
+	// name of handler in source code
+	string entrypoint = 5;
 	// subfolder path to entrypoint
-	string subfolder = 5;
-	// runtime/language of the function
-	// eg: php74,
-	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
-	// dotnet3
-	// java11
-	// ruby26, ruby27
-	// go111, go113, go116
+	string subfolder = 6;
+	// runtime/language of the function e.g php74,
+	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16, 
+	// dotnet3, java11, ruby26, ruby27, go111, go113, go116,
 	// python37, python38, python39
-	string runtime = 6;
-	// eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
-	string status = 7;
+	string runtime = 7;
+	// region to deploy in. defaults to europe-west1
+	string region = 8;
 	// associated env vars
-	map<string,string> env_vars = 8;
+	map<string,string> env_vars = 9;
+	// eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
+	string status = 10;
+	// unique url of the function
+	string url = 11;
+	// time of creation
+	string created = 12;
+	// time it was updated
+	string updated = 13;
 }
 
 message ListResponse {
@@ -101,8 +104,6 @@ message ListResponse {
 message DeleteRequest {
 	// The name of the function
 	string name = 1;
-	// Optional project name
-	string project = 2;
 }
 
 message DeleteResponse {
@@ -113,45 +114,63 @@ message DeleteResponse {
 message DescribeRequest {
 	// The name of the function
 	string name = 1;
-	// Optional project name
-	string project = 2;
 }
 
 message DescribeResponse {
 	// The function requested
 	Func function = 1;
-	// The time at which the function was updated
-	string updated_at = 2;
-	// The timeout for requests to the function
-	string timeout = 3;
 }
 
-// Update a function
+// Update a function. Downloads the source, builds and redeploys
 message UpdateRequest {
 	// function name
 	string name = 1;
-	// github url to repo
-	string repo = 2;
-	// optional subfolder path
-	string subfolder = 3;
-	// entry point, ie. handler name in the source code 
-	// if not provided, defaults to the name parameter
-	string entrypoint = 4;
-	// project is used for namespacing your functions
-	// optional. defaults to "default".
-	string project = 5;
-	// runtime/language of the function
-	// eg: php74,
-	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16
-	// dotnet3
-	// java11
-	// ruby26, ruby27
-	// go111, go113, go116
-	// python37, python38, python39
-	string runtime = 6;
-	// environment variables to pass in at runtime
-	map<string,string> env_vars = 7;
 }
 
 message UpdateResponse {
 }
+
+// Return the backend url for proxying
+message ProxyRequest {
+	// id of the function
+	string id = 1;
+}
+
+message ProxyResponse {
+	// backend url
+	string url = 1;
+}
+
+// Return a list of supported regions
+message RegionsRequest {
+}
+
+message RegionsResponse {
+	repeated string regions = 1;
+}
+
+// Reservation represents a reserved function
+message Reservation {
+        // name of the app
+        string name = 1;
+        // owner id
+        string owner = 2;
+        // associated token
+        string token = 3;
+        // time of reservation
+        string created = 4;
+        // time reservation expires
+        string expires = 5;
+}
+
+// Reserve function names and resources beyond free quota
+message ReserveRequest {
+        // name of your app e.g helloworld
+        string name = 1;
+}
+
+message ReserveResponse {
+        // The app reservation
+        Reservation reservation = 1;
+}
+

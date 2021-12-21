@@ -6,20 +6,98 @@ option go_package = "./proto;app";
 
 service App {
 	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
-        rpc Vote(VoteRequest) returns (VoteResponse) {}
+	rpc Regions(RegionsRequest) returns (RegionsResponse) {}
+	rpc Run(RunRequest) returns (RunResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Status(StatusRequest) returns (StatusResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Resolve(ResolveRequest) returns (ResolveResponse) {}
 }
 
-// Vote to have the App api launched faster!
-message VoteRequest {
-        // optional message
-        string message = 1;
+message Service {
+	// unique id
+	string id = 1;
+	// name of the app
+	string name = 2;
+	// source repository
+	string repo = 3;
+	// branch of code
+	string branch = 4;
+	// region running in
+	string region = 5;
+	// port running on
+	int32 port = 6;
+	// status of the app
+	string status = 7;
+	// app url
+	string url = 8;
+	// time of creation
+	string created = 9;
+	// last updated
+	string updated = 10;
+	// associated env vars
+	map<string,string> env_vars = 11;
+	// custom domains
+	repeated string custom_domains = 12;
 }
 
-message VoteResponse {
-        // response message
-        string message = 2;
+// Delete an app
+message DeleteRequest {
+	// name of the app
+	string name = 1;
 }
 
+message DeleteResponse {}
+
+// List all the apps
+message ListRequest {
+}
+
+message ListResponse {
+	// all the apps
+	repeated Service services = 1;
+}
+
+// Run an app from a source repo. Specify region etc.
+message RunRequest {
+	// name of the app
+	string name = 1;
+	// source repository
+	string repo = 2;
+	// branch. defaults to master
+	string branch = 3;
+	// region to run in
+	string region = 4;
+	// port to run on
+	int32 port = 5;
+	// associatede env vars to pass in
+	map<string,string> env_vars = 6;
+}
+
+message RunResponse {
+	// The running service
+	Service service = 1;
+}
+
+// Update the app. The latest source code will be downloaded, built and deployed.
+message UpdateRequest {
+	// name of the app
+	string name = 1;
+}
+
+message UpdateResponse {
+}
+
+
+// Return the support regions
+message RegionsRequest {}
+
+message RegionsResponse {
+	repeated string regions = 1;
+}
+
+// Reservation represents a reserved app instance
 message Reservation {
 	// name of the app
 	string name = 1;
@@ -33,12 +111,35 @@ message Reservation {
 	string expires = 5;
 }
 
-// Reserve your app name
+// Reserve apps beyond the free quota. Call Run after.
 message ReserveRequest {
 	// name of your app e.g helloworld
 	string name = 1;
 }
 
 message ReserveResponse {
+	// The app reservation
 	Reservation reservation = 1;
+}
+
+// Get the status of an app
+message StatusRequest {
+	// name of the app
+	string name = 1;
+}
+
+message StatusResponse {
+	// running service info
+	Service service = 1;
+}
+
+// Resolve an app by id to its raw backend endpoint
+message ResolveRequest {
+	// the service id
+	string id = 1;
+}
+
+message ResolveResponse {
+	// the end provider url
+	string url = 1;
 }

@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	me "github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/config"
+	me "github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/pkg/errors"
 	"golang.org/x/text/language"
@@ -17,7 +17,7 @@ import (
 
 type translation struct {
 	ApiKey string
-	Limit int
+	Limit  int
 }
 
 func NewTranslation() *translation {
@@ -39,7 +39,7 @@ func NewTranslation() *translation {
 
 	return &translation{
 		ApiKey: key,
-		Limit: limit,
+		Limit:  limit,
 	}
 }
 

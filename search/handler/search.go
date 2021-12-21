@@ -5,9 +5,8 @@ import (
 	"sync"
 	"time"
 
-
-	"github.com/micro/services/pkg/tenant"
 	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/search/proto"
 )
 
@@ -20,8 +19,8 @@ var (
 )
 
 type Vote struct {
-	Id string `json:"id"`
-	Message string `json:"message"`
+	Id      string    `json:"id"`
+	Message string    `json:"message"`
 	VotedAt time.Time `json:"voted_at"`
 }
 
@@ -34,8 +33,8 @@ func (n *Search) Vote(ctx context.Context, req *pb.VoteRequest, rsp *pb.VoteResp
 		id = "micro"
 	}
 
-	rec := store.NewRecord(voteKey + id, &Vote{
-		Id: id,
+	rec := store.NewRecord(voteKey+id, &Vote{
+		Id:      id,
 		Message: req.Message,
 		VotedAt: time.Now(),
 	})
@@ -47,4 +46,3 @@ func (n *Search) Vote(ctx context.Context, req *pb.VoteRequest, rsp *pb.VoteResp
 
 	return nil
 }
-
