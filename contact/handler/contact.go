@@ -101,7 +101,7 @@ func (c *contact) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRes
 }
 
 // Delete contact by id
-func (c *contact) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
+func (c *contact) Delete(ctx context.Context, req *pb.DeleteRequest, _ *pb.DeleteResponse) error {
 	err := c.contact.Delete(ctx, req.Id)
 	if err != nil {
 		return errors.InternalServerError("contact.delete", "delete contact error: %v", err)

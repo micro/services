@@ -42,8 +42,8 @@ func contactIdKey(id string) string {
 
 // Create a contact
 func (c *contact) Create(ctx context.Context, info *pb.ContactInfo) error {
-	info.CreatedAt = time.Now().Unix()
-	info.UpdatedAt = time.Now().Unix()
+	info.CreatedAt = time.Now().Format(time.RFC3339)
+	info.UpdatedAt = time.Now().Format(time.RFC3339)
 
 	val, err := json.Marshal(info)
 	if err != nil {
@@ -58,7 +58,7 @@ func (c *contact) Create(ctx context.Context, info *pb.ContactInfo) error {
 
 // Update contact information by id
 func (c *contact) Update(ctx context.Context, id string, info *pb.ContactInfo) error {
-	info.UpdatedAt = time.Now().Unix()
+	info.UpdatedAt = time.Now().Format(time.RFC3339)
 
 	val, err := json.Marshal(info)
 	if err != nil {

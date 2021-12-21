@@ -68,10 +68,10 @@ message ContactInfo {
 	repeated SocialMedia social_medias = 8;
 	// note of the contact
 	string note = 9;
-	// create date in timestamp
-	int64 created_at = 10;
-	// update date in timestamp
-	int64 updated_at = 11;
+	// create date string in RFC3339
+	string created_at = 10;
+	// update date string in RFC3339
+	string updated_at = 11;
 }
 
 message CreateRequest {
