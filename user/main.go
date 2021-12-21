@@ -4,8 +4,11 @@ import (
 	"time"
 
 	"github.com/micro/micro/v3/service"
+	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	authPb "github.com/micro/micro/v3/proto/auth"
 
@@ -17,6 +20,8 @@ import (
 	proto "github.com/micro/services/user/proto"
 )
 
+var pgxDsn = "postgresql://postgres:postgres@localhost:5432/db?sslmode=disable"
+
 func migrateData(from db.DbService, to store.Store, authAccount authPb.AccountsService) {
 	startTime := time.Now()
 	logger.Info("start migrate ...")
@@ -24,14 +29,21 @@ func migrateData(from db.DbService, to store.Store, authAccount authPb.AccountsS
 		logger.Infof("migrate finish, use time: %v", time.Since(startTime))
 	}()
 
-	// users
-	u := migrate.NewUserMigration(from, to, authAccount)
-	err := u.Do()
+	// Connect to the database
+	cfg, err := config.Get("micro.db.database")
 	if err != nil {
-		logger.Errorf("migrate users data error: %v", err)
+		logger.Fatalf("Error loading config: %v", err)
 	}
 
-	//
+	dsn := cfg.String(pgxDsn)
+	gormDb, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		logger.Fatal("Failed to connect to ")
+	}
+
+	migration := migrate.NewMigration(gormDb)
+	migration.Do()
 
 	return
 }

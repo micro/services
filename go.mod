@@ -50,6 +50,7 @@ require (
 	github.com/teamwork/test v0.0.0-20200108114543-02621bae84ad // indirect
 	github.com/teamwork/utils v0.0.0-20211103135549-f7e7a68ba696 // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
+	github.com/tidwall/gjson v1.12.1
 	github.com/tkuchiki/go-timezone v0.2.2
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
@@ -64,7 +65,6 @@ require (
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
-	gopkg.in/yaml.v2 v2.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 	gorm.io/datatypes v1.0.1
 	gorm.io/driver/postgres v1.0.8
