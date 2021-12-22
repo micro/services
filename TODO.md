@@ -4,19 +4,19 @@ A list of open source services to be created
 
 ## Current
 
-- [x] blog - a simple blogging service
-  - [x] posts
-  - [x] comments
-  - [x] tags
-  - [x] feed - rss feed aggregator
+- [ ] blog - a simple blogging service
+  - [ ] posts
+  - [ ] comments
+  - [ ] tags
+  - [ ] feed - rss feed aggregator
 - [ ] inbox - a simple inbox for mail and private messages
-  * [x] messages - store the messages for the inbox
+  * [ ] messages - store the messages for the inbox
   * [ ] notifications - holds updates and alerts
 - [x] notes - a simple note taking service
 - [x] users - manages user accounts and login
 - [ ] books - search and read from the internet archive [open library](https://github.com/internetarchive/openlibrary)
 - [ ] stream - timeline of events, news, photos
-- [ ] contacts - store your contacts whether email, phone, etc
+- [x] contacts - store your contacts whether email, phone, etc
 - [ ] teams - staying in sync in a distributed team 
 
 ## Services
