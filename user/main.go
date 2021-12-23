@@ -10,9 +10,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	authPb "github.com/micro/micro/v3/proto/auth"
-
-	db "github.com/micro/services/db/proto"
 	otp "github.com/micro/services/otp/proto"
 	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/user/handler"
@@ -22,7 +19,7 @@ import (
 
 var pgxDsn = "postgresql://postgres:postgres@localhost:5432/db?sslmode=disable"
 
-func migrateData(from db.DbService, to store.Store, authAccount authPb.AccountsService) {
+func migrateData() {
 	startTime := time.Now()
 	logger.Info("start migrate ...")
 	defer func() {
@@ -56,9 +53,8 @@ func main() {
 	)
 	srv.Init()
 
-	from := db.NewDbService("db", srv.Client())
-	authAccount := authPb.NewAccountsService("auth", srv.Client())
-	go migrateData(from, store.DefaultStore, authAccount)
+	// migration work
+	go migrateData()
 
 	hd := handler.NewUser(
 		store.DefaultStore,
