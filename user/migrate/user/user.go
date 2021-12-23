@@ -12,20 +12,16 @@ import (
 	"github.com/micro/services/user/migrate/entity"
 )
 
-func getStoreKeyPrefix(tenantId string) string {
-	return fmt.Sprintf("user/%s/", tenantId)
-}
-
 func generateAccountStoreKey(tenantId, userId string) string {
-	return fmt.Sprintf("%saccount/id/%s", getStoreKeyPrefix(tenantId), userId)
+	return fmt.Sprintf("%saccount/id/%s", entity.KeyPrefix(tenantId), userId)
 }
 
 func generateAccountEmailStoreKey(tenantId, email string) string {
-	return fmt.Sprintf("%sacccount/email/%s", getStoreKeyPrefix(tenantId), email)
+	return fmt.Sprintf("%sacccount/email/%s", entity.KeyPrefix(tenantId), email)
 }
 
 func generateAccountUsernameStoreKey(tenantId, username string) string {
-	return fmt.Sprintf("%saccount/username/%s", getStoreKeyPrefix(tenantId), username)
+	return fmt.Sprintf("%saccount/username/%s", entity.KeyPrefix(tenantId), username)
 }
 
 type user struct {
@@ -67,8 +63,6 @@ func (u *user) migrate(rows []*entity.Row) error {
 		id := gjson.Get(rec.Data, "id").String()
 		email := gjson.Get(rec.Data, "email").String()
 		username := gjson.Get(rec.Data, "username").String()
-
-		fmt.Println("--> username", id, email)
 
 		keys := []string{
 			generateAccountStoreKey(u.tenantId, id),

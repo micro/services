@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
@@ -259,7 +260,7 @@ func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp 
 	}
 
 	// check the token exists
-	userId, err := s.domain.ReadToken(ctx, req.Email, req.Token)
+	email, err := s.domain.ReadToken(ctx, req.Email, req.Token)
 	if err != nil {
 		return err
 	}
@@ -279,7 +280,7 @@ func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp 
 	}
 
 	// mark user as verified
-	user, err := s.domain.Read(ctx, userId)
+	user, err := s.domain.SearchByEmail(ctx, email)
 	if err != nil {
 		return err
 	}
@@ -442,12 +443,14 @@ func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, 
 	// save token, so we can retrieve it later
 	err = s.domain.CacheToken(ctx, token, req.Email, ttl)
 	if err != nil {
+		logger.Errorf("SendMagicLink.cacheToken error: %v", err)
 		return errors.BadRequest("SendMagicLink.cacheToken", "Oooops something went wrong")
 	}
 
 	// send magic link to email address
 	err = s.domain.SendMLE(req.FromName, req.Email, account.Username, req.Subject, req.TextContent, token, req.Address, req.Endpoint)
 	if err != nil {
+		logger.Errorf("SendMagicLink.cacheToken error: %v", err)
 		return errors.BadRequest("SendMagicLink.sendEmail", "Oooops something went wrong")
 	}
 

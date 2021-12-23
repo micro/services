@@ -1,4 +1,4 @@
-package password
+package password_reset_code
 
 import (
 	"fmt"
@@ -11,22 +11,22 @@ import (
 )
 
 func generatePasswordStoreKey(tenantId string, id string) string {
-	return fmt.Sprintf("%spassword/%s", entity.KeyPrefix(tenantId), id)
+	return fmt.Sprintf("%spassword-reset-codes/%s", entity.KeyPrefix(tenantId), id)
 }
 
-type password struct {
+type resetCode struct {
 	to       store.Store
 	tenantId string
 }
 
-func New(to store.Store, tenantId string) *password {
-	return &password{
+func New(to store.Store, tenantId string) *resetCode {
+	return &resetCode{
 		to:       to,
 		tenantId: tenantId,
 	}
 }
 
-func (u *password) migrate(rows []*entity.Row) error {
+func (u *resetCode) migrate(rows []*entity.Row) error {
 	for _, rec := range rows {
 		id := gjson.Get(rec.Data, "id").String()
 
@@ -37,7 +37,7 @@ func (u *password) migrate(rows []*entity.Row) error {
 		})
 
 		if err != nil {
-			logger.Errorf("migrate password write error: %v, %+v", err, key)
+			logger.Errorf("migrate password-reset-code write error: %v, %+v", err, key)
 			continue
 		}
 	}
@@ -45,6 +45,6 @@ func (u *password) migrate(rows []*entity.Row) error {
 	return nil
 }
 
-func (u *password) Migrate(rows []*entity.Row) error {
+func (u *resetCode) Migrate(rows []*entity.Row) error {
 	return u.migrate(rows)
 }

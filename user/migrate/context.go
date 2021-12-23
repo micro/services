@@ -48,5 +48,7 @@ func (c *context) Migrate(tableName string) error {
 		}
 	}
 
+	logger.Infof("migrate done, table: %v, rows count: %v", tableName, count)
+
 	return nil
 }

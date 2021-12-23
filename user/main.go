@@ -26,7 +26,7 @@ func migrateData(from db.DbService, to store.Store, authAccount authPb.AccountsS
 	startTime := time.Now()
 	logger.Info("start migrate ...")
 	defer func() {
-		logger.Infof("migrate finish, use time: %v", time.Since(startTime))
+		logger.Infof("all migrations are finished, use time: %v", time.Since(startTime))
 	}()
 
 	// Connect to the database
@@ -43,7 +43,9 @@ func migrateData(from db.DbService, to store.Store, authAccount authPb.AccountsS
 	}
 
 	migration := migrate.NewMigration(gormDb)
-	migration.Do()
+	if err := migration.Do(); err != nil {
+		logger.Fatal("migrate error: ", err)
+	}
 
 	return
 }

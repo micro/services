@@ -10,6 +10,9 @@ import (
 	"gorm.io/gorm"
 
 	pwdMgr "github.com/micro/services/user/migrate/password"
+	resetMgr "github.com/micro/services/user/migrate/password_reset_code"
+	sessionMgr "github.com/micro/services/user/migrate/session"
+	tokenMgr "github.com/micro/services/user/migrate/token"
 	userMgr "github.com/micro/services/user/migrate/user"
 )
 
@@ -56,6 +59,14 @@ func (m *migration) Do() error {
 				strg = userMgr.New(m.store, strings.TrimSuffix(tableName, "_users"))
 			} else if strings.HasSuffix(tableName, "_passwords") {
 				strg = pwdMgr.New(m.store, strings.TrimSuffix(tableName, "_passwords"))
+			} else if strings.HasSuffix(tableName, "_sessions") {
+				strg = sessionMgr.New(m.store, strings.TrimSuffix(tableName, "_sessions"))
+			} else if strings.HasSuffix(tableName, "_tokens") {
+				strg = tokenMgr.New(m.store, strings.TrimSuffix(tableName, "_tokens"))
+			} else if strings.HasSuffix(tableName, "_password_reset_codes") {
+				strg = resetMgr.New(m.store, strings.TrimSuffix(tableName, "_password_reset_codes"))
+			} else {
+				logger.Infof("ignore table: %s", tableName)
 			}
 
 			if strg == nil {

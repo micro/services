@@ -195,12 +195,12 @@ func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 }
 
 // ReadToken returns the user id
-func (domain *Domain) ReadToken(ctx context.Context, userId, token string) (string, error) {
+func (domain *Domain) ReadToken(ctx context.Context, email, token string) (string, error) {
 	if token == "" {
 		return "", errors.New("token id empty")
 	}
 
-	records, err := domain.store.Read(generateVerificationsTokenStoreKey(ctx, userId, token))
+	records, err := domain.store.Read(generateVerificationsTokenStoreKey(ctx, email, token))
 	if err != nil {
 		return "", err
 	}
@@ -218,9 +218,9 @@ func (domain *Domain) ReadToken(ctx context.Context, userId, token string) (stri
 }
 
 // CreateToken returns the created and saved token
-func (domain *Domain) CreateToken(ctx context.Context, userId, token string) (string, error) {
+func (domain *Domain) CreateToken(ctx context.Context, email, token string) (string, error) {
 	tk, err := json.Marshal(verificationToken{
-		UserID: userId,
+		UserID: email,
 		Token:  token,
 	})
 
@@ -229,7 +229,7 @@ func (domain *Domain) CreateToken(ctx context.Context, userId, token string) (st
 	}
 
 	record := &store.Record{
-		Key:   generateVerificationsTokenStoreKey(ctx, userId, token),
+		Key:   generateVerificationsTokenStoreKey(ctx, email, token),
 		Value: tk,
 	}
 	err = domain.store.Write(record)
