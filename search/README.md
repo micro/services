@@ -7,3 +7,14 @@ Store and search for anything text based. The Search API provides full indexing 
 Powered by [OpenSearch](https://opensearch.org/).
 
 Search for a given word or phrase in a particular field of a document. Combine multiple with either `AND` or `OR` boolean operators to create complex queries.
+
+## Search query language
+
+Supports single or double quotes for string values
+
+### Examples
+```
+foo.bar == 1
+
+foo.bar == 1 AND baz == 'hello'
+```
