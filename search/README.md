@@ -9,7 +9,7 @@ Powered by [OpenSearch](https://opensearch.org/).
 Search for a given word or phrase in a particular field of a document. Combine multiple with either `AND` or `OR` boolean operators to create complex queries.
 
 ## Usage
-Documents are inserted using the `/search/index` endpoint. Document fields are automatically indexed with no need to define which fields to index ahead of time. Documents are logically grouped in to `indexes` so you may have an index for customers and one for products. Once documents are inserted you are ready to search.
+Documents are inserted using the `/search/index` endpoint. Document fields are automatically indexed with no need to define which fields to index ahead of time. Documents are logically grouped in to `indexes` so you may have an index for customers and one for products. Once documents are inserted you are ready to search, simple as that.
 
 ## Search query language
 
@@ -39,6 +39,12 @@ or booleans
 
 ```sql
 verified == true
+```
+
+You can search on fields that are nested in the document using dot (`.`) as a separator 
+
+```sql
+address.city == 'London'
 ```
 
 In addition to equality `==` the API support greater than or equals `>=` and less than or equals `<=` operators
