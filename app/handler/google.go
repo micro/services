@@ -28,7 +28,7 @@ type GoogleApp struct {
 	// eg. https://us-central1-m3o-apis.cloudfunctions.net/
 	address string
 	// max number of apps per user
-	limit   int
+	limit int
 	// custom domain for apps
 	domain string
 	// the service account for the app
@@ -39,7 +39,7 @@ type GoogleApp struct {
 
 var (
 	// hardcoded list of supported regions
-	GoogleRegions = []string{"europe-west1", "us-east1", "us-west1"}
+	GoogleRegions = []string{"europe-west1", "us-central1", "us-east1", "us-west1", "asia-east1"}
 
 	// hardcoded list of valid repos
 	GitRepos = []string{"github.com", "gitlab.org", "bitbucket.org"}
@@ -143,12 +143,12 @@ func New() *GoogleApp {
 	log.Info(string(outp))
 
 	return &GoogleApp{
-		domain: domain,
-		project: project,
-		address: address,
-		limit: limit,
+		domain:   domain,
+		project:  project,
+		address:  address,
+		limit:    limit,
 		identity: identity,
-		App: new(App),
+		App:      new(App),
 	}
 }
 
@@ -191,10 +191,11 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	if err == nil && len(recs) > 0 {
 		res := new(Reservation)
 		recs[0].Decode(res)
-		if res.Owner != id && res.Expires.After(time.Now()) {
-			return errors.BadRequest("app.run", "name %s is reserved", req.Name)
+
+		// if its the owners app and there's still time left
+		if res.Owner == id && res.Expires.After(time.Now()) {
+			reservedApp = true
 		}
-		reservedApp = true
 	}
 
 	var validRepo bool
@@ -259,7 +260,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	// set the id
 	appId := req.Name
 
-	// check the owner isn't already running it
+	// check the app isn't already running it
 	recs, err = store.Read(key, store.ReadLimit(1))
 
 	// if there's an existing service then generate a unique id
@@ -330,10 +331,23 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		}
 	}
 
+	// make copy
+	srv := new(pb.Service)
+	*srv = *service
+
+	// set the custom domain
+	if len(e.domain) > 0 {
+		srv.Url = fmt.Sprintf("https://%s.%s", srv.Id, e.domain)
+	}
+
+	// set the service in the response
+	rsp.Service = srv
+
 	go func(service *pb.Service) {
 		// generate a unique service account for the app
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", req.Region,
+		cmd := exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run",
+			"deploy", service.Id, "--region", req.Region,
 			"--service-account", e.identity,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
@@ -397,9 +411,6 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		}
 	}(service)
 
-	// set the service in the response
-	rsp.Service = service
-
 	return nil
 }
 
@@ -456,8 +467,8 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 
 	go func(service *pb.Service) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--format", "json", "run", "deploy", service.Id, "--region", service.Region,
-			"--service-account", e.identity,
+		cmd := exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run", "deploy",
+			service.Id, "--region", service.Region, "--service-account", e.identity,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", service.Port),
 			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
 		)
@@ -551,6 +562,10 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 
 	if err := recs[0].Decode(srv); err != nil {
 		return err
+	}
+
+	if srv.Status == "Deploying" {
+		return errors.BadRequest("app.run", "app is being deployed")
 	}
 
 	// execute the delete async
@@ -678,6 +693,10 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 
 	// no change in status and we have a pre-existing url
 	if srv.Status == currentStatus && srv.Url == currentUrl && srv.Updated == updatedAt {
+		// set the custom domain
+		if len(e.domain) > 0 {
+			rsp.Service.Url = fmt.Sprintf("https://%s.%s", srv.Id, e.domain)
+		}
 		return nil
 	}
 
