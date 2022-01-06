@@ -133,7 +133,7 @@ func lexIdent(l *lexer) stateFn {
 			return l.errorf("Unexpected end of input %q", l.input[l.start:])
 		}
 
-		if unicode.IsSpace(r) {
+		if unicode.IsSpace(r) || strings.IndexRune("=><", r) >= 0 {
 			l.backup()
 			break
 		}

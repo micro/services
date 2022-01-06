@@ -52,6 +52,24 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
+			name:  "basic compressed",
+			input: `foo=="bar"`,
+			tokens: []item{
+				{
+					typ: itemIdentifier,
+					val: "foo",
+				},
+				{
+					typ: itemOperator,
+					val: "==",
+				},
+				{
+					typ: itemString,
+					val: `bar`,
+				},
+			},
+		},
+		{
 			name:  "basic bool",
 			input: `foo == true`,
 			tokens: []item{
@@ -392,6 +410,64 @@ func TestLexer(t *testing.T) {
 				{
 					typ: itemRightParen,
 					val: ")",
+				},
+			},
+		},
+		{
+			name:  "brackets",
+			input: `(foo == 'bar' and baz == 'hello') or customer.name == 'john doe'`,
+			tokens: []item{
+				{
+					typ: itemLeftParen,
+					val: "(",
+				},
+				{
+					typ: itemIdentifier,
+					val: "foo",
+				},
+				{
+					typ: itemOperator,
+					val: "==",
+				},
+				{
+					typ: itemString,
+					val: `bar`,
+				},
+				{
+					typ: itemBooleanOp,
+					val: "and",
+				},
+				{
+					typ: itemIdentifier,
+					val: "baz",
+				},
+				{
+					typ: itemOperator,
+					val: "==",
+				},
+				{
+					typ: itemString,
+					val: `hello`,
+				},
+				{
+					typ: itemRightParen,
+					val: ")",
+				},
+				{
+					typ: itemBooleanOp,
+					val: "or",
+				},
+				{
+					typ: itemIdentifier,
+					val: "customer.name",
+				},
+				{
+					typ: itemOperator,
+					val: "==",
+				},
+				{
+					typ: itemString,
+					val: "john doe",
 				},
 			},
 		},
