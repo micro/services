@@ -4,7 +4,7 @@
       "title": "Index a document",
       "run_check": false,
       "request": {
-        "index_name": "customers",
+        "index": "customers",
         "document": {
           "id": "1234",
           "contents": {
@@ -23,7 +23,7 @@
       "title": "Search for a document",
       "run_check": false,
       "request": {
-        "index_name": "customers",
+        "index": "customers",
         "query": "name == 'John'"
       },
       "response": {
@@ -43,7 +43,7 @@
       "title": "Search on multiple fields (AND)",
       "run_check": false,
       "request": {
-        "index_name": "customers",
+        "index": "customers",
         "query": "name == 'John' AND starsign == 'Leo'"
       },
       "response": {
@@ -63,7 +63,7 @@
       "title": "Search on multiple fields (OR)",
       "run_check": false,
       "request": {
-        "index_name": "customers",
+        "index": "customers",
         "query": "name == 'John' OR name == 'Jane'"
       },
       "response": {
@@ -86,7 +86,7 @@
       "run_check": false,
       "request": {
         "id": "1234",
-        "index_name": "customers"
+        "index": "customers"
       },
       "response": {}
     }
@@ -96,7 +96,7 @@
       "title": "Delete an index",
       "run_check": false,
       "request": {
-        "index_name": "customers"
+        "index": "customers"
       },
       "response": {}
     }
