@@ -105,6 +105,11 @@ func TestParsing(t *testing.T) {
 			input:  `foo <= 6`,
 			output: `{"query":{"bool":{"must":[{"range":{"foo":{"lte":"6"}}}]}}}`,
 		},
+		{
+			name:   "wildcard",
+			input:  `foo == "ba*"`,
+			output: `{"query":{"bool":{"must":[{"wildcard":{"foo":{"value":"ba*"}}}]}}}`,
+		},
 	}
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {

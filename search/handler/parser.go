@@ -18,12 +18,18 @@ func parseQueryString(query string) (*simplejson.Json, error) {
 	return js, nil
 }
 
+const (
+	matchTypeRange    = "range"
+	matchTypeMatch    = "match"
+	matchTypeWildcard = "wildcard"
+)
+
 func parseQueryStringRec(items chan item) (*simplejson.Json, error) {
 	retTerm := simplejson.New()
 	currFieldName := ""
 	currBool := ""
-	currMatchType := "match"
-	currRangeType := ""
+	currMatchType := matchTypeMatch
+	currPathAddition := ""
 	terms := []*simplejson.Json{}
 itemLoop:
 	for it := range items {
@@ -36,16 +42,20 @@ itemLoop:
 			currFieldName = it.val
 		case itemString, itemBoolean, itemNumber:
 			currTerm := simplejson.New()
+			if strings.ContainsRune(it.val, '*') {
+				currMatchType = matchTypeWildcard
+				currPathAddition = "value"
+			}
 			path := []string{currMatchType, currFieldName}
-			if len(currRangeType) > 0 {
-				path = append(path, currRangeType)
+			if len(currPathAddition) > 0 {
+				path = append(path, currPathAddition)
 			}
 			currTerm.SetPath(path, it.val)
 			terms = append(terms, currTerm)
 
 			// reset
 			currFieldName = ""
-			currMatchType = "match"
+			currMatchType = matchTypeMatch
 
 		case itemBooleanOp:
 			thisBool := "must"
@@ -71,14 +81,14 @@ itemLoop:
 		case itemOperator:
 			switch it.val {
 			case "==":
-				currMatchType = "match"
-				currRangeType = ""
+				currMatchType = matchTypeMatch
+				currPathAddition = ""
 			case ">=":
-				currMatchType = "range"
-				currRangeType = "gte"
+				currMatchType = matchTypeRange
+				currPathAddition = "gte"
 			case "<=":
-				currMatchType = "range"
-				currRangeType = "lte"
+				currMatchType = matchTypeRange
+				currPathAddition = "lte"
 			}
 
 		}

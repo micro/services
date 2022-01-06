@@ -47,6 +47,12 @@ You can search on fields that are nested in the document using dot (`.`) as a se
 address.city == 'London'
 ```
 
+The API also supports wildcard `*` matching to enable scenarios like autocomplete.
+
+```sql
+first_name == 'Joh*'
+```
+
 In addition to equality `==` the API support greater than or equals `>=` and less than or equals `<=` operators
 
 ```sql
