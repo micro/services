@@ -1,29 +1,4 @@
 {
-  "createIndex": [
-    {
-      "title": "Create an index",
-      "run_check": false,
-      "request": {
-        "index_name": "customers",
-        "fields": [
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "age",
-            "type": "integer"
-          },
-          {
-            "name": "starsign",
-            "type": "string"
-          }
-        ]
-      },
-      "response": {
-      }
-    }
-  ],
   "index": [
     {
       "title": "Index a document",
@@ -49,14 +24,7 @@
       "run_check": false,
       "request": {
         "index_name": "customers",
-        "query": {
-          "fields": [
-            {
-              "field_name": "name",
-              "value": "John"
-            }
-          ]
-        }
+        "query": "name == 'John'"
       },
       "response": {
         "documents": [
@@ -76,19 +44,7 @@
       "run_check": false,
       "request": {
         "index_name": "customers",
-        "query": {
-          "operator": "and",
-          "fields": [
-            {
-              "field_name": "name",
-              "value": "John"
-            },
-            {
-              "field_name": "starsign",
-              "value": "Leo"
-            }
-          ]
-        }
+        "query": "name == 'John' AND starsign == 'Leo'"
       },
       "response": {
         "documents": [
@@ -108,47 +64,7 @@
       "run_check": false,
       "request": {
         "index_name": "customers",
-        "query": {
-          "operator": "or",
-          "fields": [
-            {
-              "field_name": "name",
-              "value": "John"
-            },
-            {
-              "field_name": "starsign",
-              "value": "Leo"
-            }
-          ]
-        }
-      },
-      "response": {
-        "documents": [
-          {
-            "id": "1234",
-            "contents": {
-              "name": "John Doe",
-              "age": 37,
-              "starsign": "Leo"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "title": "Search on prefix",
-      "run_check": false,
-      "request": {
-        "index_name": "customers",
-        "query": {
-          "fields": [
-            {
-              "field_name": "name",
-              "value": "Jo"
-            }
-          ],
-          "prefix": true
-        }
+        "query": "name == 'John' OR name == 'Jane'"
       },
       "response": {
         "documents": [
