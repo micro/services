@@ -53,30 +53,7 @@ message SearchRequest {
 	string index = 1;
 
 	// The query
-	QueryDef query = 2;
-
-	//	bool fuzzy = 3; // TODO
-}
-
-message QueryDef {
-	// The fields to search/match on
-	repeated FieldQuery fields = 2;
-	// Boolean operator for the fields be combined with - `and` or `or`
-	string operator = 3;
-	// Should we treat the search as a prefix rather than having to match the whole word?
-	bool prefix = 4;
-
-	//	repeated QueryDef queries = 1; // TODO reinstate once we fix protoc openapi3 recursive generation
-
-}
-
-message FieldQuery {
-	// The name of the field
-	string field_name = 1;
-	// The value to look for
-	string value = 2;
-
-	// TODO add an operator field for complex things like >, <, etc.
+	string query = 2;
 }
 
 message SearchResponse {

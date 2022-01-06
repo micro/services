@@ -11,7 +11,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bitly/go-simplejson"
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
@@ -199,43 +198,10 @@ func (s *Search) Delete(ctx context.Context, request *pb.DeleteRequest, response
 	return nil
 }
 
-func parseQueryDef(qd *pb.QueryDef) *simplejson.Json {
-	js := recurseParseQueryDef(qd)
-	ret := simplejson.New()
-	ret.Set("query", js)
-	return ret
-}
-
-func recurseParseQueryDef(qd *pb.QueryDef) *simplejson.Json {
-	qs := simplejson.New()
-	boolean := "must"
-	if strings.ToLower(qd.Operator) == "or" {
-		boolean = "should"
-	}
-
-	terms := []*simplejson.Json{}
-	for _, v := range qd.Fields {
-		matchType := "match"
-		if qd.Prefix {
-			matchType = "match_bool_prefix"
-		}
-		js := simplejson.New()
-		js.SetPath([]string{matchType, v.FieldName}, v.Value)
-		terms = append(terms, js)
-	}
-	// TODO reinstate once we fix protoc openapi3 recursive generation
-	//for _, v := range qd.Queries {
-	//	terms = append(terms, recurseParseQueryDef(v))
-	//}
-
-	qs.SetPath([]string{"bool", boolean}, terms)
-	return qs
-}
-
 func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response *pb.SearchResponse) error {
 	method := "search.Search"
 	if len(request.Index) == 0 {
-		return errors.BadRequest(method, "Missing index_name param")
+		return errors.BadRequest(method, "Missing index param")
 	}
 
 	// Search models to support https://opensearch.org/docs/latest/opensearch/ux/
@@ -250,11 +216,15 @@ func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response
 	}
 
 	// TODO fuzzy
-	if request.Query == nil {
+	if len(request.Query) == 0 {
 		return errors.BadRequest(method, "Missing query param")
 	}
 
-	qs := parseQueryDef(request.Query)
+	qs, err := parseQueryString(request.Query)
+	if err != nil {
+		log.Errorf("Error parsing string %s %s", request.Query, err)
+		return errors.BadRequest(method, "%s", err)
+	}
 	b, _ := qs.MarshalJSON()
 	req := openapi.SearchRequest{
 		Index: []string{indexName(tnt, request.Index)},

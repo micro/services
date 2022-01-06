@@ -29,7 +29,61 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `"bar"`,
+					val: `bar`,
+				},
+			},
+		},
+		{
+			name:  "basic",
+			input: `first_name == 'Dom'`,
+			tokens: []item{
+				{
+					typ: itemIdentifier,
+					val: "first_name",
+				},
+				{
+					typ: itemOperator,
+					val: "==",
+				},
+				{
+					typ: itemString,
+					val: `Dom`,
+				},
+			},
+		},
+		{
+			name:  "basic bool",
+			input: `foo == true`,
+			tokens: []item{
+				{
+					typ: itemIdentifier,
+					val: "foo",
+				},
+				{
+					typ: itemOperator,
+					val: "==",
+				},
+				{
+					typ: itemBoolean,
+					val: `true`,
+				},
+			},
+		},
+		{
+			name:  "basic bool false",
+			input: `foo == false`,
+			tokens: []item{
+				{
+					typ: itemIdentifier,
+					val: "foo",
+				},
+				{
+					typ: itemOperator,
+					val: "==",
+				},
+				{
+					typ: itemBoolean,
+					val: `false`,
 				},
 			},
 		},
@@ -47,7 +101,7 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `"hello there"`,
+					val: `hello there`,
 				},
 			},
 		},
@@ -119,10 +173,10 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'bar'`,
+					val: `bar`,
 				},
 				{
-					typ: itemBoolean,
+					typ: itemBooleanOp,
 					val: "AND",
 				},
 				{
@@ -135,7 +189,7 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'hello'`,
+					val: `hello`,
 				},
 			},
 		},
@@ -153,10 +207,10 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'bar'`,
+					val: `bar`,
 				},
 				{
-					typ: itemBoolean,
+					typ: itemBooleanOp,
 					val: "and",
 				},
 				{
@@ -169,7 +223,7 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'hello'`,
+					val: `hello`,
 				},
 			},
 		},
@@ -187,10 +241,10 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'bar'`,
+					val: `bar`,
 				},
 				{
-					typ: itemBoolean,
+					typ: itemBooleanOp,
 					val: "OR",
 				},
 				{
@@ -203,7 +257,7 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'hello'`,
+					val: `hello`,
 				},
 			},
 		},
@@ -221,10 +275,10 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'bar'`,
+					val: `bar`,
 				},
 				{
-					typ: itemBoolean,
+					typ: itemBooleanOp,
 					val: "or",
 				},
 				{
@@ -237,7 +291,7 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'hello'`,
+					val: `hello`,
 				},
 			},
 		},
@@ -297,10 +351,10 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'bar'`,
+					val: `bar`,
 				},
 				{
-					typ: itemBoolean,
+					typ: itemBooleanOp,
 					val: "and",
 				},
 				{
@@ -317,10 +371,10 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: `'hello'`,
+					val: `hello`,
 				},
 				{
-					typ: itemBoolean,
+					typ: itemBooleanOp,
 					val: "or",
 				},
 				{
@@ -333,7 +387,7 @@ func TestLexer(t *testing.T) {
 				},
 				{
 					typ: itemString,
-					val: "'john doe'",
+					val: "john doe",
 				},
 				{
 					typ: itemRightParen,

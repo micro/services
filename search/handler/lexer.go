@@ -11,11 +11,10 @@ type itemType int
 
 const (
 	itemError itemType = iota
-	itemAnd
-	itemOr
 	itemNumber
 	itemIdentifier
 	itemBoolean
+	itemBooleanOp
 	itemString
 	itemOperator
 	itemLeftParen
@@ -160,29 +159,29 @@ func lexValue(l *lexer) stateFn {
 }
 
 func lexString(l *lexer) stateFn {
+	// TODO support single and double quotes with escaping
 	if !l.accept(`"'`) {
 		return l.errorf("Unexpected value %v, expected a quote", l.peek())
 	}
+	// ignore the quote
 	openQuote := l.input[l.start:l.pos]
+	l.ignore()
 	lastRead := ""
 	for {
 		r := l.next()
-		if r == eof {
-			break
+		if r == eof { // should only happen in error case
+			return l.errorf("Unexpected value %v, incorrectly terminated value %s %v", l.input[l.start:], openQuote, lastRead)
 		}
 		if string(r) == openQuote && lastRead != `\` {
-			lastRead = string(r)
-			break
+			l.backup()
+			l.emit(itemString)
+			l.next()
+			l.ignore() // ignore the quote
+			return lexEndStatement(l)
 		}
 		lastRead = string(r)
 
 	}
-	if openQuote != lastRead {
-		// incorrectly closed
-		return l.errorf("Unexpected value %v, incorrectly terminated value %s %v", l.input[l.start:l.pos], openQuote, lastRead)
-	}
-	l.emit(itemString)
-	return lexEndStatement(l)
 }
 
 const (
@@ -262,7 +261,7 @@ func lexEndStatement(l *lexer) stateFn {
 	}
 
 	if l.input[l.start:l.pos] == "and" || l.input[l.start:l.pos] == "AND" || l.input[l.start:l.pos] == "or" || l.input[l.start:l.pos] == "OR" {
-		l.emit(itemBoolean)
+		l.emit(itemBooleanOp)
 		return lexStartStatement(l)
 	}
 	return l.errorf("Unexpected input %v", l.input[l.start:l.pos])
