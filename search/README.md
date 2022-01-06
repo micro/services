@@ -1,4 +1,4 @@
-Indexing & full text search
+Indexing and full text search
 
 # Search Service
 
