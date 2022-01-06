@@ -21,7 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Index a document i.e. insert a document to search for. If the index for the document does not exist it will be created on the fly.
+// Index a document i.e. insert a document to search for.
 type IndexRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
