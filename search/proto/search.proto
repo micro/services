@@ -52,7 +52,7 @@ message SearchRequest {
 	// The index the document belongs to
 	string index = 1;
 
-	// The query
+	// The query. See docs for query language examples
 	string query = 2;
 }
 

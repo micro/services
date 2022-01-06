@@ -287,7 +287,7 @@ type SearchRequest struct {
 
 	// The index the document belongs to
 	Index string `protobuf:"bytes,1,opt,name=index,proto3" json:"index,omitempty"`
-	// The query
+	// The query. See docs for query language examples
 	Query string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 }
 
