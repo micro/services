@@ -15,7 +15,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterSearchHandler(srv.Server(), new(handler.Search))
+	pb.RegisterSearchHandler(srv.Server(), handler.New(srv))
 
 	// Run service
 	if err := srv.Run(); err != nil {

@@ -85,24 +85,23 @@ func (m mockError) OrigErr() error {
 }
 
 func TestCreate(t *testing.T) {
-	g := NewWithT(t)
 	tcs := []struct {
 		name       string
 		objName    string
 		visibility string
 		err        error
 		url        string
-		head       func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error)
-		put        func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error)
+		head       func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error)
+		put        func(input *sthree.PutObjectInput, g *WithT) (*sthree.PutObjectOutput, error)
 	}{
 		{
 			name:    "Simple case",
 			objName: "foo.jpg",
 			url:     "",
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				return nil, mockError{code: "NotFound"}
 			},
-			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
+			put: func(input *sthree.PutObjectInput, g *WithT) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(input.ACL).To(BeNil())
 				return &sthree.PutObjectOutput{}, nil
@@ -113,10 +112,10 @@ func TestCreate(t *testing.T) {
 			objName:    "bar/baz/foo.jpg",
 			visibility: "public",
 			url:        "https://my-space.ams3.example.com/micro/123/bar/baz/foo.jpg",
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				return nil, mockError{code: "NotFound"}
 			},
-			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
+			put: func(input *sthree.PutObjectInput, g *WithT) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.ACL).To(Equal(mdACLPublic))
 				return &sthree.PutObjectOutput{}, nil
@@ -131,7 +130,7 @@ func TestCreate(t *testing.T) {
 			name:    "Already exists",
 			objName: "foo.jpg",
 			err:     errors.BadRequest("space.Create", "Object already exists"),
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
 				return &sthree.HeadObjectOutput{}, nil
@@ -142,6 +141,7 @@ func TestCreate(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			g := NewWithT(t)
 			handler := Space{
 				conf: conf{
 					AccessKey: "access",
@@ -152,7 +152,13 @@ func TestCreate(t *testing.T) {
 					Region:    "ams3",
 					BaseURL:   "https://my-space.ams3.example.com",
 				},
-				client: &mockS3Client{head: tc.head, put: tc.put},
+				client: &mockS3Client{
+					head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+						return tc.head(input, g)
+					},
+					put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
+						return tc.put(input, g)
+					}},
 			}
 			ctx := context.Background()
 			ctx = auth.ContextWithAccount(ctx, &auth.Account{
@@ -182,24 +188,23 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	g := NewWithT(t)
 	tcs := []struct {
 		name       string
 		objName    string
 		visibility string
 		err        error
 		url        string
-		head       func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error)
-		put        func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error)
+		head       func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error)
+		put        func(input *sthree.PutObjectInput, g *WithT) (*sthree.PutObjectOutput, error)
 	}{
 		{
 			name:    "Does not exist",
 			objName: "foo.jpg",
 			url:     "",
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				return nil, mockError{code: "NotFound"}
 			},
-			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
+			put: func(input *sthree.PutObjectInput, g *WithT) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(input.ACL).To(BeNil())
 				return &sthree.PutObjectOutput{}, nil
@@ -210,10 +215,10 @@ func TestUpdate(t *testing.T) {
 			objName:    "bar/baz/foo.jpg",
 			visibility: "public",
 			url:        "https://my-space.ams3.example.com/micro/123/bar/baz/foo.jpg",
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				return nil, mockError{code: "NotFound"}
 			},
-			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
+			put: func(input *sthree.PutObjectInput, g *WithT) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.ACL).To(Equal(mdACLPublic))
 				return &sthree.PutObjectOutput{}, nil
@@ -227,12 +232,12 @@ func TestUpdate(t *testing.T) {
 		{
 			name:    "Already exists",
 			objName: "foo.jpg",
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
 				return &sthree.HeadObjectOutput{}, nil
 			},
-			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
+			put: func(input *sthree.PutObjectInput, g *WithT) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(input.ACL).To(BeNil())
 				return &sthree.PutObjectOutput{}, nil
@@ -242,12 +247,12 @@ func TestUpdate(t *testing.T) {
 		{
 			name:    "Already exists public",
 			objName: "foo.jpg",
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
 				return &sthree.HeadObjectOutput{}, nil
 			},
-			put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
+			put: func(input *sthree.PutObjectInput, g *WithT) (*sthree.PutObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.ACL).To(Equal(mdACLPublic))
 				return &sthree.PutObjectOutput{}, nil
@@ -260,6 +265,7 @@ func TestUpdate(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			g := NewWithT(t)
 			handler := Space{
 				conf: conf{
 					AccessKey: "access",
@@ -270,7 +276,13 @@ func TestUpdate(t *testing.T) {
 					Region:    "ams3",
 					BaseURL:   "https://my-space.ams3.example.com",
 				},
-				client: &mockS3Client{head: tc.head, put: tc.put},
+				client: &mockS3Client{
+					head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+						return tc.head(input, g)
+					},
+					put: func(input *sthree.PutObjectInput) (*sthree.PutObjectOutput, error) {
+						return tc.put(input, g)
+					}},
 			}
 			ctx := context.Background()
 			ctx = auth.ContextWithAccount(ctx, &auth.Account{
@@ -301,7 +313,6 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	g := NewWithT(t)
 	tcs := []struct {
 		name    string
 		objName string
@@ -322,6 +333,7 @@ func TestDelete(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			g := NewWithT(t)
 			handler := Space{
 				conf: conf{
 					AccessKey: "access",
@@ -364,7 +376,6 @@ func TestDelete(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	g := NewWithT(t)
 	tcs := []struct {
 		name       string
 		prefix     string
@@ -383,6 +394,7 @@ func TestList(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			g := NewWithT(t)
 			store.DefaultStore = memory.NewStore()
 			store.Write(
 				store.NewRecord(fmt.Sprintf("%s/micro/123/file.jpg", prefixByUser),
@@ -463,7 +475,6 @@ func TestList(t *testing.T) {
 }
 
 func TestHead(t *testing.T) {
-	g := NewWithT(t)
 	tcs := []struct {
 		name       string
 		objectName string
@@ -472,7 +483,7 @@ func TestHead(t *testing.T) {
 		modified   string
 		created    string
 		err        error
-		head       func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error)
+		head       func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error)
 	}{
 		{
 			name:       "Simple case",
@@ -481,7 +492,7 @@ func TestHead(t *testing.T) {
 			url:        "https://my-space.ams3.example.com/micro/123/foo.jpg",
 			created:    "2009-11-10T23:00:00Z",
 			modified:   "2009-11-10T23:00:00Z",
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
 
@@ -497,7 +508,7 @@ func TestHead(t *testing.T) {
 			url:        "",
 			created:    "2009-11-10T23:00:00Z",
 			modified:   "2009-11-10T23:00:00Z",
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				g.Expect(*input.Bucket).To(Equal("my-space"))
 				g.Expect(*input.Key).To(Equal("micro/123/foo.jpg"))
 
@@ -514,7 +525,7 @@ func TestHead(t *testing.T) {
 			name:       "Not found",
 			objectName: "foo.jpg",
 			err:        errors.BadRequest("space.Head", "Object not found"),
-			head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+			head: func(input *sthree.HeadObjectInput, g *WithT) (*sthree.HeadObjectOutput, error) {
 				return nil, mockError{code: "NotFound"}
 			},
 		},
@@ -522,6 +533,7 @@ func TestHead(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
+			g := NewWithT(t)
 			store.DefaultStore = memory.NewStore()
 			store.Write(store.NewRecord(fmt.Sprintf("%s/micro/123/%s", prefixByUser, tc.objectName), meta{
 				Visibility:   tc.visibility,
@@ -539,7 +551,9 @@ func TestHead(t *testing.T) {
 					BaseURL:   "https://my-space.ams3.example.com",
 				},
 				client: &mockS3Client{
-					head: tc.head,
+					head: func(input *sthree.HeadObjectInput) (*sthree.HeadObjectOutput, error) {
+						return tc.head(input, g)
+					},
 				},
 			}
 			ctx := context.Background()

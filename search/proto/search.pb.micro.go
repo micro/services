@@ -6,6 +6,7 @@ package search
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/protobuf/types/known/structpb"
 	math "math"
 )
 
@@ -42,7 +43,10 @@ func NewSearchEndpoints() []*api.Endpoint {
 // Client API for Search service
 
 type SearchService interface {
-	Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error)
+	Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
+	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
+	DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...client.CallOption) (*DeleteIndexResponse, error)
 }
 
 type searchService struct {
@@ -57,9 +61,39 @@ func NewSearchService(name string, c client.Client) SearchService {
 	}
 }
 
-func (c *searchService) Vote(ctx context.Context, in *VoteRequest, opts ...client.CallOption) (*VoteResponse, error) {
-	req := c.c.NewRequest(c.name, "Search.Vote", in)
-	out := new(VoteResponse)
+func (c *searchService) Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error) {
+	req := c.c.NewRequest(c.name, "Search.Index", in)
+	out := new(IndexResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+	req := c.c.NewRequest(c.name, "Search.Delete", in)
+	out := new(DeleteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchService) Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error) {
+	req := c.c.NewRequest(c.name, "Search.Search", in)
+	out := new(SearchResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchService) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...client.CallOption) (*DeleteIndexResponse, error) {
+	req := c.c.NewRequest(c.name, "Search.DeleteIndex", in)
+	out := new(DeleteIndexResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +104,18 @@ func (c *searchService) Vote(ctx context.Context, in *VoteRequest, opts ...clien
 // Server API for Search service
 
 type SearchHandler interface {
-	Vote(context.Context, *VoteRequest, *VoteResponse) error
+	Index(context.Context, *IndexRequest, *IndexResponse) error
+	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
+	Search(context.Context, *SearchRequest, *SearchResponse) error
+	DeleteIndex(context.Context, *DeleteIndexRequest, *DeleteIndexResponse) error
 }
 
 func RegisterSearchHandler(s server.Server, hdlr SearchHandler, opts ...server.HandlerOption) error {
 	type search interface {
-		Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error
+		Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error
+		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
+		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
+		DeleteIndex(ctx context.Context, in *DeleteIndexRequest, out *DeleteIndexResponse) error
 	}
 	type Search struct {
 		search
@@ -88,6 +128,18 @@ type searchHandler struct {
 	SearchHandler
 }
 
-func (h *searchHandler) Vote(ctx context.Context, in *VoteRequest, out *VoteResponse) error {
-	return h.SearchHandler.Vote(ctx, in, out)
+func (h *searchHandler) Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error {
+	return h.SearchHandler.Index(ctx, in, out)
+}
+
+func (h *searchHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
+	return h.SearchHandler.Delete(ctx, in, out)
+}
+
+func (h *searchHandler) Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error {
+	return h.SearchHandler.Search(ctx, in, out)
+}
+
+func (h *searchHandler) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, out *DeleteIndexResponse) error {
+	return h.SearchHandler.DeleteIndex(ctx, in, out)
 }
