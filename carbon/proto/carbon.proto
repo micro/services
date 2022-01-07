@@ -17,7 +17,7 @@ message Project {
 	double tonnes = 3;
 }
 
-// Purchase 1kg (0.001 tonnes) of carbon offsets in a single request
+// Purchase 1 tonne of carbon offsets in a single request
 message OffsetRequest {}
 
 message OffsetResponse {
