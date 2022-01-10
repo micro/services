@@ -6,7 +6,7 @@
     "Crypto.News": 1000,
     "Crypto.Price": 2000,
     "Crypto.Quote": 2000,
-    "Crypto.History": 3500
+    "Crypto.History": 5000
   },
   "display_name": "Crypto"
 }

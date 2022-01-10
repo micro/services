@@ -5,7 +5,7 @@
   "pricing": {
     "Forex.Price": 2000,
     "Forex.Quote": 2000,
-    "Forex.History": 3500
+    "Forex.History": 5000
   },
   "display_name": "Forex"
 }
