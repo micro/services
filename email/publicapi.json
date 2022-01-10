@@ -3,7 +3,7 @@
   "icon": "✉️",
   "category": "communication",
   "pricing": {
-    "Email.Send": 5000
+    "Email.Send": 10000
   },
   "display_name": "Email"
 }
