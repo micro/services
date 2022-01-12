@@ -4,19 +4,19 @@
         "run_check": false,
         "request": {},
         "response": {
-		"units": 1000,
+		"units": 1,
 		"metric": "KG",
-		"tonnes": 1,
+		"tonnes": 0.001,
 		"projects": [
 			{
 				"name": "Producing electricity from wind power in Northeast Thailand",
 				"percentage": 98,
-				"tonnes": 0.98
+				"tonnes": 0.00098
 			},
 			{
 				"name": "Wind power generation in Bac Lieu Province, Vietnam",
 				"percentage": 2,
-				"tonnes": 0.02
+				"tonnes": 0.0002
 			}
 		]
         }
