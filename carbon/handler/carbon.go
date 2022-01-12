@@ -50,7 +50,7 @@ func (c *Carbon) Offset(ctx context.Context, req *pb.OffsetRequest, rsp *pb.Offs
 
 	// currently do not support options
 	r := &domain.OffsetRequest{
-		Number: 1000,
+		Number: 1,
 		Units:  "KG",
 	}
 

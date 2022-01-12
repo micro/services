@@ -4,6 +4,6 @@
   "category": "climate",
   "display_name": "Carbon",
   "pricing": {
-    "Carbon.Offset": 5000000
+    "Carbon.Offset": 10000
   }
 }
