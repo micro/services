@@ -47,6 +47,7 @@ type CacheService interface {
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Increment(ctx context.Context, in *IncrementRequest, opts ...client.CallOption) (*IncrementResponse, error)
 	Decrement(ctx context.Context, in *DecrementRequest, opts ...client.CallOption) (*DecrementResponse, error)
+	ListKeys(ctx context.Context, in *ListKeysRequest, opts ...client.CallOption) (*ListKeysResponse, error)
 }
 
 type cacheService struct {
@@ -111,6 +112,16 @@ func (c *cacheService) Decrement(ctx context.Context, in *DecrementRequest, opts
 	return out, nil
 }
 
+func (c *cacheService) ListKeys(ctx context.Context, in *ListKeysRequest, opts ...client.CallOption) (*ListKeysResponse, error) {
+	req := c.c.NewRequest(c.name, "Cache.ListKeys", in)
+	out := new(ListKeysResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Cache service
 
 type CacheHandler interface {
@@ -119,6 +130,7 @@ type CacheHandler interface {
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Increment(context.Context, *IncrementRequest, *IncrementResponse) error
 	Decrement(context.Context, *DecrementRequest, *DecrementResponse) error
+	ListKeys(context.Context, *ListKeysRequest, *ListKeysResponse) error
 }
 
 func RegisterCacheHandler(s server.Server, hdlr CacheHandler, opts ...server.HandlerOption) error {
@@ -128,6 +140,7 @@ func RegisterCacheHandler(s server.Server, hdlr CacheHandler, opts ...server.Han
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Increment(ctx context.Context, in *IncrementRequest, out *IncrementResponse) error
 		Decrement(ctx context.Context, in *DecrementRequest, out *DecrementResponse) error
+		ListKeys(ctx context.Context, in *ListKeysRequest, out *ListKeysResponse) error
 	}
 	type Cache struct {
 		cache
@@ -158,4 +171,8 @@ func (h *cacheHandler) Increment(ctx context.Context, in *IncrementRequest, out 
 
 func (h *cacheHandler) Decrement(ctx context.Context, in *DecrementRequest, out *DecrementResponse) error {
 	return h.CacheHandler.Decrement(ctx, in, out)
+}
+
+func (h *cacheHandler) ListKeys(ctx context.Context, in *ListKeysRequest, out *ListKeysResponse) error {
+	return h.CacheHandler.ListKeys(ctx, in, out)
 }

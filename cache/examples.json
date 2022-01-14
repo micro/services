@@ -62,5 +62,14 @@
             "key": "counter",
             "value": 0
         }
+    }],
+    "listKeys": [{
+        "title": "List the keys",
+        "description": "List all the stored keys",
+        "run_check": true,
+        "request": {},
+        "response": {
+            "keys": ["counter", "foo"]
+        }
     }]
 }
