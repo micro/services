@@ -274,8 +274,8 @@ func (s *Search) DeleteIndex(ctx context.Context, request *pb.DeleteIndexRequest
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
 	}
-	req := openapi.DeleteRequest{
-		Index: indexName(tnt, request.Index),
+	req := openapi.IndicesDeleteRequest{
+		Index: []string{indexName(tnt, request.Index)},
 	}
 	rsp, err := req.Do(ctx, s.client)
 	if err != nil {
