@@ -143,7 +143,7 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 		request.Document.Id = uuid.New().String()
 	}
 	if len(request.Index) == 0 {
-		return errors.BadRequest(method, "Missing index_name param")
+		return errors.BadRequest(method, "Missing index param")
 	}
 	if !isValidIndexName(request.Index) {
 		return errors.BadRequest(method, "Index name should contain only alphanumerics and hyphens")
@@ -180,6 +180,9 @@ func (s *Search) Delete(ctx context.Context, request *pb.DeleteRequest, response
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
+	}
+	if len(request.Index) == 0 {
+		return errors.BadRequest(method, "Missing index param")
 	}
 	req := openapi.DeleteRequest{
 		Index:      indexName(tnt, request.Index),
@@ -274,8 +277,11 @@ func (s *Search) DeleteIndex(ctx context.Context, request *pb.DeleteIndexRequest
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
 	}
-	req := openapi.DeleteRequest{
-		Index: indexName(tnt, request.Index),
+	if len(request.Index) == 0 {
+		return errors.BadRequest(method, "Missing index param")
+	}
+	req := openapi.IndicesDeleteRequest{
+		Index: []string{indexName(tnt, request.Index)},
 	}
 	rsp, err := req.Do(ctx, s.client)
 	if err != nil {
