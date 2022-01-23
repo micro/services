@@ -3,7 +3,6 @@
   "icon": "📈",
   "category": "money",
   "pricing": {
-    "Stock.Price": 2000,
     "Stock.Quote": 2000,
     "Stock.History": 5000,
     "Stock.OrderBook": 5000
