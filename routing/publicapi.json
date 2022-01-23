@@ -2,8 +2,5 @@
   "name": "routing",
   "icon": "🧭",
   "category": "logistics",
-  "pricing": {
-    "Routing.Directions": 1000
-  },
   "display_name": "Routing"
 }
