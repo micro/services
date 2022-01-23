@@ -5,6 +5,5 @@
   "display_name": "Currency",
   "pricing": {
     "Currency.History": 5000,
-    "Currency.Rates": 5000
   }
 }
