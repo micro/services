@@ -7,12 +7,11 @@ package search;
 option go_package = "./proto;search";
 
 service Search {
-	rpc CreateIndex(CreateIndexRequest) returns (CreateIndexResponse) {}
 	rpc Index(IndexRequest) returns (IndexResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc CreateIndex(CreateIndexRequest) returns (CreateIndexResponse) {}
 	rpc DeleteIndex(DeleteIndexRequest) returns (DeleteIndexResponse) {}
-
 }
 
 // Index a document i.e. insert a document to search for.

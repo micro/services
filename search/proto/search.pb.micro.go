@@ -46,6 +46,7 @@ type SearchService interface {
 	Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
+	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...client.CallOption) (*CreateIndexResponse, error)
 	DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...client.CallOption) (*DeleteIndexResponse, error)
 }
 
@@ -91,6 +92,16 @@ func (c *searchService) Search(ctx context.Context, in *SearchRequest, opts ...c
 	return out, nil
 }
 
+func (c *searchService) CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...client.CallOption) (*CreateIndexResponse, error) {
+	req := c.c.NewRequest(c.name, "Search.CreateIndex", in)
+	out := new(CreateIndexResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *searchService) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...client.CallOption) (*DeleteIndexResponse, error) {
 	req := c.c.NewRequest(c.name, "Search.DeleteIndex", in)
 	out := new(DeleteIndexResponse)
@@ -107,6 +118,7 @@ type SearchHandler interface {
 	Index(context.Context, *IndexRequest, *IndexResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Search(context.Context, *SearchRequest, *SearchResponse) error
+	CreateIndex(context.Context, *CreateIndexRequest, *CreateIndexResponse) error
 	DeleteIndex(context.Context, *DeleteIndexRequest, *DeleteIndexResponse) error
 }
 
@@ -115,6 +127,7 @@ func RegisterSearchHandler(s server.Server, hdlr SearchHandler, opts ...server.H
 		Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
+		CreateIndex(ctx context.Context, in *CreateIndexRequest, out *CreateIndexResponse) error
 		DeleteIndex(ctx context.Context, in *DeleteIndexRequest, out *DeleteIndexResponse) error
 	}
 	type Search struct {
@@ -138,6 +151,10 @@ func (h *searchHandler) Delete(ctx context.Context, in *DeleteRequest, out *Dele
 
 func (h *searchHandler) Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error {
 	return h.SearchHandler.Search(ctx, in, out)
+}
+
+func (h *searchHandler) CreateIndex(ctx context.Context, in *CreateIndexRequest, out *CreateIndexResponse) error {
+	return h.SearchHandler.CreateIndex(ctx, in, out)
 }
 
 func (h *searchHandler) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, out *DeleteIndexResponse) error {
