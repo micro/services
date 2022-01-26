@@ -61,10 +61,8 @@ message SearchResponse {
 
 // Create an index by name
 message CreateIndexRequest {
-	// the name of the index
+	// The name of the index
 	string index = 1;
-	// TODO: allow fields to index
-	// repeated Field fields = 2;
 }
 
 message Field {
