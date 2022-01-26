@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/mail"
 	"net/http"
 	"regexp"
 
@@ -201,6 +202,38 @@ func (e *Email) sendEmail(ctx context.Context, req *pb.SendRequest) error {
 		}
 		return fmt.Errorf("could not send email, error: %v", string(bytes))
 	}
+
+	return nil
+}
+
+func (e *Email) Parse(ctx context.Context, req *pb.ParseRequest, rsp *pb.ParseResponse) error {
+	if len(req.Address) == 0 {
+		return errors.BadRequest("email.validate", "address is blank")
+	}
+
+	a, err := mail.ParseAddress(req.Address)
+	if err != nil {
+		return errors.InternalServerError("email.parse", err.Error())
+	}
+
+	rsp.Name = a.Name
+	rsp.Address = a.Address
+
+	return nil
+}
+
+func (e *Email) Validate(ctx context.Context, req *pb.ValidateRequest, rsp *pb.ValidateResponse) error {
+	if len(req.Address) == 0 {
+		return errors.BadRequest("email.validate", "address is blank")
+	}
+
+	_, err := mail.ParseAddress(req.Address)
+	if err != nil {
+		return nil
+	}
+
+	// success
+	rsp.IsValid = true
 
 	return nil
 }

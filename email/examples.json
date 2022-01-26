@@ -10,5 +10,30 @@
       },
       "response": {}
     }
+  ],
+  "parse": [
+    { 
+      "title": "Parse email",
+      "run_check": false,
+      "request": {
+        "address": "Joe Blogs <joe@example.com>"
+      },
+      "response": {
+        "name": "Joe Blogs",
+        "address": "joe@example.com"
+      }
+    }
+  ],
+  "validate": [
+    { 
+      "title": "Validate email",
+      "run_check": false,
+      "request": {
+        "address": "joe@example.com"
+      },
+      "response": {
+        "is_valid": true
+      }
+    }
   ]
 }
