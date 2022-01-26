@@ -107,7 +107,7 @@ func (s *Search) CreateIndex(ctx context.Context, request *pb.CreateIndexRequest
 	if !isValidIndexName(request.Index) {
 		return errors.BadRequest(method, "Index name should contain only alphanumerics and hyphens")
 	}
-	req := openapi.CreateRequest{
+	req := openapi.IndicesCreateRequest{
 		Index: indexName(tnt, request.Index),
 		Body:  nil, // TODO populate with fields and their types
 	}
@@ -156,7 +156,7 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 	if err != nil {
 		return errors.BadRequest(method, "Error processing document")
 	}
-	req := openapi.IndexRequest{
+	req := openapi.CreateRequest{
 		Index:      indexName(tnt, request.Index),
 		DocumentID: request.Document.Id,
 		Body:       bytes.NewBuffer(b),

@@ -91,6 +91,16 @@
       "response": {}
     }
   ],
+  "createIndex": [
+    {
+      "title": "Create an index",
+      "run_check": false,
+      "request": {
+        "index": "customers"
+      },
+      "response": {}
+    }
+  ],
   "deleteIndex": [
     {
       "title": "Delete an index",

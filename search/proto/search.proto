@@ -7,9 +7,7 @@ package search;
 option go_package = "./proto;search";
 
 service Search {
-	// TODO reinstate when we have a reason for more fine grained control of index creation, for now just rely on lazy creation on first index call
-	//	rpc CreateIndex(CreateIndexRequest) returns (CreateIndexResponse) {}
-
+	rpc CreateIndex(CreateIndexRequest) returns (CreateIndexResponse) {}
 	rpc Index(IndexRequest) returns (IndexResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Search(SearchRequest) returns (SearchResponse) {}
@@ -62,11 +60,12 @@ message SearchResponse {
 
 }
 
-// Create a search index by specifying which fields are to be queried
+// Create a search index by name
 message CreateIndexRequest {
 	// the name of the index
 	string index = 1;
-	repeated Field fields = 2;
+	// TODO: allow fields to index
+	// repeated Field fields = 2;
 }
 
 message Field {
