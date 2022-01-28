@@ -42,8 +42,6 @@ func (m *migration) Do() error {
 	// max concurrency is 5
 	concurrencyChan := make(chan struct{}, 5)
 
-	var strg Migration
-
 	for _, t := range tables {
 
 		wg.Add(1)
@@ -54,6 +52,7 @@ func (m *migration) Do() error {
 				wg.Done()
 				<-concurrencyChan
 			}()
+			var strg Migration
 
 			if strings.HasSuffix(tableName, "_users") {
 				strg = userMgr.New(m.store, strings.TrimSuffix(tableName, "_users"))
