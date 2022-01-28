@@ -14,9 +14,13 @@ func getStoreKeyPrefix(ctx context.Context) string {
 		tenantId = "micro"
 	}
 
-	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+	return getStoreKeyPrefixForTenent(tenantId)
+}
 
-	return fmt.Sprintf("user/%s/", tenantId)
+func getStoreKeyPrefixForTenent(tenantID string) string {
+	tid := strings.Replace(strings.Replace(tenantID, "/", "_", -1), "-", "_", -1)
+
+	return fmt.Sprintf("user/%s/", tid)
 }
 
 func generateAccountStoreKey(ctx context.Context, userId string) string {

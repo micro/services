@@ -556,3 +556,17 @@ func (domain *Domain) CacheReadToken(ctx context.Context, token string) (string,
 
 	return email, nil
 }
+
+func (domain *Domain) DeleteTenantData(tenantID string) error {
+	keys, err := domain.store.List(store.ListPrefix(getStoreKeyPrefixForTenent(tenantID)))
+	if err != nil {
+		return err
+	}
+	for _, k := range keys {
+		if err := domain.store.Delete(k); err != nil {
+			return err
+		}
+	}
+	logger.Infof("Deleted %d keys for user %s", len(keys), tenantID)
+	return nil
+}

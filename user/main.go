@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 
 	otp "github.com/micro/services/otp/proto"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/user/handler"
 	"github.com/micro/services/user/migrate"
@@ -62,6 +63,7 @@ func main() {
 	)
 
 	proto.RegisterUserHandler(srv.Server(), hd)
+	adminpb.RegisterAdminHandler(srv.Server(), hd)
 	traceCloser := tracing.SetupOpentracing("user")
 	defer traceCloser.Close()
 
