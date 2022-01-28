@@ -11,12 +11,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
-	db "github.com/micro/services/db/proto"
+	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
+	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/context"
+
 	otp "github.com/micro/services/otp/proto"
 	"github.com/micro/services/user/domain"
 	pb "github.com/micro/services/user/proto"
-	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/net/context"
 )
 
 const (
@@ -28,6 +30,7 @@ var (
 	emailFormat = regexp.MustCompile("^[\\w-\\.\\+]+@([\\w-]+\\.)+[\\w-]{2,4}$")
 )
 
+// random generate i length alphanum string
 func random(i int) string {
 	bytes := make([]byte, i)
 	for {
@@ -45,37 +48,53 @@ type User struct {
 	Otp    otp.OtpService
 }
 
-func NewUser(db db.DbService, otp otp.OtpService) *User {
+func NewUser(st store.Store, otp otp.OtpService) *User {
 	return &User{
-		domain: domain.New(db),
+		domain: domain.New(st),
 		Otp:    otp,
 	}
 }
 
-func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
-	if !emailFormat.MatchString(req.Email) {
+// validatePostUserData checks userId, username, email post data are valid and in right format
+func (s *User) validatePostUserData(ctx context.Context, userId, username, email string) error {
+	username = strings.TrimSpace(strings.ToLower(username))
+	email = strings.TrimSpace(strings.ToLower(email))
+
+	if !emailFormat.MatchString(email) {
 		return errors.BadRequest("create.email-format-check", "email has wrong format")
 	}
+
+	if userId == "" || username == "" || email == "" {
+		return errors.BadRequest("valid-check", "missing id or username or email")
+	}
+
+	account, err := s.domain.SearchByUsername(ctx, username)
+	if err != nil && err.Error() != domain.ErrNotFound.Error() {
+		return err
+	}
+
+	if account.Id != "" && account.Id != userId {
+		return errors.BadRequest("username-check", "username already exists")
+	}
+
+	account, err = s.domain.SearchByEmail(ctx, email)
+	if err != nil && err.Error() != domain.ErrNotFound.Error() {
+		return err
+	}
+	if account.Id != "" && account.Id != userId {
+		return errors.BadRequest("email-check", "email already exists")
+	}
+
+	return nil
+}
+
+func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
 	if len(req.Password) < 8 {
 		return errors.InternalServerError("user.Create.Check", "Password is less than 8 characters")
 	}
-	req.Username = strings.ToLower(req.Username)
-	req.Email = strings.ToLower(req.Email)
-	usernames, err := s.domain.Search(ctx, req.Username, "")
-	if err != nil && err.Error() != "not found" {
-		return err
-	}
-	if len(usernames) > 0 {
-		return errors.BadRequest("create.username-check", "username already exists")
-	}
 
-	// TODO: don't error out here
-	emails, err := s.domain.Search(ctx, "", req.Email)
-	if err != nil && err.Error() != "not found" {
+	if err := s.validatePostUserData(ctx, req.Id, req.Username, req.Email); err != nil {
 		return err
-	}
-	if len(emails) > 0 {
-		return errors.BadRequest("create.email-check", "email already exists")
 	}
 
 	salt := random(16)
@@ -90,8 +109,8 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 
 	acc := &pb.Account{
 		Id:       req.Id,
-		Username: req.Username,
-		Email:    req.Email,
+		Username: strings.ToLower(req.Username),
+		Email:    strings.ToLower(req.Email),
 		Profile:  req.Profile,
 	}
 
@@ -107,26 +126,31 @@ func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 }
 
 func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
+	var account = &pb.Account{}
+	var err error
+
 	switch {
 	case req.Id != "":
-		account, err := s.domain.Read(ctx, req.Id)
-		if err != nil {
-			return err
-		}
-		rsp.Account = account
-		return nil
-	case req.Username != "" || req.Email != "":
-		accounts, err := s.domain.Search(ctx, req.Username, req.Email)
-		if err != nil {
-			return err
-		}
-		rsp.Account = accounts[0]
-		return nil
+		account, err = s.domain.Read(ctx, req.Id)
+	case req.Username != "":
+		account, err = s.domain.SearchByUsername(ctx, req.Username)
+	case req.Email != "":
+		account, err = s.domain.SearchByEmail(ctx, req.Email)
 	}
+
+	rsp.Account = account
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (s *User) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
+	if err := s.validatePostUserData(ctx, req.Id, req.Username, req.Email); err != nil {
+		return err
+	}
+
 	return s.domain.Update(ctx, &pb.Account{
 		Id:       req.Id,
 		Username: strings.ToLower(req.Username),
@@ -236,7 +260,7 @@ func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp 
 	}
 
 	// check the token exists
-	userId, err := s.domain.ReadToken(ctx, req.Email, req.Token)
+	email, err := s.domain.ReadToken(ctx, req.Email, req.Token)
 	if err != nil {
 		return err
 	}
@@ -256,7 +280,7 @@ func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp 
 	}
 
 	// mark user as verified
-	user, err := s.domain.Read(ctx, userId)
+	user, err := s.domain.SearchByEmail(ctx, email)
 	if err != nil {
 		return err
 	}
@@ -273,7 +297,7 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 	}
 
 	// search for the user
-	users, err := s.domain.Search(ctx, "", req.Email)
+	account, err := s.domain.SearchByEmail(ctx, req.Email)
 	if err != nil {
 		return err
 	}
@@ -294,7 +318,7 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 		return err
 	}
 
-	return s.domain.SendEmail(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.RedirectUrl, req.FailureRedirectUrl)
+	return s.domain.SendEmail(req.FromName, req.Email, account.Username, req.Subject, req.TextContent, token, req.RedirectUrl, req.FailureRedirectUrl)
 }
 
 func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordResetEmailRequest, rsp *pb.SendPasswordResetEmailResponse) error {
@@ -303,7 +327,7 @@ func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordR
 	}
 
 	// look for an existing user
-	users, err := s.domain.Search(ctx, "", req.Email)
+	account, err := s.domain.SearchByEmail(ctx, req.Email)
 	if err != nil {
 		return err
 	}
@@ -319,7 +343,7 @@ func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordR
 	}
 
 	// save the code in the database and then send via email
-	return s.domain.SendPasswordResetEmail(ctx, users[0].Id, resp.Code, req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent)
+	return s.domain.SendPasswordResetEmail(ctx, account.Id, resp.Code, req.FromName, req.Email, account.Username, req.Subject, req.TextContent)
 }
 
 func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, rsp *pb.ResetPasswordResponse) error {
@@ -340,13 +364,13 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	}
 
 	// look for an existing user
-	users, err := s.domain.Search(ctx, "", req.Email)
+	account, err := s.domain.SearchByEmail(ctx, req.Email)
 	if err != nil {
 		return err
 	}
 
 	// check if a request was made to reset the password, we should have saved it
-	code, err := s.domain.ReadPasswordResetCode(ctx, users[0].Id, req.Code)
+	code, err := s.domain.ReadPasswordResetCode(ctx, account.Id, req.Code)
 	if err != nil {
 		return err
 	}
@@ -379,7 +403,7 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	}
 
 	// delete our saved code
-	s.domain.DeletePasswordResetCode(ctx, users[0].Id, req.Code)
+	s.domain.DeletePasswordResetCode(ctx, account.Id, req.Code)
 
 	return nil
 }
@@ -403,7 +427,7 @@ func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, 
 	}
 
 	// check if the email exist in the DB
-	users, err := s.domain.Search(ctx, "", req.Email)
+	account, err := s.domain.SearchByEmail(ctx, req.Email)
 	if err != nil && err.Error() == "not found" {
 		return errors.BadRequest("SendMagicLink.email-check", "email doesn't exist")
 	} else if err != nil {
@@ -419,12 +443,14 @@ func (s *User) SendMagicLink(ctx context.Context, req *pb.SendMagicLinkRequest, 
 	// save token, so we can retrieve it later
 	err = s.domain.CacheToken(ctx, token, req.Email, ttl)
 	if err != nil {
+		logger.Errorf("SendMagicLink.cacheToken error: %v", err)
 		return errors.BadRequest("SendMagicLink.cacheToken", "Oooops something went wrong")
 	}
 
 	// send magic link to email address
-	err = s.domain.SendMLE(req.FromName, req.Email, users[0].Username, req.Subject, req.TextContent, token, req.Address, req.Endpoint)
+	err = s.domain.SendMLE(req.FromName, req.Email, account.Username, req.Subject, req.TextContent, token, req.Address, req.Endpoint)
 	if err != nil {
+		logger.Errorf("SendMagicLink.cacheToken error: %v", err)
 		return errors.BadRequest("SendMagicLink.sendEmail", "Oooops something went wrong")
 	}
 
@@ -456,23 +482,18 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 	}
 
 	// save session
-	accounts, err := s.domain.Search(ctx, "", email)
+	account, err := s.domain.SearchByEmail(ctx, email)
 	if err != nil {
 		rsp.IsValid = false
 		rsp.Message = "account not found"
 		return err
-	}
-	if len(accounts) == 0 {
-		rsp.IsValid = false
-		rsp.Message = "account not found"
-		return nil
 	}
 
 	sess := &pb.Session{
 		Id:      random(128),
 		Created: time.Now().Unix(),
 		Expires: time.Now().Add(time.Hour * 24 * 7).Unix(),
-		UserId:  accounts[0].Id,
+		UserId:  account.Id,
 	}
 
 	if err := s.domain.CreateSession(ctx, sess); err != nil {

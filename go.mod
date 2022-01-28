@@ -52,6 +52,7 @@ require (
 	github.com/teamwork/test v0.0.0-20200108114543-02621bae84ad // indirect
 	github.com/teamwork/utils v0.0.0-20211103135549-f7e7a68ba696 // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
+	github.com/tidwall/gjson v1.12.1
 	github.com/tkuchiki/go-timezone v0.2.2
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
