@@ -409,7 +409,7 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	return nil
 }
 
-func (s *User) List(ctx goctx.Context, request *pb.ListRequest, response *pb.ListResponse) error {
+func (s *User) List(ctx context.Context, request *pb.ListRequest, response *pb.ListResponse) error {
 	accs, err := s.domain.List(ctx, request.Offset, request.Limit)
 	if err != nil && err != domain.ErrNotFound {
 		return errors.InternalServerError("user.List", "Error retrieving user list")
