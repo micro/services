@@ -44,5 +44,5 @@ func generateSessionStoreKey(ctx context.Context, sessionId string) string {
 }
 
 func generateVerificationsTokenStoreKey(ctx context.Context, userId, token string) string {
-	return fmt.Sprintf("%sverifycation-token/%s-%s", getStoreKeyPrefix(ctx), userId, token)
+	return fmt.Sprintf("%sverification-token/%s-%s", getStoreKeyPrefix(ctx), userId, token)
 }

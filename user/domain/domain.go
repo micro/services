@@ -266,13 +266,16 @@ func (domain *Domain) batchWrite(records []*store.Record) error {
 	}
 
 	wg := sync.WaitGroup{}
+	lock := sync.Mutex{}
 	errs := make([]string, 0)
 	for _, v := range records {
 		wg.Add(1)
 		go func(r *store.Record) {
 			defer wg.Done()
 			if err := domain.store.Write(r); err != nil {
+				lock.Lock()
 				errs = append(errs, err.Error())
+				lock.Unlock()
 			}
 		}(v)
 	}
@@ -321,13 +324,16 @@ func (domain *Domain) batchDelete(keys []string) error {
 	}
 
 	wg := sync.WaitGroup{}
+	lock := sync.Mutex{}
 	errs := make([]string, 0)
 	for _, key := range keys {
 		wg.Add(1)
 		go func(keyToDel string) {
 			defer wg.Done()
 			if err := domain.store.Delete(keyToDel); err != nil {
+				lock.Lock()
 				errs = append(errs, err.Error())
+				lock.Unlock()
 			}
 		}(key)
 

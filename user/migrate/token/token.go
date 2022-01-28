@@ -11,7 +11,7 @@ import (
 )
 
 func generateStoreKey(tenantId string, id string) string {
-	return fmt.Sprintf("%sverifycation-token/%s", entity.KeyPrefix(tenantId), id)
+	return fmt.Sprintf("%sverification-token/%s", entity.KeyPrefix(tenantId), id)
 }
 
 type token struct {
