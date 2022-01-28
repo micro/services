@@ -1,0 +1,9 @@
+{
+  "name": "carbon",
+  "icon": "🌋",
+  "category": "climate",
+  "display_name": "Carbon",
+  "pricing": {
+    "Carbon.Offset": 10000
+  }
+}

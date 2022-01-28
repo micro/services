@@ -120,3 +120,16 @@ func (c *Cache) Decrement(ctx context.Context, req *pb.DecrementRequest, rsp *pb
 
 	return nil
 }
+
+func (c *Cache) ListKeys(ctx context.Context, req *pb.ListKeysRequest, rsp *pb.ListKeysResponse) error {
+	keys, err := cache.Context(ctx).ListKeys()
+
+	if err != nil {
+		log.Errorf("Error listing keys in cache %s", err)
+		return errors.InternalServerError("cache.listkeys", "Error listing keys in cache")
+	}
+
+	rsp.Keys = keys
+
+	return nil
+}

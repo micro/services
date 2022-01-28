@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -24,11 +25,12 @@ type Cache interface {
 	Delete(key string) error
 	Increment(key string, val int64) (int64, error)
 	Decrement(key string, val int64) (int64, error)
+	ListKeys() ([]string, error)
 	Close() error
 }
 
 type cache struct {
-	sync.Mutex
+	sync.RWMutex
 	closed chan bool
 	LRU    *lru.Cache
 	Disk   *diskv.Diskv
@@ -259,6 +261,30 @@ func (c *cache) Decrement(key string, value int64) (int64, error) {
 	return val, nil
 }
 
+func (c *cache) ListKeys() ([]string, error) {
+	c.RLock()
+	defer c.RUnlock()
+
+	if c.Store == nil {
+		c.Store = store.DefaultStore
+	}
+
+	prefix := c.Key("")
+
+	recKeys, err := c.Store.List(store.ListPrefix(prefix))
+	if err != nil {
+		return nil, err
+	}
+
+	var keys []string
+
+	for _, key := range recKeys {
+		keys = append(keys, strings.TrimPrefix(key, prefix))
+	}
+
+	return keys, nil
+}
+
 func Context(ctx context.Context) Cache {
 	return DefaultCache.Context(ctx)
 }
@@ -281,4 +307,8 @@ func Increment(key string, val int64) (int64, error) {
 
 func Decrement(key string, val int64) (int64, error) {
 	return DefaultCache.Decrement(key, val)
+}
+
+func ListKeys() ([]string, error) {
+	return DefaultCache.ListKeys()
 }

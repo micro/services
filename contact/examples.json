@@ -1,0 +1,387 @@
+{
+  "create": [
+    {
+      "title": "Create a contact",
+      "run_check": false,
+      "description": "Create a contact with post data",
+      "request": {
+        "name": "joe",
+        "phones": [
+          {
+            "label": "home",
+            "number": "010-12345678"
+          },
+          {
+            "label": "work",
+            "number": "010-87654321"
+          }
+        ],
+        "emails": [
+          {
+            "label": "home",
+            "address": "home@example.com"
+          },
+          {
+            "label": "work",
+            "address": "work@example.com"
+          }
+        ],
+        "links": [
+          {
+            "label": "blog",
+            "url": "https://blog.joe.me"
+          }
+        ],
+        "birthday": "1995-01-01",
+        "addresses": [
+          {
+            "label": "company address",
+            "location": "123 street address"
+          }
+        ],
+        "social_medias": [
+          {
+            "label": "twitter",
+            "username": "joe-twitter"
+          },
+          {
+            "label": "facebook",
+            "username": "joe-facebook"
+          }
+        ],
+        "note": "this person is very important"
+      },
+      "response": {
+        "contact": {
+          "id": "42e48a3c-6221-11ec-96d2-acde48001122",
+          "name": "joe",
+          "phones": [
+            {
+              "label": "home",
+              "number": "010-12345678"
+            },
+            {
+              "label": "work",
+              "number": "010-87654321"
+            }
+          ],
+          "emails": [
+            {
+              "label": "home",
+              "address": "home@example.com"
+            },
+            {
+              "label": "work",
+              "address": "work@example.com"
+            }
+          ],
+          "links": [
+            {
+              "label": "blog",
+              "url": "https://blog.joe.me"
+            }
+          ],
+          "birthday": "1995-01-01",
+          "addresses": [
+            {
+              "label": "company address",
+              "location": "123 street address"
+            }
+          ],
+          "social_medias": [
+            {
+              "label": "twitter",
+              "username": "joe-twitter"
+            },
+            {
+              "label": "facebook",
+              "username": "joe-facebook"
+            }
+          ],
+          "note": "this person is very important",
+          "created_at": "2021-12-21T17:28:15+08:00",
+          "updated_at": "2021-12-21T17:31:21+08:00"
+        }
+      }
+    }
+  ],
+  "update": [
+    {
+      "title": "Update a contact",
+      "run_check": false,
+      "description": "Update a contact with post data",
+      "request": {
+        "id": "42e48a3c-6221-11ec-96d2-acde48001122",
+        "name": "joe",
+        "phones": [
+          {
+            "label": "home",
+            "number": "010-12345678"
+          },
+          {
+            "label": "work",
+            "number": "010-87654321"
+          }
+        ],
+        "emails": [
+          {
+            "label": "home",
+            "address": "home@example.com"
+          },
+          {
+            "label": "work",
+            "address": "work@example.com"
+          }
+        ],
+        "links": [
+          {
+            "label": "blog",
+            "url": "https://blog.joe.me"
+          }
+        ],
+        "birthday": "1995-01-01",
+        "addresses": [
+          {
+            "label": "company address",
+            "location": "123 street address"
+          }
+        ],
+        "social_medias": [
+          {
+            "label": "twitter",
+            "username": "joe-twitter"
+          },
+          {
+            "label": "facebook",
+            "username": "joe-facebook"
+          }
+        ],
+        "note": "this person is very important"
+      },
+      "response": {
+        "contact": {
+          "id": "42e48a3c-6221-11ec-96d2-acde48001122",
+          "name": "joe",
+          "phones": [
+            {
+              "label": "home",
+              "number": "010-12345678"
+            },
+            {
+              "label": "work",
+              "number": "010-87654321"
+            }
+          ],
+          "emails": [
+            {
+              "label": "home",
+              "address": "home@example.com"
+            },
+            {
+              "label": "work",
+              "address": "work@example.com"
+            }
+          ],
+          "links": [
+            {
+              "label": "blog",
+              "url": "https://blog.joe.me"
+            }
+          ],
+          "birthday": "1995-01-01",
+          "addresses": [
+            {
+              "label": "company address",
+              "location": "123 street address"
+            }
+          ],
+          "social_medias": [
+            {
+              "label": "twitter",
+              "username": "joe-twitter"
+            },
+            {
+              "label": "facebook",
+              "username": "joe-facebook"
+            }
+          ],
+          "note": "this person is very important",
+          "created_at": "2021-12-21T17:28:15+08:00",
+          "updated_at": "2021-12-21T17:31:21+08:00"
+        }
+      }
+    }
+  ],
+  "read": [
+    {
+      "title": "Get a contact",
+      "run_check": false,
+      "description": "Get a contact by id",
+      "request": {
+        "id": "42e48a3c-6221-11ec-96d2-acde48001122"
+      },
+      "response": {
+        "contact": {
+          "id": "42e48a3c-6221-11ec-96d2-acde48001122",
+          "name": "joe",
+          "phones": [
+            {
+              "label": "home",
+              "number": "010-12345678"
+            },
+            {
+              "label": "work",
+              "number": "010-87654321"
+            }
+          ],
+          "emails": [
+            {
+              "label": "home",
+              "address": "home@example.com"
+            },
+            {
+              "label": "work",
+              "address": "work@example.com"
+            }
+          ],
+          "links": [
+            {
+              "label": "blog",
+              "url": "https://blog.joe.me"
+            }
+          ],
+          "birthday": "1995-01-01",
+          "addresses": [
+            {
+              "label": "company address",
+              "location": "123 street address"
+            }
+          ],
+          "social_medias": [
+            {
+              "label": "twitter",
+              "username": "joe-twitter"
+            },
+            {
+              "label": "facebook",
+              "username": "joe-facebook"
+            }
+          ],
+          "note": "this person is very important",
+          "created_at": "2021-12-21T17:28:15+08:00",
+          "updated_at": "2021-12-21T17:31:21+08:00"
+        }
+      }
+    }
+  ],
+  "delete": [
+    {
+      "title": "Delete a contact",
+      "run_check": false,
+      "description": "Delete a contact by id",
+      "request": {
+        "id": "42e48a3c-6221-11ec-96d2-acde48001122"
+      },
+      "response": {
+      }
+    }
+  ],
+  "list": [
+    {
+      "title": "List contacts with default offset and limit, default limit is 20",
+      "run_check": false,
+      "description": "List contacts",
+      "request": {
+      },
+      "response": {
+        "contacts": [
+          {
+            "id": "7765a308-6222-11ec-96d2-acde48001122",
+            "name": "contact-1",
+            "phones": [
+              {
+                "label": "home",
+                "number": "010-1234567"
+              }
+            ],
+            "emails": [],
+            "links": [],
+            "birthday": "",
+            "addresses": [],
+            "social_medias": [],
+            "note": "",
+            "created_at": "2021-12-21T17:28:15+08:00",
+            "updated_at": "2021-12-21T17:31:21+08:00"
+          },
+          {
+            "id": "7a7c1806-6222-11ec-96d2-acde48001122",
+            "name": "contact-2",
+            "phones": [
+              {
+                "label": "home",
+                "number": "010-1234567"
+              }
+            ],
+            "emails": [],
+            "links": [],
+            "birthday": "",
+            "addresses": [],
+            "social_medias": [],
+            "note": "",
+            "created_at": "2021-12-21T17:28:15+08:00",
+            "updated_at": "2021-12-21T17:31:21+08:00"
+          },
+          {
+            "id": "7d4a8e28-6222-11ec-96d2-acde48001122",
+            "name": "contact-3",
+            "phones": [
+              {
+                "label": "home",
+                "number": "010-1234567"
+              }
+            ],
+            "emails": [],
+            "links": [],
+            "birthday": "",
+            "addresses": [],
+            "social_medias": [],
+            "note": "",
+            "created_at": "2021-12-21T17:28:15+08:00",
+            "updated_at": "2021-12-21T17:31:21+08:00"
+          }
+        ]
+      }
+    },
+    {
+      "title": "List contacts with specific offset and limit",
+      "run_check": false,
+      "description": "List contacts",
+      "request": {
+        "offset": 1,
+        "limit": 1
+      },
+      "response": {
+        "contacts": [
+          {
+            "id": "7a7c1806-6222-11ec-96d2-acde48001122",
+            "name": "contact-2",
+            "phones": [
+              {
+                "label": "home",
+                "number": "010-1234567"
+              }
+            ],
+            "emails": [],
+            "links": [],
+            "birthday": "",
+            "addresses": [],
+            "social_medias": [],
+            "note": "",
+            "created_at": "2021-12-21T17:28:15+08:00",
+            "updated_at": "2021-12-21T17:31:21+08:00"
+          }
+        ]
+      }
+    }
+  ]
+}

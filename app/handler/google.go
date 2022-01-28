@@ -17,6 +17,7 @@ import (
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/runtime/source/git"
 	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/services/app/domain"
 	pb "github.com/micro/services/app/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
@@ -309,7 +310,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		Branch:  req.Branch,
 		Region:  req.Region,
 		Port:    req.Port,
-		Status:  "Deploying",
+		Status:  domain.StatusDeploying,
 		EnvVars: req.EnvVars,
 		Created: time.Now().Format(time.RFC3339Nano),
 	}
@@ -321,15 +322,21 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		OwnerKey + id + "/" + req.Name,
 	}
 
-	// write the keys for the service
-	for _, key := range keys {
-		rec := store.NewRecord(key, service)
+	// function to update records
+	updateRecords := func(service *pb.Service) {
+		// write the keys for the service
+		for _, key := range keys {
+			rec := store.NewRecord(key, service)
 
-		if err := store.Write(rec); err != nil {
-			log.Error(err)
-			return err
+			if err := store.Write(rec); err != nil {
+				log.Error(err)
+				return
+			}
 		}
 	}
+
+	// write the record
+	updateRecords(service)
 
 	// make copy
 	srv := new(pb.Service)
@@ -385,7 +392,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		log.Error(fmt.Errorf(errString))
 
 		// set the error status
-		service.Status = "DeploymentError"
+		service.Status = domain.StatusDeploymentError
 
 		if strings.Contains(errString, "Failed to start and then listen on the port defined by the PORT environment variable") {
 			service.Status += ": Failed to start and listen on port " + fmt.Sprintf("%d", req.Port)
@@ -393,22 +400,8 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			service.Status += ": Build failed"
 		}
 
-		keys := []string{
-			// service key
-			ServiceKey + service.Id,
-			// owner key
-			OwnerKey + id + "/" + req.Name,
-		}
-
-		// write the keys for the service
-		for _, key := range keys {
-			rec := store.NewRecord(key, service)
-
-			if err := store.Write(rec); err != nil {
-				log.Error(err)
-				return
-			}
-		}
+		// write the records
+		updateRecords(service)
 	}(service)
 
 	return nil
@@ -449,6 +442,13 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 		return err
 	}
 
+	// check the status
+	switch srv.Status {
+	case domain.StatusUpdating, domain.StatusDeploying, domain.StatusDeleting:
+		log.Errorf("Won't update: % is %s", req.Name, srv.Status)
+		return errors.BadRequest("app.update", "% status: %s", req.Name, srv.Status)
+	}
+
 	// checkout the code
 	gitter := git.NewGitter(map[string]string{})
 	if err := gitter.Checkout(srv.Repo, srv.Branch); err != nil {
@@ -464,6 +464,31 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 	for k, v := range srv.EnvVars {
 		envVars = append(envVars, k+"="+v)
 	}
+
+	keys := []string{
+		// service key
+		ServiceKey + srv.Id,
+		// owner key
+		OwnerKey + id + "/" + req.Name,
+	}
+
+	// function to update records
+	updateRecords := func(service *pb.Service) {
+		// write the keys for the service
+		for _, key := range keys {
+			rec := store.NewRecord(key, service)
+
+			if err := store.Write(rec); err != nil {
+				log.Error(err)
+				return
+			}
+		}
+	}
+
+	srv.Status = domain.StatusUpdating
+
+	// update immediately with status
+	updateRecords(srv)
 
 	go func(service *pb.Service) {
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
@@ -505,7 +530,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 		log.Error(fmt.Errorf(errString))
 
 		// set the error status
-		service.Status = "DeploymentError"
+		service.Status = domain.StatusDeploymentError
 
 		if strings.Contains(errString, "Failed to start and then listen on the port defined by the PORT environment variable") {
 			service.Status += ": Failed to start and listen on port " + fmt.Sprintf("%d", service.Port)
@@ -513,22 +538,8 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 			service.Status += ": Build failed"
 		}
 
-		keys := []string{
-			// service key
-			ServiceKey + service.Id,
-			// owner key
-			OwnerKey + id + "/" + req.Name,
-		}
-
-		// write the keys for the service
-		for _, key := range keys {
-			rec := store.NewRecord(key, service)
-
-			if err := store.Write(rec); err != nil {
-				log.Error(err)
-				return
-			}
-		}
+		// update the records
+		updateRecords(service)
 	}(srv)
 
 	return err
@@ -564,8 +575,31 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 		return err
 	}
 
-	if srv.Status == "Deploying" {
-		return errors.BadRequest("app.run", "app is being deployed")
+	// check the status
+	switch srv.Status {
+	case domain.StatusUpdating, domain.StatusDeploying, domain.StatusDeleting:
+		log.Errorf("Won't delete: % is %s", req.Name, srv.Status)
+		return errors.BadRequest("app.delete", "% status: %s", req.Name, srv.Status)
+	}
+
+	// delete from the db
+	keys := []string{
+		// service key
+		ServiceKey + srv.Id,
+		// owner key
+		OwnerKey + id + "/" + req.Name,
+	}
+
+	// set the delete status
+	srv.Status = domain.StatusDeleting
+
+	// update the status
+	for _, key := range keys {
+		rec := store.NewRecord(key, srv)
+		if err := store.Write(rec); err != nil {
+			log.Error(err)
+			return err
+		}
 	}
 
 	// execute the delete async
@@ -577,22 +611,13 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 			return
 		}
 
-		// delete from the db
-		keys := []string{
-			// service key
-			ServiceKey + srv.Id,
-			// owner key
-			OwnerKey + id + "/" + req.Name,
-		}
-
-		// delete the keys for the service
+		// delete the records
 		for _, key := range keys {
 			if err := store.Delete(key); err != nil {
 				log.Error(err)
 				return
 			}
 		}
-
 	}(srv)
 
 	return nil

@@ -6,6 +6,8 @@ option go_package = "./proto;email";
 
 service Email {
 	rpc Send(SendRequest) returns (SendResponse) {}
+	rpc Parse(ParseRequest) returns (ParseResponse) {}
+	rpc Validate(ValidateRequest) returns (ValidateResponse) {}
 }
 
 // Send an email by passing in from, to, subject, and a text or html body
@@ -27,3 +29,24 @@ message SendRequest {
 message SendResponse {
 }
 
+// Parse an RFC5322 address e.g "Joe Blogs <joe@example.com>"
+message ParseRequest {
+	// The address to parse. Can be of the format "Joe Blogs <joe@example.com>" or "joe@example.com"
+	string address = 1;
+}
+
+message ParseResponse {
+	// associated name e.g Joe Blogs
+	string name = 1;
+	// the email address
+	string address = 2;
+}
+
+// Validate an email address format
+message ValidateRequest {
+	string address = 1;
+}
+
+message ValidateResponse {
+	bool is_valid = 1;
+}

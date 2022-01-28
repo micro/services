@@ -7,7 +7,6 @@ import (
 )
 
 func TestEmailValidation(t *testing.T) {
-	g := NewWithT(t)
 	tcs := []struct {
 		name  string
 		email string
@@ -60,6 +59,7 @@ func TestEmailValidation(t *testing.T) {
 		},
 	}
 	for _, tc := range tcs {
+		g := NewWithT(t)
 		t.Run(tc.name, func(t *testing.T) {
 			g.Expect(validEmail(tc.email)).To(Equal(tc.valid))
 		})

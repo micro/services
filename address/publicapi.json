@@ -3,7 +3,7 @@
   "icon": "🏠",
   "category": "logistics",
   "pricing": {
-    "Address.LookupPostcode": 75000
+    "Address.LookupPostcode": 50000
   },
   "display_name": "Address"
 }

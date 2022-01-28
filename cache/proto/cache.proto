@@ -10,6 +10,7 @@ service Cache {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Increment(IncrementRequest) returns (IncrementResponse) {}
 	rpc Decrement(DecrementRequest) returns (DecrementResponse) {}
+	rpc ListKeys(ListKeysRequest) returns (ListKeysResponse) {}
 }
 
 // Get an item from the cache by key. If key is not found, an empty response is returned.
@@ -81,4 +82,13 @@ message DecrementResponse {
 	string key = 1;
 	// The new value
 	int64 value = 2;
+}
+
+// List all the available keys
+message ListKeysRequest {
+
+}
+
+message ListKeysResponse {
+	repeated string keys = 1;
 }

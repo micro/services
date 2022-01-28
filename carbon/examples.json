@@ -1,0 +1,24 @@
+{
+    "offset": [{
+        "title": "Offset Carbon",
+        "run_check": false,
+        "request": {},
+        "response": {
+		"units": 1,
+		"metric": "KG",
+		"tonnes": 0.001,
+		"projects": [
+			{
+				"name": "Producing electricity from wind power in Northeast Thailand",
+				"percentage": 98,
+				"tonnes": 0.00098
+			},
+			{
+				"name": "Wind power generation in Bac Lieu Province, Vietnam",
+				"percentage": 2,
+				"tonnes": 0.0002
+			}
+		]
+        }
+    }]
+}

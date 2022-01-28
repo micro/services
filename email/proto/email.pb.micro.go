@@ -43,6 +43,8 @@ func NewEmailEndpoints() []*api.Endpoint {
 
 type EmailService interface {
 	Send(ctx context.Context, in *SendRequest, opts ...client.CallOption) (*SendResponse, error)
+	Parse(ctx context.Context, in *ParseRequest, opts ...client.CallOption) (*ParseResponse, error)
+	Validate(ctx context.Context, in *ValidateRequest, opts ...client.CallOption) (*ValidateResponse, error)
 }
 
 type emailService struct {
@@ -67,15 +69,39 @@ func (c *emailService) Send(ctx context.Context, in *SendRequest, opts ...client
 	return out, nil
 }
 
+func (c *emailService) Parse(ctx context.Context, in *ParseRequest, opts ...client.CallOption) (*ParseResponse, error) {
+	req := c.c.NewRequest(c.name, "Email.Parse", in)
+	out := new(ParseResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *emailService) Validate(ctx context.Context, in *ValidateRequest, opts ...client.CallOption) (*ValidateResponse, error) {
+	req := c.c.NewRequest(c.name, "Email.Validate", in)
+	out := new(ValidateResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Email service
 
 type EmailHandler interface {
 	Send(context.Context, *SendRequest, *SendResponse) error
+	Parse(context.Context, *ParseRequest, *ParseResponse) error
+	Validate(context.Context, *ValidateRequest, *ValidateResponse) error
 }
 
 func RegisterEmailHandler(s server.Server, hdlr EmailHandler, opts ...server.HandlerOption) error {
 	type email interface {
 		Send(ctx context.Context, in *SendRequest, out *SendResponse) error
+		Parse(ctx context.Context, in *ParseRequest, out *ParseResponse) error
+		Validate(ctx context.Context, in *ValidateRequest, out *ValidateResponse) error
 	}
 	type Email struct {
 		email
@@ -90,4 +116,12 @@ type emailHandler struct {
 
 func (h *emailHandler) Send(ctx context.Context, in *SendRequest, out *SendResponse) error {
 	return h.EmailHandler.Send(ctx, in, out)
+}
+
+func (h *emailHandler) Parse(ctx context.Context, in *ParseRequest, out *ParseResponse) error {
+	return h.EmailHandler.Parse(ctx, in, out)
+}
+
+func (h *emailHandler) Validate(ctx context.Context, in *ValidateRequest, out *ValidateResponse) error {
+	return h.EmailHandler.Validate(ctx, in, out)
 }

@@ -4,6 +4,6 @@
   "category": "money",
   "display_name": "Currency",
   "pricing": {
-    "Currency.History": 1000
+    "Currency.History": 5000
   }
 }

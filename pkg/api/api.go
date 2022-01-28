@@ -40,7 +40,7 @@ func Get(url string, rsp interface{}) error {
 		return err
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode >= 400 {
 		return fmt.Errorf("Non 200 response %v: %v", resp.StatusCode, string(b))
 	}
 
@@ -78,7 +78,7 @@ func Post(url string, ureq, rsp interface{}) error {
 		return err
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode >= 400 {
 		return fmt.Errorf("Non 200 response %v: %v", resp.StatusCode, string(b))
 	}
 

@@ -9,6 +9,7 @@ require (
 	github.com/Teamwork/spamc v0.0.0-20200109085853-a4e0c5c3f7a0
 	github.com/asim/mq v0.1.0
 	github.com/aws/aws-sdk-go v1.42.17
+	github.com/bitly/go-simplejson v0.5.0
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cdipaolo/sentiment v0.0.0-20200617002423-c697f64e7f10
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
@@ -31,11 +32,12 @@ require (
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro/v3 v3.8.1-0.20211216122745-2e7245423520
+	github.com/micro/micro/v3 v3.9.0
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/minio/minio-go/v7 v7.0.16
 	github.com/o1egl/govatar v0.3.0
 	github.com/onsi/gomega v1.10.5
+	github.com/opensearch-project/opensearch-go v1.0.0
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package carbon;
+
+option go_package = "./proto;carbon";
+
+service Carbon {
+	rpc Offset(OffsetRequest) returns (OffsetResponse) {}
+}
+
+message Project {
+	// name of the project
+	string name = 1;
+	// percentage that went to this
+	double percentage = 2;
+	// amount in tonnes
+	double tonnes = 3;
+}
+
+// Purchase 1KG (0.001 tonne) of carbon offsets in a single request
+message OffsetRequest {}
+
+message OffsetResponse {
+	// number of units purchased
+	int32 units = 1;
+	// the metric used e.g KG or Tonnes
+	string metric = 2;
+	// number of tonnes
+	double tonnes = 3;
+	// projects it was allocated to
+	repeated Project projects = 4;
+}

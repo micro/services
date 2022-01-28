@@ -1,20 +1,83 @@
 syntax = "proto3";
 
+import "google/protobuf/struct.proto";
+
 package search;
 
 option go_package = "./proto;search";
 
 service Search {
-	rpc Vote(VoteRequest) returns (VoteResponse) {}
+	rpc Index(IndexRequest) returns (IndexResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+	rpc CreateIndex(CreateIndexRequest) returns (CreateIndexResponse) {}
+	rpc DeleteIndex(DeleteIndexRequest) returns (DeleteIndexResponse) {}
 }
 
-// Vote to have the Search api launched faster!
-message VoteRequest {
-	// optional message
-	string message = 1;
+// Index a document i.e. insert a document to search for.
+message IndexRequest {
+	// The document to index
+	Document document = 1;
+	// The index this document belongs to
+	string index = 2;
+
 }
 
-message VoteResponse {
-	// response message
-	string message = 2;
+message Document {
+	// The ID for this document. If blank, one will be generated
+	string id = 1;
+	// The JSON contents of the document
+	google.protobuf.Struct contents = 2;
 }
+
+message IndexResponse {
+	string id = 1;
+}
+
+// Delete a document given its ID
+message DeleteRequest {
+	// The ID of the document to delete
+	string id = 1;
+	// The index the document belongs to
+	string index = 2;
+}
+
+message DeleteResponse {}
+
+// Search for documents in a given in index
+message SearchRequest {
+	// The index the document belongs to
+	string index = 1;
+
+	// The query. See docs for query language examples
+	string query = 2;
+}
+
+message SearchResponse {
+	// The matching documents
+	repeated Document documents = 1;
+
+}
+
+// Create an index by name
+message CreateIndexRequest {
+	// The name of the index
+	string index = 1;
+}
+
+message Field {
+	// The name of the field. Use a `.` separator to define nested fields e.g. foo.bar
+	string name = 1;
+	// The type of the field - string, number
+	string type = 2;
+}
+
+message CreateIndexResponse {}
+
+// Delete an index by name
+message DeleteIndexRequest {
+	// The name of the index to delete
+	string index = 1;
+}
+
+message DeleteIndexResponse {}

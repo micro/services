@@ -2,8 +2,5 @@
   "name": "weather",
   "icon": "☀️",
   "category": "climate",
-  "display_name": "Weather",
-  "pricing": {
-    "Weather.Forecast": 10
-  }
+  "display_name": "Weather"
 }
