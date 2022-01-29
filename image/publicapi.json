@@ -4,6 +4,6 @@
   "category": "web",
   "display_name": "Image",
   "pricing": {
-    "Image.Upload": 1000
+    "Image.Upload": 10000
   }
 }
