@@ -345,7 +345,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 
 		var status string
 
-LOOP:
+	LOOP:
 		// wait for the deployment and status update
 		for i := 0; i < 120; i++ {
 			cmd = exec.Command("gcloud", "functions", "describe", "--format", "json",
@@ -456,8 +456,27 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 	var status string
 
 	go func() {
+		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
+		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id, "--quiet",
+			"--region", fn.Region, "--service-account", e.identity,
+			"--allow-unauthenticated", "--entry-point", fn.Entrypoint,
+			"--trigger-http", "--project", e.project, "--runtime", fn.Runtime)
 
-LOOP:
+		// if env vars exist then set them
+		if len(envVars) > 0 {
+			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
+		}
+
+		cmd.Dir = filepath.Join(gitter.RepoDir(), fn.Subfolder)
+		outp, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Error(fmt.Errorf(string(outp)))
+			fn.Status = "DeploymentError"
+			store.Write(store.NewRecord(key, fn))
+			return
+		}
+
+	LOOP:
 		// wait for the deployment and status update
 		for i := 0; i < 120; i++ {
 			cmd := exec.Command("gcloud", "functions", "describe", "--quiet", "--format", "json",
