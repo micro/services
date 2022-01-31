@@ -514,10 +514,10 @@ func (s *User) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 		return err
 	}
 
-	if len(request.UserId) == 0 {
-		return errors.BadRequest("user.DeleteData", "Missing user ID")
+	if len(request.TenantId) == 0 {
+		return errors.BadRequest("user.DeleteData", "Missing tenant ID")
 	}
-	return s.domain.DeleteTenantData(request.UserId)
+	return s.domain.DeleteTenantData(request.TenantId)
 }
 
 func verifyMicroAdmin(ctx context.Context, method string) (*auth.Account, error) {

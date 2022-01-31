@@ -10,7 +10,7 @@ service Admin {
 }
 
 message DeleteDataRequest {
-  string user_id = 1;
+  string tenant_id = 1;
 }
 
 message DeleteDataResponse {}
