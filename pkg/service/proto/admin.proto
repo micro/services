@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package admin;
+
+option go_package = "./proto;admin";
+
+service Admin {
+  rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse) {}
+
+}
+
+message DeleteDataRequest {
+  string tenant_id = 1;
+}
+
+message DeleteDataResponse {}

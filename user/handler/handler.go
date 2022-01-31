@@ -1,7 +1,7 @@
 package handler
 
 import (
-	goctx "context"
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
@@ -10,11 +10,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v3/service/auth"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/net/context"
 
 	otp "github.com/micro/services/otp/proto"
 	"github.com/micro/services/user/domain"
@@ -408,7 +409,7 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	return nil
 }
 
-func (s *User) List(ctx goctx.Context, request *pb.ListRequest, response *pb.ListResponse) error {
+func (s *User) List(ctx context.Context, request *pb.ListRequest, response *pb.ListResponse) error {
 	accs, err := s.domain.List(ctx, request.Offset, request.Limit)
 	if err != nil && err != domain.ErrNotFound {
 		return errors.InternalServerError("user.List", "Error retrieving user list")
@@ -506,4 +507,41 @@ func (s *User) VerifyToken(ctx context.Context, req *pb.VerifyTokenRequest, rsp 
 	rsp.Session = sess
 
 	return nil
+}
+
+func (s *User) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	if _, err := verifyMicroAdmin(ctx, "user.DeleteData"); err != nil {
+		return err
+	}
+
+	if len(request.TenantId) == 0 {
+		return errors.BadRequest("user.DeleteData", "Missing tenant ID")
+	}
+	return s.domain.DeleteTenantData(request.TenantId)
+}
+
+func verifyMicroAdmin(ctx context.Context, method string) (*auth.Account, error) {
+	acc, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return nil, errors.Unauthorized(method, "Unauthorized")
+	}
+	if err := doVerifyMicroAdmin(acc, method); err != nil {
+		return nil, err
+	}
+	return acc, nil
+}
+
+func doVerifyMicroAdmin(acc *auth.Account, method string) error {
+	errForbid := errors.Forbidden(method, "Forbidden")
+	if acc.Issuer != "micro" {
+		return errForbid
+	}
+
+	for _, s := range acc.Scopes {
+		if (s == "admin" && acc.Type == "user") || (s == "service" && acc.Type == "service") {
+			return nil
+		}
+	}
+	return errForbid
+
 }

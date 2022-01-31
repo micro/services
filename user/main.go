@@ -6,6 +6,7 @@ import (
 	"github.com/micro/micro/v3/service/store"
 
 	otp "github.com/micro/services/otp/proto"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/user/handler"
 	proto "github.com/micro/services/user/proto"
@@ -23,6 +24,7 @@ func main() {
 	)
 
 	proto.RegisterUserHandler(srv.Server(), hd)
+	adminpb.RegisterAdminHandler(srv.Server(), hd)
 	traceCloser := tracing.SetupOpentracing("user")
 	defer traceCloser.Close()
 
