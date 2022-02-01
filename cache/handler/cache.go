@@ -149,15 +149,16 @@ func (c *Cache) DeleteData(ctx context.Context, request *adminpb.DeleteDataReque
 	}
 
 	split := strings.Split(request.TenantId, "/")
-	tenant.NewContext(split[1], split[0], split[1])
-	keys, err := cache.Context(ctx).ListKeys()
+	tctx := tenant.NewContext(split[1], split[0], split[1])
+	keys, err := cache.Context(tctx).ListKeys()
 	if err != nil {
 		return err
 	}
 	for _, k := range keys {
-		if err := cache.Context(ctx).Delete(k); err != nil {
+		if err := cache.Context(tctx).Delete(k); err != nil {
 			return err
 		}
 	}
+	log.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
 	return nil
 }
