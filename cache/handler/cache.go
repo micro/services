@@ -9,7 +9,10 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/cache/proto"
+	pauth "github.com/micro/services/pkg/auth"
 	"github.com/micro/services/pkg/cache"
+	adminpb "github.com/micro/services/pkg/service/proto"
+	"github.com/micro/services/pkg/tenant"
 )
 
 type Cache struct{}
@@ -131,5 +134,30 @@ func (c *Cache) ListKeys(ctx context.Context, req *pb.ListKeysRequest, rsp *pb.L
 
 	rsp.Keys = keys
 
+	return nil
+}
+
+func (c *Cache) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) == 0 {
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	split := strings.Split(request.TenantId, "/")
+	tenant.NewContext(split[1], split[0], split[1])
+	keys, err := cache.Context(ctx).ListKeys()
+	if err != nil {
+		return err
+	}
+	for _, k := range keys {
+		if err := cache.Context(ctx).Delete(k); err != nil {
+			return err
+		}
+	}
 	return nil
 }

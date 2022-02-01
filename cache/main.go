@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/micro/services/cache/handler"
 	pb "github.com/micro/services/cache/proto"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 
 	"github.com/micro/micro/v3/service"
@@ -17,7 +18,9 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterCacheHandler(srv.Server(), new(handler.Cache))
+	c := new(handler.Cache)
+	pb.RegisterCacheHandler(srv.Server(), c)
+	adminpb.RegisterAdminHandler(srv.Server(), c)
 
 	traceCloser := tracing.SetupOpentracing("cache")
 	defer traceCloser.Close()
