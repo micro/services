@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/micro/micro/v3/service/store"
+	admin "github.com/micro/services/pkg/service/proto"
 
 	"github.com/micro/services/contact/domain"
 	"github.com/micro/services/contact/handler"
@@ -20,9 +21,10 @@ func main() {
 
 	contactDomain := domain.NewContactDomain(store.DefaultStore)
 
+	h := handler.NewContact(contactDomain)
 	// Register handler
-	pb.RegisterContactHandler(srv.Server(), handler.NewContact(contactDomain))
-
+	pb.RegisterContactHandler(srv.Server(), h)
+	admin.RegisterAdminHandler(srv.Server(), h)
 	// Run service
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)
