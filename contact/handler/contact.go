@@ -6,6 +6,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
+	"github.com/micro/services/pkg/tenant"
 
 	"github.com/micro/services/contact/domain"
 	pb "github.com/micro/services/contact/proto"
@@ -123,5 +127,44 @@ func (c *contact) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRes
 
 	rsp.Contacts = list
 
+	return nil
+}
+
+func (c *contact) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) == 0 {
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	split := strings.Split(request.TenantId, "/")
+	tctx := tenant.NewContext(split[1], split[0], split[1])
+	// load all keys
+	keys := []string{}
+	offset := uint(0)
+	for {
+		res, err := c.contact.List(tctx, offset, 100)
+		if err != nil && !strings.Contains(err.Error(), "not found") {
+			return err
+		}
+		for _, r := range res {
+			keys = append(keys, r.Id)
+		}
+		if len(res) < 100 {
+			break
+		}
+		offset += 100
+	}
+	for _, k := range keys {
+		if err := c.contact.Delete(tctx, k); err != nil {
+			return err
+		}
+	}
+
+	logger.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
 	return nil
 }

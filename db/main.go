@@ -2,6 +2,7 @@ package main
 
 import (
 	pb "github.com/micro/services/db/proto"
+	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 
 	"github.com/micro/services/db/handler"
@@ -40,9 +41,7 @@ func main() {
 
 	// Register handler
 	pb.RegisterDbHandler(srv.Server(), h)
-
-	// Register handler
-	pb.RegisterDbHandler(srv.Server(), &handler.Db{})
+	admin.RegisterAdminHandler(srv.Server(), h)
 
 	traceCloser := tracing.SetupOpentracing("db")
 	defer traceCloser.Close()
