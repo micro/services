@@ -12,7 +12,9 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	db "github.com/micro/services/db/proto"
+	pauth "github.com/micro/services/pkg/auth"
 	gorm2 "github.com/micro/services/pkg/gorm"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/patrickmn/go-cache"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -439,5 +441,46 @@ func (e *Db) ListTables(ctx context.Context, req *db.ListTablesRequest, rsp *db.
 			rsp.Tables = append(rsp.Tables, strings.Replace(v, tenantId+"_", "", -1))
 		}
 	}
+	return nil
+}
+
+func (e *Db) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) == 0 {
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	split := strings.Split(request.TenantId, "/")
+	tctx := tenant.NewContext(split[1], split[0], split[1])
+
+	tenantId := request.TenantId
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+
+	db, err := e.GetDBConn(tctx)
+	if err != nil {
+		return err
+	}
+
+	var tables []string
+	if err := db.Table("information_schema.tables").Select("table_name").Where("table_schema = ?", "public").Find(&tables).Error; err != nil {
+		return err
+	}
+	dropCount := 0
+	for _, v := range tables {
+		if !strings.HasPrefix(v, tenantId) {
+			continue
+		}
+		if err := db.Exec(fmt.Sprintf(dropTableStmt, v)).Error; err != nil {
+			return err
+		}
+		dropCount++
+	}
+
+	logger.Infof("Deleted %d tables for %s", dropCount, request.TenantId)
 	return nil
 }

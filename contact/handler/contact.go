@@ -165,6 +165,6 @@ func (c *contact) DeleteData(ctx context.Context, request *adminpb.DeleteDataReq
 		}
 	}
 
-	logger.Errorf("Deleted %d keys for %s", len(keys), request.TenantId)
+	logger.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
 	return nil
 }
