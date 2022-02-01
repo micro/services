@@ -1,7 +1,7 @@
 {
   "name": "forex",
   "icon": "💲",
-  "category": "money",
+  "category": "finance",
   "pricing": {
     "Forex.Price": 2000,
     "Forex.Quote": 2000,

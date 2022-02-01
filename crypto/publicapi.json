@@ -1,7 +1,7 @@
 {
   "name": "crypto",
   "icon": "₿",
-  "category": "money",
+  "category": "crypto",
   "pricing": {
     "Crypto.News": 1000,
     "Crypto.Quote": 2000,

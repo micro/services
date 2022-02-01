@@ -1,6 +1,6 @@
 {
   "name": "url",
   "icon": "🔗",
-  "category": "web",
+  "category": "utility",
   "display_name": "URL Shortener"
 }

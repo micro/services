@@ -1,7 +1,7 @@
 {
   "name": "news",
   "icon": "📰",
-  "category": "web",
+  "category": "utility",
   "display_name": "News",
   "pricing": {
     "News.Headlines": 10000

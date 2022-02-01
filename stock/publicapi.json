@@ -1,7 +1,7 @@
 {
   "name": "stock",
   "icon": "📈",
-  "category": "money",
+  "category": "finance",
   "pricing": {
     "Stock.Quote": 2000,
     "Stock.History": 5000,

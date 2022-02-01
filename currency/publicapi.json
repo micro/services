@@ -1,7 +1,7 @@
 {
   "name": "currency",
   "icon": "💱",
-  "category": "money",
+  "category": "finance",
   "display_name": "Currency",
   "pricing": {
     "Currency.History": 5000

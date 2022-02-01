@@ -1,7 +1,7 @@
 {
   "name": "translate",
   "icon": "📖",
-  "category": "language",
+  "category": "utility",
   "display_name": "Translate",
   "pricing": {
     "Translate.Text": 10000
