@@ -303,6 +303,7 @@ func (s *Search) deleteIndices(ctx context.Context, indices []string, method str
 		log.Errorf("Error deleting index %s", rsp.String())
 		return errors.InternalServerError(method, "Error deleting index")
 	}
+	log.Infof("Deleted indices: %v", indices)
 	return nil
 
 }
