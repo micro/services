@@ -51,6 +51,7 @@ func (e *crawl) FetchAll() {
 		return
 	}
 
+	currList := map[string]bool{}
 	for _, v := range records {
 		feed := pb.Feed{}
 		if err := json.Unmarshal(v.Value, &feed); err != nil {
@@ -62,6 +63,22 @@ func (e *crawl) FetchAll() {
 		if err != nil {
 			log.Errorf("Error saving post: %v", err)
 		}
+		currList[feed.Url] = true
+	}
+
+	// prune anything that has been deleted
+	rssSync.Lock()
+	defer rssSync.Unlock()
+	for url, _ := range rssFeeds {
+		if currList[url] {
+			continue
+		}
+		// this isn't in the current list. delete from store any entries
+		keys, _ := store.List(store.ListPrefix(generateEntryKey(url, "")))
+		for _, k := range keys {
+			store.Delete(k)
+		}
+		delete(rssFeeds, url)
 	}
 }
 
