@@ -315,7 +315,7 @@ func (s *Search) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequ
 		return err
 	}
 
-	if len(request.TenantId) == 0 {
+	if len(request.TenantId) < 10 { // deliberate length check, don't want to unwittingly delete all the things
 		return errors.BadRequest(method, "Missing tenant ID")
 	}
 	req := openapi.CatIndicesRequest{
