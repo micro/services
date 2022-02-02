@@ -16,6 +16,8 @@ import (
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/search/proto"
 	open "github.com/opensearch-project/opensearch-go"
@@ -53,6 +55,10 @@ type hit struct {
 	ID     string                 `json:"_id"`
 	Score  float64                `json:"_score"`
 	Source map[string]interface{} `json:"_source"`
+}
+
+type catIndicesEntry struct {
+	Index string `json:"index"`
 }
 
 func New(srv *service.Service) *Search {
@@ -280,8 +286,12 @@ func (s *Search) DeleteIndex(ctx context.Context, request *pb.DeleteIndexRequest
 	if len(request.Index) == 0 {
 		return errors.BadRequest(method, "Missing index param")
 	}
+	return s.deleteIndices(ctx, []string{indexName(tnt, request.Index)}, method)
+}
+
+func (s *Search) deleteIndices(ctx context.Context, indices []string, method string) error {
 	req := openapi.IndicesDeleteRequest{
-		Index: []string{indexName(tnt, request.Index)},
+		Index: indices,
 	}
 	rsp, err := req.Do(ctx, s.client)
 	if err != nil {
@@ -293,5 +303,48 @@ func (s *Search) DeleteIndex(ctx context.Context, request *pb.DeleteIndexRequest
 		log.Errorf("Error deleting index %s", rsp.String())
 		return errors.InternalServerError(method, "Error deleting index")
 	}
+	log.Infof("Deleted indices: %v", indices)
 	return nil
+
+}
+
+func (s *Search) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check, don't want to unwittingly delete all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+	req := openapi.CatIndicesRequest{
+		Format: "json",
+	}
+	rsp, err := req.Do(ctx, s.client)
+	if err != nil {
+		return err
+	}
+	defer rsp.Body.Close()
+	if rsp.IsError() {
+		return err
+	}
+	b, err := ioutil.ReadAll(rsp.Body)
+	if err != nil {
+		return err
+	}
+
+	var entries []catIndicesEntry
+	if err := json.Unmarshal(b, &entries); err != nil {
+		return err
+	}
+	toDelete := []string{}
+	for _, entry := range entries {
+		if !strings.HasPrefix(entry.Index, indexName(request.TenantId, "")) {
+			continue
+		}
+		toDelete = append(toDelete, entry.Index)
+
+	}
+	return s.deleteIndices(ctx, toDelete, method)
 }

@@ -186,7 +186,7 @@ func (e *Rss) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest
 		return err
 	}
 
-	if len(request.TenantId) == 0 {
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
 		return errors.BadRequest(method, "Missing tenant ID")
 	}
 	split := strings.Split(request.TenantId, "/")
