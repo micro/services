@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/micro/services/file/handler"
 	pb "github.com/micro/services/file/proto"
+	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 
 	"github.com/micro/micro/v3/service"
@@ -16,8 +17,10 @@ func main() {
 		service.Version("latest"),
 	)
 
+	h := handler.NewFile()
 	// Register handler
-	pb.RegisterFileHandler(srv.Server(), handler.NewFile())
+	pb.RegisterFileHandler(srv.Server(), h)
+	admin.RegisterAdminHandler(srv.Server(), h)
 
 	traceCloser := tracing.SetupOpentracing("file")
 	defer traceCloser.Close()

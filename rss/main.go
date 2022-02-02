@@ -6,6 +6,7 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	admin "github.com/micro/services/pkg/service/proto"
 
 	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/rss/handler"
@@ -33,6 +34,7 @@ func main() {
 
 	// Register handler
 	pb.RegisterRssHandler(srv.Server(), rss)
+	admin.RegisterAdminHandler(srv.Server(), rss)
 	traceCloser := tracing.SetupOpentracing("rss")
 	defer traceCloser.Close()
 

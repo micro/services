@@ -10,6 +10,8 @@ import (
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	file "github.com/micro/services/file/proto"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 )
 
@@ -147,6 +149,35 @@ func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListRe
 
 		rsp.Files = append(rsp.Files, file)
 	}
+
+	return nil
+}
+
+func (e *File) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) == 0 {
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	path := filepath.Join("file", request.TenantId)
+
+	// read all the files for the project
+	records, err := store.List(store.ListPrefix(path))
+	if err != nil {
+		return err
+	}
+
+	for _, file := range records {
+		if err := store.Delete(file); err != nil {
+			return err
+		}
+	}
+	log.Infof("Deleted %d records for %s", len(records), request.TenantId)
 
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/services/location/handler"
 	pb "github.com/micro/services/location/proto"
+	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 )
 
@@ -14,7 +15,9 @@ func main() {
 		service.Name("location"),
 	)
 
-	pb.RegisterLocationHandler(location.Server(), new(handler.Location))
+	h := new(handler.Location)
+	pb.RegisterLocationHandler(location.Server(), h)
+	admin.RegisterAdminHandler(location.Server(), h)
 
 	// TODO reinstate me
 	//service.Subscribe(subscriber.Topic, new(subscriber.Location))

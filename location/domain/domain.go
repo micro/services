@@ -111,7 +111,6 @@ func Search(ctx context.Context, typ string, entity *Entity, radius float64, num
 
 	// get the index
 	index := getIndex(ctx)
-
 	points := index.KNearest(entity, numEntities, geo.Meters(radius), func(p geo.Point) bool {
 		e, ok := p.(*Entity)
 		if !ok || e.Type != typ {
@@ -131,4 +130,12 @@ func Search(ctx context.Context, typ string, entity *Entity, radius float64, num
 	}
 
 	return entities
+}
+
+func DeleteIndex(tenantID string) error {
+	mtx.Lock()
+	defer mtx.Unlock()
+	delete(indexes, tenantID)
+
+	return nil
 }
