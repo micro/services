@@ -177,6 +177,7 @@ func (e *File) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 			return err
 		}
 	}
+	log.Infof("Deleted %d records for %s", len(records), request.TenantId)
 
 	return nil
 }
