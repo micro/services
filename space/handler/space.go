@@ -517,7 +517,7 @@ func (s Space) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 		return errors.BadRequest(method, "Missing tenant ID")
 	}
 
-	objectName := fmt.Sprintf("%s/", request.TenantId)
+	objectName := request.TenantId
 	rsp, err := s.client.ListObjects(&sthree.ListObjectsInput{
 		Bucket: aws.String(s.conf.SpaceName),
 		Prefix: aws.String(objectName),
