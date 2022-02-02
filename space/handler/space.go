@@ -15,6 +15,8 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/space/proto"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
@@ -502,4 +504,57 @@ func (s Space) Upload(ctx context.Context, request *pb.UploadRequest, response *
 	}
 
 	return nil
+}
+
+func (s Space) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) == 0 {
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	objectName := fmt.Sprintf("%s/", request.TenantId)
+	rsp, err := s.client.ListObjects(&sthree.ListObjectsInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Prefix: aws.String(objectName),
+	})
+	if err != nil {
+		log.Errorf("Error listing objects %s", err)
+		return errors.InternalServerError(method, "Error listing objects")
+	}
+
+	oIDs := []*sthree.ObjectIdentifier{}
+	for _, v := range rsp.Contents {
+		oIDs = append(oIDs, &sthree.ObjectIdentifier{Key: v.Key})
+	}
+
+	if _, err := s.client.DeleteObjects(&sthree.DeleteObjectsInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Delete: &sthree.Delete{
+			Objects: oIDs,
+		},
+	}); err != nil {
+		return err
+	}
+
+	log.Infof("Deleted %d objects from s3 for %s", len(oIDs), request.TenantId)
+
+	keys, err := store.List(store.ListPrefix(fmt.Sprintf("%s/", prefixByUser)))
+	if err != nil {
+		log.Errorf("Error listing objects %s", err)
+		return errors.InternalServerError(method, "Error listing objects")
+	}
+	for _, k := range keys {
+		if err := store.Delete(k); err != nil {
+			return err
+		}
+	}
+	log.Infof("Deleted %d objects from store for %s", len(keys), request.TenantId)
+
+	return nil
+
 }

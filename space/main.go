@@ -4,6 +4,7 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/api"
 	"github.com/micro/micro/v3/service/logger"
+	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/space/handler"
 )
 
@@ -14,12 +15,12 @@ func main() {
 		service.Version("latest"),
 	)
 
+	h := handler.NewSpace(srv)
 	// Register handler
-	//pb.RegisterSpaceHandler(srv.Server(), handler.NewSpace(srv))
-
+	admin.RegisterAdminHandler(srv.Server(), h)
 	srv.Server().Handle(
 		srv.Server().NewHandler(
-			handler.NewSpace(srv),
+			h,
 			api.WithEndpoint(
 				&api.Endpoint{
 					Name:    "Space.Download",
