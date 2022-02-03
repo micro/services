@@ -1,6 +1,7 @@
 package main
 
 import (
+	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/qr/handler"
 	pb "github.com/micro/services/qr/proto"
@@ -16,8 +17,10 @@ func main() {
 		service.Version("latest"),
 	)
 
+	h := handler.New()
 	// Register handler
-	pb.RegisterQrHandler(srv.Server(), handler.New())
+	pb.RegisterQrHandler(srv.Server(), h)
+	admin.RegisterAdminHandler(srv.Server(), h)
 	traceCloser := tracing.SetupOpentracing("qr")
 	defer traceCloser.Close()
 
