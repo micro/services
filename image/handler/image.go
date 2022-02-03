@@ -21,6 +21,8 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	img "github.com/micro/services/image/proto"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 )
 
@@ -318,5 +320,34 @@ func (e *Image) Delete(ctx context.Context, request *img.DeleteRequest, response
 		logger.Errorf("Error deleting key %s", err)
 		return merrors.InternalServerError("image.Delete", "Error processing delete")
 	}
+	return nil
+}
+
+func (e *Image) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return merrors.BadRequest(method, "Missing tenant ID")
+	}
+
+	path := fmt.Sprintf("%v/%v", pathPrefix, request.TenantId)
+	keys, err := store.DefaultBlobStore.List(store.BlobListPrefix(path))
+	if err != nil {
+		return err
+	}
+
+	for _, key := range keys {
+		err = store.DefaultBlobStore.Delete(key)
+		if err != nil {
+			return err
+		}
+	}
+
+	logger.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
+
 	return nil
 }
