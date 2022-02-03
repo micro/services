@@ -346,5 +346,8 @@ func (s *Search) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequ
 		toDelete = append(toDelete, entry.Index)
 
 	}
-	return s.deleteIndices(ctx, toDelete, method)
+	if len(toDelete) > 0 {
+		return s.deleteIndices(ctx, toDelete, method)
+	}
+	return nil
 }
