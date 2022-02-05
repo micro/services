@@ -1,4 +1,4 @@
-Quick access key-value storage
+Fast access key-value storage
 
 # Cache Service
 
