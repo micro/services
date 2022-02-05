@@ -1,4 +1,4 @@
-Serverless compute as a service
+Serverless functions
 
 # Function Service
 
