@@ -2,7 +2,7 @@ Send SMS messages
 
 # SMS Service
 
-Send SMS messages in seconds. Integrate into products for verification codes, links, reminders and more. 
+Send SMS messages in seconds. Integrate into any product for verification codes, links, reminders and more. 
 
 Powered by [twilio.com](https://twilio.com).
 
