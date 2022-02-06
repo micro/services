@@ -1,8 +1,8 @@
-Send an SMS message
+Send SMS messages
 
 # SMS Service
 
-Send an SMS message in seconds. No fuss, no muss. 
+Send SMS messages in seconds. Integrate into products for verification codes, links, reminders and more. 
 
 Powered by [twilio.com](https://twilio.com).
 
