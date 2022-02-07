@@ -654,6 +654,7 @@ func (e *GoogleApp) DeleteData(ctx context.Context, request *adminpb.DeleteDataR
 		}
 		e.deleteApp(ctx, request.TenantId, &srv)
 	}
+	log.Infof("Deleted %d functions for %s", len(recs), request.TenantId)
 	return nil
 }
 

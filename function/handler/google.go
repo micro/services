@@ -827,5 +827,6 @@ func (e *GoogleFunction) DeleteData(ctx context.Context, request *adminpb.Delete
 		}
 		e.deleteFunction(&fn, rec.Key)
 	}
+	log.Infof("Deleted %d functions for %s", len(recs), request.TenantId)
 	return nil
 }
