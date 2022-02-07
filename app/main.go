@@ -5,6 +5,7 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/app/handler"
 	pb "github.com/micro/services/app/proto"
+	admin "github.com/micro/services/pkg/service/proto"
 )
 
 func main() {
@@ -14,8 +15,10 @@ func main() {
 		service.Version("latest"),
 	)
 
+	h := handler.New()
 	// Register handler
-	pb.RegisterAppHandler(srv.Server(), handler.New())
+	pb.RegisterAppHandler(srv.Server(), h)
+	admin.RegisterAdminHandler(srv.Server(), h)
 
 	// Run service
 	if err := srv.Run(); err != nil {

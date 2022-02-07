@@ -7,7 +7,10 @@ import (
 
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	url "github.com/micro/services/url/proto"
 	cache "github.com/patrickmn/go-cache"
@@ -132,6 +135,38 @@ func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyRe
 	}
 
 	rsp.DestinationURL = uri.DestinationURL
+
+	return nil
+}
+
+func (e *Url) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	prefix := "urlOwner/" + request.TenantId + "/"
+
+	keys, err := store.List(store.ListPrefix(prefix))
+	if err != nil {
+		return err
+	}
+
+	for _, key := range keys {
+		id := strings.TrimPrefix(key, prefix)
+		if err := store.Delete("url/" + id); err != nil {
+			return err
+		}
+		if err := store.Delete(key); err != nil {
+			return err
+		}
+	}
+	logger.Infof("Deleted %d objects from S3 for %s", len(keys), request.TenantId)
 
 	return nil
 }
