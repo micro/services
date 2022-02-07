@@ -19,6 +19,8 @@ import (
 	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/app/domain"
 	pb "github.com/micro/services/app/proto"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
 )
@@ -555,7 +557,6 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 	if !ok {
 		id = "micro"
 	}
-
 	// read the app for the owner
 	key := OwnerKey + id + "/" + req.Name
 	recs, err := store.Read(key)
@@ -575,11 +576,16 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 		return err
 	}
 
+	return e.deleteApp(ctx, id, srv)
+}
+
+func (e *GoogleApp) deleteApp(ctx context.Context, tenantID string, srv *pb.Service) error {
+
 	// check the status
 	switch srv.Status {
 	case domain.StatusUpdating, domain.StatusDeploying, domain.StatusDeleting:
-		log.Errorf("Won't delete: % is %s", req.Name, srv.Status)
-		return errors.BadRequest("app.delete", "% status: %s", req.Name, srv.Status)
+		log.Errorf("Won't delete: % is %s", srv.Name, srv.Status)
+		return errors.BadRequest("app.delete", "% status: %s", srv.Name, srv.Status)
 	}
 
 	// delete from the db
@@ -587,7 +593,7 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 		// service key
 		ServiceKey + srv.Id,
 		// owner key
-		OwnerKey + id + "/" + req.Name,
+		OwnerKey + tenantID + "/" + srv.Name,
 	}
 
 	// set the delete status
@@ -620,6 +626,34 @@ func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.D
 		}
 	}(srv)
 
+	return nil
+}
+
+func (e *GoogleApp) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	prefix := OwnerKey + request.TenantId + "/"
+
+	recs, err := store.Read(prefix, store.ReadPrefix())
+	if err != nil {
+		return err
+	}
+
+	for _, rec := range recs {
+		var srv pb.Service
+		if err := rec.Decode(&srv); err != nil {
+			return err
+		}
+		e.deleteApp(ctx, request.TenantId, &srv)
+	}
 	return nil
 }
 
