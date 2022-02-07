@@ -74,7 +74,7 @@ func (s *User) validatePostUserData(ctx context.Context, userId, username, email
 		return err
 	}
 
-	if account.Id != "" && account.Id != userId {
+	if account.Id != "" && account.Username == username {
 		return errors.BadRequest("username-check", "username already exists")
 	}
 
@@ -82,7 +82,8 @@ func (s *User) validatePostUserData(ctx context.Context, userId, username, email
 	if err != nil && err.Error() != domain.ErrNotFound.Error() {
 		return err
 	}
-	if account.Id != "" && account.Id != userId {
+
+	if account.Id != "" && account.Email == email {
 		return errors.BadRequest("email-check", "email already exists")
 	}
 
