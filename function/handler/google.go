@@ -19,6 +19,8 @@ import (
 	"github.com/micro/micro/v3/service/runtime/source/git"
 	"github.com/micro/micro/v3/service/store"
 	function "github.com/micro/services/function/proto"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
 )
@@ -626,22 +628,24 @@ func (e *GoogleFunction) Delete(ctx context.Context, req *function.DeleteRequest
 	}
 
 	// async delete
-	go func() {
-		cmd := exec.Command("gcloud", "functions", "delete", "--quiet", "--project", e.project, "--region", fn.Region, fn.Id)
-		outp, err := cmd.CombinedOutput()
-		if err != nil && !strings.Contains(string(outp), "does not exist") {
-			log.Error(fmt.Errorf(string(outp)))
-			return
-		}
-
-		// delete the owner key
-		store.Delete(key)
-
-		// delete the global key
-		store.Delete(FunctionKey + fn.Id)
-	}()
+	go e.deleteFunction(fn, key)
 
 	return nil
+}
+
+func (e *GoogleFunction) deleteFunction(fn *function.Func, key string) {
+	cmd := exec.Command("gcloud", "functions", "delete", "--quiet", "--project", e.project, "--region", fn.Region, fn.Id)
+	outp, err := cmd.CombinedOutput()
+	if err != nil && !strings.Contains(string(outp), "does not exist") {
+		log.Error(fmt.Errorf(string(outp)))
+		return
+	}
+
+	// delete the owner key
+	store.Delete(key)
+
+	// delete the global key
+	store.Delete(FunctionKey + fn.Id)
 }
 
 func (e *GoogleFunction) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
@@ -795,5 +799,33 @@ func (g *GoogleFunction) Proxy(ctx context.Context, req *function.ProxyRequest, 
 
 func (e *GoogleFunction) Regions(ctx context.Context, req *function.RegionsRequest, rsp *function.RegionsResponse) error {
 	rsp.Regions = GoogleRegions
+	return nil
+}
+
+func (e *GoogleFunction) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	prefix := OwnerKey + request.TenantId + "/"
+
+	recs, err := store.Read(prefix, store.ReadPrefix())
+	if err != nil {
+		return err
+	}
+
+	for _, rec := range recs {
+		var fn function.Func
+		if err := rec.Decode(&fn); err != nil {
+			return err
+		}
+		e.deleteFunction(&fn, rec.Key)
+	}
 	return nil
 }
