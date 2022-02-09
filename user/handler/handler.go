@@ -260,11 +260,16 @@ func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp 
 	// check the token exists
 	tenant, email, err := s.domain.ReadToken(ctx, req.Token)
 	if err != nil {
+		logger.Error("Failed to read token: %v", err)
 		return err
 	}
 
 	// update the user
-	return s.domain.MarkVerified(ctx, tenant, email)
+	err = s.domain.MarkVerified(ctx, tenant, email)
+	if err != nil {
+		logger.Error("Failed to mark email: %s for tenant: %s as verified: %v", email, tenant, err)
+	}
+	return err
 }
 
 func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificationEmailRequest, rsp *pb.SendVerificationEmailResponse) error {
