@@ -253,21 +253,18 @@ func (s *User) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp 
 }
 
 func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp *pb.VerifyEmailResponse) error {
-	if len(req.Email) == 0 {
-		return errors.BadRequest("user.verifyemail", "missing email")
-	}
 	if len(req.Token) == 0 {
 		return errors.BadRequest("user.verifytoken", "missing token")
 	}
 
 	// check the token exists
-	tenantId, err := s.domain.ReadToken(ctx, req.Id, req.Email, req.Token)
+	tenant, email, err := s.domain.ReadToken(ctx, req.Token)
 	if err != nil {
 		return err
 	}
 
 	// update the user
-	return s.domain.MarkVerified(ctx, tenantId, req.Email)
+	return s.domain.MarkVerified(ctx, tenant, email)
 }
 
 func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificationEmailRequest, rsp *pb.SendVerificationEmailResponse) error {
@@ -282,15 +279,15 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 	}
 
 	// generate random token
-	token := random(8)
+	token := random(256)
 
 	// generate/save a token for verification
-	id, err := s.domain.CreateToken(ctx, req.Email, token)
+	err = s.domain.CreateToken(ctx, req.Email, token)
 	if err != nil {
 		return err
 	}
 
-	return s.domain.SendEmail(req.FromName, req.Email, account.Username, req.Subject, req.TextContent, id, token, req.RedirectUrl, req.FailureRedirectUrl)
+	return s.domain.SendEmail(req.FromName, req.Email, account.Username, req.Subject, req.TextContent, token, req.RedirectUrl, req.FailureRedirectUrl)
 }
 
 func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordResetEmailRequest, rsp *pb.SendPasswordResetEmailResponse) error {

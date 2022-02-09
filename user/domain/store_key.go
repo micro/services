@@ -66,10 +66,6 @@ func generateSessionStoreKey(ctx context.Context, sessionId string) string {
 	return fmt.Sprintf("%ssession/%s", getStoreKeyPrefix(ctx), sessionId)
 }
 
-func generateVerificationsTokenStoreKey(ctx context.Context, userId, token string) string {
-	return fmt.Sprintf("%sverification-token/%s-%s", getStoreKeyPrefix(ctx), userId, token)
-}
-
-func generateVerificationTokenKeyByTenant(tenantId, userId, token string) string {
-	return fmt.Sprintf("%sverification-token/%s-%s", getStoreKeyPrefixForTenent(tenantId), userId, token)
+func generateVerificationTokenStoreKey(token string) string {
+	return fmt.Sprintf("user/verification-token/%s", token)
 }

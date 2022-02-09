@@ -79,7 +79,7 @@ func New(st store.Store) *Domain {
 	}
 }
 
-func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textContent, id, token, redirctUrl, failureRedirectUrl string) error {
+func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textContent, token, redirctUrl, failureRedirectUrl string) error {
 	if domain.sengridKey == "" {
 		return fmt.Errorf("empty email api key")
 	}
@@ -88,8 +88,6 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 
 	uri := "https://user.m3o.com"
 	query := "?token=" + token + "&redirectUrl=" + url.QueryEscape(redirctUrl) + "&failureRedirectUrl=" + url.QueryEscape(failureRedirectUrl)
-	query += "&email=" + url.QueryEscape(toAddress)
-	query += "&id=" + id
 
 	// set the text content
 	textContent = strings.Replace(textContent, "$micro_verification_link", uri+query, -1)
@@ -203,46 +201,34 @@ func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 }
 
 // ReadToken returns the user id
-func (domain *Domain) ReadToken(ctx context.Context, id, email, token string) (string, error) {
+func (domain *Domain) ReadToken(ctx context.Context, token string) (string, string, error) {
 	if token == "" {
-		return "", errors.New("token id empty")
+		return "", "", errors.New("token id empty")
 	}
 
-	var key string
-	if len(id) > 0 {
-		key = generateVerificationTokenKeyByTenant(id, email, token)
-	} else {
-		key = generateVerificationsTokenStoreKey(ctx, email, token)
-	}
+	key := generateVerificationTokenStoreKey(token)
 
 	records, err := domain.store.Read(key)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	if len(records) == 0 {
-		return "", errors.New("token not found")
+		return "", "", errors.New("token not found")
 	}
 
 	tk := &verificationToken{}
 	err = json.Unmarshal(records[0].Value, tk)
 	if err != nil {
-		return "", err
-	}
-
-	if tk.Email != email {
-		return "", errors.New("email does not match")
-	}
-	if tk.Token != token {
-		return "", errors.New("token does not match")
+		return "", "", err
 	}
 
 	// pass back tenant id
-	return tk.ID, nil
+	return tk.ID, tk.Email, nil
 }
 
 // CreateToken returns the created and saved token
-func (domain *Domain) CreateToken(ctx context.Context, email, token string) (string, error) {
+func (domain *Domain) CreateToken(ctx context.Context, email, token string) error {
 	tk, err := json.Marshal(verificationToken{
 		ID:    getTenantKey(ctx),
 		Email: email,
@@ -250,20 +236,20 @@ func (domain *Domain) CreateToken(ctx context.Context, email, token string) (str
 	})
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	record := &store.Record{
-		Key:   generateVerificationsTokenStoreKey(ctx, email, token),
+		Key:   generateVerificationTokenStoreKey(token),
 		Value: tk,
 	}
 
 	err = domain.store.Write(record)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return getTenantKey(ctx), err
+	return err
 }
 
 func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session, error) {

@@ -163,12 +163,8 @@ message LogoutResponse {
 
 // Verify the email address of an account from a token sent in an email to the user.
 message VerifyEmailRequest {
-	// the unique id assigned to the verification process
-	string id = 1;
-	// the email address to verify
-	string email = 2;
 	// The token from the verification email
-	string token = 3;
+	string token = 1;
 }
 
 message VerifyEmailResponse{
