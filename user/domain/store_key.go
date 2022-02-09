@@ -17,10 +17,29 @@ func getStoreKeyPrefix(ctx context.Context) string {
 	return getStoreKeyPrefixForTenent(tenantId)
 }
 
-func getStoreKeyPrefixForTenent(tenantID string) string {
-	tid := strings.Replace(strings.Replace(tenantID, "/", "_", -1), "-", "_", -1)
+func getTenantKey(ctx context.Context) string {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		tenantId = "micro"
+	}
+
+	return strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+}
+
+func getStoreKeyPrefixForTenent(tenantId string) string {
+	tid := strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 
 	return fmt.Sprintf("user/%s/", tid)
+}
+
+func generateAccountTenantKey(tenantId, userId string) string {
+	return fmt.Sprintf("%saccount/id/%s", getStoreKeyPrefixForTenent(tenantId), userId)
+}
+func generateAccountTenantEmailKey(tenantId, email string) string {
+	return fmt.Sprintf("%sacccount/email/%s", getStoreKeyPrefixForTenent(tenantId), email)
+}
+func generateAccountTenantUsernameKey(tenantId, username string) string {
+	return fmt.Sprintf("%saccount/username/%s", getStoreKeyPrefixForTenent(tenantId), username)
 }
 
 func generateAccountStoreKey(ctx context.Context, userId string) string {
@@ -49,4 +68,8 @@ func generateSessionStoreKey(ctx context.Context, sessionId string) string {
 
 func generateVerificationsTokenStoreKey(ctx context.Context, userId, token string) string {
 	return fmt.Sprintf("%sverification-token/%s-%s", getStoreKeyPrefix(ctx), userId, token)
+}
+
+func generateVerificationTokenKeyByTenant(tenantId, userId, token string) string {
+	return fmt.Sprintf("%sverification-token/%s-%s", getStoreKeyPrefixForTenent(tenantId), userId, token)
 }

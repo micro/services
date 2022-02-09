@@ -33,8 +33,11 @@ type pw struct {
 }
 
 type verificationToken struct {
-	UserID string `json:"userId"`
-	Token  string `json:"token"`
+	// tenant id e.g micro_13425asdasa
+	ID string `json:"userId"`
+	// user email
+	Email string `json:"email"`
+	Token string `json:"token"`
 }
 
 type passwordResetCode struct {
@@ -76,15 +79,20 @@ func New(st store.Store) *Domain {
 	}
 }
 
-func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textContent, token, redirctUrl, failureRedirectUrl string) error {
+func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textContent, id, token, redirctUrl, failureRedirectUrl string) error {
 	if domain.sengridKey == "" {
 		return fmt.Errorf("empty email api key")
 	}
 	from := mail.NewEmail(fromName, domain.fromEmail)
 	to := mail.NewEmail(toUsername, toAddress)
 
+	uri := "https://user.m3o.com"
+	query := "?token=" + token + "&redirectUrl=" + url.QueryEscape(redirctUrl) + "&failureRedirectUrl=" + url.QueryEscape(failureRedirectUrl)
+	query += "&email=" + url.QueryEscape(toAddress)
+	query += "&id=" + id
+
 	// set the text content
-	textContent = strings.Replace(textContent, "$micro_verification_link", "https://user.m3o.com?token="+token+"&redirectUrl="+url.QueryEscape(redirctUrl)+"&failureRedirectUrl="+url.QueryEscape(failureRedirectUrl), -1)
+	textContent = strings.Replace(textContent, "$micro_verification_link", uri+query, -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
 
 	// send the email
@@ -195,12 +203,19 @@ func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 }
 
 // ReadToken returns the user id
-func (domain *Domain) ReadToken(ctx context.Context, email, token string) (string, error) {
+func (domain *Domain) ReadToken(ctx context.Context, id, email, token string) (string, error) {
 	if token == "" {
 		return "", errors.New("token id empty")
 	}
 
-	records, err := domain.store.Read(generateVerificationsTokenStoreKey(ctx, email, token))
+	var key string
+	if len(id) > 0 {
+		key = generateVerificationTokenKeyByTenant(id, email, token)
+	} else {
+		key = generateVerificationsTokenStoreKey(ctx, email, token)
+	}
+
+	records, err := domain.store.Read(key)
 	if err != nil {
 		return "", err
 	}
@@ -214,14 +229,24 @@ func (domain *Domain) ReadToken(ctx context.Context, email, token string) (strin
 	if err != nil {
 		return "", err
 	}
-	return tk.UserID, nil
+
+	if tk.Email != email {
+		return "", errors.New("email does not match")
+	}
+	if tk.Token != token {
+		return "", errors.New("token does not match")
+	}
+
+	// pass back tenant id
+	return tk.ID, nil
 }
 
 // CreateToken returns the created and saved token
 func (domain *Domain) CreateToken(ctx context.Context, email, token string) (string, error) {
 	tk, err := json.Marshal(verificationToken{
-		UserID: email,
-		Token:  token,
+		ID:    getTenantKey(ctx),
+		Email: email,
+		Token: token,
 	})
 
 	if err != nil {
@@ -232,12 +257,13 @@ func (domain *Domain) CreateToken(ctx context.Context, email, token string) (str
 		Key:   generateVerificationsTokenStoreKey(ctx, email, token),
 		Value: tk,
 	}
+
 	err = domain.store.Write(record)
 	if err != nil {
 		return "", err
 	}
 
-	return token, err
+	return getTenantKey(ctx), err
 }
 
 func (domain *Domain) ReadSession(ctx context.Context, id string) (*user.Session, error) {
@@ -362,6 +388,38 @@ func (domain *Domain) Delete(ctx context.Context, userId string) error {
 	return domain.batchDelete(keys)
 }
 
+func (domain *Domain) MarkVerified(ctx context.Context, id, email string) error {
+	key := generateAccountTenantEmailKey(id, email)
+
+	// get old information of the user
+	user, err := domain.ReadUserByKey(ctx, key)
+	if err != nil {
+		return err
+	}
+
+	// mark as verified
+	user.Verified = true
+	user.Updated = time.Now().Unix()
+
+	val, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+
+	records := []*store.Record{
+		{Key: generateAccountTenantKey(id, user.Id), Value: val},
+		{Key: generateAccountTenantUsernameKey(id, user.Username), Value: val},
+		{Key: generateAccountTenantEmailKey(id, user.Email), Value: val},
+	}
+
+	// update
+	if err := domain.batchWrite(records); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 	// get old information of the user
 	old, err := domain.Read(ctx, user.Id)
@@ -405,8 +463,8 @@ func (domain *Domain) Update(ctx context.Context, user *user.Account) error {
 	return nil
 }
 
-// readUserByKey read user account in store by key
-func (domain *Domain) readUserByKey(ctx context.Context, key string) (*user.Account, error) {
+// ReadUserByKey read user account in store by key
+func (domain *Domain) ReadUserByKey(ctx context.Context, key string) (*user.Account, error) {
 	var result = &user.Account{}
 	records, err := domain.store.Read(key)
 	if err != nil {
@@ -422,15 +480,15 @@ func (domain *Domain) readUserByKey(ctx context.Context, key string) (*user.Acco
 }
 
 func (domain *Domain) Read(ctx context.Context, userId string) (*user.Account, error) {
-	return domain.readUserByKey(ctx, generateAccountStoreKey(ctx, userId))
+	return domain.ReadUserByKey(ctx, generateAccountStoreKey(ctx, userId))
 }
 
 func (domain *Domain) SearchByUsername(ctx context.Context, username string) (*user.Account, error) {
-	return domain.readUserByKey(ctx, generateAccountUsernameStoreKey(ctx, username))
+	return domain.ReadUserByKey(ctx, generateAccountUsernameStoreKey(ctx, username))
 }
 
 func (domain *Domain) SearchByEmail(ctx context.Context, email string) (*user.Account, error) {
-	return domain.readUserByKey(ctx, generateAccountEmailStoreKey(ctx, email))
+	return domain.ReadUserByKey(ctx, generateAccountEmailStoreKey(ctx, email))
 }
 
 func (domain *Domain) Search(ctx context.Context, username, email string) ([]*user.Account, error) {
