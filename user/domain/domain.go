@@ -34,7 +34,7 @@ type pw struct {
 
 type verificationToken struct {
 	// tenant id e.g micro_13425asdasa
-	ID string `json:"userId"`
+	ID string `json:"id"`
 	// user email
 	Email string `json:"email"`
 	Token string `json:"token"`
