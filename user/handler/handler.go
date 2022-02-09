@@ -253,43 +253,18 @@ func (s *User) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp 
 }
 
 func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp *pb.VerifyEmailResponse) error {
-	if len(req.Email) == 0 {
-		return errors.BadRequest("user.verifyemail", "missing email")
-	}
 	if len(req.Token) == 0 {
 		return errors.BadRequest("user.verifytoken", "missing token")
 	}
 
 	// check the token exists
-	email, err := s.domain.ReadToken(ctx, req.Email, req.Token)
+	tenant, email, err := s.domain.ReadToken(ctx, req.Token)
 	if err != nil {
 		return err
 	}
-
-	// validate the code, e.g its an OTP token and hasn't expired
-	resp, err := s.Otp.Validate(ctx, &otp.ValidateRequest{
-		Id:   req.Email,
-		Code: req.Token,
-	})
-	if err != nil {
-		return err
-	}
-
-	// check if the code is actually valid
-	if !resp.Success {
-		return errors.BadRequest("user.resetpassword", "invalid code")
-	}
-
-	// mark user as verified
-	user, err := s.domain.SearchByEmail(ctx, email)
-	if err != nil {
-		return err
-	}
-
-	user.Verified = true
 
 	// update the user
-	return s.domain.Update(ctx, user)
+	return s.domain.MarkVerified(ctx, tenant, email)
 }
 
 func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificationEmailRequest, rsp *pb.SendVerificationEmailResponse) error {
@@ -303,18 +278,11 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 		return err
 	}
 
-	// generate a new OTP code
-	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
-		Expiry: 900,
-		Id:     req.Email,
-	})
-
-	if err != nil {
-		return err
-	}
+	// generate random token
+	token := random(256)
 
 	// generate/save a token for verification
-	token, err := s.domain.CreateToken(ctx, req.Email, resp.Code)
+	err = s.domain.CreateToken(ctx, req.Email, token)
 	if err != nil {
 		return err
 	}
