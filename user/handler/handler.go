@@ -257,7 +257,7 @@ func (s *User) VerifyEmail(ctx context.Context, req *pb.VerifyEmailRequest, rsp 
 		return errors.BadRequest("user.verifyemail", "missing email")
 	}
 	if len(req.Token) == 0 {
-		return errors.BadRequest("user.verifyemail", "missing token")
+		return errors.BadRequest("user.verifytoken", "missing token")
 	}
 
 	// check the token exists
