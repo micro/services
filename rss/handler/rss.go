@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"hash/fnv"
+	"strings"
 
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/rss/proto"
@@ -174,4 +177,33 @@ func (e *Rss) Remove(ctx context.Context, req *pb.RemoveRequest, rsp *pb.RemoveR
 	}
 
 	return e.store.Delete(generateFeedKey(ctx, req.Name))
+}
+
+func (e *Rss) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+	split := strings.Split(request.TenantId, "/")
+	tctx := tenant.NewContext(split[1], split[0], split[1])
+
+	prefix := generateFeedKey(tctx, "")
+	records, err := e.store.Read(prefix, store.ReadPrefix())
+	if err != nil {
+		return err
+	}
+
+	for _, val := range records {
+		if err := e.store.Delete(val.Key); err != nil {
+			return err
+		}
+	}
+	log.Infof("Delete %d records for %s", len(records), request.TenantId)
+	return nil
+
 }

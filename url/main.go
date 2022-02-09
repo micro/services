@@ -1,6 +1,7 @@
 package main
 
 import (
+	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/url/handler"
 	pb "github.com/micro/services/url/proto"
@@ -15,9 +16,10 @@ func main() {
 		service.Name("url"),
 		service.Version("latest"),
 	)
-
+	h := handler.NewUrl()
 	// Register handler
-	pb.RegisterUrlHandler(srv.Server(), handler.NewUrl())
+	pb.RegisterUrlHandler(srv.Server(), h)
+	admin.RegisterAdminHandler(srv.Server(), h)
 
 	traceCloser := tracing.SetupOpentracing("url")
 	defer traceCloser.Close()

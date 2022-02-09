@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/micro/services/image/handler"
 	pb "github.com/micro/services/image/proto"
+	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
 
 	"github.com/micro/micro/v3/service"
@@ -16,8 +17,10 @@ func main() {
 		service.Version("latest"),
 	)
 
+	h := handler.NewImage()
 	// Register handler
-	pb.RegisterImageHandler(srv.Server(), handler.NewImage())
+	pb.RegisterImageHandler(srv.Server(), h)
+	admin.RegisterAdminHandler(srv.Server(), h)
 	traceCloser := tracing.SetupOpentracing("image")
 	defer traceCloser.Close()
 

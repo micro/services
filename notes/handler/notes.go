@@ -9,9 +9,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	streamPb "github.com/micro/services/mq/proto"
 	pb "github.com/micro/services/notes/proto"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -290,5 +293,31 @@ func (h *Notes) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespo
 		}
 	}
 
+	return nil
+}
+
+func (h *Notes) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	keys, err := store.List(store.ListPrefix(request.TenantId))
+	if err != nil {
+		return err
+	}
+
+	for _, k := range keys {
+		if err := store.Delete(k); err != nil {
+			return err
+		}
+	}
+
+	logger.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
 	return nil
 }

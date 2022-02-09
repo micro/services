@@ -6,9 +6,12 @@ import (
 
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/location/domain"
 	loc "github.com/micro/services/location/proto"
 	"github.com/micro/services/location/subscriber"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 )
 
 type Location struct{}
@@ -68,5 +71,23 @@ func (l *Location) Search(ctx context.Context, req *loc.SearchRequest, rsp *loc.
 		rsp.Entities = append(rsp.Entities, e.ToProto())
 	}
 
+	return nil
+}
+
+func (l *Location) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	if err := domain.DeleteIndex(request.TenantId); err != nil {
+		return err
+	}
+	logger.Infof("Deleted index for %s", request.TenantId)
 	return nil
 }

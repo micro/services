@@ -5,6 +5,7 @@ import (
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/notes/handler"
 	pb "github.com/micro/services/notes/proto"
+	admin "github.com/micro/services/pkg/service/proto"
 )
 
 func main() {
@@ -17,8 +18,10 @@ func main() {
 	// Initialise service
 	srv.Init()
 
+	h := handler.New(srv.Client())
 	// Register Handler
-	pb.RegisterNotesHandler(srv.Server(), handler.New(srv.Client()))
+	pb.RegisterNotesHandler(srv.Server(), h)
+	admin.RegisterAdminHandler(srv.Server(), h)
 
 	// Run service
 	if err := srv.Run(); err != nil {
