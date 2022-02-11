@@ -66,6 +66,20 @@ func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.De
 		store.Delete(file)
 	}
 
+	path = filepath.Join(pathPrefix, tenantId, req.Project, req.Path)
+
+	// check if the files are in the blob store and delete if they exist
+	keys, err := store.DefaultBlobStore.List(store.BlobListPrefix(path))
+	if err != nil {
+		log.Error("Failed to list blob store keys %s: %v", path, err)
+		return nil
+	}
+
+	// delete the files from the blob store
+	for _, file := range keys {
+		store.DefaultBlobStore.Delete(file)
+	}
+
 	return nil
 }
 
