@@ -369,6 +369,7 @@ func (domain *Domain) Delete(ctx context.Context, userId string) error {
 		generateAccountStoreKey(ctx, userId),
 		generateAccountEmailStoreKey(ctx, account.Email),
 		generateAccountUsernameStoreKey(ctx, account.Username),
+		generatePasswordStoreKey(ctx, userId),
 	}
 
 	return domain.batchDelete(keys)
