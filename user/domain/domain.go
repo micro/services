@@ -569,7 +569,7 @@ func (domain *Domain) SendMLE(fromName, toAddress, toUsername, subject, textCont
 	if domain.sengridKey == "" {
 		return fmt.Errorf("empty email api key")
 	}
-	from := mail.NewEmail(fromName, "support@m3o.com")
+	from := mail.NewEmail(fromName, domain.fromEmail)
 	to := mail.NewEmail(toUsername, toAddress)
 	textContent = strings.Replace(textContent, "$micro_verification_link", fmt.Sprint("https://", path.Join(address, endpoint, token)), -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
