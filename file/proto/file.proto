@@ -42,10 +42,15 @@ message ReadResponse {
 
 // Save a file
 message SaveRequest {
+	// The file to save
 	Record file = 1;
+	// Make the file public: true or false
+	bool public = 2;
 }
 
 message SaveResponse {
+	// The permalink for the file if made public
+	string url = 1;
 }
 
 // List files by their project and optionally a path.
