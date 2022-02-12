@@ -425,6 +425,10 @@ func (domain *Domain) Read(ctx context.Context, userId string) (*user.Account, e
 	return domain.readUserByKey(ctx, generateAccountStoreKey(ctx, userId))
 }
 
+func (domain *Domain) SearchByUserId(ctx context.Context, userId string) (*user.Account, error) {
+	return domain.ReadUserByKey(ctx, generateAccountStoreKey(ctx, userId))
+}
+
 func (domain *Domain) SearchByUsername(ctx context.Context, username string) (*user.Account, error) {
 	return domain.readUserByKey(ctx, generateAccountUsernameStoreKey(ctx, username))
 }
