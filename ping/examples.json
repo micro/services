@@ -21,7 +21,7 @@
             "status": "OK"
         }
     }],
-    "http": [{
+    "url": [{
         "title": "Check a url",
         "description": "Check a url endpoint",
         "run_check": false,
