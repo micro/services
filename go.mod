@@ -16,7 +16,7 @@ require (
 	github.com/dghubble/go-twitter v0.0.0-20210609183100-2fdbf421508e
 	github.com/disintegration/imaging v1.6.2
 	github.com/enescakir/emoji v1.0.0
-	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534 // indirect
+	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/protobuf v1.5.2
@@ -24,7 +24,9 @@ require (
 	github.com/hablullah/go-prayer v1.0.0
 	github.com/hailocab/go-geoindex v0.0.0-20160127134810-64631bfe9711
 	github.com/hashicorp/golang-lru v0.5.3
+	github.com/iverly/go-mcping v1.0.1-0.20200818104507-3d8fc23750ae
 	github.com/jackc/pgx/v4 v4.10.1
+	github.com/jmoiron/jsonq v0.0.0-20150511023944-e874b168d07e // indirect
 	github.com/kevinburke/go-types v0.0.0-20201208005256-aee49f568a20 // indirect
 	github.com/kevinburke/go.uuid v1.2.0 // indirect
 	github.com/kevinburke/rest v0.0.0-20210506044642-5611499aa33c // indirect
