@@ -27,7 +27,9 @@ func (p *Ping) Ip(ctx context.Context, req *pb.IpRequest, rsp *pb.IpResponse) er
 		rsp.Status = err.Error()
 		return nil
 	}
+
 	pinger.Count = 4
+	pinger.SetPrivileged(true)
 	err = pinger.Run() // Blocks until finished.
 	if err != nil {
 		rsp.Status = err.Error()
