@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package ping;
+
+option go_package = "./proto;ping";
+
+service Ping {
+	rpc Ip(IpRequest) returns (IpResponse) {}
+	rpc Url(UrlRequest) returns (UrlResponse) {}
+	rpc Tcp(TcpRequest) returns (TcpResponse) {}
+}
+
+// Ping an IP address
+message IpRequest {
+	// address to ping
+	string address = 1;
+}
+
+message IpResponse {
+	// response status
+	string status = 1;
+	// average latency e.g 10ms
+	string latency = 2;
+}
+
+// Ping a HTTP URL
+message UrlRequest {
+	// address to use
+	string address = 1;
+	// method of the call
+	string method = 2;
+}
+
+message UrlResponse {
+	// the response status
+	string status = 1;
+	// the response code
+	int32 code = 2;
+}
+
+// Ping a TCP port is open
+message TcpRequest {
+	// address to dial
+	string address = 1;
+	// optional data to send
+	string data = 2;
+}
+
+message TcpResponse {
+	// response status
+	string status = 1;
+	// response data if any
+	string data = 2;
+}
