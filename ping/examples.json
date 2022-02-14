@@ -4,7 +4,7 @@
         "description": "Ping an ip address to get the latency",
         "run_check": false,
         "request": {
-            "google.com"
+            "address": "google.com"
         },
         "response": {
             "status": "OK"
@@ -15,7 +15,7 @@
         "description": "Dial a tcp address",
         "run_check": false,
         "request": {
-            "google.com:80"
+            "address": "google.com:80"
         },
         "response": {
             "status": "OK"
@@ -26,7 +26,7 @@
         "description": "Check a url endpoint",
         "run_check": false,
         "request": {
-            "google.com"
+            "address": "google.com"
         },
         "response": {
             "status": "200 OK",
