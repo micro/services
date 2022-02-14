@@ -4,7 +4,7 @@
         "description": "Ping a minecrafter server for stats",
         "run_check": false,
         "request": {
-            "funcraft.net"
+            "address": "funcraft.net"
         },
         "response": {
 		"latency": 84,
