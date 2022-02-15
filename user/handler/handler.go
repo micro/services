@@ -400,6 +400,9 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 		return errors.InternalServerError("user.resetpassword", err.Error())
 	}
 
+	// delete our saved code
+	s.domain.DeletePasswordResetCode(ctx, account.Id, req.Code)
+
 	return nil
 }
 
