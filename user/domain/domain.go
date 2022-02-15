@@ -113,6 +113,9 @@ func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeSt
 
 	// log the response
 	logger.Info(response)
+	if response.StatusCode >= 400 {
+		return microerr.InternalServerError("user", "Error sending password reset email")
+	}
 
 	return err
 }

@@ -326,6 +326,12 @@ func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordR
 	if len(req.Email) == 0 {
 		return errors.BadRequest("user.sendpasswordresetemail", "missing email")
 	}
+	if len(req.Subject) == 0 {
+		return errors.BadRequest("user.sendpasswordresetemail", "missing subject")
+	}
+	if len(req.TextContent) == 0 {
+		return errors.BadRequest("user.sendpasswordresetemail", "missing textContent")
+	}
 
 	// look for an existing user
 	account, err := s.domain.SearchByEmail(ctx, req.Email)
