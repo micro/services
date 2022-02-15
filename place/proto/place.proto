@@ -38,7 +38,7 @@ message AutocompleteRequest {}
 
 message AutocompleteResponse {}
 
-// Search for places nearby, points of interest and geographic locations
+// Find places nearby using a location
 message NearbyRequest {
 	// specify the location by lat,lng e.g -33.8670522,-151.1957362
 	string location = 1;
@@ -58,6 +58,7 @@ message NearbyResponse {
 	repeated Result results = 1;
 }
 
+// Search for places by text query
 message SearchRequest {
 	// the text string on which to search, for example: "restaurant"
 	string query = 1;
