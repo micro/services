@@ -105,7 +105,7 @@ func (domain *Domain) SavePasswordResetCode(ctx context.Context, userId, code st
 	record := store.NewRecord(generatePasswordResetCodeStoreKey(ctx, userId, code), pwcode)
 	// expire the record itself too
 	record.Expiry = expiry
-	err = domain.store.Write(record)
+	err := domain.store.Write(record)
 
 	return &pwcode, err
 }
