@@ -95,6 +95,54 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	return err
 }
 
+func (domain *Domain) SavePasswordResetCode(ctx context.Context, userId, code string, expiry time.Duration) (*passwordResetCode, error) {
+	pwcode := passwordResetCode{
+		Expires: time.Now().Add(expiry),
+		UserID:  userId,
+		Code:    code,
+	}
+
+	val, err := json.Marshal(pwcode)
+	if err != nil {
+		return nil, err
+	}
+
+	record := store.NewRecord(generatePasswordResetCodeStoreKey(ctx, userId, code), val)
+	// expire the record itself too
+	record.Expiry = expiry
+	err = domain.store.Write(record)
+
+	return &pwcode, err
+}
+
+func (domain *Domain) DeletePasswordResetCode(ctx context.Context, userId, code string) error {
+	return domain.store.Delete(generatePasswordResetCodeStoreKey(ctx, userId, code))
+}
+
+// ReadPasswordResetCode returns the user reset code
+func (domain *Domain) ReadPasswordResetCode(ctx context.Context, userId, code string) (*passwordResetCode, error) {
+	records, err := domain.store.Read(generatePasswordResetCodeStoreKey(ctx, userId, code))
+	if err != nil && err != store.ErrNotFound {
+		return nil, err
+	}
+
+	if len(records) == 0 {
+		return nil, errors.New("password reset code not found")
+	}
+
+	resetCode := &passwordResetCode{}
+	if err := json.Unmarshal(records[0].Value, resetCode); err != nil {
+		return nil, err
+	}
+
+	// check the expiry
+	if resetCode.Expires.Before(time.Now()) {
+		return nil, errors.New("password reset code expired")
+	}
+
+	return resetCode, nil
+}
+
 func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeStr, fromName, toAddress, toUsername, subject, textContent string) error {
 	if domain.sengridKey == "" {
 		return fmt.Errorf("empty email api key")
