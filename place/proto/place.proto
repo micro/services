@@ -5,6 +5,7 @@ package place;
 option go_package = "./proto;place";
 
 service Place {
+	rpc Autocomplete(AutocompleteRequest) returns (AutocompleteResponse) {}
 	rpc Nearby(NearbyRequest) returns (NearbyResponse) {}
 	rpc Search(SearchRequest) returns (SearchResponse) {}
 }
@@ -31,6 +32,11 @@ message Result {
 	// feature types
 	repeated string types = 10;
 }
+
+// Autocomplete queries (coming soon)
+message AutocompleteRequest {}
+
+message AutocompleteResponse {}
 
 // Search for places nearby, points of interest and geographic locations
 message NearbyRequest {

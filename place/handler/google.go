@@ -43,6 +43,10 @@ func NewGoogle() *Google {
 	}
 }
 
+func (g *Google) Autocomplete(ctx context.Context, req *pb.AutocompleteRequest, rsp *pb.AutocompleteResponse) error {
+	return errors.BadRequest("place.autocomplete", "coming soon")
+}
+
 func (g *Google) Nearby(ctx context.Context, req *pb.NearbyRequest, rsp *pb.NearbyResponse) error {
 	greq := &maps.NearbySearchRequest{}
 

@@ -1,4 +1,12 @@
 {
+    "autocomplete": [{
+        "title": "Autocomplete queries",
+        "description": "Autocomplete queries for places",
+        "run_check": false,
+        "request": {}
+        },
+        "response": {}
+    }],
     "nearby": [{
         "title": "Find places nearby",
         "description": "Find places and points of interest nearby",
