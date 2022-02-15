@@ -42,7 +42,6 @@ func NewPlaceEndpoints() []*api.Endpoint {
 // Client API for Place service
 
 type PlaceService interface {
-	Autocomplete(ctx context.Context, in *AutocompleteRequest, opts ...client.CallOption) (*AutocompleteResponse, error)
 	Nearby(ctx context.Context, in *NearbyRequest, opts ...client.CallOption) (*NearbyResponse, error)
 	Search(ctx context.Context, in *SearchRequest, opts ...client.CallOption) (*SearchResponse, error)
 }
@@ -57,16 +56,6 @@ func NewPlaceService(name string, c client.Client) PlaceService {
 		c:    c,
 		name: name,
 	}
-}
-
-func (c *placeService) Autocomplete(ctx context.Context, in *AutocompleteRequest, opts ...client.CallOption) (*AutocompleteResponse, error) {
-	req := c.c.NewRequest(c.name, "Place.Autocomplete", in)
-	out := new(AutocompleteResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *placeService) Nearby(ctx context.Context, in *NearbyRequest, opts ...client.CallOption) (*NearbyResponse, error) {
@@ -92,14 +81,12 @@ func (c *placeService) Search(ctx context.Context, in *SearchRequest, opts ...cl
 // Server API for Place service
 
 type PlaceHandler interface {
-	Autocomplete(context.Context, *AutocompleteRequest, *AutocompleteResponse) error
 	Nearby(context.Context, *NearbyRequest, *NearbyResponse) error
 	Search(context.Context, *SearchRequest, *SearchResponse) error
 }
 
 func RegisterPlaceHandler(s server.Server, hdlr PlaceHandler, opts ...server.HandlerOption) error {
 	type place interface {
-		Autocomplete(ctx context.Context, in *AutocompleteRequest, out *AutocompleteResponse) error
 		Nearby(ctx context.Context, in *NearbyRequest, out *NearbyResponse) error
 		Search(ctx context.Context, in *SearchRequest, out *SearchResponse) error
 	}
@@ -112,10 +99,6 @@ func RegisterPlaceHandler(s server.Server, hdlr PlaceHandler, opts ...server.Han
 
 type placeHandler struct {
 	PlaceHandler
-}
-
-func (h *placeHandler) Autocomplete(ctx context.Context, in *AutocompleteRequest, out *AutocompleteResponse) error {
-	return h.PlaceHandler.Autocomplete(ctx, in, out)
 }
 
 func (h *placeHandler) Nearby(ctx context.Context, in *NearbyRequest, out *NearbyResponse) error {

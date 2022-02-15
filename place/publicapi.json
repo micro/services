@@ -4,7 +4,6 @@
   "category": "utility",
   "display_name": "Places",
   "pricing": {
-    "Place.Autocomplete": 5000,
     "Place.Search": 20000,
     "Place.Nearby": 20000
   }
