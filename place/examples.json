@@ -3,8 +3,7 @@
         "title": "Autocomplete queries",
         "description": "Autocomplete queries for places",
         "run_check": false,
-        "request": {}
-        },
+        "request": {},
         "response": {}
     }],
     "nearby": [{
