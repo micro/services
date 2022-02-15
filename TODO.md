@@ -51,7 +51,7 @@ A non-comprehensive list of additional high-level value add services:
 - Popup (locations)
 - Review (hyper local ephemeral reviews)
 - Reward (points / tokens)
-- Search
+- [x] Search
 - Secrets
 - Status
 - [x] Stream
