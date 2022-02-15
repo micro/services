@@ -1,0 +1,36 @@
+{
+    "ip": [{
+        "title": "Ping an ip",
+        "description": "Ping an ip address to get the latency",
+        "run_check": false,
+        "request": {
+            "address": "google.com"
+        },
+        "response": {
+            "status": "OK"
+        }
+    }],
+    "tcp": [{
+        "title": "Dial a tcp address",
+        "description": "Dial a tcp address",
+        "run_check": false,
+        "request": {
+            "address": "google.com:80"
+        },
+        "response": {
+            "status": "OK"
+        }
+    }],
+    "url": [{
+        "title": "Check a url",
+        "description": "Check a url endpoint",
+        "run_check": false,
+        "request": {
+            "address": "google.com"
+        },
+        "response": {
+            "status": "200 OK",
+            "code": 200
+        }
+    }]
+}

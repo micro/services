@@ -59,7 +59,7 @@ message ListResponse {
 	repeated Service services = 1;
 }
 
-// Run an app from a source repo. Specify region etc.
+// Run an app from source
 message RunRequest {
 	// name of the app
 	string name = 1;
@@ -71,7 +71,7 @@ message RunRequest {
 	string region = 4;
 	// port to run on
 	int32 port = 5;
-	// associatede env vars to pass in
+	// associated env vars to pass in
 	map<string,string> env_vars = 6;
 }
 

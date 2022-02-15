@@ -1,4 +1,4 @@
-Ephemeral pubsub messaging
+PubSub messaging
 
 # MQ Service
 

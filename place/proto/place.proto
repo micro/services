@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package place;
+
+option go_package = "./proto;place";
+
+service Place {
+	rpc Nearby(NearbyRequest) returns (NearbyResponse) {}
+	rpc Search(SearchRequest) returns (SearchResponse) {}
+}
+
+message Result {
+	// name of the place
+	string name = 1;
+	// address of place
+	string address = 2;
+	// lat/lng of place
+	string location = 3;
+	// type of location
+	string type = 4;
+	// url of an icon
+	string icon_url = 5;
+	// rating from 1.0 to 5.0
+	double rating = 6;
+	// open now
+	bool open_now = 7;
+	// opening hours
+	repeated string opening_hours = 8;
+	// simplified address
+	string vicinity = 9;
+	// feature types
+	repeated string types = 10;
+}
+
+// Autocomplete queries (coming soon)
+message AutocompleteRequest {}
+
+message AutocompleteResponse {}
+
+// Find places nearby using a location
+message NearbyRequest {
+	// specify the location by lat,lng e.g -33.8670522,-151.1957362
+	string location = 1;
+	// radius in meters within which to search
+	uint32 radius = 2;
+	// Keyword to include in the search
+	string keyword = 3;
+	// Name of the place to search for
+	string name = 4;
+	// Whether the place is open now
+	bool open_now = 5;
+	// Type of place. https://developers.google.com/maps/documentation/places/web-service/supported_types
+	string type = 6;
+}
+
+message NearbyResponse {
+	repeated Result results = 1;
+}
+
+// Search for places by text query
+message SearchRequest {
+	// the text string on which to search, for example: "restaurant"
+	string query = 1;
+	// the location by lat,lng e.g -33.8670522,-151.1957362
+	string location = 2;
+	// radius in meters within which to search
+	uint32 radius = 3;
+	// Whether the place is open now
+	bool open_now = 4;
+	// Type of place. https://developers.google.com/maps/documentation/places/web-service/supported_types
+	string type = 5;
+}
+
+message SearchResponse {
+	repeated Result results = 1;
+}

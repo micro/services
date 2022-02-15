@@ -163,24 +163,21 @@ message LogoutResponse {
 
 // Verify the email address of an account from a token sent in an email to the user.
 message VerifyEmailRequest {
-	// the email address to verify
-	string email = 1;
 	// The token from the verification email
-	string token = 2;
+	string token = 1;
 }
 
 message VerifyEmailResponse{
 
 }
 
-// Send a verification email
-// to the user being signed up. Email from will be from 'noreply@email.m3ocontent.com',
-// but you can provide the title and contents.
-// The verification link will be injected in to the email as a template variable, $micro_verification_link.
-// Example: 'Hi there, welcome onboard! Use the link below to verify your email: $micro_verification_link'
-// The variable will be replaced with an actual url that will look similar to this:
+// Send a verification email to a user.
+// Email "from" will be 'noreply@email.m3ocontent.com'.
+// The verification link will be injected in the email 
+// as a template variable, $micro_verification_link e.g 
+// 'Welcome to M3O! Use the link below to verify your email: $micro_verification_link'
+// The variable will be replaced with a url similar to:
 // 'https://user.m3o.com/user/verify?token=a-verification-token&redirectUrl=your-redir-url'
-
 message SendVerificationEmailRequest{
 	// email address to send the verification code
 	string email = 1;
@@ -189,7 +186,9 @@ message SendVerificationEmailRequest{
 	// Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
 	// HTML emails are not available currently.
 	string text_content = 3;
+	// The url to redirect to after successful verification
 	string redirect_url = 4;
+	// The url to redirect to incase of failure
 	string failure_redirect_url = 5;
 	// Display name of the sender for the email. Note: the email address will still be 'noreply@email.m3ocontent.com'
 	string from_name = 6;

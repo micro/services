@@ -1,0 +1,20 @@
+{
+    "ping": [{
+        "title": "Ping a minecraft server",
+        "description": "Ping a minecrafter server for stats",
+        "run_check": false,
+        "request": {
+            "address": "funcraft.net"
+        },
+        "response": {
+		"latency": 84,
+		"players": 412,
+		"max_players": 1000,
+		"protocol": 109,
+		"favicon": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAADAFBMVEX...",
+		"motd": "Fun times ahead",
+		"version": "Use 1.9/1.10/1.11",
+		"sample": []
+        }
+    }]
+}

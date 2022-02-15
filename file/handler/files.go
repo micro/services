@@ -1,11 +1,14 @@
 package handler
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
@@ -15,10 +18,25 @@ import (
 	"github.com/micro/services/pkg/tenant"
 )
 
-type File struct{}
+const pathPrefix = "files"
+const hostPrefix = "https://cdn.m3ocontent.com"
 
 func NewFile() *File {
-	return &File{}
+	var hp string
+	cfg, err := config.Get("micro.image.host_prefix")
+	if err != nil {
+		hp = cfg.String(hostPrefix)
+	}
+	if len(strings.TrimSpace(hp)) == 0 {
+		hp = hostPrefix
+	}
+	return &File{
+		hostPrefix: hp,
+	}
+}
+
+type File struct {
+	hostPrefix string
 }
 
 func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.DeleteResponse) error {
@@ -46,6 +64,20 @@ func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.De
 
 	for _, file := range records {
 		store.Delete(file)
+	}
+
+	path = filepath.Join(pathPrefix, tenantId, req.Project, req.Path)
+
+	// check if the files are in the blob store and delete if they exist
+	keys, err := store.DefaultBlobStore.List(store.BlobListPrefix(path))
+	if err != nil {
+		log.Error("Failed to list blob store keys %s: %v", path, err)
+		return nil
+	}
+
+	// delete the files from the blob store
+	for _, file := range keys {
+		store.DefaultBlobStore.Delete(file)
 	}
 
 	return nil
@@ -113,7 +145,26 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 	req.File.Updated = time.Now().Format(time.RFC3339Nano)
 
 	// create the file
-	return store.Write(store.NewRecord(path, req.File))
+	if err := store.Write(store.NewRecord(path, req.File)); err != nil {
+		return err
+	}
+
+	// save the file if made public
+	if !req.Public {
+		return nil
+	}
+
+	path = filepath.Join(pathPrefix, tenantId, req.File.Project, req.File.Path)
+
+	// upload to the blob store
+	err := store.DefaultBlobStore.Write(path, bytes.NewReader([]byte(req.File.Content)), store.BlobPublic(true))
+	if err != nil {
+		return err
+	}
+
+	rsp.Url = fmt.Sprintf("%v/%v/%v", e.hostPrefix, "micro", path)
+
+	return nil
 }
 
 func (e *File) List(ctx context.Context, req *file.ListRequest, rsp *file.ListResponse) error {

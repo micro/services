@@ -1,0 +1,106 @@
+{
+    "nearby": [{
+        "title": "Find places nearby",
+        "description": "Find places and points of interest nearby",
+        "run_check": false,
+        "request": {
+            "location": "51.5074577,-0.1297515",
+            "keyword": "tesco",
+            "type": "store"
+        },
+        "response": {
+            "results": [
+                {
+                        "name": "Tesco Express",
+                        "address": "",
+                        "location": "51.5089111,-0.1346174",
+                        "type": "",
+                        "icon_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+                        "rating": 3.700000047683716,
+                        "open_now": true,
+                        "opening_hours": [],
+                        "vicinity": "17-25 Regent St., London",
+                        "types": [
+                                "supermarket",
+                                "convenience_store",
+                                "grocery_or_supermarket",
+                                "food",
+                                "point_of_interest",
+                                "store",
+                                "establishment"
+                        ]
+                },
+                {
+                        "name": "Tesco Express",
+                        "address": "",
+                        "location": "51.5111163,-0.1251733",
+                        "type": "",
+                        "icon_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+                        "rating": 3.9000000953674316,
+                        "open_now": true,
+                        "opening_hours": [],
+                        "vicinity": "22-25 Bedford St, London",
+                        "types": [
+                                "supermarket",
+                                "convenience_store",
+                                "grocery_or_supermarket",
+                                "food",
+                                "point_of_interest",
+                                "store",
+                                "establishment"
+                        ]
+                }
+	    ]
+        }
+    }],
+    "search": [{
+        "title": "Search for places",
+        "description": "Find places and points of interest",
+        "run_check": false,
+        "request": {
+            "query": "food",
+            "location": "51.5074577,-0.1297515"
+        },
+        "response": {
+            "results": [
+               {
+                        "name": "Covent Garden Food \u0026 Wine",
+                        "address": "20 Wellington St, London WC2E 7DD",
+                        "location": "51.5119823,-0.1200065",
+                        "type": "",
+                        "icon_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+                        "rating": 4,
+                        "open_now": true,
+                        "opening_hours": [],
+                        "vicinity": "",
+                        "types": [
+                                "convenience_store",
+                                "book_store",
+                                "food",
+                                "point_of_interest",
+                                "store",
+                                "establishment"
+                        ]
+                },
+                {
+                        "name": "Co-op Food - Holborn - Kingsway",
+                        "address": "18 Kingsway, London WC2B 6LH",
+                        "location": "51.5140073,-0.1176054",
+                        "type": "",
+                        "icon_url": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+                        "rating": 4,
+                        "open_now": true,
+                        "opening_hours": [],
+                        "vicinity": "",
+                        "types": [
+                                "convenience_store",
+                                "food",
+                                "point_of_interest",
+                                "store",
+                                "establishment"
+                        ]
+                }
+            ]
+        }
+    }]
+}

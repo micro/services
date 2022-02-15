@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package minecraft;
+
+option go_package = "./proto;minecraft";
+
+service Minecraft {
+	rpc Ping(PingRequest) returns (PingResponse) {}
+}
+
+message PlayerSample {
+	// unique id of player
+	string uuid = 1;
+	// name of the player
+	string name = 2;
+}
+
+// Ping a minecraft server
+message PingRequest {
+	// address of the server
+	string address = 1;
+}
+
+message PingResponse {
+	// Latency (ms) between us and the server (EU)
+	uint32 latency = 1;
+	// Number of players online
+	int32 players = 2;
+	// Max players ever
+	int32 max_players = 3;
+	// Protocol number of the server
+	int32 protocol = 4;
+	// Favicon in base64
+	string favicon = 5;
+	// Message of the day
+	string motd = 6;
+	// Version of the server
+	string version = 7;
+	// List of connected players
+	repeated PlayerSample sample = 8;
+}
