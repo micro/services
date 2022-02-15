@@ -30,7 +30,7 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 	}
 
 	// check if a key exists for the user
-	okey := new(otpKey)
+	var okey otpKey
 
 	if req.Expiry <= 0 {
 		req.Expiry = 60
@@ -40,7 +40,7 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 		req.Size = 6
 	}
 
-	if _, err := cache.Context(ctx).Get("otp:"+req.Id, &okey); err != nil || okey == nil {
+	if _, err := cache.Context(ctx).Get("otp:"+req.Id, &okey); err != nil {
 		// generate a key
 		key, err := totp.Generate(totp.GenerateOpts{
 			Issuer:      "Micro",
@@ -53,7 +53,7 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 			return errors.InternalServerError("otp.generate", "failed to generate code")
 		}
 
-		okey = &otpKey{
+		okey = otpKey{
 			Secret: key.Secret(),
 			Expiry: uint(req.Expiry),
 		}
@@ -78,11 +78,11 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 		return errors.InternalServerError("otp.generate", "failed to generate code: %v", err)
 	}
 
-	// we have to replaced the cached value if the expiry is different
+	// we have to replace the cached value if the expiry is different
 	if v := uint(req.Expiry); v != okey.Expiry {
 		okey.Expiry = v
 
-		if err := cache.Context(ctx).Set("otp:"+req.Id, okey, time.Now().Add(time.Minute*5)); err != nil {
+		if err := cache.Context(ctx).Set("otp:"+req.Id, okey, time.Now().Add(time.Second*time.Duration(req.Expiry))); err != nil {
 			logger.Error("Failed to store secret: %v", err)
 			return errors.InternalServerError("otp.generate", "failed to generate code")
 		}
@@ -133,7 +133,7 @@ func (e *Otp) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest
 		return err
 	}
 
-	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+	if len(request.TenantId) < 10 { // deliberate length check, so we don't delete all the things
 		return errors.BadRequest(method, "Missing tenant ID")
 	}
 

@@ -209,12 +209,14 @@ message SendPasswordResetEmailRequest {
 	string textContent = 3;
 	// Display name of the sender for the email. Note: the email address will still be 'noreply@email.m3ocontent.com'
 	string fromName = 4;
+	// Number of secs that the password reset email is valid for, defaults to 1800 secs (30 mins)
+	int64 expiration = 5;
 }
 
 message SendPasswordResetEmailResponse {
 }
 
-// Reset password with the code sent by the "SendPasswordResetEmail" endoint.
+// Reset password with the code sent by the "SendPasswordResetEmail" endpoint.
 message ResetPasswordRequest {
 	// the email to reset the password for
 	string email = 1;

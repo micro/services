@@ -305,7 +305,7 @@ func (s *User) SendVerificationEmail(ctx context.Context, req *pb.SendVerificati
 
 	// generate a new OTP code
 	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
-		Expiry: 900,
+		Expiry: 1800,
 		Id:     req.Email,
 	})
 
@@ -333,9 +333,14 @@ func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordR
 		return err
 	}
 
+	var expiry int64 = 1800 // 1800 secs = 30 min
+	if req.Expiration > 0 {
+		expiry = req.Expiration
+	}
+
 	// generate a new OTP code
 	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
-		Expiry: 900,
+		Expiry: expiry,
 		Id:     req.Email,
 	})
 
@@ -370,12 +375,6 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 		return err
 	}
 
-	// check if a request was made to reset the password, we should have saved it
-	code, err := s.domain.ReadPasswordResetCode(ctx, account.Id, req.Code)
-	if err != nil {
-		return err
-	}
-
 	// validate the code, e.g its an OTP token and hasn't expired
 	resp, err := s.Otp.Validate(ctx, &otp.ValidateRequest{
 		Id:   req.Email,
@@ -399,12 +398,9 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	pp := base64.StdEncoding.EncodeToString(h)
 
 	// update the user password
-	if err := s.domain.UpdatePassword(ctx, code.UserID, salt, pp); err != nil {
+	if err := s.domain.UpdatePassword(ctx, account.Id, salt, pp); err != nil {
 		return errors.InternalServerError("user.resetpassword", err.Error())
 	}
-
-	// delete our saved code
-	s.domain.DeletePasswordResetCode(ctx, account.Id, req.Code)
 
 	return nil
 }
