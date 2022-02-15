@@ -2,5 +2,9 @@
   "name": "place",
   "icon": "🗺️",
   "category": "utility",
-  "display_name": "Places"
+  "display_name": "Places",
+  "pricing": {
+    "Place.Search": 20000,
+    "Place.Nearby": 20000
+  }
 }
