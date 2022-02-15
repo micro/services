@@ -58,7 +58,7 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 			Expiry: uint(req.Expiry),
 		}
 
-		if err := cache.Context(ctx).Set("otp:"+req.Id, okey, time.Now().Add(time.Second*time.Duration(req.Expiry))); err != nil {
+		if err := cache.Context(ctx).Set("otp:"+req.Id, okey, time.Time{}); err != nil {
 			logger.Error("Failed to store secret: %v", err)
 			return errors.InternalServerError("otp.generate", "failed to generate code")
 		}
@@ -82,7 +82,7 @@ func (e *Otp) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gen
 	if v := uint(req.Expiry); v != okey.Expiry {
 		okey.Expiry = v
 
-		if err := cache.Context(ctx).Set("otp:"+req.Id, okey, time.Now().Add(time.Second*time.Duration(req.Expiry))); err != nil {
+		if err := cache.Context(ctx).Set("otp:"+req.Id, okey, time.Time{}); err != nil {
 			logger.Error("Failed to store secret: %v", err)
 			return errors.InternalServerError("otp.generate", "failed to generate code")
 		}
