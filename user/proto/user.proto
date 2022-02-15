@@ -36,7 +36,7 @@ message Account {
 	// if the account is verified
 	bool verified = 6;
 	// date of verification
-	int64 verificationDate = 7;
+	int64 verification_date = 7;
 	// Store any custom data you want about your users in this fields.
 	map<string,string> profile = 8;
 }
@@ -114,9 +114,9 @@ message UpdatePasswordRequest {
 	// the account id
 	string userId = 1;
 	// the old password
-	string oldPassword = 2;
+	string old_password = 2;
 	// the new password
-	string newPassword = 3;
+	string new_password = 3;
 	// confirm new password
 	string confirm_password = 4;
 }
@@ -127,7 +127,7 @@ message UpdatePasswordResponse {
 // Read a session by the session id. In the event it has expired or is not found and error is returned.
 message ReadSessionRequest {
 	// The unique session id
-	string sessionId = 1;
+	string session_id = 1;
 }
 
 message ReadSessionResponse {
@@ -155,7 +155,7 @@ message LoginResponse {
 // Logout a user account
 message LogoutRequest {
 	// the session id for the user to logout
-	string sessionId = 1;
+	string session_id = 1;
 }
 
 message LogoutResponse {
@@ -188,11 +188,11 @@ message SendVerificationEmailRequest{
 	string subject = 2;
 	// Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
 	// HTML emails are not available currently.
-	string textContent = 3;
-	string redirectUrl = 4;
-	string failureRedirectUrl = 5;
+	string text_content = 3;
+	string redirect_url = 4;
+	string failure_redirect_url = 5;
 	// Display name of the sender for the email. Note: the email address will still be 'noreply@email.m3ocontent.com'
-	string fromName = 6;
+	string from_name = 6;
 }
 
 message SendVerificationEmailResponse{}
@@ -206,9 +206,9 @@ message SendPasswordResetEmailRequest {
 	string subject = 2;
 	// Text content of the email. Don't forget to include the string '$code' which will be replaced by the real verification link
 	// HTML emails are not available currently.
-	string textContent = 3;
+	string text_content = 3;
 	// Display name of the sender for the email. Note: the email address will still be 'noreply@email.m3ocontent.com'
-	string fromName = 4;
+	string from_name = 4;
 	// Number of secs that the password reset email is valid for, defaults to 1800 secs (30 mins)
 	int64 expiration = 5;
 }
@@ -223,9 +223,9 @@ message ResetPasswordRequest {
 	// The code from the verification email
 	string code = 2;
 	// the new password
-	string newPassword = 3;
+	string new_password = 3;
 	// confirm new password
-	string confirmPassword = 4;
+	string confirm_password = 4;
 }
 
 message ResetPasswordResponse {}
@@ -249,9 +249,9 @@ message SendMagicLinkRequest {
 	string subject = 2;
 	// Text content of the email. Don't forget to include the string '$micro_verification_link' which will be replaced by the real verification link
 	// HTML emails are not available currently.
-	string textContent = 3;
+	string text_content = 3;
 	// Display name of the sender for the email. Note: the email address will still be 'support@m3o.com'
-	string fromName = 4;
+	string from_name = 4;
 	// Your web site address, example www.example.com or user.example.com
 	string address = 5;
 	// Endpoint name where your http request handler handles MagicLink by 
