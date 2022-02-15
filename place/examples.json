@@ -53,7 +53,7 @@
 	    ]
         }
     }],
-    "Search": [{
+    "search": [{
         "title": "Search for places",
         "description": "Find places and points of interest",
         "run_check": false,
