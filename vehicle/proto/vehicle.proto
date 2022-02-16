@@ -8,6 +8,10 @@ service Vehicle {
 	rpc Lookup(LookupRequest) returns (LookupResponse) {}
 }
 
+service VehicleAdmin {
+	rpc SetLogo(SetLogoRequest) returns (SetLogoResponse) {}
+}
+
 // Lookup a UK vehicle by it's registration number
 message LookupRequest {
 	// the vehicle registration number
@@ -45,4 +49,13 @@ message LookupResponse {
 	string wheelplan = 14;
 	// date of last v5 issue
 	string last_v5_issued = 15;
+	// url of logo for the make
+	string logo_url = 16;
 }
+
+message SetLogoRequest {
+	string make = 1;
+	string url = 2;
+}
+
+message SetLogoResponse {}
