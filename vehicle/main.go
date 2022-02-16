@@ -25,8 +25,10 @@ func main() {
 		logger.Fatal("dvla.api_key config not found")
 	}
 
+	h := handler.New(key)
 	// Register handler
-	pb.RegisterVehicleHandler(srv.Server(), handler.New(key))
+	pb.RegisterVehicleHandler(srv.Server(), h)
+	pb.RegisterVehicleAdminHandler(srv.Server(), h)
 
 	// Run service
 	if err := srv.Run(); err != nil {

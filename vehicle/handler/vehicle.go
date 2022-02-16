@@ -2,10 +2,15 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"strings"
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/pkg/api"
+	"github.com/micro/services/pkg/auth"
 	pb "github.com/micro/services/vehicle/proto"
 )
 
@@ -60,6 +65,44 @@ func (v *Vehicle) Lookup(ctx context.Context, req *pb.LookupRequest, rsp *pb.Loo
 	rsp.TypeApproval, _ = resp["typeApproval"].(string)
 	rsp.Wheelplan, _ = resp["wheelplan"].(string)
 	rsp.LastV5Issued, _ = resp["dateOfLastV5CIssued"].(string)
-
+	rsp.LogoUrl = v.getLogo(rsp.Make)
 	return nil
+}
+
+const (
+	prefixLogo = "logo"
+)
+
+func (v *Vehicle) getLogo(make string) string {
+	recs, err := store.Read(logoKey(make))
+	if err != nil {
+		if err == store.ErrNotFound {
+			logger.Errorf("No logo found for make %s", make)
+		} else {
+			logger.Errorf("Error reading logo %s", err)
+		}
+		return ""
+	}
+	var ret string
+	json.Unmarshal(recs[0].Value, &ret)
+	return ret
+}
+
+func (v *Vehicle) SetLogo(ctx context.Context, request *pb.SetLogoRequest, response *pb.SetLogoResponse) error {
+	if _, err := auth.VerifyMicroAdmin(ctx, "vehicleAdmin.SetLogo"); err != nil {
+		return err
+	}
+
+	if len(request.Url) == 0 || len(request.Make) == 0 {
+		return errors.BadRequest("vehicleAdmin.SetLogo", "Missing params")
+	}
+	rec := store.NewRecord(logoKey(request.Make), request.Url)
+	if err := store.Write(rec); err != nil {
+		return err
+	}
+	return nil
+}
+
+func logoKey(make string) string {
+	return fmt.Sprintf("%s/%s", prefixLogo, strings.ToLower(make))
 }

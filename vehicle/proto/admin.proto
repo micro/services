@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package vehicle;
+
+option go_package = "./proto;vehicle";
+
+service VehicleAdmin {
+  rpc SetLogo(SetLogoRequest) returns (SetLogoResponse) {}
+}
+
+message SetLogoRequest {
+  string make = 1;
+  string url = 2;
+}
+
+message SetLogoResponse {}
