@@ -299,6 +299,12 @@ func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordR
 	if len(req.Email) == 0 {
 		return errors.BadRequest("user.sendpasswordresetemail", "missing email")
 	}
+	if len(req.Subject) == 0 {
+		return errors.BadRequest("user.sendpasswordresetemail", "missing subject")
+	}
+	if len(req.TextContent) == 0 {
+		return errors.BadRequest("user.sendpasswordresetemail", "missing textContent")
+	}
 
 	// look for an existing user
 	account, err := s.domain.SearchByEmail(ctx, req.Email)
@@ -306,18 +312,23 @@ func (s *User) SendPasswordResetEmail(ctx context.Context, req *pb.SendPasswordR
 		return err
 	}
 
-	// generate a new OTP code
-	resp, err := s.Otp.Generate(ctx, &otp.GenerateRequest{
-		Expiry: 900,
-		Id:     req.Email,
-	})
+	var expiry int64 = 1800 // 1800 secs = 30 min
+	if req.Expiration > 0 {
+		expiry = req.Expiration
+	}
 
 	if err != nil {
 		return err
 	}
+	code := random(8)
 
+	// save the password reset code
+	_, err = s.domain.SavePasswordResetCode(ctx, account.Id, code, time.Duration(expiry)*time.Second)
+	if err != nil {
+		return err
+	}
 	// save the code in the database and then send via email
-	return s.domain.SendPasswordResetEmail(ctx, account.Id, resp.Code, req.FromName, req.Email, account.Username, req.Subject, req.TextContent)
+	return s.domain.SendPasswordResetEmail(ctx, account.Id, code, req.FromName, req.Email, account.Username, req.Subject, req.TextContent)
 }
 
 func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, rsp *pb.ResetPasswordResponse) error {
@@ -343,24 +354,10 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 		return err
 	}
 
-	// check if a request was made to reset the password, we should have saved it
-	code, err := s.domain.ReadPasswordResetCode(ctx, account.Id, req.Code)
+	// validate the code
+	_, err = s.domain.ReadPasswordResetCode(ctx, account.Id, req.Code)
 	if err != nil {
 		return err
-	}
-
-	// validate the code, e.g its an OTP token and hasn't expired
-	resp, err := s.Otp.Validate(ctx, &otp.ValidateRequest{
-		Id:   req.Email,
-		Code: req.Code,
-	})
-	if err != nil {
-		return err
-	}
-
-	// check if the code is actually valid
-	if !resp.Success {
-		return errors.BadRequest("user.resetpassword", "invalid code")
 	}
 
 	// no error means it exists and not expired
@@ -372,7 +369,7 @@ func (s *User) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest, 
 	pp := base64.StdEncoding.EncodeToString(h)
 
 	// update the user password
-	if err := s.domain.UpdatePassword(ctx, code.UserID, salt, pp); err != nil {
+	if err := s.domain.UpdatePassword(ctx, account.Id, salt, pp); err != nil {
 		return errors.InternalServerError("user.resetpassword", err.Error())
 	}
 

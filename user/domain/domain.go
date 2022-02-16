@@ -101,20 +101,17 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	return err
 }
 
-func (domain *Domain) SavePasswordResetCode(ctx context.Context, userId, code string) (*passwordResetCode, error) {
+func (domain *Domain) SavePasswordResetCode(ctx context.Context, userId, code string, expiry time.Duration) (*passwordResetCode, error) {
 	pwcode := passwordResetCode{
-		Expires: time.Now().Add(24 * time.Hour),
+		Expires: time.Now().Add(expiry),
 		UserID:  userId,
 		Code:    code,
 	}
 
-	val, err := json.Marshal(pwcode)
-	if err != nil {
-		return nil, err
-	}
-
-	record := store.NewRecord(generatePasswordResetCodeStoreKey(ctx, userId, code), val)
-	err = domain.store.Write(record)
+	record := store.NewRecord(generatePasswordResetCodeStoreKey(ctx, userId, code), pwcode)
+	// expire the record itself too
+	record.Expiry = expiry
+	err := domain.store.Write(record)
 
 	return &pwcode, err
 }
@@ -126,7 +123,7 @@ func (domain *Domain) DeletePasswordResetCode(ctx context.Context, userId, code 
 // ReadPasswordResetCode returns the user reset code
 func (domain *Domain) ReadPasswordResetCode(ctx context.Context, userId, code string) (*passwordResetCode, error) {
 	records, err := domain.store.Read(generatePasswordResetCodeStoreKey(ctx, userId, code))
-	if err != nil {
+	if err != nil && err != store.ErrNotFound {
 		return nil, err
 	}
 
@@ -155,14 +152,8 @@ func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeSt
 	from := mail.NewEmail(fromName, domain.fromEmail)
 	to := mail.NewEmail(toUsername, toAddress)
 
-	// save the password reset code
-	pw, err := domain.SavePasswordResetCode(ctx, userId, codeStr)
-	if err != nil {
-		return err
-	}
-
 	// set the code in the text content
-	textContent = strings.Replace(textContent, "$code", pw.Code, -1)
+	textContent = strings.Replace(textContent, "$code", codeStr, -1)
 	message := mail.NewSingleEmail(from, subject, to, textContent, "")
 
 	// send the email
@@ -171,6 +162,9 @@ func (domain *Domain) SendPasswordResetEmail(ctx context.Context, userId, codeSt
 
 	// log the response
 	logger.Info(response)
+	if response.StatusCode >= 400 {
+		return microerr.InternalServerError("user", "Error sending password reset email")
+	}
 
 	return err
 }
