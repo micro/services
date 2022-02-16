@@ -18,7 +18,8 @@
       "run_check": false,
       "request": {
         "id": "user-1",
-        "email": "joe+2@example.com"
+        "email": "joe+2@example.com",
+        "username": "joe"
       },
       "response": {}
     }
