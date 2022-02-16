@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -82,12 +83,18 @@ func (v *Vehicle) getLogo(make string) string {
 		}
 		return ""
 	}
-	return string(recs[0].Value)
+	var ret string
+	json.Unmarshal(recs[0].Value, &ret)
+	return ret
 }
 
 func (v *Vehicle) SetLogo(ctx context.Context, request *pb.SetLogoRequest, response *pb.SetLogoResponse) error {
 	if _, err := auth.VerifyMicroAdmin(ctx, "vehicleAdmin.SetLogo"); err != nil {
 		return err
+	}
+
+	if len(request.Url) == 0 || len(request.Make) == 0 {
+		return errors.BadRequest("vehicleAdmin.SetLogo", "Missing params")
 	}
 	rec := store.NewRecord(logoKey(request.Make), request.Url)
 	if err := store.Write(rec); err != nil {
