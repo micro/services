@@ -26,7 +26,6 @@ require (
 	github.com/hashicorp/golang-lru v0.5.3
 	github.com/iverly/go-mcping v1.0.1-0.20200818104507-3d8fc23750ae
 	github.com/jackc/pgx/v4 v4.10.1
-	github.com/jmoiron/jsonq v0.0.0-20150511023944-e874b168d07e // indirect
 	github.com/kevinburke/go-types v0.0.0-20201208005256-aee49f568a20 // indirect
 	github.com/kevinburke/go.uuid v1.2.0 // indirect
 	github.com/kevinburke/rest v0.0.0-20210506044642-5611499aa33c // indirect
@@ -35,7 +34,7 @@ require (
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro/v3 v3.9.1-0.20220203152611-b23544122058
+	github.com/micro/micro/v3 v3.9.1-0.20220216155053-3f60fc42a827
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/minio/minio-go/v7 v7.0.16
 	github.com/o1egl/govatar v0.3.0
