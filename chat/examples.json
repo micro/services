@@ -122,7 +122,7 @@
             "user_id": "user-2"
         },
         "response": {
-            "messages": [{
+            "message": {
                 "id": "d44c6dc0-89d7-4a36-b528-cfd6c728ccef",
                 "client": "web",
                 "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
@@ -130,7 +130,7 @@
                 "sent_at": "2022-02-17T16:18:35.683008885Z",
                 "subject": "Random",
                 "text": "Hey whats up?"
-            }]
+            }
         }
     }],
     "kick": [{

@@ -9,7 +9,7 @@ service Chat {
 	rpc Send(SendRequest) returns (SendResponse);
 	rpc List(ListRequest) returns (ListResponse);
 	rpc Delete(DeleteRequest) returns (DeleteResponse);
-	rpc Join(JoinRequest) returns (stream Message);
+	rpc Join(JoinRequest) returns (stream JoinResponse);
 	rpc Invite(InviteRequest) returns (InviteResponse);
 	rpc Leave(LeaveRequest) returns (LeaveResponse);
 	rpc Kick(KickRequest) returns (KickResponse);
@@ -91,6 +91,10 @@ message JoinRequest {
 	string room_id = 1;
 	// user id joining
 	string user_id = 2;
+}
+
+message JoinResponse {
+	Message message = 1;
 }
 
 message Room {

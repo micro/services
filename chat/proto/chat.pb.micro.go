@@ -132,7 +132,7 @@ type Chat_JoinService interface {
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
-	Recv() (*Message, error)
+	Recv() (*JoinResponse, error)
 }
 
 type chatServiceJoin struct {
@@ -155,8 +155,8 @@ func (x *chatServiceJoin) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *chatServiceJoin) Recv() (*Message, error) {
-	m := new(Message)
+func (x *chatServiceJoin) Recv() (*JoinResponse, error) {
+	m := new(JoinResponse)
 	err := x.stream.Recv(m)
 	if err != nil {
 		return nil, err
@@ -264,7 +264,7 @@ type Chat_JoinStream interface {
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
-	Send(*Message) error
+	Send(*JoinResponse) error
 }
 
 type chatJoinStream struct {
@@ -287,7 +287,7 @@ func (x *chatJoinStream) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *chatJoinStream) Send(m *Message) error {
+func (x *chatJoinStream) Send(m *JoinResponse) error {
 	return x.stream.Send(m)
 }
 

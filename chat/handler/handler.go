@@ -403,7 +403,7 @@ func (c *Chat) Join(ctx context.Context, req *pb.JoinRequest, stream pb.Chat_Joi
 			}
 
 			// publish the message to the stream
-			if err := stream.Send(&msg); err != nil {
+			if err := stream.Send(&pb.JoinResponse{Message: &msg}); err != nil {
 				logger.Errorf("Error sending message to stream. ChatID: %v. Message ID: %v. Error: %v", msg.RoomId, msg.Id, err)
 				errChan <- err
 				return nil
