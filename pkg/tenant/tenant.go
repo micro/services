@@ -10,6 +10,9 @@ import (
 
 const (
 	metaOwner = "apikey_owner"
+
+	// default tenant
+	defaultId = "micro"
 )
 
 // FromContext returns a tenant from the context
@@ -61,4 +64,13 @@ func NewContext(id, issuer, owner string) context.Context {
 			metaOwner: owner,
 		},
 	})
+}
+
+// Get the tenant and default where needed
+func Id(ctx context.Context) string {
+	id, ok := FromContext(ctx)
+	if !ok {
+		return "micro"
+	}
+	return id
 }

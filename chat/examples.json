@@ -1,0 +1,174 @@
+{
+    "new": [{
+        "title": "Create a new chat",
+        "description": "Create a new chat by name",
+        "run_check": false,
+        "request": {
+            "name": "general",
+            "description": "The general chat room"
+        },
+        "response": {
+            "room": {
+                "id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "name": "general",
+                "description": "The general chat room",
+                "created_at": "2022-02-17T16:12:43.942557998Z",
+                "user_ids": [],
+                "private": false
+            }
+        }
+    }],
+    "list": [{
+        "title": "List chat rooms",
+        "description": "List all the chat rooms",
+        "run_check": false,
+        "request": {},
+        "response": {
+            "rooms": [{
+                "id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "name": "general",
+                "description": "The general chat room",
+                "created_at": "2022-02-17T16:12:43.942557998Z",
+                "user_ids": [],
+                "private": false
+            }]
+        }
+    }],
+    "delete": [{
+        "title": "Delete a chat",
+        "description": "Delete a chat room",
+        "run_check": false,
+        "request": {
+            "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910"
+        },
+        "response": {
+            "room": {
+                "id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "name": "general",
+                "description": "The general chat room",
+                "created_at": "2022-02-17T16:12:43.942557998Z",
+                "user_ids": [],
+                "private": false
+            }
+        }
+    }],
+    "invite": [{
+        "title": "Invite a user",
+        "description": "Invite a user to a chat room",
+        "run_check": false,
+        "request": {
+            "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+            "user_id": "user-1"
+        },
+        "response": {
+            "room": {
+                "id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "name": "general",
+                "description": "The general chat room",
+                "created_at": "2022-02-17T16:12:43.942557998Z",
+                "user_ids": ["user-1"],
+                "private": false
+            }
+        }
+    }],
+    "send": [{
+        "title": "Send a message",
+        "description": "Send a message to a room",
+        "run_check": false,
+        "request": {
+            "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+            "user_id": "user-1",
+            "client": "web",
+            "subject": "Random",
+            "text": "Hey whats up?"
+        },
+        "response": {
+            "message": {
+                "id": "d44c6dc0-89d7-4a36-b528-cfd6c728ccef",
+                "client": "web",
+                "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "user_id": "user-1",
+                "sent_at": "2022-02-17T16:18:35.683008885Z",
+                "subject": "Random",
+                "text": "Hey whats up?"
+            }
+        }
+    }],
+    "history": [{
+        "title": "Get chat history",
+        "description": "Get chat history for a room",
+        "run_check": false,
+        "request": {
+            "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910"
+        },
+        "response": {
+            "messages": [{
+                "id": "d44c6dc0-89d7-4a36-b528-cfd6c728ccef",
+                "client": "web",
+                "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "user_id": "user-1",
+                "sent_at": "2022-02-17T16:18:35.683008885Z",
+                "subject": "Random",
+                "text": "Hey whats up?"
+            }]
+        }
+    }],
+    "join": [{
+        "title": "Join a room",
+        "description": "Join a room",
+        "run_check": false,
+        "request": {
+            "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+            "user_id": "user-2"
+        },
+        "response": {
+            "messages": [{
+                "id": "d44c6dc0-89d7-4a36-b528-cfd6c728ccef",
+                "client": "web",
+                "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "user_id": "user-1",
+                "sent_at": "2022-02-17T16:18:35.683008885Z",
+                "subject": "Random",
+                "text": "Hey whats up?"
+            }]
+        }
+    }],
+    "kick": [{
+        "title": "Kick a user from a room",
+        "description": "Kick a user from a chat room",
+        "run_check": false,
+        "request": {
+            "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+            "user_id": "user-1"
+        },
+        "response": {
+            "room": {
+                "id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "name": "general",
+                "description": "The general chat room",
+                "created_at": "2022-02-17T16:12:43.942557998Z",
+                "user_ids": [],
+                "private": false
+            }
+        }
+    }],
+    "leave": [{
+        "title": "Leave a room",
+        "description": "Leave a chat room",
+        "run_check": false,
+        "request": {
+            "room_id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+            "user_id": "user-1"
+        },
+        "response": {
+            "room": {
+                "id": "d8057208-f81a-4e14-ad7f-c29daa2bb910",
+                "name": "general",
+                "description": "The general chat room",
+                "created_at": "2022-02-17T16:12:43.942557998Z",
+                "user_ids": [],
+                "private": false
+            }
+        }
+    }]
+}
