@@ -8,6 +8,7 @@ service Avatar {
   rpc Generate(GenerateRequest) returns (GenerateResponse) {}
 }
 
+// Generate an unique avatar
 message GenerateRequest {
   // avatar's gender, `male` or `female`, default is `male`
   string gender = 1;
