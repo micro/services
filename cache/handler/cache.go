@@ -34,11 +34,6 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 		value = ""
 	}
 
-	// set the default value if specified
-	if value == nil && len(req.DefaultValue) > 0 {
-		value = req.DefaultValue
-	}
-
 	rsp.Key = req.Key
 	// set the value
 	rsp.Value = fmt.Sprintf("%v", value)

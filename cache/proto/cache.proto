@@ -17,8 +17,6 @@ service Cache {
 message GetRequest {
 	// The key to retrieve
 	string key = 1;
-	// Specify a default value returned in the event the value does not exist
-	string default_value = 2;
 }
 
 message GetResponse {
