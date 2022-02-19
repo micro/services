@@ -45,7 +45,6 @@ type EmojiService interface {
 	Find(ctx context.Context, in *FindRequest, opts ...client.CallOption) (*FindResponse, error)
 	Flag(ctx context.Context, in *FlagRequest, opts ...client.CallOption) (*FlagResponse, error)
 	Print(ctx context.Context, in *PrintRequest, opts ...client.CallOption) (*PrintResponse, error)
-	Send(ctx context.Context, in *SendRequest, opts ...client.CallOption) (*SendResponse, error)
 }
 
 type emojiService struct {
@@ -90,23 +89,12 @@ func (c *emojiService) Print(ctx context.Context, in *PrintRequest, opts ...clie
 	return out, nil
 }
 
-func (c *emojiService) Send(ctx context.Context, in *SendRequest, opts ...client.CallOption) (*SendResponse, error) {
-	req := c.c.NewRequest(c.name, "Emoji.Send", in)
-	out := new(SendResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // Server API for Emoji service
 
 type EmojiHandler interface {
 	Find(context.Context, *FindRequest, *FindResponse) error
 	Flag(context.Context, *FlagRequest, *FlagResponse) error
 	Print(context.Context, *PrintRequest, *PrintResponse) error
-	Send(context.Context, *SendRequest, *SendResponse) error
 }
 
 func RegisterEmojiHandler(s server.Server, hdlr EmojiHandler, opts ...server.HandlerOption) error {
@@ -114,7 +102,6 @@ func RegisterEmojiHandler(s server.Server, hdlr EmojiHandler, opts ...server.Han
 		Find(ctx context.Context, in *FindRequest, out *FindResponse) error
 		Flag(ctx context.Context, in *FlagRequest, out *FlagResponse) error
 		Print(ctx context.Context, in *PrintRequest, out *PrintResponse) error
-		Send(ctx context.Context, in *SendRequest, out *SendResponse) error
 	}
 	type Emoji struct {
 		emoji
@@ -137,8 +124,4 @@ func (h *emojiHandler) Flag(ctx context.Context, in *FlagRequest, out *FlagRespo
 
 func (h *emojiHandler) Print(ctx context.Context, in *PrintRequest, out *PrintResponse) error {
 	return h.EmojiHandler.Print(ctx, in, out)
-}
-
-func (h *emojiHandler) Send(ctx context.Context, in *SendRequest, out *SendResponse) error {
-	return h.EmojiHandler.Send(ctx, in, out)
 }
