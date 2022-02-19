@@ -8,7 +8,6 @@ service Emoji {
 	rpc Find(FindRequest) returns (FindResponse) {}
 	rpc Flag(FlagRequest) returns (FlagResponse) {}
 	rpc Print(PrintRequest) returns (PrintResponse) {}
-	rpc Send(SendRequest) returns (SendResponse) {}
 }
 
 // Find an emoji by its alias e.g :beer:
@@ -45,17 +44,3 @@ message PrintResponse {
 	string text = 1;
 }
 
-// Send an emoji to anyone via SMS. Messages are sent in the form '<message> Sent from <from>'
-message SendRequest {
-	// the name of the sender from e.g Alice
-	string from = 1;
-	// phone number to send to (including international dialing code)
-	string to = 2;
-	// message to send including emoji aliases
-	string message = 3;
-}
-
-message SendResponse {
-	// whether or not it succeeded
-	bool success = 1;
-}
