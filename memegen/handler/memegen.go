@@ -10,16 +10,16 @@ import (
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
-	pb "github.com/micro/services/meme/proto"
+	pb "github.com/micro/services/memegen/proto"
 	"github.com/micro/services/pkg/api"
 )
 
-type Meme struct {
+type Memegen struct {
 	username string
 	password string
 }
 
-func New() *Meme {
+func New() *Memegen {
 	v, err := config.Get("imgflip.username")
 	if err != nil {
 		logger.Fatalf("imgflip.username config not found: %v", err)
@@ -36,7 +36,7 @@ func New() *Meme {
 	if len(password) == 0 {
 		logger.Fatal("imgflip.password config not found")
 	}
-	return &Meme{
+	return &Memegen{
 		username: username,
 		password: password,
 	}
@@ -51,16 +51,16 @@ type Data struct {
 	Memes []*pb.Template `json:"memes"`
 }
 
-func (m *Meme) Templates(ctx context.Context, req *pb.TemplatesRequest, rsp *pb.TemplatesResponse) error {
+func (m *Memegen) Templates(ctx context.Context, req *pb.TemplatesRequest, rsp *pb.TemplatesResponse) error {
 	templateRsp := new(TemplateRequest)
 	if err := api.Get("https://api.imgflip.com/get_memes", templateRsp); err != nil {
-		return errors.InternalServerError("meme.templates", err.Error())
+		return errors.InternalServerError("memegen.templates", err.Error())
 	}
 	rsp.Templates = templateRsp.Data.Memes
 	return nil
 }
 
-func (m *Meme) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.GenerateResponse) error {
+func (m *Memegen) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.GenerateResponse) error {
 	vals := url.Values{}
 	vals.Set("template_id", req.Id)
 	vals.Set("text0", req.TopText)
@@ -74,7 +74,7 @@ func (m *Meme) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Ge
 
 	resp, err := http.PostForm("https://api.imgflip.com/caption_image", vals)
 	if err != nil {
-		return errors.InternalServerError("meme.generate", err.Error())
+		return errors.InternalServerError("memegen.generate", err.Error())
 	}
 	defer resp.Body.Close()
 
@@ -83,7 +83,7 @@ func (m *Meme) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Ge
 
 	success := genRsp["success"].(bool)
 	if !success {
-		return errors.BadRequest("meme.generate", genRsp["error_message"].(string))
+		return errors.BadRequest("memegen.generate", genRsp["error_message"].(string))
 	}
 
 	// set response url

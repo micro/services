@@ -1,20 +1,20 @@
 syntax = "proto3";
 
-package meme;
+package memegen;
 
-option go_package = "./proto;meme";
+option go_package = "./proto;memegen";
 
-service Meme {
+service Memegen {
 	rpc Templates(TemplatesRequest) returns (TemplatesResponse) {}
 	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
 }
 
 message Template {
-	// id of the meme
+	// id of the memegen
 	string id = 1;
-	// name of the meme
+	// name of the memegen
 	string name = 2;
-	// url of the meme
+	// url of the memegen
 	string url = 3;
 	// width in pixels
 	int32 width = 4;
@@ -62,7 +62,7 @@ message GenerateRequest {
 }
 
 message GenerateResponse {
-	// url of the meme
+	// url of the memegen
 	string url = 1;
 }
 

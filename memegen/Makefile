@@ -8,15 +8,15 @@ init:
 
 .PHONY: api
 api:
-	protoc --openapi_out=. --proto_path=. proto/meme.proto
+	protoc --openapi_out=. --proto_path=. proto/memegen.proto
 
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/meme.proto
+	protoc --proto_path=. --micro_out=. --go_out=:. proto/memegen.proto
 	
 .PHONY: build
 build:
-	go build -o meme *.go
+	go build -o memegen *.go
 
 .PHONY: test
 test:
@@ -24,4 +24,4 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t meme:latest
+	docker build . -t memegen:latest
