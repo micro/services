@@ -48,6 +48,7 @@ message TemplatesResponse {
 	repeated Template templates = 1;
 }
 
+// Generate a meme using a template
 message GenerateRequest {
 	// the template id to use
 	string id = 1;
