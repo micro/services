@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package meme;
+
+option go_package = "./proto;meme";
+
+service Meme {
+	rpc Templates(TemplatesRequest) returns (TemplatesResponse) {}
+	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
+}
+
+message Template {
+	// id of the meme
+	string id = 1;
+	// name of the meme
+	string name = 2;
+	// url of the meme
+	string url = 3;
+	// width in pixels
+	int32 width = 4;
+	// height in pixels
+	int32 height = 5;
+	// number of boxes used
+	int32 box_count = 6;
+}
+
+message Box {
+	// text to display
+	string text = 1;
+	// x axis position
+	int32 x = 2;
+	// y axis position
+	int32 y = 3;
+	// width in pixels
+	int32 width = 4;
+	// height in pixels
+	int32 height = 5;
+	// colour hex code
+	string color = 6;
+	// outline color hex code
+	string outline = 7;
+}
+
+// List the available templates
+message TemplatesRequest {}
+
+message TemplatesResponse {
+	repeated Template templates = 1;
+}
+
+message GenerateRequest {
+	// the template id to use
+	string id = 1;
+	// top text
+	string top_text = 2;
+	// bottom text
+	string bottom_text = 3;
+	// font: arial or impact
+	string font = 4;
+	// font size; defaults to 50px
+	string max_font_size = 5;
+}
+
+message GenerateResponse {
+	// url of the meme
+	string url = 1;
+}
+
