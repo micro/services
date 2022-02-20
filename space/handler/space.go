@@ -543,7 +543,7 @@ func (s Space) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 
 	log.Infof("Deleted %d objects from s3 for %s", len(oIDs), request.TenantId)
 
-	keys, err := store.List(store.ListPrefix(fmt.Sprintf("%s/", prefixByUser)))
+	keys, err := store.List(store.ListPrefix(fmt.Sprintf("%s/%s/", prefixByUser, request.TenantId)))
 	if err != nil {
 		log.Errorf("Error listing objects %s", err)
 		return errors.InternalServerError(method, "Error listing objects")
