@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"path"
 	"time"
 
 	"github.com/google/uuid"
@@ -65,7 +65,7 @@ func (h *Lists) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Creat
 		Items:   req.Items,
 	}
 
-	key := fmt.Sprintf("%s:%s", tnt, id)
+	key := path.Join("list", tnt, id.String())
 	rec := store.NewRecord(key, list)
 
 	if err = store.Write(rec); err != nil {
@@ -96,7 +96,7 @@ func (h *Lists) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		tnt = "default"
 	}
 
-	key := fmt.Sprintf("%s:%s", tnt, req.Id)
+	key := path.Join("list", tnt, req.Id)
 
 	// read the specific list
 	recs, err := store.Read(key)
@@ -133,7 +133,7 @@ func (h *Lists) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Updat
 		tnt = "default"
 	}
 
-	key := fmt.Sprintf("%s:%s", tnt, req.List.Id)
+	key := path.Join("list", tnt, req.List.Id)
 
 	// read the specific list
 	recs, err := store.Read(key)
@@ -234,7 +234,7 @@ func (h *Lists) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delet
 		tnt = "default"
 	}
 
-	key := fmt.Sprintf("%s:%s", tnt, req.Id)
+	key := path.Join("list", tnt, req.Id)
 
 	// read the specific list
 	recs, err := store.Read(key)
@@ -275,7 +275,7 @@ func (h *Lists) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespo
 		tnt = "default"
 	}
 
-	key := fmt.Sprintf("%s:", tnt)
+	key := path.Join("list", tnt) + "/"
 
 	// Retrieve all of the records in the store
 	recs, err := store.Read(key, store.ReadPrefix())
@@ -307,7 +307,7 @@ func (h *Lists) DeleteData(ctx context.Context, request *adminpb.DeleteDataReque
 		return errors.BadRequest(method, "Missing tenant ID")
 	}
 
-	keys, err := store.List(store.ListPrefix(request.TenantId))
+	keys, err := store.List(store.ListPrefix(path.Join("list", request.TenantId) + "/"))
 	if err != nil {
 		return err
 	}
