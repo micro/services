@@ -1,11 +1,11 @@
 
 {
     "create": [{
-        "subject": "Create a comment",
+        "title": "Create a comment",
         "description": "Create a simple text based comment",
         "run_check": false,
         "request": {
-            "subject": "New Comment",
+            "title": "New Comment",
             "text": "This is my comment"
         },
         "response": {
@@ -19,7 +19,7 @@
         }
     }],
     "read": [{
-        "subject": "Read a comment",
+        "title": "Read a comment",
         "description": "Read a comment by its ID",
         "run_check": false,
         "request": {
@@ -36,7 +36,7 @@
         }
     }],
     "list": [{
-        "subject": "List all comments",
+        "title": "List all comments",
         "description": "List all your available comments",
         "run_check": false,
         "request": {},
@@ -53,8 +53,8 @@
         }
     }],
     "update": [{
-        "subject": "Update a Comment",
-        "description": "Update the comment subject and text",
+        "title": "Update a Comment",
+        "description": "Update the comment title and text",
         "run_check": false,
         "request": {
 	    "comment": {
@@ -74,7 +74,7 @@
         }
     }],
     "delete": [{
-        "subject": "Delete a Comment",
+        "title": "Delete a Comment",
         "description": "Delete a comment by id",
         "run_check": false,
         "request": {
@@ -91,7 +91,7 @@
         }
     }],
     "events": [{
-        "subject": "Subscribe to events",
+        "title": "Subscribe to events",
         "description": "Subscribe to comment change events",
         "run_check": false,
         "request": {
