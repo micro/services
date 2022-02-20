@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package lists;
+
+option go_package = "./proto;lists";
+
+service Lists {
+	rpc List(ListRequest) returns (ListResponse);
+	rpc Create(CreateRequest) returns (CreateResponse);
+	rpc Read(ReadRequest) returns (ReadResponse);
+	rpc Delete(DeleteRequest) returns (DeleteResponse);
+	rpc Update(UpdateRequest) returns (UpdateResponse);
+	rpc Events(EventsRequest) returns (stream EventsResponse);
+}
+
+message List {
+	// unique id for the list, generated if not specified
+	string id = 1;
+	// time at which the list was created
+	string created = 2;
+	// time at which the list was updated
+	string updated = 3;
+	// name of the list
+	string name = 4;
+	// items within the list
+	repeated string items = 5;
+}
+
+// Create a new list
+message CreateRequest {
+	// list name
+	string name = 1;
+	// list items
+	repeated string items = 2;
+}
+
+message CreateResponse {
+	// The created list
+	List list = 1;
+}
+
+// Read a list
+message ReadRequest {
+	// the list id
+	string id = 1;
+}
+
+message ReadResponse {
+	// The list
+	List list = 1;
+}
+
+// Update a list
+message UpdateRequest {
+	List list = 1;
+}
+
+message UpdateResponse {
+	List list = 1;
+}
+
+// Delete a list
+message DeleteRequest {
+	// specify the id of the list
+	string id = 1;
+}
+
+message DeleteResponse {
+	List list = 1;
+}
+
+// List all the lists
+message ListRequest {}
+
+message ListResponse {
+	// the list of lists
+	repeated List lists = 1;
+}
+
+// Subscribe to lists events
+message EventsRequest {
+	// optionally specify a list id
+	string id = 1;
+}
+
+message EventsResponse {
+	// the event which occured; create, delete, update
+	string event = 1;
+	// the list which the operation occured on
+	List list = 2;
+}

@@ -1,0 +1,111 @@
+
+{
+    "create": [{
+        "title": "Create a list",
+        "description": "Create a simple text based list",
+        "run_check": false,
+        "request": {
+            "title": "New List",
+            "text": "This is my list"
+        },
+        "response": {
+            "list": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:33:03+01:00",
+                "title": "New List",
+                "text": "This is my list"
+            }
+        }
+    }],
+    "read": [{
+        "title": "Read a list",
+        "description": "Read a list by its ID",
+        "run_check": false,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "list": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:33:03+01:00",
+                "title": "New List",
+                "text": "This is my list"
+            }
+        }
+    }],
+    "list": [{
+        "title": "List all lists",
+        "description": "List all your available lists",
+        "run_check": false,
+        "request": {},
+        "response": {
+            "lists": [
+                {
+                        "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                        "created": "2021-09-29T13:33:03+01:00",
+                        "updated": "2021-09-29T13:33:03+01:00",
+                        "title": "New List",
+                        "text": "This is my list"
+                }
+            ]
+        }
+    }],
+    "update": [{
+        "title": "Update a List",
+        "description": "Update the list title and text",
+        "run_check": false,
+        "request": {
+	    "list": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "title": "Update List",
+                "text": "Updated list text"
+            }
+        },
+        "response": {
+            "list": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "title": "Update List",
+                "text": "Updated list text"
+            }
+        }
+    }],
+    "delete": [{
+        "title": "Delete a List",
+        "description": "Delete a list by id",
+        "run_check": false,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "list": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "title": "Update List",
+                "text": "Updated list text"
+            }
+        }
+    }],
+    "events": [{
+        "title": "Subscribe to events",
+        "description": "Subscribe to list change events",
+        "run_check": false,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "event": "deleted",
+            "list": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "title": "Update List",
+                "text": "Updated list text"
+            }
+        }
+    }]
+}
