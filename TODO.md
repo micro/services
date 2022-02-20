@@ -6,7 +6,7 @@ A list of open source services to be created
 
 - [ ] blog - a simple blogging service
   - [ ] posts
-  - [ ] comments
+  - [x] comments
   - [ ] tags
   - [ ] feed - rss feed aggregator
 - [ ] inbox - a simple inbox for mail and private messages
@@ -35,7 +35,7 @@ A non-comprehensive list of additional high-level value add services:
 - Food (markets)
 - Fraud/Risk
 - Gamify (scores / leaderboard)
-- [x] geocoding
+- [x] Geocoding
 - i18n
 - [x] Image
 - [x] Location
@@ -47,10 +47,10 @@ A non-comprehensive list of additional high-level value add services:
 - Payment
 - Personalisation
 - Presence
-- Place
+- [x] Places
 - Popup (locations)
-- Review (hyper local ephemeral reviews)
-- Reward (points / tokens)
+- Reviews (hyper local ephemeral reviews)
+- Rewards (points / tokens)
 - [x] Search
 - Secrets
 - Status
