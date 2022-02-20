@@ -1,8 +1,8 @@
 
 {
     "templates": [{
-        "title": "Memegen templates",
-        "description": "List of memegen templates",
+        "title": "Meme templates",
+        "description": "List of meme templates",
         "run_check": false,
         "request": {},
         "response": {
@@ -27,8 +27,8 @@
         }
     }],
     "generate": [{
-        "title": "Generate a memegen",
-        "description": "Generate a memegen from a template",
+        "title": "Generate a meme",
+        "description": "Generate a meme from a template",
         "run_check": false,
         "request": {
             "id": "444501",
