@@ -1,0 +1,111 @@
+
+{
+    "create": [{
+        "subject": "Create a comment",
+        "description": "Create a simple text based comment",
+        "run_check": false,
+        "request": {
+            "subject": "New Comment",
+            "text": "This is my comment"
+        },
+        "response": {
+            "comment": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:33:03+01:00",
+                "subject": "New Comment",
+                "text": "This is my comment"
+            }
+        }
+    }],
+    "read": [{
+        "subject": "Read a comment",
+        "description": "Read a comment by its ID",
+        "run_check": false,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "comment": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:33:03+01:00",
+                "subject": "New Comment",
+                "text": "This is my comment"
+            }
+        }
+    }],
+    "list": [{
+        "subject": "List all comments",
+        "description": "List all your available comments",
+        "run_check": false,
+        "request": {},
+        "response": {
+            "comments": [
+                {
+                        "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                        "created": "2021-09-29T13:33:03+01:00",
+                        "updated": "2021-09-29T13:33:03+01:00",
+                        "subject": "New Comment",
+                        "text": "This is my comment"
+                }
+            ]
+        }
+    }],
+    "update": [{
+        "subject": "Update a Comment",
+        "description": "Update the comment subject and text",
+        "run_check": false,
+        "request": {
+	    "comment": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "subject": "Update Comment",
+                "text": "Updated comment text"
+            }
+        },
+        "response": {
+            "comment": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "subject": "Update Comment",
+                "text": "Updated comment text"
+            }
+        }
+    }],
+    "delete": [{
+        "subject": "Delete a Comment",
+        "description": "Delete a comment by id",
+        "run_check": false,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "comment": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "subject": "Update Comment",
+                "text": "Updated comment text"
+            }
+        }
+    }],
+    "events": [{
+        "subject": "Subscribe to events",
+        "description": "Subscribe to comment change events",
+        "run_check": false,
+        "request": {
+            "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+        },
+        "response": {
+            "event": "deleted",
+            "comment": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
+                "created": "2021-09-29T13:33:03+01:00",
+                "updated": "2021-09-29T13:50:20+01:00",
+                "subject": "Update Comment",
+                "text": "Updated comment text"
+            }
+        }
+    }]
+}

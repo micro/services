@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package comments;
+
+option go_package = "./proto;comments";
+
+service Comments {
+	rpc List(ListRequest) returns (ListResponse);
+	rpc Create(CreateRequest) returns (CreateResponse);
+	rpc Read(ReadRequest) returns (ReadResponse);
+	rpc Delete(DeleteRequest) returns (DeleteResponse);
+	rpc Update(UpdateRequest) returns (UpdateResponse);
+	rpc Events(EventsRequest) returns (stream EventsResponse);
+}
+
+message Comment {
+	// unique id for the comment, generated if not specified
+	string id = 1;
+	// time at which the comment was created
+	string created = 2;
+	// time at which the comment was updated
+	string updated = 3;
+	// subject of the comment
+	string subject = 4;
+	// text of the comment
+	string text = 5;
+}
+
+// Create a new comment
+message CreateRequest {
+	// comment subject
+	string subject = 1;
+	// comment items
+	string text = 2;
+}
+
+message CreateResponse {
+	// The created comment
+	Comment comment = 1;
+}
+
+// Read a comment
+message ReadRequest {
+	// the comment id
+	string id = 1;
+}
+
+message ReadResponse {
+	// The comment
+	Comment comment = 1;
+}
+
+// Update a comment
+message UpdateRequest {
+	Comment comment = 1;
+}
+
+message UpdateResponse {
+	Comment comment = 1;
+}
+
+// Delete a comment
+message DeleteRequest {
+	// specify the id of the comment
+	string id = 1;
+}
+
+message DeleteResponse {
+	Comment comment = 1;
+}
+
+// List all the comments
+message ListRequest {}
+
+message ListResponse {
+	// the comment of comments
+	repeated Comment comments = 1;
+}
+
+// Subscribe to comments events
+message EventsRequest {
+	// optionally specify a comment id
+	string id = 1;
+}
+
+message EventsResponse {
+	// the event which occured; create, delete, update
+	string event = 1;
+	// the comment which the operation occured on
+	Comment comment = 2;
+}
