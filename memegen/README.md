@@ -1,7 +1,7 @@
-Memegen generator
+Generate funny memes
 
 # Memegen Service
 
-Generate memegen. That's it.
+Generate memes. That's it.
 
 Powered by [Imgflip](https://imgflip.com/api)
