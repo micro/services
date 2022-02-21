@@ -356,7 +356,7 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		if acl != nil && *acl == mdACLPublic {
 			vis = visibilityPublic
 		}
-		md = meta{
+		md = &meta{
 			Visibility:   vis,
 			CreateTime:   (*goo.LastModified).Format(time.RFC3339Nano),
 			ModifiedTime: (*goo.LastModified).Format(time.RFC3339Nano),
