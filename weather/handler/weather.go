@@ -121,6 +121,16 @@ func (w *Weather) Forecast(ctx context.Context, req *pb.ForecastRequest, rsp *pb
 			MaxWindKph:   day["maxwind_kph"].(float64),
 		})
 	}
+	location := respBody["location"].(map[string]interface{})
+
+	// set the location
+	rsp.Location = location["name"].(string)
+	rsp.Region = location["region"].(string)
+	rsp.Country = location["region"].(string)
+	rsp.Latitude = location["lat"].(float64)
+	rsp.Longitude = location["lon"].(float64)
+	rsp.Timezone = location["tz_id"].(string)
+	rsp.LocalTime = location["localtime"].(string)
 
 	return nil
 }
