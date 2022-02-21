@@ -338,7 +338,7 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	})
 	if err != nil {
 		aerr, ok := err.(awserr.Error)
-		if ok && aerr.Code() == "NotSuchKey" {
+		if ok && aerr.Code() == "NoSuchKey" {
 			return errors.BadRequest(method, "Object not found")
 		}
 		log.Errorf("Error s3 %s", err)
@@ -346,9 +346,26 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	}
 
 	md, err := s.objectMeta(objectName)
-	if err != nil {
+	if err != nil && err != store.ErrNotFound {
 		log.Errorf("Error reading meta %s", err)
 		return errors.InternalServerError(method, "Error reading object")
+	}
+	if md == nil {
+		vis := visibilityPrivate
+		acl := goo.Metadata[mdACL]
+		if acl != nil && *acl == mdACLPublic {
+			vis = visibilityPublic
+		}
+		md = meta{
+			Visibility:   vis,
+			CreateTime:   (*goo.LastModified).Format(time.RFC3339Nano),
+			ModifiedTime: (*goo.LastModified).Format(time.RFC3339Nano),
+		}
+		// store the metadata for easy retrieval for listing
+		if err := store.Write(store.NewRecord(fmt.Sprintf("%s/%s", prefixByUser, objectName), md)); err != nil {
+			log.Errorf("Error writing object to store %s", err)
+			return errors.InternalServerError(method, "Error reading object")
+		}
 	}
 
 	url := ""
