@@ -36,6 +36,10 @@ message Forecast {
 	string sunrise = 12;
 	// time of sunset
 	string sunset = 13;
+	// max wind speed mph
+	double max_wind_mph = 14;
+	// max wind speed kph
+	double max_wind_kph = 15;
 }
 
 // Get the weather forecast for the next 1-10 days

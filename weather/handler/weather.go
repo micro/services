@@ -117,6 +117,8 @@ func (w *Weather) Forecast(ctx context.Context, req *pb.ForecastRequest, rsp *pb
 			IconUrl:      day["condition"].(map[string]interface{})["icon"].(string),
 			Sunrise:      fc["astro"].(map[string]interface{})["sunrise"].(string),
 			Sunset:       fc["astro"].(map[string]interface{})["sunset"].(string),
+			MaxWindMph:   day["maxwind_mph"].(float64),
+			MaxWindKph:   day["maxwind_kph"].(float64),
 		})
 	}
 
