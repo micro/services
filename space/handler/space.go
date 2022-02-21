@@ -225,7 +225,7 @@ func (s Space) List(ctx context.Context, request *pb.ListRequest, response *pb.L
 	}
 
 	recs, err := store.Read(fmt.Sprintf("%s/%s", prefixByUser, objectName), store.ReadPrefix())
-	if err != nil {
+	if err != nil && err != store.ErrNotFound {
 		log.Errorf("Error listing objects %s", err)
 		return errors.InternalServerError(method, "Error listing objects")
 	}
@@ -285,9 +285,15 @@ func (s Space) Head(ctx context.Context, request *pb.HeadRequest, response *pb.H
 	}
 
 	md, err := s.objectMeta(objectName)
-	if err != nil {
+	if err != nil && err != store.ErrNotFound {
 		log.Errorf("Error reading object meta %s", err)
 		return errors.InternalServerError(method, "Error reading object")
+	}
+	if md == nil {
+		md, err = s.reconstructMeta(ctx, method, objectName, *goo.LastModified)
+		if err != nil {
+			return err
+		}
 	}
 
 	url := ""
@@ -351,41 +357,9 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		return errors.InternalServerError(method, "Error reading object")
 	}
 	if md == nil {
-		// bug, reconstruct
-		aclo, err := s.client.GetObjectAcl(&sthree.GetObjectAclInput{
-			Bucket: aws.String(s.conf.SpaceName),
-			Key:    aws.String(objectName),
-		})
+		md, err = s.reconstructMeta(ctx, method, objectName, *goo.LastModified)
 		if err != nil {
-			aerr, ok := err.(awserr.Error)
-			if ok && aerr.Code() == "NotFound" {
-				return errors.BadRequest(method, "Object not found")
-			}
-			log.Errorf("Error s3 %s", err)
-			return errors.InternalServerError(method, "Error reading object")
-		}
-
-		vis := visibilityPrivate
-
-		for _, v := range aclo.Grants {
-			if v.Grantee != nil &&
-				v.Grantee.URI != nil && *(v.Grantee.URI) == "http://acs.amazonaws.com/groups/global/AllUsers" &&
-				v.Permission != nil && *(v.Permission) == "READ" {
-				vis = visibilityPublic
-				break
-			}
-
-		}
-
-		md = &meta{
-			Visibility:   vis,
-			CreateTime:   (*goo.LastModified).Format(time.RFC3339Nano),
-			ModifiedTime: (*goo.LastModified).Format(time.RFC3339Nano),
-		}
-		// store the metadata for easy retrieval for listing
-		if err := store.Write(store.NewRecord(fmt.Sprintf("%s/%s", prefixByUser, objectName), md)); err != nil {
-			log.Errorf("Error writing object to store %s", err)
-			return errors.InternalServerError(method, "Error reading object")
+			return err
 		}
 	}
 
@@ -413,6 +387,44 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	}
 
 	return nil
+}
+
+func (s *Space) reconstructMeta(ctx context.Context, method, objectName string, lastMod time.Time) (*meta, error) {
+	aclo, err := s.client.GetObjectAcl(&sthree.GetObjectAclInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if ok && aerr.Code() == "NotFound" {
+			return nil, errors.BadRequest(method, "Object not found")
+		}
+		log.Errorf("Error s3 %s", err)
+		return nil, errors.InternalServerError(method, "Error reading object")
+	}
+
+	vis := visibilityPrivate
+
+	for _, v := range aclo.Grants {
+		if v.Grantee != nil &&
+			v.Grantee.URI != nil && *(v.Grantee.URI) == "http://acs.amazonaws.com/groups/global/AllUsers" &&
+			v.Permission != nil && *(v.Permission) == "READ" {
+			vis = visibilityPublic
+			break
+		}
+	}
+
+	md := &meta{
+		Visibility:   vis,
+		CreateTime:   lastMod.Format(time.RFC3339Nano),
+		ModifiedTime: lastMod.Format(time.RFC3339Nano),
+	}
+	// store the metadata for easy retrieval for listing
+	if err := store.Write(store.NewRecord(fmt.Sprintf("%s/%s", prefixByUser, objectName), md)); err != nil {
+		log.Errorf("Error writing object to store %s", err)
+		return nil, errors.InternalServerError(method, "Error reading object")
+	}
+	return md, nil
 }
 
 func (s *Space) Download(ctx context.Context, req *api.Request, rsp *api.Response) error {
