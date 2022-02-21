@@ -352,7 +352,7 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	}
 	if md == nil {
 
-		goo, err := s.client.HeadObject(&sthree.HeadObjectInput{
+		goo, err := s.client.GetObjectAcl(&sthree.GetObjectAclInput{
 			Bucket: aws.String(s.conf.SpaceName),
 			Key:    aws.String(objectName),
 		})
@@ -366,18 +366,19 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		}
 
 		vis := visibilityPrivate
-		acl := goo.Metadata[mdACL]
 
-		for k, v := range goo.Metadata {
-			log.Infof("k %s v %s", k, *v)
+		log.Infof(goo.GoString())
+		for _, v := range goo.Grants {
+			log.Infof("g %s, p %s", v.Grantee, v.Permission)
 		}
-		if acl != nil && *acl == mdACLPublic {
-			vis = visibilityPublic
-		}
+		log.Infof("owner %s", goo.Owner)
+		//if acl != nil && *acl == mdACLPublic {
+		//	vis = visibilityPublic
+		//}
 		md = &meta{
-			Visibility:   vis,
-			CreateTime:   (*goo.LastModified).Format(time.RFC3339Nano),
-			ModifiedTime: (*goo.LastModified).Format(time.RFC3339Nano),
+			Visibility: vis,
+			//CreateTime:   (*goo.LastModified).Format(time.RFC3339Nano),
+			//ModifiedTime: (*goo.LastModified).Format(time.RFC3339Nano),
 		}
 		// store the metadata for easy retrieval for listing
 		if err := store.Write(store.NewRecord(fmt.Sprintf("%s/%s", prefixByUser, objectName), md)); err != nil {
