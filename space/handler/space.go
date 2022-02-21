@@ -351,8 +351,8 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		return errors.InternalServerError(method, "Error reading object")
 	}
 	if md == nil {
-
-		goo, err := s.client.GetObjectAcl(&sthree.GetObjectAclInput{
+		// bug, reconstruct
+		aclo, err := s.client.GetObjectAcl(&sthree.GetObjectAclInput{
 			Bucket: aws.String(s.conf.SpaceName),
 			Key:    aws.String(objectName),
 		})
@@ -367,18 +367,16 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 
 		vis := visibilityPrivate
 
-		log.Infof(goo.GoString())
-		for _, v := range goo.Grants {
-			log.Infof("g %s, p %s", v.Grantee, v.Permission)
+		for _, v := range aclo.Grants {
+			if *v.Grantee.URI == "http://acs.amazonaws.com/groups/global/AllUser" && *v.Permission == "READ" {
+				vis = visibilityPublic
+			}
 		}
-		log.Infof("owner %s", goo.Owner)
-		//if acl != nil && *acl == mdACLPublic {
-		//	vis = visibilityPublic
-		//}
+
 		md = &meta{
-			Visibility: vis,
-			//CreateTime:   (*goo.LastModified).Format(time.RFC3339Nano),
-			//ModifiedTime: (*goo.LastModified).Format(time.RFC3339Nano),
+			Visibility:   vis,
+			CreateTime:   (*goo.LastModified).Format(time.RFC3339Nano),
+			ModifiedTime: (*goo.LastModified).Format(time.RFC3339Nano),
 		}
 		// store the metadata for easy retrieval for listing
 		if err := store.Write(store.NewRecord(fmt.Sprintf("%s/%s", prefixByUser, objectName), md)); err != nil {
