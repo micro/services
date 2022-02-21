@@ -12,6 +12,14 @@
         }
       },
       "response": {
+        "record": {
+          "id": "0d5aab12-c716-4174-8c3a-f4222b337292",
+          "data": {
+            "name": "John Doe",
+            "age": 37,
+            "starsign": "Leo"
+          }
+        }
       }
     }
   ],
