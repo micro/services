@@ -369,8 +369,8 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 
 		for _, v := range aclo.Grants {
 			if v.Grantee != nil &&
-				*(v.Grantee.URI) == "http://acs.amazonaws.com/groups/global/AllUser" &&
-				*(v.Permission) == "READ" {
+				v.Grantee.URI != nil && *(v.Grantee.URI) == "http://acs.amazonaws.com/groups/global/AllUser" &&
+				v.Permission != nil && *(v.Permission) == "READ" {
 				vis = visibilityPublic
 				break
 			}
