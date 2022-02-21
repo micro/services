@@ -351,8 +351,23 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		return errors.InternalServerError(method, "Error reading object")
 	}
 	if md == nil {
+
+		goo, err := s.client.HeadObject(&sthree.HeadObjectInput{
+			Bucket: aws.String(s.conf.SpaceName),
+			Key:    aws.String(objectName),
+		})
+		if err != nil {
+			aerr, ok := err.(awserr.Error)
+			if ok && aerr.Code() == "NotFound" {
+				return errors.BadRequest(method, "Object not found")
+			}
+			log.Errorf("Error s3 %s", err)
+			return errors.InternalServerError(method, "Error reading object")
+		}
+
 		vis := visibilityPrivate
 		acl := goo.Metadata[mdACL]
+
 		for k, v := range goo.Metadata {
 			log.Infof("k %s v %s", k, *v)
 		}
