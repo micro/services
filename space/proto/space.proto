@@ -94,7 +94,7 @@ message HeadObject {
 	string url = 5;
 }
 
-message Object {
+message SpaceObject {
 	// name of object
 	string name = 1;
 	// when was this last modified
@@ -118,7 +118,7 @@ message ReadRequest {
 // Returns the raw object
 message ReadResponse {
 	// The object itself
-	Object object = 1;
+	SpaceObject object = 1;
 }
 
 // Download an object via a presigned url
