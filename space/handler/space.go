@@ -377,7 +377,7 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		return errors.InternalServerError(method, "Failed to read data")
 	}
 
-	rsp.Object = &pb.Object{
+	rsp.Object = &pb.SpaceObject{
 		Name:       req.Name,
 		Modified:   goo.LastModified.Format(time.RFC3339Nano),
 		Created:    md.CreateTime,
