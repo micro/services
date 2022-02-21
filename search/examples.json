@@ -1,17 +1,14 @@
 {
   "index": [
     {
-      "title": "Index a document",
+      "title": "Index a record",
       "run_check": false,
       "request": {
         "index": "customers",
-        "document": {
-          "id": "1234",
-          "contents": {
-            "name": "John Doe",
-            "age": 37,
-            "starsign": "Leo"
-          }
+        "data": {
+          "name": "John Doe",
+          "age": 37,
+          "starsign": "Leo"
         }
       },
       "response": {
@@ -20,17 +17,17 @@
   ],
   "search": [
     {
-      "title": "Search for a document",
+      "title": "Search for a record",
       "run_check": false,
       "request": {
         "index": "customers",
         "query": "name == 'John'"
       },
       "response": {
-        "documents": [
+        "records": [
           {
             "id": "1234",
-            "contents": {
+            "data": {
               "name": "John Doe",
               "age": 37,
               "starsign": "Leo"
@@ -47,10 +44,10 @@
         "query": "name == 'John' AND starsign == 'Leo'"
       },
       "response": {
-        "documents": [
+        "records": [
           {
             "id": "1234",
-            "contents": {
+            "data": {
               "name": "John Doe",
               "age": 37,
               "starsign": "Leo"
@@ -67,10 +64,10 @@
         "query": "name == 'John' OR name == 'Jane'"
       },
       "response": {
-        "documents": [
+        "records": [
           {
             "id": "1234",
-            "contents": {
+            "data": {
               "name": "John Doe",
               "age": 37,
               "starsign": "Leo"
@@ -82,7 +79,7 @@
   ],
   "delete": [
     {
-      "title": "Delete a document",
+      "title": "Delete a record",
       "run_check": false,
       "request": {
         "id": "1234",

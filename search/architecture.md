@@ -2,13 +2,17 @@ Indexing and full text search
 
 # Search Service
 
-Store and search JSON records. The Search API provides indexing and full text search. 
-Search for a word or phrase in a particular field of a record. Combine multiple with 
-either `AND` or `OR` boolean operators to create complex queries.
+Store and search JSON records. The Search API provides full indexing and text search.
 
 Powered by [OpenSearch](https://opensearch.org/).
 
-## Query Language
+Search for a given word or phrase in a particular field of a record. Combine multiple with either `AND` or `OR` boolean operators to create complex queries.
+
+## Usage
+
+Records are indexed  using the `/search/index` endpoint. Record fields are automatically indexed with no need to define which fields to index ahead of time. Records are logically grouped in to `indexes` so you may have an index for customers and one for products. Once records are inserted you are ready to search, simple as that.
+
+## Search query language
 
 The search API supports a simple query language to let you get to your data quickly without having to learn a complicated language. 
 

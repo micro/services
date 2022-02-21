@@ -14,39 +14,41 @@ service Search {
 	rpc DeleteIndex(DeleteIndexRequest) returns (DeleteIndexResponse) {}
 }
 
-// Index a document i.e. insert a document to search for.
+// Index a record i.e. insert a document to search for.
 message IndexRequest {
-	// The document to index
-	Document document = 1;
-	// The index this document belongs to
-	string index = 2;
-
+	// The index this record belongs to
+	string index = 1;
+	// The data to index
+	google.protobuf.Struct data = 2;
+	// Optional ID for the record
+	string id = 3;
 }
 
-message Document {
-	// The ID for this document. If blank, one will be generated
+message Record {
+	// The ID for this record. If blank, one will be generated
 	string id = 1;
-	// The JSON contents of the document
-	google.protobuf.Struct contents = 2;
+	// The JSON contents of the record
+	google.protobuf.Struct data = 2;
 }
 
 message IndexResponse {
-	string id = 1;
+	// the indexed record
+	Record record = 1;
 }
 
-// Delete a document given its ID
+// Delete a record given its ID
 message DeleteRequest {
-	// The ID of the document to delete
+	// The ID of the record to delete
 	string id = 1;
-	// The index the document belongs to
+	// The index the record belongs to
 	string index = 2;
 }
 
 message DeleteResponse {}
 
-// Search for documents in a given in index
+// Search for records in a given in index
 message SearchRequest {
-	// The index the document belongs to
+	// The index the record belongs to
 	string index = 1;
 
 	// The query. See docs for query language examples
@@ -54,8 +56,8 @@ message SearchRequest {
 }
 
 message SearchResponse {
-	// The matching documents
-	repeated Document documents = 1;
+	// The matching records
+	repeated Record records = 1;
 
 }
 

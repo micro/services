@@ -142,29 +142,26 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 	if !ok {
 		return errors.Unauthorized(method, "Unauthorized")
 	}
-	if request.Document == nil {
-		return errors.BadRequest(method, "Missing document param")
+	if request.Data == nil {
+		return errors.BadRequest(method, "Missing data")
 	}
-	if len(request.Document.Id) == 0 {
-		request.Document.Id = uuid.New().String()
+	if len(request.Id) == 0 {
+		request.Id = uuid.New().String()
 	}
 	if len(request.Index) == 0 {
-		return errors.BadRequest(method, "Missing index param")
+		return errors.BadRequest(method, "Missing index")
 	}
 	if !isValidIndexName(request.Index) {
 		return errors.BadRequest(method, "Index name should contain only alphanumerics and hyphens")
 	}
-	if request.Document.Contents == nil {
-		return errors.BadRequest(method, "Missing document.contents param")
-	}
 
-	b, err := request.Document.Contents.MarshalJSON()
+	b, err := request.Data.MarshalJSON()
 	if err != nil {
 		return errors.BadRequest(method, "Error processing document")
 	}
 	req := openapi.CreateRequest{
 		Index:      indexName(tnt, request.Index),
-		DocumentID: request.Document.Id,
+		DocumentID: request.Id,
 		Body:       bytes.NewBuffer(b),
 	}
 	rsp, err := req.Do(ctx, s.client)
@@ -177,7 +174,11 @@ func (s *Search) Index(ctx context.Context, request *pb.IndexRequest, response *
 		log.Errorf("Error indexing doc %s", rsp.String())
 		return errors.InternalServerError(method, "Error indexing document")
 	}
-	response.Id = req.DocumentID
+	response.Record = &pb.Record{
+		Id:   req.DocumentID,
+		Data: request.Data,
+	}
+
 	return nil
 }
 
@@ -269,9 +270,9 @@ func (s *Search) Search(ctx context.Context, request *pb.SearchRequest, response
 			log.Errorf("Error unmarshalling doc %s", err)
 			return errors.InternalServerError(method, "Error searching documents")
 		}
-		response.Documents = append(response.Documents, &pb.Document{
-			Id:       v.ID,
-			Contents: vs,
+		response.Records = append(response.Records, &pb.Record{
+			Id:   v.ID,
+			Data: vs,
 		})
 	}
 	return nil
