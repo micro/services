@@ -353,6 +353,9 @@ func (s *Space) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	if md == nil {
 		vis := visibilityPrivate
 		acl := goo.Metadata[mdACL]
+		for k, v := range goo.Metadata {
+			log.Infof("k %s v %s", k, *v)
+		}
 		if acl != nil && *acl == mdACLPublic {
 			vis = visibilityPublic
 		}
