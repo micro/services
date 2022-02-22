@@ -1,8 +1,8 @@
 
 {
     "call": [{
-        "title": "Call the helloworld service",
-        "description": "Helloworld is a simple example that takes a name and returns a personalised message",
+        "title": "Call helloworld",
+        "description": "Call the helloworld service and get a message back",
         "run_check": true,
         "idempotent": true,
         "request": {
@@ -13,7 +13,8 @@
         }
     }],
     "stream": [{
-        "title": "Streams responses from the server using websockets",
+        "title": "Stream helloworld",
+        "description": "Streams responses from the server using websockets",
         "run_check": true,
         "idempotent": true,
         "request": {
