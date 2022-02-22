@@ -52,7 +52,9 @@
             "condition": "Partly cloudy",
             "icon_url": "//cdn.weatherapi.com/weather/64x64/day/116.png",
             "sunrise": "06:45 AM",
-            "sunset": "07:01 PM"
+            "sunset": "07:01 PM",
+            "max_wind_mph": 4.3,
+            "max_wind_kph": 6.8
           },
           {
             "date": "2021-09-22",
@@ -65,7 +67,9 @@
             "condition": "Partly cloudy",
             "icon_url": "//cdn.weatherapi.com/weather/64x64/day/116.png",
             "sunrise": "06:47 AM",
-            "sunset": "06:58 PM"
+            "sunset": "06:58 PM",
+            "max_wind_mph": 4.3,
+            "max_wind_kph": 6.8
           }
         ]
       }
