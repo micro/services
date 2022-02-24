@@ -49,6 +49,12 @@ type User struct {
 	Otp    otp.OtpService
 }
 
+type userPayload struct {
+	Id       string
+	Email    string
+	Username string
+}
+
 func NewUser(st store.Store, otp otp.OtpService) *User {
 	return &User{
 		domain: domain.New(st),
@@ -56,62 +62,91 @@ func NewUser(st store.Store, otp otp.OtpService) *User {
 	}
 }
 
-// validatePostUserData checks userId, username, email post data are valid and in right format
-func (s *User) validatePostUserData(ctx context.Context, userId, username, email string) error {
-	username = strings.TrimSpace(strings.ToLower(username))
-	email = strings.TrimSpace(strings.ToLower(email))
+// validatePostUserData trims leading and trailing spaces of userId, username, email
+// also, check for email format and make sure that values are not empty.
+func (s *User) validatePostUserData(ctx context.Context, p *userPayload) error {
+	p.Username = strings.TrimSpace(strings.ToLower(p.Username))
+	p.Email = strings.TrimSpace(strings.ToLower(p.Email))
+	p.Id = strings.TrimSpace(p.Id)
 
-	if !emailFormat.MatchString(email) {
-		return errors.BadRequest("create.email-format-check", "email has wrong format")
+	// email format check
+	if !emailFormat.MatchString(p.Email) {
+		return errors.BadRequest("users-email-format-check", "email has wrong format")
 	}
 
-	if userId == "" || username == "" || email == "" {
-		return errors.BadRequest("valid-check", "missing id or username or email")
-	}
-
-	account, err := s.domain.SearchByUsername(ctx, username)
-	if err != nil && err.Error() != domain.ErrNotFound.Error() {
-		return err
-	}
-
-	if account.Id != "" && account.Id != userId {
-		return errors.BadRequest("username-check", "username already exists")
-	}
-
-	account, err = s.domain.SearchByEmail(ctx, email)
-	if err != nil && err.Error() != domain.ErrNotFound.Error() {
-		return err
-	}
-	if account.Id != "" && account.Id != userId {
-		return errors.BadRequest("email-check", "email already exists")
+	if p.Id == "" || p.Username == "" || p.Email == "" {
+		return errors.BadRequest("users-valid-check", "missing id or username or email")
 	}
 
 	return nil
 }
 
 func (s *User) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
-	if len(req.Password) < 8 {
-		return errors.InternalServerError("user.Create.Check", "Password is less than 8 characters")
+	check := func(err error) error {
+		if err != nil && err.Error() != domain.ErrNotFound.Error() {
+			return err
+		}
+		return nil
 	}
 
-	if err := s.validatePostUserData(ctx, req.Id, req.Username, req.Email); err != nil {
+	if len(req.Password) < 8 {
+		return errors.InternalServerError("users-password-check", "Password is less than 8 characters")
+	}
+
+	// based on the docs Id is optional, hence the need to provide
+	// one in case of absence
+	if req.Id == "" {
+		req.Id = uuid.New().String()
+	}
+
+	p := &userPayload{Id: req.Id, Email: req.Email, Username: req.Username}
+
+	if err := s.validatePostUserData(ctx, p); err != nil {
 		return err
+	}
+
+	// userId check
+	account, err := s.domain.SearchByUserId(ctx, p.Id)
+	if check(err) != nil {
+		return err
+	}
+
+	if account.Id != "" && account.Id == p.Id {
+		return errors.BadRequest("users-userId-check", "account already exists")
+	}
+
+	// email check
+	account, err = s.domain.SearchByEmail(ctx, p.Email)
+	if check(err) != nil {
+		return err
+	}
+
+	if account.Id != "" && account.Email == p.Email {
+		return errors.BadRequest("users-email-check", "email already exists")
+	}
+
+	// username check
+	account, err = s.domain.SearchByUsername(ctx, p.Username)
+	if check(err) != nil {
+		return err
+	}
+
+	if account.Id != "" && account.Username == p.Username {
+		return errors.BadRequest("users-username-check", "username already exists")
 	}
 
 	salt := random(16)
 	h, err := bcrypt.GenerateFromPassword([]byte(x+salt+req.Password), 10)
 	if err != nil {
-		return errors.InternalServerError("user.Create", err.Error())
-	}
-	pp := base64.StdEncoding.EncodeToString(h)
-	if req.Id == "" {
-		req.Id = uuid.New().String()
+		return errors.InternalServerError("users-Create", err.Error())
 	}
 
+	pp := base64.StdEncoding.EncodeToString(h)
+
 	acc := &pb.Account{
-		Id:       req.Id,
-		Username: strings.ToLower(req.Username),
-		Email:    strings.ToLower(req.Email),
+		Id:       p.Id,
+		Username: p.Username,
+		Email:    p.Email,
 		Profile:  req.Profile,
 	}
 
@@ -148,14 +183,113 @@ func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 }
 
 func (s *User) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.UpdateResponse) error {
-	if err := s.validatePostUserData(ctx, req.Id, req.Username, req.Email); err != nil {
+
+	// based on the docs, Update allows user to update email or username.
+	// here we handle three cases, when Id and Email are provided,
+	// when Id and Username are provided and lastly, when Id, Email and Username are provided.
+
+	check := func(err error) error {
+		if err != nil && err.Error() != domain.ErrNotFound.Error() {
+			return err
+		}
+		return nil
+	}
+
+	// fetch account
+	account, err := s.domain.SearchByUserId(ctx, req.Id)
+	if err != nil {
 		return err
 	}
 
+	// check if req.Email is empty and replace it with account.Email
+	// in case of absence, this is neccessary step to prevent validatePostUserData
+	// form throwing an error
+	if req.Email == "" {
+		req.Email = account.Email
+
+		p := &userPayload{Id: req.Id, Email: req.Email, Username: req.Username}
+
+		if err := s.validatePostUserData(ctx, p); err != nil {
+			return err
+		}
+
+		// check if the new Username is already exists in thge store
+		account, err = s.domain.SearchByUsername(ctx, p.Username)
+		if check(err) != nil {
+			return err
+		}
+
+		if account.Id != "" && account.Username == p.Username {
+			return errors.BadRequest("users-username-check", "username already exists")
+		}
+
+		return s.domain.Update(ctx, &pb.Account{
+			Id:       p.Id,
+			Username: p.Username,
+			Email:    p.Email,
+			Profile:  req.Profile,
+		})
+	}
+
+	// check if req.Username is empty, same as above
+	if req.Username == "" {
+		req.Username = account.Username
+
+		p := &userPayload{Id: req.Id, Email: req.Email, Username: req.Username}
+
+		if err := s.validatePostUserData(ctx, p); err != nil {
+			return err
+		}
+
+		// check if the new Email is already exists in the store
+		account, err = s.domain.SearchByEmail(ctx, p.Email)
+		if check(err) != nil {
+			return err
+		}
+
+		if account.Id != "" && account.Email == p.Email {
+			return errors.BadRequest("users-email-check", "email already exists")
+		}
+
+		return s.domain.Update(ctx, &pb.Account{
+			Id:       p.Id,
+			Username: p.Username,
+			Email:    p.Email,
+			Profile:  req.Profile,
+		})
+	}
+
+	// if both new Email and new Username were provided
+	p := &userPayload{Id: req.Id, Email: req.Email, Username: req.Username}
+
+	if err := s.validatePostUserData(ctx, p); err != nil {
+		return err
+	}
+
+	// check if the new Email is already exists in the store
+	account, err = s.domain.SearchByEmail(ctx, p.Email)
+	if check(err) != nil {
+		return err
+	}
+
+	if account.Id != "" && account.Email == p.Email {
+		return errors.BadRequest("users-email-check", "email already exists")
+	}
+
+	// check if the new Username is already exists in thge store
+	account, err = s.domain.SearchByUsername(ctx, p.Username)
+	if check(err) != nil {
+		return err
+	}
+
+	if account.Id != "" && account.Username == p.Username {
+		return errors.BadRequest("users-username-check", "username already exists")
+	}
+
 	return s.domain.Update(ctx, &pb.Account{
-		Id:       req.Id,
-		Username: strings.ToLower(req.Username),
-		Email:    strings.ToLower(req.Email),
+		Id:       p.Id,
+		Username: p.Username,
+		Email:    p.Email,
 		Profile:  req.Profile,
 	})
 }
