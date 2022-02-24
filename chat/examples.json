@@ -1,5 +1,5 @@
 {
-    "new": [{
+    "create": [{
         "title": "Create a new chat",
         "description": "Create a new chat by name",
         "run_check": false,

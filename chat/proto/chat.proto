@@ -4,7 +4,7 @@ package chat;
 option go_package = "./proto;chat";
 
 service Chat {
-	rpc New(NewRequest) returns (NewResponse);
+	rpc Create(CreateRequest) returns (CreateResponse);
 	rpc History(HistoryRequest) returns (HistoryResponse);
 	rpc Send(SendRequest) returns (SendResponse);
 	rpc List(ListRequest) returns (ListResponse);
@@ -16,7 +16,7 @@ service Chat {
 }
 
 // Create a new chat room
-message NewRequest {
+message CreateRequest {
 	// name of the room
 	string name = 1;
 	// chat description
@@ -27,7 +27,7 @@ message NewRequest {
 	bool private = 4;
 }
 
-message NewResponse {
+message CreateResponse {
 	// the unique chat room
 	Room room = 1;
 }

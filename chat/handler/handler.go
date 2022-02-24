@@ -22,7 +22,7 @@ const (
 
 type Chat struct{}
 
-func (c *Chat) New(ctx context.Context, req *pb.NewRequest, rsp *pb.NewResponse) error {
+func (c *Chat) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.CreateResponse) error {
 	// get the tenant
 	tenantId := tenant.Id(ctx)
 

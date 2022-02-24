@@ -42,7 +42,7 @@ func NewChatEndpoints() []*api.Endpoint {
 // Client API for Chat service
 
 type ChatService interface {
-	New(ctx context.Context, in *NewRequest, opts ...client.CallOption) (*NewResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
 	History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error)
 	Send(ctx context.Context, in *SendRequest, opts ...client.CallOption) (*SendResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
@@ -65,9 +65,9 @@ func NewChatService(name string, c client.Client) ChatService {
 	}
 }
 
-func (c *chatService) New(ctx context.Context, in *NewRequest, opts ...client.CallOption) (*NewResponse, error) {
-	req := c.c.NewRequest(c.name, "Chat.New", in)
-	out := new(NewResponse)
+func (c *chatService) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
+	req := c.c.NewRequest(c.name, "Chat.Create", in)
+	out := new(CreateResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -197,7 +197,7 @@ func (c *chatService) Kick(ctx context.Context, in *KickRequest, opts ...client.
 // Server API for Chat service
 
 type ChatHandler interface {
-	New(context.Context, *NewRequest, *NewResponse) error
+	Create(context.Context, *CreateRequest, *CreateResponse) error
 	History(context.Context, *HistoryRequest, *HistoryResponse) error
 	Send(context.Context, *SendRequest, *SendResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
@@ -210,7 +210,7 @@ type ChatHandler interface {
 
 func RegisterChatHandler(s server.Server, hdlr ChatHandler, opts ...server.HandlerOption) error {
 	type chat interface {
-		New(ctx context.Context, in *NewRequest, out *NewResponse) error
+		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
 		History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error
 		Send(ctx context.Context, in *SendRequest, out *SendResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
@@ -231,8 +231,8 @@ type chatHandler struct {
 	ChatHandler
 }
 
-func (h *chatHandler) New(ctx context.Context, in *NewRequest, out *NewResponse) error {
-	return h.ChatHandler.New(ctx, in, out)
+func (h *chatHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
+	return h.ChatHandler.Create(ctx, in, out)
 }
 
 func (h *chatHandler) History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error {
