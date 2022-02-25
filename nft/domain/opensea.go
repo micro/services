@@ -8,6 +8,10 @@ type CollectionsResponse struct {
 	Collections []*Collection `json:"collections"`
 }
 
+type CollectionResponse struct {
+	Collection *Collection `json:"collection"`
+}
+
 type Asset struct {
 	Id          int32       `json:"id"`
 	TokenId     string      `json:"token_id"`
@@ -23,6 +27,8 @@ type Asset struct {
 	LastSale    *Sale       `json:"last_sale,omitempty"`
 	Presale     bool        `json:"is_presale"`
 	ListingDate string      `json:"listing_date,omitempty"`
+
+	Traits map[string]interface{} `json:"traits,omitempty"`
 }
 
 type Contract struct {
@@ -55,6 +61,16 @@ type Collection struct {
 	ImageUrl      string `json:"image_url,omitempty"`
 	CreatedAt     string `json:"created_date,omitempty"`
 	PayoutAddress string `json:"payout_address,omitempty"`
+
+	ExternalLink            string                 `json:"external_link,omitempty"`
+	BannerImageUrl          string                 `json:"banner_image_url,omitempty"`
+	DevSellerFeeBasisPoints string                 `json:"dev_seller_fee_basis_points,omitempty"`
+	SafelistRequestStatus   string                 `json:"safelist_request_status,omitempty"`
+	PrimaryAssetContracts   []Contract             `json:"primary_asset_contracts,omitempty"`
+	Traits                  map[string]interface{} `json:"traits,omitempty"`
+	PaymentTokens           []Token                `json:"payment_tokens,omitempty"`
+	Editors                 []string               `json:"editors,omitempty"`
+	Stats                   map[string]interface{} `json:"stats,omitempty"`
 }
 
 type User struct {
