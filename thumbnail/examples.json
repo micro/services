@@ -2,7 +2,7 @@
   "screenshot": [
     {
       "title": "Take screenshot of a URL",
-      "run_check": true,
+      "run_check": false,
       "request": {
         "height": 600,
         "url": "https://google.com",
