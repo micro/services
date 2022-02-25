@@ -1,5 +1,7 @@
 package domain
 
+import "encoding/json"
+
 type AssetsResponse struct {
 	Assets []*Asset `json:"assets"`
 }
@@ -111,12 +113,12 @@ type Transaction struct {
 }
 
 type Token struct {
-	Id       int32   `json:"id,omitempty"`
-	Name     string  `json:"name,omitempty"`
-	Symbol   string  `json:"symbol,omitempty"`
-	Address  string  `json:"address,omitempty"`
-	ImageUrl string  `json:"image_url,omitempty"`
-	Decimals int32   `json:"decimals,omitempty"`
-	EthPrice float64 `json:"eth_price,omitempty"`
-	UsdPrice float64 `json:"usd_price,omitempty"`
+	Id       int32       `json:"id,omitempty"`
+	Name     string      `json:"name,omitempty"`
+	Symbol   string      `json:"symbol,omitempty"`
+	Address  string      `json:"address,omitempty"`
+	ImageUrl string      `json:"image_url,omitempty"`
+	Decimals int32       `json:"decimals,omitempty"`
+	EthPrice json.Number `json:"eth_price,omitempty"`
+	UsdPrice json.Number `json:"usd_price,omitempty"`
 }
