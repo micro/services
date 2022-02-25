@@ -105,8 +105,9 @@ func paymentTokenToPb(token *domain.Token) *pb.Token {
 		Address:  token.Address,
 		ImageUrl: token.ImageUrl,
 		Decimals: token.Decimals,
-		EthPrice: token.EthPrice,
-		UsdPrice: token.UsdPrice,
+		// converting to string for backwards compat
+		EthPrice: fmt.Sprintf("%v", token.EthPrice),
+		UsdPrice: fmt.Sprintf("%v", token.UsdPrice),
 	}
 }
 

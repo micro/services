@@ -111,12 +111,12 @@ type Transaction struct {
 }
 
 type Token struct {
-	Id       int32  `json:"id,omitempty"`
-	Name     string `json:"name,omitempty"`
-	Symbol   string `json:"symbol,omitempty"`
-	Address  string `json:"address,omitempty"`
-	ImageUrl string `json:"image_url,omitempty"`
-	Decimals int32  `json:"decimals,omitempty"`
-	EthPrice string `json:"eth_price,omitempty"`
-	UsdPrice string `json:"usd_price,omitempty"`
+	Id       int32   `json:"id,omitempty"`
+	Name     string  `json:"name,omitempty"`
+	Symbol   string  `json:"symbol,omitempty"`
+	Address  string  `json:"address,omitempty"`
+	ImageUrl string  `json:"image_url,omitempty"`
+	Decimals int32   `json:"decimals,omitempty"`
+	EthPrice float64 `json:"eth_price,omitempty"`
+	UsdPrice float64 `json:"usd_price,omitempty"`
 }
