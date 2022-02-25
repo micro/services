@@ -70,7 +70,7 @@ message Asset {
 	// listing date
 	string listing_date = 14;
 	// traits associated with the item
-	google.protobuf.Struct traits = 15;
+	repeated google.protobuf.Struct traits = 15;
 }
 
 message Contract {

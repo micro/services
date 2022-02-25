@@ -28,7 +28,7 @@ type Asset struct {
 	Presale     bool        `json:"is_presale"`
 	ListingDate string      `json:"listing_date,omitempty"`
 
-	Traits map[string]interface{} `json:"traits,omitempty"`
+	Traits []map[string]interface{} `json:"traits,omitempty"`
 }
 
 type Contract struct {

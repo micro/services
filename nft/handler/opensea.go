@@ -243,7 +243,10 @@ func assetToPb(asset *domain.Asset) *pb.Asset {
 			PaymentToken: paymentTokenToPb(asset.LastSale.PaymentToken),
 		}
 	}
-	traits, _ := structpb.NewStruct(asset.Traits)
+	traits := make([]*structpb.Struct, len(asset.Traits))
+	for i, t := range asset.Traits {
+		traits[i], _ = structpb.NewStruct(t)
+	}
 
 	return &pb.Asset{
 		Name:        asset.Name,
