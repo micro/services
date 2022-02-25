@@ -6,6 +6,7 @@ package nft
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/protobuf/types/known/structpb"
 	math "math"
 )
 
@@ -45,6 +46,8 @@ type NftService interface {
 	Assets(ctx context.Context, in *AssetsRequest, opts ...client.CallOption) (*AssetsResponse, error)
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
 	Collections(ctx context.Context, in *CollectionsRequest, opts ...client.CallOption) (*CollectionsResponse, error)
+	Asset(ctx context.Context, in *AssetRequest, opts ...client.CallOption) (*AssetResponse, error)
+	Collection(ctx context.Context, in *CollectionRequest, opts ...client.CallOption) (*CollectionResponse, error)
 }
 
 type nftService struct {
@@ -89,12 +92,34 @@ func (c *nftService) Collections(ctx context.Context, in *CollectionsRequest, op
 	return out, nil
 }
 
+func (c *nftService) Asset(ctx context.Context, in *AssetRequest, opts ...client.CallOption) (*AssetResponse, error) {
+	req := c.c.NewRequest(c.name, "Nft.Asset", in)
+	out := new(AssetResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *nftService) Collection(ctx context.Context, in *CollectionRequest, opts ...client.CallOption) (*CollectionResponse, error) {
+	req := c.c.NewRequest(c.name, "Nft.Collection", in)
+	out := new(CollectionResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Nft service
 
 type NftHandler interface {
 	Assets(context.Context, *AssetsRequest, *AssetsResponse) error
 	Create(context.Context, *CreateRequest, *CreateResponse) error
 	Collections(context.Context, *CollectionsRequest, *CollectionsResponse) error
+	Asset(context.Context, *AssetRequest, *AssetResponse) error
+	Collection(context.Context, *CollectionRequest, *CollectionResponse) error
 }
 
 func RegisterNftHandler(s server.Server, hdlr NftHandler, opts ...server.HandlerOption) error {
@@ -102,6 +127,8 @@ func RegisterNftHandler(s server.Server, hdlr NftHandler, opts ...server.Handler
 		Assets(ctx context.Context, in *AssetsRequest, out *AssetsResponse) error
 		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
 		Collections(ctx context.Context, in *CollectionsRequest, out *CollectionsResponse) error
+		Asset(ctx context.Context, in *AssetRequest, out *AssetResponse) error
+		Collection(ctx context.Context, in *CollectionRequest, out *CollectionResponse) error
 	}
 	type Nft struct {
 		nft
@@ -124,4 +151,12 @@ func (h *nftHandler) Create(ctx context.Context, in *CreateRequest, out *CreateR
 
 func (h *nftHandler) Collections(ctx context.Context, in *CollectionsRequest, out *CollectionsResponse) error {
 	return h.NftHandler.Collections(ctx, in, out)
+}
+
+func (h *nftHandler) Asset(ctx context.Context, in *AssetRequest, out *AssetResponse) error {
+	return h.NftHandler.Asset(ctx, in, out)
+}
+
+func (h *nftHandler) Collection(ctx context.Context, in *CollectionRequest, out *CollectionResponse) error {
+	return h.NftHandler.Collection(ctx, in, out)
 }

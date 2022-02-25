@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/struct.proto";
+
 package nft;
 
 option go_package = "./proto;nft";
@@ -8,6 +10,8 @@ service Nft {
 	rpc Assets(AssetsRequest) returns (AssetsResponse) {}
 	rpc Create(CreateRequest) returns (CreateResponse) {}
 	rpc Collections(CollectionsRequest) returns (CollectionsResponse) {}
+	rpc Asset(AssetRequest) returns (AssetResponse) {}
+	rpc Collection(CollectionRequest) returns (CollectionResponse) {}
 }
 
 // Create your own NFT (coming soon)
@@ -65,6 +69,8 @@ message Asset {
 	Sale last_sale = 13;
 	// listing date
 	string listing_date = 14;
+	// traits associated with the item
+	repeated google.protobuf.Struct traits = 15;
 }
 
 message Contract {
@@ -91,12 +97,36 @@ message Contract {
 }
 
 message Collection {
+	// name of the collection
 	string name = 1;
+	// description of the collection
 	string description = 2;
+	// collection slug
 	string slug = 3;
+	// an image for the collection
 	string image_url = 4;
+	// creation time
 	string created_at = 5;
+	// payout address for the collection's royalties
 	string payout_address = 6;
+	// external link to the original website for the collection
+	string external_link = 7;
+	// image used in the banner for the collection
+	string banner_image_url = 8;
+	// the fees that get paid out when a sale is made
+	string seller_fees = 9;
+	// the collection's approval status on OpenSea
+	string safelist_request_status = 10;
+	// a list of the contracts associated with this collection
+	repeated Contract primary_asset_contracts = 11;
+	// listing of all the trait types available within this collection
+	google.protobuf.Struct traits = 12;
+	// the payment tokens accepted for this collection
+	repeated Token payment_tokens = 13;
+	// approved editors for this collection
+	repeated string editors = 14;
+	// sales statistics associated with the collection
+	google.protobuf.Struct stats = 15;
 }
 
 message User {
@@ -156,4 +186,21 @@ message AssetsRequest {
 message AssetsResponse {
 	// list of assets
 	repeated Asset assets = 1;
+}
+
+message AssetRequest {
+	string contract_address = 1;
+	string token_id = 2;
+}
+
+message AssetResponse {
+	Asset asset = 1;
+}
+
+message CollectionRequest {
+	string slug = 1;
+}
+
+message CollectionResponse {
+	Collection collection = 1;
 }
