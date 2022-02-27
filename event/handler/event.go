@@ -103,20 +103,21 @@ func (s *Event) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	// create tenant based topics
 	topic := path.Join("event", id, req.Topic)
 
-	limit := uint(25)
-	offset := uint(0)
+	//limit := uint(25)
+	//offset := uint(0)
+	var opts []events.ReadOption
 
 	if req.Limit > 0 {
-		limit = uint(req.Limit)
+		opts = append(opts, events.ReadLimit(uint(req.Limit)))
 	}
 
 	if req.Offset > 0 {
-		offset = uint(req.Offset)
+		opts = append(opts, events.ReadOffset( uint(req.Offset)))
 	}
 
 	log.Infof("Tenant %v reading %v limit: %v offset: %v\n", id, req.Topic, req.Limit, req.Offset)
 
-	events, err := events.Read(topic, events.ReadLimit(limit), events.ReadOffset(offset))
+	events, err := events.Read(topic, opts...)
 	if err != nil {
 		return err
 	}
