@@ -103,7 +103,6 @@ func (s *Event) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	// create tenant based topics
 	topic := path.Join("event", id, req.Topic)
 
-	log.Infof("Tenant %v reading %v\n", id, req.Topic)
 	limit := uint(25)
 	offset := uint(0)
 
@@ -115,10 +114,14 @@ func (s *Event) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 		offset = uint(req.Offset)
 	}
 
+	log.Infof("Tenant %v reading %v limit: %v offset: %v\n", id, req.Topic, req.Limit, req.Offset)
+
 	events, err := events.Read(topic, events.ReadLimit(limit), events.ReadOffset(offset))
 	if err != nil {
 		return err
 	}
+
+	log.Infof("Events read %v", len(events))
 
 	for _, ev := range events {
 		// unmarshal the message into a struct
