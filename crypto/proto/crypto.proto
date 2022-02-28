@@ -9,6 +9,7 @@ service Crypto {
 	rpc Quote(QuoteRequest) returns (QuoteResponse) {}
 	rpc Price(PriceRequest) returns (PriceResponse) {}
 	rpc History(HistoryRequest) returns (HistoryResponse) {}
+	rpc Symbols(SymbolsRequest) returns (SymbolsResponse) {}
 }
 
 message Article {
@@ -93,4 +94,16 @@ message HistoryResponse {
 	double volume = 6;
 	// the date
 	string date = 7;
+}
+
+// Returns the full list of supported symbols
+message SymbolsRequest {}
+
+message SymbolsResponse {
+	repeated Symbol symbols = 1;
+}
+
+message Symbol {
+	string symbol = 1;
+	string name = 2;
 }

@@ -72,5 +72,29 @@
         "date": "2021-06-20"
       }
     }
+  ],
+  "symbols": [
+    {
+      "title": "Get list of all supported symbols",
+      "description": "Returns the full list of supported crypto symbols",
+      "request": {
+      },
+      "response": {
+        "symbols": [
+          {
+            "symbol": "BTCUSD",
+            "name": "Bitcoin - United States Dollar"
+          },
+          {
+            "symbol": "DOGEEUR",
+            "name": "Dogecoin - Euro"
+          },
+          {
+            "symbol": "ETHBTC",
+            "name": "Ethereum - Bitcoin"
+          }
+        ]
+      }
+    }
   ]
 }

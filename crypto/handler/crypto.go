@@ -131,12 +131,12 @@ func (c *Crypto) News(ctx context.Context, req *pb.NewsRequest, rsp *pb.NewsResp
 	return nil
 }
 
-func (s *Crypto) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
+func (c *Crypto) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.HistoryResponse) error {
 	if len(req.Symbol) <= 0 {
 		return errors.BadRequest("crypto.history", "invalid symbol")
 	}
 
-	uri := fmt.Sprintf("%sagg/crypto/prev-close/%s?apikey=%s", s.Api, req.Symbol, s.Key)
+	uri := fmt.Sprintf("%sagg/crypto/prev-close/%s?apikey=%s", c.Api, req.Symbol, c.Key)
 
 	resp, err := http.Get(uri)
 	if err != nil {
@@ -174,12 +174,12 @@ func (s *Crypto) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.Hi
 
 	return nil
 }
-func (s *Crypto) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteResponse) error {
+func (c *Crypto) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteResponse) error {
 	if len(req.Symbol) <= 0 {
 		return errors.BadRequest("crypto.quote", "invalid symbol")
 	}
 
-	uri := fmt.Sprintf("%slast/quote/crypto/%s?apikey=%s", s.Api, req.Symbol, s.Key)
+	uri := fmt.Sprintf("%slast/quote/crypto/%s?apikey=%s", c.Api, req.Symbol, c.Key)
 
 	resp, err := http.Get(uri)
 	if err != nil {
@@ -212,12 +212,12 @@ func (s *Crypto) Quote(ctx context.Context, req *pb.QuoteRequest, rsp *pb.QuoteR
 	return nil
 }
 
-func (s *Crypto) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceResponse) error {
+func (c *Crypto) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceResponse) error {
 	if len(req.Symbol) <= 0 {
 		return errors.BadRequest("crypto.price", "invalid symbol")
 	}
 
-	uri := fmt.Sprintf("%slast/crypto/%s?apikey=%s", s.Api, req.Symbol, s.Key)
+	uri := fmt.Sprintf("%slast/crypto/%s?apikey=%s", c.Api, req.Symbol, c.Key)
 
 	resp, err := http.Get(uri)
 	if err != nil {
@@ -244,4 +244,61 @@ func (s *Crypto) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceR
 	rsp.Price = respBody["price"].(float64)
 
 	return nil
+}
+
+func (c *Crypto) Symbols(ctx context.Context, req *pb.SymbolsRequest, rsp *pb.SymbolsResponse) error {
+	cached, ok := c.Cache.Get("symbolsCache")
+	if ok {
+		rsp.Symbols, _ = cached.([]*pb.Symbol)
+		return nil
+	}
+
+	toCache := []*pb.Symbol{}
+	page := 1
+	for {
+		var symbolsRsp struct {
+			Page      int32 `json:"page"`
+			TotalPage int32 `json:"totalPage"`
+			Symbols   []struct {
+				Symbol string `json:"symbol"`
+				Name   string `json:"name"`
+			} `json:"symbols"`
+		}
+
+		uri := fmt.Sprintf("%ssymbol-list/crypto?page=%d&apikey=%s", c.Api, page, c.Key)
+
+		resp, err := http.Get(uri)
+		if err != nil {
+			logger.Errorf("Failed to get price: %v\n", err)
+			return errors.InternalServerError("crypto.trade", "failed to get price")
+		}
+		defer resp.Body.Close()
+
+		b, _ := ioutil.ReadAll(resp.Body)
+		if resp.StatusCode != 200 {
+			logger.Errorf("Failed to load symbol list (non 200): %d %v\n", resp.StatusCode, string(b))
+			return errors.InternalServerError("crypto.symbols", "failed to get symbols")
+		}
+
+		if err := json.Unmarshal(b, &symbolsRsp); err != nil {
+			logger.Errorf("Error unmarshalling cyrpto symbols: %v\n", err)
+			return errors.InternalServerError("crypto.symbols", "failed to get symbols")
+		}
+
+		for _, v := range symbolsRsp.Symbols {
+			toCache = append(toCache, &pb.Symbol{
+				Symbol: v.Symbol,
+				Name:   v.Name,
+			})
+		}
+
+		if symbolsRsp.Page == symbolsRsp.TotalPage {
+			break
+		}
+		page++
+	}
+	c.Cache.Set("symbolsCache", toCache, 24*time.Hour)
+	rsp.Symbols = toCache
+	return nil
+
 }
