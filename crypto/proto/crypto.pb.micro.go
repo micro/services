@@ -46,6 +46,7 @@ type CryptoService interface {
 	Quote(ctx context.Context, in *QuoteRequest, opts ...client.CallOption) (*QuoteResponse, error)
 	Price(ctx context.Context, in *PriceRequest, opts ...client.CallOption) (*PriceResponse, error)
 	History(ctx context.Context, in *HistoryRequest, opts ...client.CallOption) (*HistoryResponse, error)
+	Symbols(ctx context.Context, in *SymbolsRequest, opts ...client.CallOption) (*SymbolsResponse, error)
 }
 
 type cryptoService struct {
@@ -100,6 +101,16 @@ func (c *cryptoService) History(ctx context.Context, in *HistoryRequest, opts ..
 	return out, nil
 }
 
+func (c *cryptoService) Symbols(ctx context.Context, in *SymbolsRequest, opts ...client.CallOption) (*SymbolsResponse, error) {
+	req := c.c.NewRequest(c.name, "Crypto.Symbols", in)
+	out := new(SymbolsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Crypto service
 
 type CryptoHandler interface {
@@ -107,6 +118,7 @@ type CryptoHandler interface {
 	Quote(context.Context, *QuoteRequest, *QuoteResponse) error
 	Price(context.Context, *PriceRequest, *PriceResponse) error
 	History(context.Context, *HistoryRequest, *HistoryResponse) error
+	Symbols(context.Context, *SymbolsRequest, *SymbolsResponse) error
 }
 
 func RegisterCryptoHandler(s server.Server, hdlr CryptoHandler, opts ...server.HandlerOption) error {
@@ -115,6 +127,7 @@ func RegisterCryptoHandler(s server.Server, hdlr CryptoHandler, opts ...server.H
 		Quote(ctx context.Context, in *QuoteRequest, out *QuoteResponse) error
 		Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error
 		History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error
+		Symbols(ctx context.Context, in *SymbolsRequest, out *SymbolsResponse) error
 	}
 	type Crypto struct {
 		crypto
@@ -141,4 +154,8 @@ func (h *cryptoHandler) Price(ctx context.Context, in *PriceRequest, out *PriceR
 
 func (h *cryptoHandler) History(ctx context.Context, in *HistoryRequest, out *HistoryResponse) error {
 	return h.CryptoHandler.History(ctx, in, out)
+}
+
+func (h *cryptoHandler) Symbols(ctx context.Context, in *SymbolsRequest, out *SymbolsResponse) error {
+	return h.CryptoHandler.Symbols(ctx, in, out)
 }
