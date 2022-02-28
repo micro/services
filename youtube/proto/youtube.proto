@@ -11,7 +11,7 @@ service Youtube {
 
 // Embed a YouTube video
 message EmbedRequest {
-	// provide the youtube url e.g https://www.youtube.com/watch?v=GWRWZu7XsJ0
+	// provide the youtube url
 	string url = 1;
 }
 
@@ -20,7 +20,7 @@ message EmbedResponse {
 	string long_url = 1;
 	// the short url
 	string short_url = 2;
-	// the embeddable link e.g https://www.youtube.com/watch?v=GWRWZu7XsJ0
+	// the embeddable link
 	string embed_url = 3;
 	// the script code
 	string html_script = 4;
@@ -29,7 +29,7 @@ message EmbedResponse {
 message SearchResult {
 	// id of the result
 	string id = 1;
-	// kind of result; "video", "channel", "playlist"
+	// kind of result: "video", "channel", "playlist"
 	string kind = 2;
 	// title of the result
 	string title = 3;
@@ -41,7 +41,7 @@ message SearchResult {
 	string channel_title = 6;
 	// published at time
 	string published_at = 7;
-	// if live broadcast then indicates activity. 
+	// if live broadcast then indicates activity: 
 	// none, upcoming, live, completed
 	string broadcasting = 8;
 	// the associated url
