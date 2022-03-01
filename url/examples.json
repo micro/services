@@ -8,7 +8,9 @@
         "response": {
             "urlPairs": [{
                 "shortURL": "https://m3o.one/u/f8f3f83f3f83g",
-                "destinationURL": "https://mysite.com/this-is-a-rather-long-web-address"
+                "destinationURL": "https://mysite.com/this-is-a-rather-long-web-address",
+                "created": "2022-03-01T16:04:11.341277162Z",
+                "hit_count": "4"
             }]
         }
     }],
