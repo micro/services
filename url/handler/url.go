@@ -160,6 +160,7 @@ func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyRe
 }
 
 func cacheKey(id string) string {
+	logger.Infof("Cache key %s", id)
 	return fmt.Sprintf("url/HitCount/%s", id)
 }
 
