@@ -40,6 +40,13 @@
         "location": "London"
       },
       "response": {
+        "location": "London",
+        "region": "City of London, Greater London",
+        "country": "City of London, Greater London",
+        "latitude": 51.52,
+        "longitude": -0.11,
+        "timezone": "Europe/London",
+        "local_time": "2022-03-01 20:13",
         "forecast": [
           {
             "date": "2021-09-21",
@@ -49,6 +56,8 @@
             "min_temp_f": 55.4,
             "avg_temp_c": 17.3,
             "avg_temp_f": 63.1,
+            "will_it_rain": true,
+            "chance_of_rain": 70,
             "condition": "Partly cloudy",
             "icon_url": "//cdn.weatherapi.com/weather/64x64/day/116.png",
             "sunrise": "06:45 AM",
@@ -64,6 +73,8 @@
             "min_temp_f": 56.1,
             "avg_temp_c": 18.1,
             "avg_temp_f": 64.6,
+            "will_it_rain": false,
+            "chance_of_rain": 0,
             "condition": "Partly cloudy",
             "icon_url": "//cdn.weatherapi.com/weather/64x64/day/116.png",
             "sunrise": "06:47 AM",
