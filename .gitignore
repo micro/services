@@ -5,3 +5,4 @@ redoc-static.html
 node_modules
 postman.json
 .npmrc
+vendor
