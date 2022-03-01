@@ -29,7 +29,7 @@ message URLPair {
 	// time of creation
 	string created = 4;
 	// The number of times the short URL has been resolved
-	int64 hit_count = 5;
+	int64 hitCount = 5;
 }
 
 // List all the shortened URLs
