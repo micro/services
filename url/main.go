@@ -16,7 +16,7 @@ func main() {
 		service.Name("url"),
 		service.Version("latest"),
 	)
-	h := handler.NewUrl()
+	h := handler.NewUrl(srv)
 	// Register handler
 	pb.RegisterUrlHandler(srv.Server(), h)
 	admin.RegisterAdminHandler(srv.Server(), h)
