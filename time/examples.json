@@ -29,7 +29,8 @@
         "timezone": "Europe/London",
         "abbreviation": "BST",
         "localtime": "2021-09-13 15:37",
-        "dst": true
+        "dst": true,
+        "offset": 1
       }
     }
   ]
