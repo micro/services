@@ -118,7 +118,7 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 		if err := rec.Decode(uri); err != nil {
 			continue
 		}
-		crsp, err := e.cache.Get(ctx, &cachepb.GetRequest{Key: cacheKey(strings.TrimPrefix(rec.Key, prefix))})
+		crsp, err := e.cache.Get(ctx, &cachepb.GetRequest{Key: cacheKey(strings.TrimPrefix(rec.Key, prefix))}, client.WithAuthToken())
 		if err != nil {
 			logger.Errorf("Error reading cache %s", err)
 			return errInternal
