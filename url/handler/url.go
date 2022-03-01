@@ -150,10 +150,13 @@ func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyRe
 
 	rsp.DestinationURL = uri.DestinationURL
 	go func() {
-		e.cache.Increment(ctx, &cachepb.IncrementRequest{
+		_, err := e.cache.Increment(ctx, &cachepb.IncrementRequest{
 			Key:   cacheKey(id),
 			Value: 1,
 		}, client.WithAuthToken())
+		if err != nil {
+			logger.Errorf("Error incrementing cache %s", err)
+		}
 	}()
 
 	return nil
