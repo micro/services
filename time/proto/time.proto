@@ -54,5 +54,7 @@ message ZoneResponse {
 	string localtime = 8;
 	// is daylight savings
 	bool dst = 9;
+	// UTC offset in hours
+	int32 offset = 10;
 }
 

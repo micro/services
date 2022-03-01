@@ -137,12 +137,12 @@ func (t *Time) Zone(ctx context.Context, req *pb.ZoneRequest, rsp *pb.ZoneRespon
 	rsp.Longitude = location["lon"].(float64)
 	rsp.Timezone = location["tz_id"].(string)
 	rsp.Localtime = location["localtime"].(string)
-
 	loc, _ := time.LoadLocation(rsp.Timezone)
 	ti := time.Now().In(loc)
 	isDST := t.TZ.IsDST(ti)
 	rsp.Abbreviation, _ = t.TZ.GetTimezoneAbbreviation(rsp.Timezone, isDST)
 	rsp.Dst = isDST
-
+	_, offset := ti.Zone()
+	rsp.Offset = int32(offset / 60 / 60)
 	return nil
 }
