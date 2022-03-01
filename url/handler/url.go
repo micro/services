@@ -192,7 +192,7 @@ func (e *Url) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest
 		if err := store.Delete(key); err != nil {
 			return err
 		}
-		e.cache.Delete(ctx, &cachepb.DeleteRequest{Key: cacheKey(id)})
+		e.cache.Delete(ctx, &cachepb.DeleteRequest{Key: cacheKey(id)}, client.WithAuthToken())
 	}
 	logger.Infof("Deleted %d objects from S3 for %s", len(keys), request.TenantId)
 
