@@ -2,29 +2,33 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/micro/micro/v3/service"
+	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	cachepb "github.com/micro/services/cache/proto"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	url "github.com/micro/services/url/proto"
-	cache "github.com/patrickmn/go-cache"
 	"github.com/teris-io/shortid"
 )
 
 const hostPrefix = "https://m3o.one/u/"
 
 type Url struct {
-	cache      *cache.Cache
+	cache      cachepb.CacheService
 	hostPrefix string
 }
 
-func NewUrl() *Url {
+func NewUrl(svc *service.Service) *Url {
 	var hp string
 
 	cfg, err := config.Get("micro.url.host_prefix")
@@ -37,7 +41,7 @@ func NewUrl() *Url {
 	}
 
 	return &Url{
-		cache:      cache.New(cache.NoExpiration, cache.NoExpiration),
+		cache:      cachepb.NewCacheService("cache", svc.Client()),
 		hostPrefix: hp,
 	}
 }
@@ -81,14 +85,17 @@ func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.Sho
 }
 
 func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListResponse) error {
+	method := "url.shorten"
+	errInternal := errors.InternalServerError(method, "Error listing URLs")
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
-		return errors.Unauthorized("url.shorten", "not authorized")
+		return errors.Unauthorized(method, "not authorized")
 	}
 
 	var err error
 
-	key := "urlOwner/" + tenantId + "/"
+	prefix := "urlOwner/" + tenantId + "/"
+	key := prefix
 
 	var opts []store.ReadOption
 
@@ -101,7 +108,8 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 
 	records, err := store.Read(key, opts...)
 	if err != nil {
-		return err
+		logger.Errorf("Error reading record %s", err)
+		return errInternal
 	}
 
 	for _, rec := range records {
@@ -110,8 +118,14 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 		if err := rec.Decode(uri); err != nil {
 			continue
 		}
-
+		crsp, err := e.cache.Get(ctx, &cachepb.GetRequest{Key: cacheKey(strings.TrimPrefix(rec.Key, prefix))}, client.WithAuthToken())
+		if err != nil {
+			logger.Errorf("Error reading cache %s", err)
+			return errInternal
+		}
+		uri.HitCount, _ = strconv.ParseInt(crsp.Value, 10, 64)
 		rsp.UrlPairs = append(rsp.UrlPairs, uri)
+
 	}
 
 	return nil
@@ -135,8 +149,21 @@ func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyRe
 	}
 
 	rsp.DestinationURL = uri.DestinationURL
+	go func() {
+		_, err := e.cache.Increment(context.Background(), &cachepb.IncrementRequest{
+			Key:   cacheKey(id),
+			Value: 1,
+		}, client.WithAuthToken())
+		if err != nil {
+			logger.Errorf("Error incrementing cache %s", err)
+		}
+	}()
 
 	return nil
+}
+
+func cacheKey(id string) string {
+	return fmt.Sprintf("url/HitCount/%s", id)
 }
 
 func (e *Url) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
@@ -165,6 +192,7 @@ func (e *Url) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest
 		if err := store.Delete(key); err != nil {
 			return err
 		}
+		e.cache.Delete(ctx, &cachepb.DeleteRequest{Key: cacheKey(id)}, client.WithAuthToken())
 	}
 	logger.Infof("Deleted %d objects from S3 for %s", len(keys), request.TenantId)
 
