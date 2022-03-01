@@ -15,6 +15,7 @@ service Function {
 	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
 	rpc Regions(RegionsRequest) returns (RegionsResponse) {}
 	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
+	rpc Runtimes(RuntimesRequest) returns (RuntimesResponse) {}
 }
 
 // Call a function by name
@@ -174,3 +175,10 @@ message ReserveResponse {
         Reservation reservation = 1;
 }
 
+// Return a list of supported runtimes
+message RuntimesRequest {
+}
+
+message RuntimesResponse {
+	repeated string runtimes = 1;
+}

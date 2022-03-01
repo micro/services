@@ -52,6 +52,7 @@ type FunctionService interface {
 	Proxy(ctx context.Context, in *ProxyRequest, opts ...client.CallOption) (*ProxyResponse, error)
 	Regions(ctx context.Context, in *RegionsRequest, opts ...client.CallOption) (*RegionsResponse, error)
 	Reserve(ctx context.Context, in *ReserveRequest, opts ...client.CallOption) (*ReserveResponse, error)
+	Runtimes(ctx context.Context, in *RuntimesRequest, opts ...client.CallOption) (*RuntimesResponse, error)
 }
 
 type functionService struct {
@@ -156,6 +157,16 @@ func (c *functionService) Reserve(ctx context.Context, in *ReserveRequest, opts 
 	return out, nil
 }
 
+func (c *functionService) Runtimes(ctx context.Context, in *RuntimesRequest, opts ...client.CallOption) (*RuntimesResponse, error) {
+	req := c.c.NewRequest(c.name, "Function.Runtimes", in)
+	out := new(RuntimesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Function service
 
 type FunctionHandler interface {
@@ -168,6 +179,7 @@ type FunctionHandler interface {
 	Proxy(context.Context, *ProxyRequest, *ProxyResponse) error
 	Regions(context.Context, *RegionsRequest, *RegionsResponse) error
 	Reserve(context.Context, *ReserveRequest, *ReserveResponse) error
+	Runtimes(context.Context, *RuntimesRequest, *RuntimesResponse) error
 }
 
 func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...server.HandlerOption) error {
@@ -181,6 +193,7 @@ func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...serv
 		Proxy(ctx context.Context, in *ProxyRequest, out *ProxyResponse) error
 		Regions(ctx context.Context, in *RegionsRequest, out *RegionsResponse) error
 		Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error
+		Runtimes(ctx context.Context, in *RuntimesRequest, out *RuntimesResponse) error
 	}
 	type Function struct {
 		function
@@ -227,4 +240,8 @@ func (h *functionHandler) Regions(ctx context.Context, in *RegionsRequest, out *
 
 func (h *functionHandler) Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error {
 	return h.FunctionHandler.Reserve(ctx, in, out)
+}
+
+func (h *functionHandler) Runtimes(ctx context.Context, in *RuntimesRequest, out *RuntimesResponse) error {
+	return h.FunctionHandler.Runtimes(ctx, in, out)
 }

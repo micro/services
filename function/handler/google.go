@@ -751,7 +751,7 @@ func (e *GoogleFunction) Describe(ctx context.Context, req *function.DescribeReq
 	fn.Status = status
 
 	// set the url
-	if len(fn.Url) == 0 && status == "Active" {
+	if len(fn.Url) == 0 && status == "Deployed" {
 		v := m["httpsTrigger"].(map[string]interface{})
 		fn.Url = v["url"].(string)
 	}
@@ -799,6 +799,11 @@ func (g *GoogleFunction) Proxy(ctx context.Context, req *function.ProxyRequest, 
 
 func (e *GoogleFunction) Regions(ctx context.Context, req *function.RegionsRequest, rsp *function.RegionsResponse) error {
 	rsp.Regions = GoogleRegions
+	return nil
+}
+
+func (e *GoogleFunction) Runtimes(ctx context.Context, req *function.RuntimesRequest, rsp *function.RuntimesResponse) error {
+	rsp.Runtimes = GoogleRuntimes
 	return nil
 }
 
