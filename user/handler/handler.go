@@ -174,6 +174,10 @@ func (s *User) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespon
 		account, err = s.domain.SearchByEmail(ctx, req.Email)
 	}
 
+	if account == nil {
+		return errors.NotFound("user.read", "user not found")
+	}
+
 	rsp.Account = account
 	if err != nil {
 		return err
