@@ -20,7 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Generate a strong random password
+// Generate a strong random password. Use the switches to control which character types are included, defaults to using all of them
 type GenerateRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
