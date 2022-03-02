@@ -1,14 +1,31 @@
 
 {
-    "generate": [{
-        "title": "Generate password",
-        "description": "Generate a strong password",
-        "run_check": false,
-        "request": {
-            "length": 16
+    "generate": [
+        {
+            "title": "Generate password",
+            "description": "Generate a strong password",
+            "run_check": false,
+            "request": {
+                "length": 16
+            },
+            "response": {
+                "password": "jSUHz74x8qW#aXRe"
+            }
         },
-        "response": {
-            "password": "jSUHz74x8qW#aXRe"
+        {
+            "title": "Generate password without special characters",
+            "description": "Generate a password without special characters",
+            "run_check": true,
+            "request": {
+                "length": 16,
+                "lowercase": true,
+                "numbers": true,
+                "special": false,
+                "uppercase": true
+            },
+            "response": {
+                "password": "Gia6II0TQePjkql1"
+            }
         }
-    }]
+    ]
 }

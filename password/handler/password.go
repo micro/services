@@ -3,35 +3,31 @@ package handler
 import (
 	"context"
 	"crypto/rand"
+	"strings"
 
 	pb "github.com/micro/services/password/proto"
 )
 
-
-var (
+const (
 	minLength = 8
 
-	special = "!@#$%&*"
-	numbers = "0123456789"
+	special   = "!@#$%&*"
+	numbers   = "0123456789"
 	lowercase = "abcdefghijklmnopqrstuvwxyz"
 	uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	allChars = special + numbers + lowercase + uppercase
+	allChars  = special + numbers + lowercase + uppercase
 )
 
 func random(chars string, i int) string {
-        bytes := make([]byte, i)
+	bytes := make([]byte, i)
 
-        for {
-                rand.Read(bytes)
-                for i, b := range bytes {
-                        bytes[i] = chars[b%byte(len(chars))]
-                }
-		break
-        }
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = chars[b%byte(len(chars))]
+	}
 
-        return string(bytes)
+	return string(bytes)
 }
-
 
 type Password struct{}
 
@@ -40,10 +36,45 @@ func (p *Password) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *p
 		req.Length = int32(minLength)
 	}
 
-	// TODO; allow user to specify types of characters
+	charSpace := ""
+	if req.Numbers {
+		charSpace += numbers
+	}
+	if req.Lowercase {
+		charSpace += lowercase
+	}
+	if req.Uppercase {
+		charSpace += uppercase
+	}
+	if req.Special {
+		charSpace += special
+	}
+	if len(charSpace) == 0 {
+		charSpace = allChars
+	}
 
-	// generate and return password
-	rsp.Password = random(allChars, int(req.Length))
+	for {
+		// generate and return password
+		rsp.Password = random(charSpace, int(req.Length))
+		// validate we have minimums needed
+		reqsSatisfied := true
+		if req.Numbers {
+			reqsSatisfied = reqsSatisfied && strings.ContainsAny(rsp.Password, numbers)
+		}
+		if req.Lowercase {
+			reqsSatisfied = reqsSatisfied && strings.ContainsAny(rsp.Password, lowercase)
+		}
+		if req.Uppercase {
+			reqsSatisfied = reqsSatisfied && strings.ContainsAny(rsp.Password, uppercase)
+		}
+		if req.Special {
+			reqsSatisfied = reqsSatisfied && strings.ContainsAny(rsp.Password, special)
+		}
+		if reqsSatisfied {
+			break
+		}
+		// failed to satisfy all reqs, try again
+	}
 
 	return nil
 }
