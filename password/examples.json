@@ -1,0 +1,14 @@
+
+{
+    "generate": [{
+        "title": "Generate password",
+        "description": "Generate a strong password",
+        "run_check": false,
+        "request": {
+            "length": 16
+        },
+        "response": {
+            "password": "jSUHz74x8qW#aXRe"
+        }
+    }]
+}
