@@ -21,10 +21,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - name: Set up Go 1.15
+      - name: Set up Go 1.17
         uses: actions/setup-go@v1
         with:
-          go-version: 1.15
+          go-version: 1.17
         id: go
 
       - name: Check out code into the Go module directory
