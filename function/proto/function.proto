@@ -35,24 +35,26 @@ message CallResponse {
 message DeployRequest {
 	// function name
 	string name = 1;
-	// github url to repo
-	string repo = 2;
+	// inline source code
+	string source = 2;
+	// github url for a repo
+	string repo = 3;
 	// branch to deploy. defaults to master
-	string branch = 3;
+	string branch = 4;
 	// optional subfolder path
-	string subfolder = 4;
+	string subfolder = 5;
 	// entry point, ie. handler name in the source code 
 	// if not provided, defaults to the name parameter
-	string entrypoint = 5;
+	string entrypoint = 6;
 	// runtime/lanaguage of the function e.g php74,
 	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16,
 	// dotnet3, java11, ruby26, ruby27, go111, go113, go116,
 	// python37, python38, python39
-	string runtime = 6;
+	string runtime = 7;
 	// region to deploy in. defaults to europe-west1
-	string region = 7;
+	string region = 8;
 	// environment variables to pass in at runtime
-	map<string,string> env_vars = 8;
+	map<string,string> env_vars = 9;
 }
 
 message DeployResponse {
@@ -69,31 +71,33 @@ message Func {
 	// function name
 	// limitation: must be unique across projects
 	string name = 2;
+	// the source code
+	string source = 3;
 	// git repo address
-	string repo = 3;
+	string repo = 4;
 	// branch to deploy. defaults to master
-	string branch = 4;
+	string branch = 5;
 	// name of handler in source code
-	string entrypoint = 5;
+	string entrypoint = 6;
 	// subfolder path to entrypoint
-	string subfolder = 6;
+	string subfolder = 7;
 	// runtime/language of the function e.g php74,
 	// nodejs6, nodejs8, nodejs10, nodejs12, nodejs14, nodejs16, 
 	// dotnet3, java11, ruby26, ruby27, go111, go113, go116,
 	// python37, python38, python39
-	string runtime = 7;
+	string runtime = 8;
 	// region to deploy in. defaults to europe-west1
-	string region = 8;
+	string region = 9;
 	// associated env vars
-	map<string,string> env_vars = 9;
+	map<string,string> env_vars = 10;
 	// eg. ACTIVE, DEPLOY_IN_PROGRESS, OFFLINE etc
-	string status = 10;
+	string status = 11;
 	// unique url of the function
-	string url = 11;
+	string url = 12;
 	// time of creation
-	string created = 12;
+	string created = 13;
 	// time it was updated
-	string updated = 13;
+	string updated = 14;
 }
 
 message ListResponse {
@@ -126,6 +130,8 @@ message DescribeResponse {
 message UpdateRequest {
 	// function name
 	string name = 1;
+	// inline source code
+	string source = 2;
 }
 
 message UpdateResponse {

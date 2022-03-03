@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -62,6 +63,26 @@ var (
 
 	// hardcoded list of supported regions
 	GoogleRegions = []string{"europe-west1", "us-central1", "us-east1", "us-west1", "asia-east1"}
+
+	SourceFile = map[string]string{
+		"nodejs16": "index.js",
+		"nodejs14": "index.js",
+		"nodejs12": "index.js",
+		"nodejs10": "index.js",
+		"nodejs8":  "index.js",
+		"nodejs6":  "index.js",
+		"python39": "main.py",
+		"python38": "main.py",
+		"python37": "main.py",
+		"go116":    "main.go",
+		"go113":    "main.go",
+		"go111":    "main.go",
+		"java11":   "main.java",
+		"dotnet3":  "main.cs",
+		"ruby27":   "app.rb",
+		"ruby26":   "app.rb",
+		"php74":    "index.php",
+	}
 )
 
 var (
@@ -176,9 +197,10 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		return errors.BadRequest("function.deploy", "Missing name")
 	}
 
-	if len(req.Repo) == 0 {
-		return errors.BadRequest("function.deploy", "Missing repo")
+	if len(req.Repo) == 0 && len(req.Source) == 0 {
+		return errors.BadRequest("function.deploy", "Missing source or repo")
 	}
+
 	if len(req.Runtime) == 0 {
 		return errors.BadRequest("function.deploy", "invalid runtime")
 	}
@@ -220,13 +242,35 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		req.Branch = "master"
 	}
 
-	gitter := git.NewGitter(map[string]string{})
+	// check format of the name
+	if !NameFormat.MatchString(req.Name) {
+		return errors.BadRequest("function.deploy", "Invalid name")
+	}
 
-	var err error
+	var sourceDir string
 
-	err = gitter.Checkout(req.Repo, req.Branch)
-	if err != nil {
-		return errors.InternalServerError("function.deploy", err.Error())
+	// if we have source then write the file
+	if len(req.Source) > 0 {
+		dir, err := ioutil.TempDir(".", req.Name)
+		if err != nil {
+			return errors.InternalServerError("function.deploy", "Failed to create source dir")
+		}
+		if err := os.WriteFile(filepath.Join(dir, SourceFile[req.Runtime]), []byte(req.Source), 0644); err != nil {
+			return errors.InternalServerError("function.deploy", "Failed to save source")
+		}
+		// set the source dir
+		sourceDir = dir
+	} else {
+		// checkout from github
+		gitter := git.NewGitter(map[string]string{})
+
+		var err error
+
+		err = gitter.Checkout(req.Repo, req.Branch)
+		if err != nil {
+			return errors.InternalServerError("function.deploy", err.Error())
+		}
+		sourceDir = filepath.Join(gitter.RepoDir(), req.Subfolder)
 	}
 
 	tenantId, ok := tenant.FromContext(ctx)
@@ -292,6 +336,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 	fn := &function.Func{
 		Id:         id,
 		Name:       req.Name,
+		Source:     req.Source,
 		Repo:       req.Repo,
 		Subfolder:  req.Subfolder,
 		Entrypoint: req.Entrypoint,
@@ -325,6 +370,11 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 	rsp.Function = fn
 
 	go func(fn *function.Func) {
+		// delete the source code once done
+		defer func() {
+			os.RemoveAll(sourceDir)
+		}()
+
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id, "--quiet",
 			"--region", fn.Region, "--service-account", e.identity,
@@ -336,7 +386,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
 
-		cmd.Dir = filepath.Join(gitter.RepoDir(), fn.Subfolder)
+		cmd.Dir = sourceDir
 		outp, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))
@@ -443,9 +493,29 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 		fn.Branch = "master"
 	}
 
-	gitter := git.NewGitter(map[string]string{})
-	if err := gitter.Checkout(fn.Repo, fn.Branch); err != nil {
-		return errors.InternalServerError("function.update", err.Error())
+	var sourceDir string
+
+	// if we have source then write the file
+	if len(req.Source) > 0 {
+		dir, err := ioutil.TempDir(".", fn.Name)
+		if err != nil {
+			return errors.InternalServerError("function.update", "Failed to create source dir")
+		}
+		if err := os.WriteFile(filepath.Join(dir, SourceFile[fn.Runtime]), []byte(req.Source), 0644); err != nil {
+			return errors.InternalServerError("function.update", "Failed to save source")
+		}
+		// set the source dir
+		sourceDir = dir
+		// set the source code
+		fn.Source = req.Source
+	} else {
+		// checkout from github
+		gitter := git.NewGitter(map[string]string{})
+		if err := gitter.Checkout(fn.Repo, fn.Branch); err != nil {
+			return errors.InternalServerError("function.update", err.Error())
+		}
+		// set the source dir
+		sourceDir = filepath.Join(gitter.RepoDir(), fn.Subfolder)
 	}
 
 	// process the env vars to the required format
@@ -458,6 +528,11 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 	var status string
 
 	go func() {
+		// delete the source code once done
+		defer func() {
+			os.RemoveAll(sourceDir)
+		}()
+
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
 		cmd := exec.Command("gcloud", "functions", "deploy", fn.Id, "--quiet",
 			"--region", fn.Region, "--service-account", e.identity,
@@ -469,7 +544,7 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
 
-		cmd.Dir = filepath.Join(gitter.RepoDir(), fn.Subfolder)
+		cmd.Dir = sourceDir
 		outp, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))
@@ -523,6 +598,7 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 			time.Sleep(time.Second)
 		}
 
+		// update the status
 		fn.Status = status
 		fn.Updated = time.Now().Format(time.RFC3339Nano)
 		store.Write(store.NewRecord(key, fn))
