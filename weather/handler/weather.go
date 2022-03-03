@@ -126,7 +126,7 @@ func (w *Weather) Forecast(ctx context.Context, req *pb.ForecastRequest, rsp *pb
 	// set the location
 	rsp.Location = location["name"].(string)
 	rsp.Region = location["region"].(string)
-	rsp.Country = location["region"].(string)
+	rsp.Country = location["country"].(string)
 	rsp.Latitude = location["lat"].(float64)
 	rsp.Longitude = location["lon"].(float64)
 	rsp.Timezone = location["tz_id"].(string)
@@ -172,7 +172,7 @@ func (w *Weather) Now(ctx context.Context, req *pb.NowRequest, rsp *pb.NowRespon
 	// set the location
 	rsp.Location = location["name"].(string)
 	rsp.Region = location["region"].(string)
-	rsp.Country = location["region"].(string)
+	rsp.Country = location["country"].(string)
 	rsp.Latitude = location["lat"].(float64)
 	rsp.Longitude = location["lon"].(float64)
 	rsp.Timezone = location["tz_id"].(string)
