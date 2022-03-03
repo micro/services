@@ -584,8 +584,8 @@ func (e *GoogleApp) deleteApp(ctx context.Context, tenantID string, srv *pb.Serv
 	// check the status
 	switch srv.Status {
 	case domain.StatusUpdating, domain.StatusDeploying, domain.StatusDeleting:
-		log.Errorf("Won't delete: % is %s", srv.Name, srv.Status)
-		return errors.BadRequest("app.delete", "% status: %s", srv.Name, srv.Status)
+		log.Errorf("Won't delete: %s is %s", srv.Name, srv.Status)
+		return errors.BadRequest("app.delete", "%s status: %s", srv.Name, srv.Status)
 	}
 
 	// delete from the db
