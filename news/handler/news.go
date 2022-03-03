@@ -79,6 +79,17 @@ func (n *News) Headlines(ctx context.Context, req *pb.HeadlinesRequest, rsp *pb.
 		date = req.Date
 	}
 
+	var seen bool
+	for _, locale := range Locales {
+		if locale == req.Locale {
+			seen = true
+			break
+		}
+	}
+	if !seen {
+		return errors.BadRequest("news.headlines", "invalid locale")
+	}
+
 	vals := url.Values{}
 	vals.Set("api_token", n.apiKey)
 	vals.Set("locale", locale)
