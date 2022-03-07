@@ -28,8 +28,8 @@ import "github.com/micro/services/helloworld/proto"
 
 ## Contribute
 
-We welcome contributions of additional services which are then hosted on [m3o.com](https://m3o.com).
+We welcome contributions of additional services
 
 - Services must be built using the Micro platform
 - Any dependency must be configured using the Micro Config
-- All services to be published must include a `publicapi.json` file
+- All services must include a README.md and be well commented
