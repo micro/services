@@ -84,6 +84,8 @@ message RunResponse {
 message UpdateRequest {
 	// name of the app
 	string name = 1;
+	// Additional env vars to update
+	map<string,string> env_vars = 2;
 }
 
 message UpdateResponse {

@@ -464,6 +464,20 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 	var envVars []string
 
 	for k, v := range srv.EnvVars {
+		// don't add anything we're updating
+		if _, ok := req.EnvVars[k]; ok {
+			continue
+		}
+		// add the value
+		envVars = append(envVars, k+"="+v)
+	}
+
+	// add the updated env vars
+	for k, v := range req.EnvVars {
+		// skip zero vals
+		if len(v) == 0 {
+			continue
+		}
 		envVars = append(envVars, k+"="+v)
 	}
 
