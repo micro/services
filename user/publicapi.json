@@ -2,5 +2,9 @@
   "name": "user",
   "icon": "👤",
   "category": "authentication",
-  "display_name": "Users"
+  "display_name": "Users",
+  "pricing": {
+    "User.SendMagicLink": 10000,
+    "User.SendVerificationEmail": 10000
+  }
 }
