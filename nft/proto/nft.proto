@@ -188,6 +188,7 @@ message AssetsResponse {
 	repeated Asset assets = 1;
 }
 
+// Get a single asset by the contract
 message AssetRequest {
 	string contract_address = 1;
 	string token_id = 2;
@@ -197,6 +198,7 @@ message AssetResponse {
 	Asset asset = 1;
 }
 
+// Get a collection by its slug
 message CollectionRequest {
 	string slug = 1;
 }
