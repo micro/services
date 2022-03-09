@@ -49,16 +49,11 @@ func (o *OpenSea) Assets(ctx context.Context, req *pb.AssetsRequest, rsp *pb.Ass
 	params := "?"
 
 	limit := int32(20)
-	offset := int32(0)
 	order := "desc"
 	orderBy := ""
 
 	if req.Limit > 0 {
 		limit = req.Limit
-	}
-
-	if req.Offset > 0 {
-		offset = req.Offset
 	}
 
 	if req.Order == "asc" {
@@ -70,8 +65,11 @@ func (o *OpenSea) Assets(ctx context.Context, req *pb.AssetsRequest, rsp *pb.Ass
 		orderBy = req.OrderBy
 	}
 
-	params += fmt.Sprintf("limit=%d&offset=%d&order_direction=%s",
-		limit, offset, order)
+	params += fmt.Sprintf("limit=%d&order_direction=%s", limit, order)
+
+	if len(req.Cursor) > 0 {
+		params += fmt.Sprintf("&cursor=%s", req.Cursor)
+	}
 
 	if len(orderBy) > 0 {
 		params += "&order_by=" + orderBy
@@ -90,6 +88,8 @@ func (o *OpenSea) Assets(ctx context.Context, req *pb.AssetsRequest, rsp *pb.Ass
 	for _, asset := range resp.Assets {
 		rsp.Assets = append(rsp.Assets, assetToPb(asset))
 	}
+	rsp.Next = resp.Next
+	rsp.Previous = resp.Previous
 
 	return nil
 }

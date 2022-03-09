@@ -3,7 +3,9 @@ package domain
 import "encoding/json"
 
 type AssetsResponse struct {
-	Assets []*Asset `json:"assets"`
+	Assets   []*Asset `json:"assets"`
+	Next     string   `json:"next"`
+	Previous string   `json:"previous"`
 }
 
 type CollectionsResponse struct {
