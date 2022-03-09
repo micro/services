@@ -173,19 +173,25 @@ message Token {
 message AssetsRequest {
 	// limit returned assets
 	int32 limit = 1;
-	// offset for pagination
-	int32 offset = 2;
+	// DEPRECATED offset for pagination, please use cursor instead
+	int32 offset = 2 [deprecated = true];
 	// order "asc" or "desc"
 	string order = 3;
 	// order by "sale_date", "sale_count", "sale_price", "total_price"
 	string order_by = 4;
 	// limit to members of a collection by slug name (case sensitive)
 	string collection = 5;
+	// A cursor pointing to the page to retrieve
+	string cursor = 6;
 }
 
 message AssetsResponse {
 	// list of assets
 	repeated Asset assets = 1;
+	// A cursor to be supplied to retrieve the next page of results
+	string next = 2;
+	// A cursor to be supplied to retrieve the previous page of results
+	string previous = 3;
 }
 
 // Get a single asset by the contract

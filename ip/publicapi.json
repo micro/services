@@ -4,6 +4,6 @@
   "category": "utility",
   "display_name": "IP2Geo",
   "pricing": {
-    "Ip.Lookup", 1
+    "Ip.Lookup": 1
   }
 }

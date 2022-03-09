@@ -27,6 +27,7 @@ func (e *Helloworld) Stream(ctx context.Context, req *helloworld.StreamRequest, 
 			Message: "Hello " + req.Name,
 		})
 	}
+	rsp.Close()
 
 	return nil
 }
