@@ -28,7 +28,7 @@ import "github.com/micro/services/helloworld/proto"
 
 ## Contribute
 
-We welcome contributions of additional services
+We welcome contributions of additional services:
 
 - Services must be built using the Micro platform
 - Any dependency must be configured using the Micro Config
