@@ -22,12 +22,12 @@ message Result {
 	string icon_url = 5;
 	// rating from 1.0 to 5.0
 	double rating = 6;
-	// open now
-	bool open_now = 7;
-	// opening hours
-	repeated string opening_hours = 8;
 	// simplified address
-	string vicinity = 9;
+	string vicinity = 7;
+	// open now
+	bool open_now = 8;
+	// opening hours
+	repeated string opening_hours = 9;
 	// feature types
 	repeated string types = 10;
 }
