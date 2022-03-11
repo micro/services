@@ -23,10 +23,6 @@ service User {
 	rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse) {}
 }
 
-service UserAdmin {
-	rpc MigrateSessions(MigrateSessionsRequest) returns (MigrateSessionsResponse) {}
-}
-
 message Account {
 	// unique account id
 	string id = 1;
@@ -290,8 +286,3 @@ message VerifyTokenResponse {
 	string message = 3;
 }
 
-message MigrateSessionsRequest {
-	string tenant_id = 1;
-}
-
-message MigrateSessionsResponse {}
