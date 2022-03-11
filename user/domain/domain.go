@@ -187,11 +187,70 @@ func (domain *Domain) CreateSession(ctx context.Context, sess *user.Session) err
 		Value: val,
 	}
 
-	return domain.store.Write(record)
+	if err := domain.store.Write(record); err != nil {
+		return err
+	}
+
+	record = &store.Record{
+		Key:   generateSessionUserStoreKey(ctx, sess.UserId, sess.Id),
+		Value: val,
+	}
+	return store.Write(record)
+}
+
+func (domain *Domain) MigrateAllSessions(tenantID string) error {
+	sessKey := fmt.Sprintf("%ssession/", getStoreKeyPrefixForTenent(tenantID))
+	recs, err := domain.store.Read(sessKey, store.ReadPrefix())
+	if err != nil {
+		return err
+	}
+	for _, rec := range recs {
+		var sess user.Session
+		if err := json.Unmarshal(rec.Value, &sess); err != nil {
+			return err
+		}
+		if err := domain.store.Write(store.NewRecord(fmt.Sprintf("%ssession/user/%s/%s", getStoreKeyPrefixForTenent(tenantID), sess.UserId, sess.Id), sess)); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
-	return domain.store.Delete(generateSessionStoreKey(ctx, id))
+	sessKey := generateSessionStoreKey(ctx, id)
+	recs, err := domain.store.Read(sessKey)
+	if err != nil {
+		return err
+	}
+	var sess user.Session
+	if err := json.Unmarshal(recs[0].Value, &sess); err != nil {
+		return err
+	}
+	if err := domain.store.Delete(generateSessionUserStoreKey(ctx, sess.UserId, id)); err != nil {
+		return err
+	}
+	return domain.store.Delete(sessKey)
+}
+
+func (domain *Domain) DeleteAllSessions(ctx context.Context, userID string) error {
+	sessKey := generateSessionUserStoreKey(ctx, userID, "")
+	recs, err := domain.store.Read(sessKey, store.ReadPrefix())
+	if err != nil {
+		return err
+	}
+	for _, rec := range recs {
+		var sess user.Session
+		if err := json.Unmarshal(rec.Value, &sess); err != nil {
+			return err
+		}
+		if err := domain.store.Delete(generateSessionStoreKey(ctx, sess.Id)); err != nil {
+			return err
+		}
+		if err := domain.store.Delete(rec.Key); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // ReadToken returns the user id

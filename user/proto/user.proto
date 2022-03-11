@@ -12,6 +12,7 @@ service User {
 	rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {}
 	rpc Login(LoginRequest) returns (LoginResponse) {}
 	rpc Logout(LogoutRequest) returns (LogoutResponse) {}
+	rpc LogoutAll(LogoutAllRequest) returns (LogoutAllResponse) {}
 	rpc ReadSession(ReadSessionRequest) returns(ReadSessionResponse) {}
 	rpc VerifyEmail(VerifyEmailRequest) returns(VerifyEmailResponse) {}
 	rpc SendVerificationEmail(SendVerificationEmailRequest) returns (SendVerificationEmailResponse) {}
@@ -161,6 +162,16 @@ message LogoutRequest {
 message LogoutResponse {
 }
 
+// Logout of all user's sessions
+message LogoutAllRequest {
+	// the user to logout
+	string user_id = 1;
+}
+
+message LogoutAllResponse {
+}
+
+
 // Verify the email address of an account from a token sent in an email to the user.
 message VerifyEmailRequest {
 	// The token from the verification email
@@ -274,3 +285,4 @@ message VerifyTokenResponse {
 	Session session = 2;
 	string message = 3;
 }
+

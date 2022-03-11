@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./proto;user";
+
+service UserAdmin {
+  rpc MigrateSessions(MigrateSessionsRequest) returns (MigrateSessionsResponse) {}
+}
+
+message MigrateSessionsRequest {
+  string tenant_id = 1;
+}
+
+message MigrateSessionsResponse {}
