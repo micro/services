@@ -23,7 +23,7 @@ service User {
 	rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse) {}
 }
 
-service Admin {
+service UserAdmin {
 	rpc MigrateSessions(MigrateSessionsRequest) returns (MigrateSessionsResponse) {}
 }
 

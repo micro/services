@@ -347,32 +347,32 @@ func (h *userHandler) VerifyToken(ctx context.Context, in *VerifyTokenRequest, o
 	return h.UserHandler.VerifyToken(ctx, in, out)
 }
 
-// Api Endpoints for Admin service
+// Api Endpoints for UserAdmin service
 
-func NewAdminEndpoints() []*api.Endpoint {
+func NewUserAdminEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
-// Client API for Admin service
+// Client API for UserAdmin service
 
-type AdminService interface {
+type UserAdminService interface {
 	MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, opts ...client.CallOption) (*MigrateSessionsResponse, error)
 }
 
-type adminService struct {
+type userAdminService struct {
 	c    client.Client
 	name string
 }
 
-func NewAdminService(name string, c client.Client) AdminService {
-	return &adminService{
+func NewUserAdminService(name string, c client.Client) UserAdminService {
+	return &userAdminService{
 		c:    c,
 		name: name,
 	}
 }
 
-func (c *adminService) MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, opts ...client.CallOption) (*MigrateSessionsResponse, error) {
-	req := c.c.NewRequest(c.name, "Admin.MigrateSessions", in)
+func (c *userAdminService) MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, opts ...client.CallOption) (*MigrateSessionsResponse, error) {
+	req := c.c.NewRequest(c.name, "UserAdmin.MigrateSessions", in)
 	out := new(MigrateSessionsResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -381,27 +381,27 @@ func (c *adminService) MigrateSessions(ctx context.Context, in *MigrateSessionsR
 	return out, nil
 }
 
-// Server API for Admin service
+// Server API for UserAdmin service
 
-type AdminHandler interface {
+type UserAdminHandler interface {
 	MigrateSessions(context.Context, *MigrateSessionsRequest, *MigrateSessionsResponse) error
 }
 
-func RegisterAdminHandler(s server.Server, hdlr AdminHandler, opts ...server.HandlerOption) error {
-	type admin interface {
+func RegisterUserAdminHandler(s server.Server, hdlr UserAdminHandler, opts ...server.HandlerOption) error {
+	type userAdmin interface {
 		MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, out *MigrateSessionsResponse) error
 	}
-	type Admin struct {
-		admin
+	type UserAdmin struct {
+		userAdmin
 	}
-	h := &adminHandler{hdlr}
-	return s.Handle(s.NewHandler(&Admin{h}, opts...))
+	h := &userAdminHandler{hdlr}
+	return s.Handle(s.NewHandler(&UserAdmin{h}, opts...))
 }
 
-type adminHandler struct {
-	AdminHandler
+type userAdminHandler struct {
+	UserAdminHandler
 }
 
-func (h *adminHandler) MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, out *MigrateSessionsResponse) error {
-	return h.AdminHandler.MigrateSessions(ctx, in, out)
+func (h *userAdminHandler) MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, out *MigrateSessionsResponse) error {
+	return h.UserAdminHandler.MigrateSessions(ctx, in, out)
 }
