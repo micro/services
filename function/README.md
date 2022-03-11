@@ -2,6 +2,5 @@ Serverless functions
 
 # Function Service
 
-Deploy and run serverless functions for any project from a Git repository.
+Deploy and run serverless lambda functions with zero infra management
 
-Limited to 1 function for free. Pay to reserve more beyond your quota.
