@@ -4,7 +4,7 @@
   "category": "climate",
   "display_name": "Weather",
   "pricing": {
-    "Weather.Now": 1000,
-    "Weather.Forecast": 10000
+    "Weather.Now": 1,
+    "Weather.Forecast": 10
   }
 }
