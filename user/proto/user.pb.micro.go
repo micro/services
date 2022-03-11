@@ -49,6 +49,7 @@ type UserService interface {
 	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...client.CallOption) (*UpdatePasswordResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...client.CallOption) (*LogoutResponse, error)
+	LogoutAll(ctx context.Context, in *LogoutAllRequest, opts ...client.CallOption) (*LogoutAllResponse, error)
 	ReadSession(ctx context.Context, in *ReadSessionRequest, opts ...client.CallOption) (*ReadSessionResponse, error)
 	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...client.CallOption) (*VerifyEmailResponse, error)
 	SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, opts ...client.CallOption) (*SendVerificationEmailResponse, error)
@@ -134,6 +135,16 @@ func (c *userService) Login(ctx context.Context, in *LoginRequest, opts ...clien
 func (c *userService) Logout(ctx context.Context, in *LogoutRequest, opts ...client.CallOption) (*LogoutResponse, error) {
 	req := c.c.NewRequest(c.name, "User.Logout", in)
 	out := new(LogoutResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) LogoutAll(ctx context.Context, in *LogoutAllRequest, opts ...client.CallOption) (*LogoutAllResponse, error) {
+	req := c.c.NewRequest(c.name, "User.LogoutAll", in)
+	out := new(LogoutAllResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -231,6 +242,7 @@ type UserHandler interface {
 	UpdatePassword(context.Context, *UpdatePasswordRequest, *UpdatePasswordResponse) error
 	Login(context.Context, *LoginRequest, *LoginResponse) error
 	Logout(context.Context, *LogoutRequest, *LogoutResponse) error
+	LogoutAll(context.Context, *LogoutAllRequest, *LogoutAllResponse) error
 	ReadSession(context.Context, *ReadSessionRequest, *ReadSessionResponse) error
 	VerifyEmail(context.Context, *VerifyEmailRequest, *VerifyEmailResponse) error
 	SendVerificationEmail(context.Context, *SendVerificationEmailRequest, *SendVerificationEmailResponse) error
@@ -250,6 +262,7 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, out *UpdatePasswordResponse) error
 		Login(ctx context.Context, in *LoginRequest, out *LoginResponse) error
 		Logout(ctx context.Context, in *LogoutRequest, out *LogoutResponse) error
+		LogoutAll(ctx context.Context, in *LogoutAllRequest, out *LogoutAllResponse) error
 		ReadSession(ctx context.Context, in *ReadSessionRequest, out *ReadSessionResponse) error
 		VerifyEmail(ctx context.Context, in *VerifyEmailRequest, out *VerifyEmailResponse) error
 		SendVerificationEmail(ctx context.Context, in *SendVerificationEmailRequest, out *SendVerificationEmailResponse) error
@@ -298,6 +311,10 @@ func (h *userHandler) Logout(ctx context.Context, in *LogoutRequest, out *Logout
 	return h.UserHandler.Logout(ctx, in, out)
 }
 
+func (h *userHandler) LogoutAll(ctx context.Context, in *LogoutAllRequest, out *LogoutAllResponse) error {
+	return h.UserHandler.LogoutAll(ctx, in, out)
+}
+
 func (h *userHandler) ReadSession(ctx context.Context, in *ReadSessionRequest, out *ReadSessionResponse) error {
 	return h.UserHandler.ReadSession(ctx, in, out)
 }
@@ -328,4 +345,63 @@ func (h *userHandler) SendMagicLink(ctx context.Context, in *SendMagicLinkReques
 
 func (h *userHandler) VerifyToken(ctx context.Context, in *VerifyTokenRequest, out *VerifyTokenResponse) error {
 	return h.UserHandler.VerifyToken(ctx, in, out)
+}
+
+// Api Endpoints for Admin service
+
+func NewAdminEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
+// Client API for Admin service
+
+type AdminService interface {
+	MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, opts ...client.CallOption) (*MigrateSessionsResponse, error)
+}
+
+type adminService struct {
+	c    client.Client
+	name string
+}
+
+func NewAdminService(name string, c client.Client) AdminService {
+	return &adminService{
+		c:    c,
+		name: name,
+	}
+}
+
+func (c *adminService) MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, opts ...client.CallOption) (*MigrateSessionsResponse, error) {
+	req := c.c.NewRequest(c.name, "Admin.MigrateSessions", in)
+	out := new(MigrateSessionsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Server API for Admin service
+
+type AdminHandler interface {
+	MigrateSessions(context.Context, *MigrateSessionsRequest, *MigrateSessionsResponse) error
+}
+
+func RegisterAdminHandler(s server.Server, hdlr AdminHandler, opts ...server.HandlerOption) error {
+	type admin interface {
+		MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, out *MigrateSessionsResponse) error
+	}
+	type Admin struct {
+		admin
+	}
+	h := &adminHandler{hdlr}
+	return s.Handle(s.NewHandler(&Admin{h}, opts...))
+}
+
+type adminHandler struct {
+	AdminHandler
+}
+
+func (h *adminHandler) MigrateSessions(ctx context.Context, in *MigrateSessionsRequest, out *MigrateSessionsResponse) error {
+	return h.AdminHandler.MigrateSessions(ctx, in, out)
 }

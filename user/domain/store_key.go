@@ -66,6 +66,10 @@ func generateSessionStoreKey(ctx context.Context, sessionId string) string {
 	return fmt.Sprintf("%ssession/%s", getStoreKeyPrefix(ctx), sessionId)
 }
 
+func generateSessionUserStoreKey(ctx context.Context, userID, sessionID string) string {
+	return fmt.Sprintf("%ssession/user/%s/%s", getStoreKeyPrefix(ctx), userID, sessionID)
+}
+
 func generateVerificationTokenStoreKey(token string) string {
 	return fmt.Sprintf("user/verification-token/%s", token)
 }

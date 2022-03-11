@@ -381,6 +381,13 @@ func (s *User) Logout(ctx context.Context, req *pb.LogoutRequest, rsp *pb.Logout
 	return s.domain.DeleteSession(ctx, req.SessionId)
 }
 
+func (s *User) LogoutAll(ctx context.Context, req *pb.LogoutAllRequest, rsp *pb.LogoutAllResponse) error {
+	if len(req.UserId) == 0 {
+		return errors.BadRequest("user.LogoutAll", "Missing user_id param")
+	}
+	return s.domain.DeleteAllSessions(ctx, req.UserId)
+}
+
 func (s *User) ReadSession(ctx context.Context, req *pb.ReadSessionRequest, rsp *pb.ReadSessionResponse) error {
 	sess, err := s.domain.ReadSession(ctx, req.SessionId)
 	if err != nil {
@@ -626,4 +633,15 @@ func (s *User) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 		return errors.BadRequest("user.DeleteData", "Missing tenant ID")
 	}
 	return s.domain.DeleteTenantData(request.TenantId)
+}
+
+func (s *User) MigrateSessions(ctx context.Context, request *pb.MigrateSessionsRequest, response *pb.MigrateSessionsResponse) error {
+	if _, err := pauth.VerifyMicroAdmin(ctx, "user.MigrateSessions"); err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return errors.BadRequest("user.MigrateSessions", "Missing tenant ID")
+	}
+	return s.domain.MigrateAllSessions(request.TenantId)
 }
