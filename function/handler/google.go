@@ -43,21 +43,11 @@ type GoogleFunction struct {
 var (
 	GoogleRuntimes = []string{
 		"nodejs16",
-		"nodejs14",
-		"nodejs12",
-		"nodejs10",
-		"nodejs8",
-		"nodejs6",
 		"python39",
-		"python38",
-		"python37",
 		"go116",
-		"go113",
-		"go111",
 		"java11",
 		"dotnet3",
 		"ruby27",
-		"ruby26",
 		"php74",
 	}
 
