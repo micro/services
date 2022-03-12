@@ -2,10 +2,5 @@
   "name": "currency",
   "icon": "💱",
   "category": "finance",
-  "display_name": "Currency",
-  "pricing": {
-    "Currency.Convert": 500,
-    "Currency.Rates": 500,
-    "Currency.History": 500
-  }
+  "display_name": "Currency"
 }

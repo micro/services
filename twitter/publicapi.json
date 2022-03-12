@@ -2,9 +2,5 @@
   "name": "twitter",
   "icon": "💬",
   "category": "social",
-  "display_name": "Twitter",
-  "pricing": {
-    "Twitter.Search": 1,
-    "Twitter.Timeline": 1
-  }
+  "display_name": "Twitter"
 }
