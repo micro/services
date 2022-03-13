@@ -6,8 +6,6 @@ Store and search JSON records. The Search API provides indexing and full text se
 Search for a word or phrase in a particular field of a record. Combine multiple with 
 either `AND` or `OR` boolean operators to create complex queries.
 
-Powered by [OpenSearch](https://opensearch.org/).
-
 ## Query Language
 
 The search API supports a simple query language to let you get to your data quickly without having to learn a complicated language. 
