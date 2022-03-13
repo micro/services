@@ -2,5 +2,5 @@ Explore NFT Assets
 
 # NFT Service
 
-Explore NFT collections and assets with a simple API, powered by OpenSea. 
+Explore NFT collections and assets with a simple API. 
 
