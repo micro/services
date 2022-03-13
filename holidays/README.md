@@ -11,5 +11,3 @@ Holiday types are:
 - Authorities - Government or other authorities are closed
 - Optional - A day where a majority of people take the day off
 - Observance - Optional day off, typically unpaid
-
-Powered by [Nager.Date](https://github.com/nager/Nager.Date/)
