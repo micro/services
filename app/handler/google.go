@@ -735,6 +735,10 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 		log.Error(fmt.Errorf(string(outp)))
 		rsp.Service = srv
 		return nil
+	} else if strings.HasPrefix(srv.Status, "DeploymentError") {
+		log.Error(fmt.Errorf(string(outp)))
+		rsp.Service = srv
+		return nil
 	} else if err != nil {
 		log.Error(fmt.Errorf(string(outp)))
 		return errors.BadRequest("app.status", "service does not exist")
