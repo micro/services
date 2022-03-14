@@ -1,0 +1,15 @@
+{
+  "price": [
+    {
+      "title": "Get bitcoin price",
+      "description": "Returns the last traded price of bitcoin",
+      "request": {
+        "symbol": "BTCUSD"
+      },
+      "response": {
+        "symbol": "BTCUSD",
+        "price": 34682.74
+      }
+    }
+  ]
+}
