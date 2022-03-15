@@ -15,6 +15,8 @@ message PriceRequest {
 }
 
 message PriceResponse {
+	// The symbol of pricing e.g BTCUSD
 	string symbol = 1;
+	// The price of bitcoin
 	double price = 2;
 }
