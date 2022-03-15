@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package analytics;
+
+option go_package = "./proto;analytics";
+
+service Analytics {
+	rpc Track(TrackRequest) returns (TrackResponse) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+}
+
+message Event {
+	// event name
+	string name = 1;
+	// time at which the event was created
+	string created = 2;
+	// the amount of times the event was triggered
+	uint64 value = 3;
+}
+
+// Track an event, it will be created if it doesn't exist
+message TrackRequest {
+	// event name
+	string name = 1;
+}
+
+message TrackResponse {}
+
+// Get a single event
+message ReadRequest {
+	string name = 1;
+}
+
+message ReadResponse {
+	Event event = 1;
+}
+
+// Delete an event
+message DeleteRequest {
+	string name = 1;
+}
+
+message DeleteResponse {
+	Event event = 1;
+}
+
+// List all events
+message ListRequest {}
+
+message ListResponse {
+	repeated Event events = 1;
+}
