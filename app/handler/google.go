@@ -374,12 +374,12 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		if len(reRes) > 1 {
 			buildID = reRes[1]
 		}
-		log.Infof("Build ID %s %s", string(outp))
+		log.Infof("Build ID %s %s", buildID, string(outp))
 
 		logCmd := exec.Command("gcloud", "logging", "read", "--format", "json", fmt.Sprintf(`'resource.type=build AND resource.labels.build_id=%s'`, buildID))
 		logOutp, logErr := logCmd.CombinedOutput()
 		if logErr != nil {
-			log.Errorf("Failed to retrieve logs for %s %s", buildID, logErr)
+			log.Errorf("Failed to retrieve logs for %s %s", buildID, logErr, string(logOutp))
 		} else {
 			// logs are returned in reverse chronological order as json
 			var logs []map[string]interface{}
