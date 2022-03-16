@@ -383,7 +383,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		} else {
 			// logs are returned in reverse chronological order as json
 			var logs []map[string]interface{}
-			if err := json.Unmarshal(logOutp, logs); err != nil {
+			if err := json.Unmarshal(logOutp, &logs); err != nil {
 				log.Errorf("Error unmarshalling logs %s", err)
 			} else {
 				filteredLogs := []string{}
