@@ -376,7 +376,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		}
 		log.Infof("Build ID %s %s", buildID, string(outp))
 
-		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`'resource.type=build AND resource.labels.build_id=%s'`, buildID))
+		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
 		logOutp, logErr := logCmd.CombinedOutput()
 		if logErr != nil {
 			log.Errorf("Failed to retrieve logs for %s %s", buildID, logErr, string(logOutp))
