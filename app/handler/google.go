@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"math/rand"
 	"os/exec"
 	"strings"
@@ -46,6 +47,14 @@ var (
 
 	// hardcoded list of valid repos
 	GitRepos = []string{"github.com", "gitlab.org", "bitbucket.org"}
+
+	GitIgnore = []string{
+		".git",
+		"dist",
+		"node_modules",
+		"vendor",
+		"*.jar",
+	}
 )
 
 var (
@@ -153,6 +162,11 @@ func New() *GoogleApp {
 		identity: identity,
 		App:      new(App),
 	}
+}
+
+func (e *GoogleApp) WriteGcloudIgnore(dir string) error {
+	data := []byte(strings.Join(GitIgnore, "\n"))
+	return ioutil.WriteFile(filepath.Join(dir, ".gcloudignore"), data, 0644)
 }
 
 func (e *GoogleApp) Regions(ctx context.Context, req *pb.RegionsRequest, rsp *pb.RegionsResponse) error {
@@ -370,6 +384,9 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		// set the command dir
 		cmd.Dir = gitter.RepoDir()
 
+		// write the gloudignore file
+		e.WriteGcloudIgnore(cmd.Dir)
+
 		// execute the command
 		outp, err := cmd.CombinedOutput()
 
@@ -521,6 +538,9 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 
 		// set the command dir
 		cmd.Dir = gitter.RepoDir()
+
+		// write the gloudignore file
+		e.WriteGcloudIgnore(cmd.Dir)
 
 		// execute the command
 		outp, err := cmd.CombinedOutput()
