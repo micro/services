@@ -360,7 +360,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 	go func(service *pb.Service) {
 		imageName := fmt.Sprintf("%s-docker.pkg.dev/%s/cloud-run-source-deploy/%s", req.Region, e.project, service.Id)
-		cmd := exec.Command("gcloud", "builds", "submit", "--region", req.Region, "--project", e.project, "--format", "json",
+		cmd := exec.Command("gcloud", "builds", "submit", "--project", e.project, "--format", "json",
 			"--pack", "image="+imageName, ".",
 		)
 
