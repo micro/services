@@ -365,7 +365,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			"deploy", service.Id, "--region", req.Region,
 			"--service-account", e.identity,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port),
-			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
+			"--allow-unauthenticated", "--max-instances", "1", "--source", ".", "--verbosity", "debug",
 		)
 
 		// if env vars exist then set them
