@@ -376,9 +376,10 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 		var buildID string
 		reRes := buildLogsRegex.FindStringSubmatch(string(outp))
-		if len(reRes) == 2 {
+		if len(reRes) > 1 {
 			buildID = reRes[1]
 		}
+		log.Infof("Build ID %s %s", string(outp))
 
 		logCmd := exec.Command("gcloud", "logging", "read", "--format", "json", fmt.Sprintf(`'resource.type=build AND resource.labels.build_id=%s'`, buildID))
 		logOutp, logErr := logCmd.CombinedOutput()
