@@ -28,7 +28,7 @@ import (
 )
 
 var (
-	buildLogsRegex = regexp.MustCompile(`starting build "(.*)"`) //"Logs are available at \\[https://console.cloud.google.com/cloud-build/builds/(.*)\\?project=")
+	buildLogsRegex = regexp.MustCompile("Logs are available at \\[https://console.cloud.google.com/cloud-build/builds/(.*)\\?project=")
 )
 
 type GoogleApp struct {
