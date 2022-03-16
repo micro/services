@@ -16,7 +16,7 @@
             "description": "Read an event by its name",
             "run_check": false,
             "request": {
-                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+                "name": "click"
             },
             "response": {
                 "event": {
