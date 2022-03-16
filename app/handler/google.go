@@ -362,12 +362,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		imageName := fmt.Sprintf("%s-docker.pkg.dev/%s/cloud-run-source-deploy/%s", req.Region, e.project, service.Id)
 		cmd := exec.Command("gcloud", "builds", "submit", "--region", req.Region, "--project", e.project, "--format", "json",
 			"--pack", "image="+imageName, ".",
-			"--service-account", e.identity,
 		)
-		// if env vars exist then set them
-		if len(envVars) > 0 {
-			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
-		}
 
 		// set the command dir
 		cmd.Dir = gitter.RepoDir()
