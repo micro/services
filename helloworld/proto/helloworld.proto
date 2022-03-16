@@ -9,22 +9,26 @@ service Helloworld {
 	rpc Stream(StreamRequest) returns (stream StreamResponse) {};
 }
 
-// Call returns a personalised "Hello $name" response
+// Return a personalised Hello message
 message CallRequest {
+	// name to append to the message e.g Alice
 	string name = 1;
 }
 
 message CallResponse {
+	// message including name e.g Hello Alice
 	string message = 1;
 }
 
-// Stream returns a stream of "Hello $name" responses
+// Stream a personalised Hello message
 message StreamRequest {
+	// name to append to the message e.g Alice
 	string name = 1;
 	// the number of messages to send back
 	int64 messages = 2;
 }
 
 message StreamResponse {
+	// message including name e.g Hello Alice
 	string message = 1;
 }
