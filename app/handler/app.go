@@ -23,7 +23,9 @@ var (
 	OwnerKey       = "app/owner/"
 	ServiceKey     = "app/service/"
 	ReservationKey = "app/reservation/"
-	NameFormat     = regexp.MustCompilePOSIX("^[a-z0-9]+$")
+	BuildLogsKey   = "app/buildlogs/"
+
+	NameFormat = regexp.MustCompilePOSIX("^[a-z0-9]+$")
 )
 
 type Reservation struct {

@@ -13,6 +13,7 @@ service App {
 	rpc Status(StatusRequest) returns (StatusResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Resolve(ResolveRequest) returns (ResolveResponse) {}
+	rpc BuildLogs(BuildLogsRequest) returns (BuildLogsResponse) {}
 }
 
 message Service {
@@ -144,4 +145,14 @@ message ResolveRequest {
 message ResolveResponse {
 	// the end provider url
 	string url = 1;
+}
+
+// Get the build logs for an app
+message BuildLogsRequest {
+	// name of the app
+	string name = 1;
+}
+
+message BuildLogsResponse {
+	string logs = 1;
 }

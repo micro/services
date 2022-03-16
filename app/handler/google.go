@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os/exec"
+	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -23,6 +25,10 @@ import (
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
+)
+
+var (
+	buildLogsRegex = regexp.MustCompile("Logs are available at \\[https://console.cloud.google.com/cloud-build/builds/(.*)\\?project=")
 )
 
 type GoogleApp struct {
@@ -372,6 +378,39 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 		// execute the command
 		outp, err := cmd.CombinedOutput()
+
+		var buildID string
+		reRes := buildLogsRegex.FindStringSubmatch(string(outp))
+		if len(reRes) == 2 {
+			buildID = reRes[1]
+		}
+
+		logCmd := exec.Command("gcloud", "logging", "read", "--format", "json", fmt.Sprintf(`'resource.type=build AND resource.labels.build_id=%s'`, buildID))
+		logOutp, err := logCmd.CombinedOutput()
+		if err != nil {
+			log.Errorf("Failed to retrieve logs for %s %s", buildID, err)
+		} else {
+			// logs are returned in reverse chronological order as json
+			var logs []map[string]interface{}
+			if err := json.Unmarshal(logOutp, logs); err != nil {
+				log.Errorf("Error unmarshalling logs %s", err)
+			} else {
+				filteredLogs := []string{}
+				for _, l := range logs {
+					if tp, ok := l["textPayload"]; ok {
+						filteredLogs = append(filteredLogs, tp.(string))
+					}
+				}
+				reversed := sort.Reverse(sort.StringSlice(filteredLogs))
+				// store it
+				logsKey := BuildLogsKey + id + "/" + req.Name
+
+				if err := store.Write(store.NewRecord(logsKey, strings.Join(reversed.(sort.StringSlice), "\n"))); err != nil {
+					log.Errorf("Error writing logs to store %s", err)
+				}
+			}
+
+		}
 
 		// by this point the context may have been cancelled
 		acc, _ := auth.AccountFromContext(ctx)
@@ -825,5 +864,25 @@ func (a *App) Resolve(ctx context.Context, req *pb.ResolveRequest, rsp *pb.Resol
 	recs[0].Decode(srv)
 
 	rsp.Url = srv.Url
+	return nil
+}
+
+func (e *GoogleApp) BuildLogs(ctx context.Context, req *pb.BuildLogsRequest, rsp *pb.BuildLogsResponse) error {
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("app.BuildLogs", "Unauthorized")
+	}
+
+	logsKey := BuildLogsKey + id + "/" + req.Name
+	recs, err := store.Read(logsKey)
+	if err != nil {
+		return errors.NotFound("app.BuildLogs", "Build logs not found")
+	}
+	var ret string
+	if err := json.Unmarshal(recs[0].Value, &ret); err != nil {
+		log.Errorf("Error unmarshalling logs %s", err)
+		return errors.NotFound("app.BuildLogs", "Build logs not found")
+	}
+	rsp.Logs = ret
 	return nil
 }

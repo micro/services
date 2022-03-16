@@ -50,6 +50,7 @@ type AppService interface {
 	Status(ctx context.Context, in *StatusRequest, opts ...client.CallOption) (*StatusResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error)
+	BuildLogs(ctx context.Context, in *BuildLogsRequest, opts ...client.CallOption) (*BuildLogsResponse, error)
 }
 
 type appService struct {
@@ -144,6 +145,16 @@ func (c *appService) Resolve(ctx context.Context, in *ResolveRequest, opts ...cl
 	return out, nil
 }
 
+func (c *appService) BuildLogs(ctx context.Context, in *BuildLogsRequest, opts ...client.CallOption) (*BuildLogsResponse, error) {
+	req := c.c.NewRequest(c.name, "App.BuildLogs", in)
+	out := new(BuildLogsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for App service
 
 type AppHandler interface {
@@ -155,6 +166,7 @@ type AppHandler interface {
 	Status(context.Context, *StatusRequest, *StatusResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
 	Resolve(context.Context, *ResolveRequest, *ResolveResponse) error
+	BuildLogs(context.Context, *BuildLogsRequest, *BuildLogsResponse) error
 }
 
 func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.HandlerOption) error {
@@ -167,6 +179,7 @@ func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.Handler
 		Status(ctx context.Context, in *StatusRequest, out *StatusResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error
+		BuildLogs(ctx context.Context, in *BuildLogsRequest, out *BuildLogsResponse) error
 	}
 	type App struct {
 		app
@@ -209,4 +222,8 @@ func (h *appHandler) List(ctx context.Context, in *ListRequest, out *ListRespons
 
 func (h *appHandler) Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error {
 	return h.AppHandler.Resolve(ctx, in, out)
+}
+
+func (h *appHandler) BuildLogs(ctx context.Context, in *BuildLogsRequest, out *BuildLogsResponse) error {
+	return h.AppHandler.BuildLogs(ctx, in, out)
 }
