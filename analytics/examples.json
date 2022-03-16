@@ -1,0 +1,69 @@
+{
+    "track": [
+        {
+            "title": "Track an event",
+            "description": "Increment or create an event",
+            "run_check": false,
+            "request": {
+                "name": "click"
+            },
+            "response": {}
+        }
+    ],
+    "read": [
+        {
+            "title": "Read an event",
+            "description": "Read an event by its name",
+            "run_check": false,
+            "request": {
+                "id": "63c0cdf8-2121-11ec-a881-0242e36f037a"
+            },
+            "response": {
+                "event": {
+                    "created": "2022-15-03T13:33:03+01:00",
+                    "name": "click",
+                    "value": "42"
+                }
+            }
+        }
+    ],
+    "list": [
+        {
+            "title": "List all events",
+            "description": "List all your available events",
+            "run_check": false,
+            "request": {},
+            "response": {
+                "events": [
+                    {
+                        "created": "2022-15-03T13:33:03+01:00",
+                        "name": "click",
+                        "value": "42"
+                    },
+                    {
+                        "created": "2022-15-03T13:35:03+01:00",
+                        "name": "login",
+                        "value": "150"
+                    }
+                ]
+            }
+        }
+    ],
+    "delete": [
+        {
+            "title": "Delete an event",
+            "description": "Delete an event by name",
+            "run_check": false,
+            "request": {
+                "name": "click"
+            },
+            "response": {
+                "event": {
+                    "created": "2022-15-03T13:33:03+01:00",
+                    "name": "click",
+                    "value": "42"
+                }
+            }
+        }
+    ]
+}
