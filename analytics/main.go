@@ -1,9 +1,8 @@
 package main
 
 import (
-	"analytics/handler"
-	pb "analytics/proto"
-
+	"github.com/micro/services/analytics/handler"
+	pb "github.com/micro/services/analytics/proto"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 )

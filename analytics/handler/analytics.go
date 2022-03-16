@@ -10,7 +10,7 @@ import (
 	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/pkg/tenant"
 
-	pb "analytics/proto"
+	pb "github.com/micro/services/analytics/proto"
 )
 
 // Analytics implements the notes proto definition
