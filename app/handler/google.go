@@ -392,11 +392,11 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 						filteredLogs = append(filteredLogs, tp.(string))
 					}
 				}
-				reversed := sort.Reverse(sort.StringSlice(filteredLogs))
+				sort.Sort(sort.Reverse(sort.StringSlice(filteredLogs)))
 				// store it
 				logsKey := BuildLogsKey + id + "/" + req.Name
 
-				if err := store.Write(store.NewRecord(logsKey, strings.Join(reversed.(sort.StringSlice), "\n"))); err != nil {
+				if err := store.Write(store.NewRecord(logsKey, strings.Join(filteredLogs, "\n"))); err != nil {
 					log.Errorf("Error writing logs to store %s", err)
 				}
 			}
