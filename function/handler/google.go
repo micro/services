@@ -408,7 +408,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		if len(reRes) > 1 {
 			buildID = reRes[1]
 		}
-
+		log.Infof("Build ID %s %s", buildID, string(outp))
 		// Logs are a nice to have so don't error out
 		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
 		logOutp, logErr := logCmd.CombinedOutput()
@@ -605,6 +605,7 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 		if len(reRes) > 1 {
 			buildID = reRes[1]
 		}
+		log.Infof("Build ID %s %s", buildID, string(outp))
 
 		// Logs are a nice to have so don't error out
 		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
