@@ -191,5 +191,18 @@
         "url": "https://europe-west1-m3o-apis.cloudfunctions.net/helloworld"
       }
     }
+  ],
+  "logs": [
+    {
+      "title": "Retrieve build logs for a function",
+      "run_check": false,
+      "request": {
+        "name": "helloworld",
+        "logs_type": "build"
+      },
+      "response": {
+        "logs": "starting build \"a85d3407-bcbf-472e-bb52-f6ddbc9cdff8\"\n\nStep #2 - \"post-buildpack\": Retagging eu.gcr.io/m3o-apis/gcf/europe-west1/540f08ba-4d25-449e-b629-c926d647d42f:domtestfn_version-1 as eu.gcr.io/m3o-apis/gcf/europe-west1/540f08ba-4d25-449e-b629-c926d647d42f:latest\nStep #2 - \"post-buildpack\": Image eu.gcr.io/m3o-apis/gcf/europe-west1/540f08ba-4d25-449e-b629-c926d647d42f:domtestfn_version-1 copied to eu.gcr.io/m3o-apis/gcf/europe-west1/540f08ba-4d25-449e-b629-c926d647d42f:latest\nStep #2 - \"post-buildpack\": Image eu.gcr.io/m3o-apis/gcf/europe-west1/540f08ba-4d25-449e-b629-c926d647d42f/cache:a85d3407-bcbf-472e-bb52-f6ddbc9cdff8 does not exist\nStep #2 - \"post-buildpack\": Already have image (with digest): eu.gcr.io/fn-img/utilities/buildpack-shim:base_20220304_18_04_RC00"
+      }
+    }
   ]
 }
