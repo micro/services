@@ -572,26 +572,70 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 	updateRecords(srv)
 
 	go func(service *pb.Service) {
+		imageName := fmt.Sprintf("%s-docker.pkg.dev/%s/cloud-run-source-deploy/%s", service.Region, e.project, service.Id)
+		cmd := exec.Command("gcloud", "builds", "submit", "--project", e.project, "--format", "json",
+			"--pack", "image="+imageName, ".",
+		)
+
+		// set the command dir
+		cmd.Dir = gitter.RepoDir()
+		// write the gloudignore file
+		e.WriteGcloudIgnore(cmd.Dir)
+
+		// execute the command
+		outp, err := cmd.CombinedOutput()
+
+		var buildID string
+		reRes := buildLogsRegex.FindStringSubmatch(string(outp))
+		if len(reRes) > 1 {
+			buildID = reRes[1]
+		}
+
+		// Logs are a nice to have so don't error out
+		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
+		logOutp, logErr := logCmd.CombinedOutput()
+		if logErr != nil {
+			log.Errorf("Failed to retrieve logs for %s %s", buildID, logErr, string(logOutp))
+		} else {
+			// logs are returned in reverse chronological order as json
+			var logs []map[string]interface{}
+			if err := json.Unmarshal(logOutp, &logs); err != nil {
+				log.Errorf("Error unmarshalling logs %s", err)
+			} else {
+				filteredLogs := []string{}
+				for _, l := range logs {
+					if tp, ok := l["textPayload"]; ok {
+						filteredLogs = append(filteredLogs, tp.(string))
+					}
+				}
+				sort.Sort(sort.Reverse(sort.StringSlice(filteredLogs)))
+				// store it
+				logsKey := BuildLogsKey + id + "/" + req.Name
+
+				if err := store.Write(store.NewRecord(logsKey, strings.Join(filteredLogs, "\n"))); err != nil {
+					log.Errorf("Error writing logs to store %s", err)
+				}
+			}
+
+		}
+
+		// generate a unique service account for the app
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run", "deploy",
-			service.Id, "--region", service.Region, "--service-account", e.identity,
+		cmd = exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run",
+			"deploy", service.Id, "--region", service.Region,
+			"--service-account", e.identity,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", service.Port),
-			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
+			"--allow-unauthenticated", "--max-instances", "1", "--image", imageName,
 		)
 
 		// if env vars exist then set them
 		if len(envVars) > 0 {
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
-
 		// set the command dir
 		cmd.Dir = gitter.RepoDir()
-
-		// write the gloudignore file
-		e.WriteGcloudIgnore(cmd.Dir)
-
 		// execute the command
-		outp, err := cmd.CombinedOutput()
+		outp, err = cmd.CombinedOutput()
 
 		// by this point the context may have been cancelled
 		acc, _ := auth.AccountFromContext(ctx)
