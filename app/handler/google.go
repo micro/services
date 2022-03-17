@@ -646,7 +646,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 
 		if err == nil {
 			// populate the app status
-			err = e.Status(ctx, &pb.StatusRequest{Name: req.Name}, &pb.StatusResponse{})
+			err = e.Status(ctx, &pb.StatusRequest{Name: service.Name}, &pb.StatusResponse{})
 			if err != nil {
 				log.Error(err)
 			}
@@ -666,7 +666,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 			service.Status += ": Build failed"
 		}
 
-		// write the records
+		// update the records
 		updateRecords(service)
 	}(srv)
 
