@@ -16,7 +16,7 @@
       "title": "Get flag by country code",
       "run_check": false,
       "request": {
-        "alias": "GB"
+        "code": "GB"
       },
       "response": {
         "flag": "🇬🇧"
