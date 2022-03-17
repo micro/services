@@ -13,7 +13,7 @@ service App {
 	rpc Status(StatusRequest) returns (StatusResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Resolve(ResolveRequest) returns (ResolveResponse) {}
-	rpc BuildLogs(BuildLogsRequest) returns (BuildLogsResponse) {}
+	rpc Logs(LogsRequest) returns (LogsResponse) {}
 }
 
 message Service {
@@ -147,12 +147,14 @@ message ResolveResponse {
 	string url = 1;
 }
 
-// Get the build logs for an app
-message BuildLogsRequest {
+// Get the logs for an app
+message LogsRequest {
 	// name of the app
 	string name = 1;
+	// type of logs to retrieve, currently supported options - "build"
+	string logs_type = 2;
 }
 
-message BuildLogsResponse {
+message LogsResponse {
 	string logs = 1;
 }

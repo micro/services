@@ -898,21 +898,34 @@ func (a *App) Resolve(ctx context.Context, req *pb.ResolveRequest, rsp *pb.Resol
 	return nil
 }
 
-func (e *GoogleApp) BuildLogs(ctx context.Context, req *pb.BuildLogsRequest, rsp *pb.BuildLogsResponse) error {
+var (
+	logsFuncMap = map[string]func(e *GoogleApp, ctx context.Context, req *pb.LogsRequest, rsp *pb.LogsResponse) error{
+		"build": buildLogs, // TODO add runtime logs
+	}
+)
+
+func (e *GoogleApp) Logs(ctx context.Context, req *pb.LogsRequest, rsp *pb.LogsResponse) error {
+	f, ok := logsFuncMap[req.LogsType]
+	if !ok {
+		return errors.BadRequest("app.Logs", "Invalid logs_type specified")
+	}
+	return f(e, ctx, req, rsp)
+}
+
+func buildLogs(e *GoogleApp, ctx context.Context, req *pb.LogsRequest, rsp *pb.LogsResponse) error {
 	id, ok := tenant.FromContext(ctx)
 	if !ok {
-		return errors.Unauthorized("app.BuildLogs", "Unauthorized")
+		return errors.Unauthorized("app.Logs", "Unauthorized")
 	}
-
 	logsKey := BuildLogsKey + id + "/" + req.Name
 	recs, err := store.Read(logsKey)
 	if err != nil {
-		return errors.NotFound("app.BuildLogs", "Build logs not found")
+		return errors.NotFound("app.Logs", "Build logs not found")
 	}
 	var ret string
 	if err := json.Unmarshal(recs[0].Value, &ret); err != nil {
 		log.Errorf("Error unmarshalling logs %s", err)
-		return errors.NotFound("app.BuildLogs", "Build logs not found")
+		return errors.NotFound("app.Logs", "Build logs not found")
 	}
 	rsp.Logs = ret
 	return nil
