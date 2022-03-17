@@ -11,6 +11,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -24,6 +26,10 @@ import (
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
+)
+
+var (
+	buildLogsRegex = regexp.MustCompile("For Cloud Build Logs, visit: https://console.cloud.google.com/cloud-build/builds;region=.*/(.*)\\?project=")
 )
 
 type GoogleFunction struct {
@@ -74,13 +80,13 @@ var (
 		"php74":    "index.php",
 	}
 
-        GitIgnore = []string{
-                ".git",
-                "dist",
-                "node_modules",
-                "vendor",
-                "*.jar",
-        }
+	GitIgnore = []string{
+		".git",
+		"dist",
+		"node_modules",
+		"vendor",
+		"*.jar",
+	}
 )
 
 var (
@@ -189,8 +195,8 @@ func NewFunction() *GoogleFunction {
 }
 
 func (e *GoogleFunction) WriteGcloudIgnore(dir string) error {
-        data := []byte(strings.Join(GitIgnore, "\n"))
-        return ioutil.WriteFile(filepath.Join(dir, ".gcloudignore"), data, 0644)
+	data := []byte(strings.Join(GitIgnore, "\n"))
+	return ioutil.WriteFile(filepath.Join(dir, ".gcloudignore"), data, 0644)
 }
 
 func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
@@ -258,6 +264,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		if err != nil {
 			return errors.InternalServerError("function.deploy", "Failed to create source dir")
 		}
+
 		if err := os.WriteFile(filepath.Join(dir, SourceFile[req.Runtime]), []byte(req.Source), 0644); err != nil {
 			return errors.InternalServerError("function.deploy", "Failed to save source")
 		}
@@ -395,6 +402,41 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		e.WriteGcloudIgnore(cmd.Dir)
 
 		outp, err := cmd.CombinedOutput()
+
+		var buildID string
+		reRes := buildLogsRegex.FindStringSubmatch(string(outp))
+		if len(reRes) > 1 {
+			buildID = reRes[1]
+		}
+
+		// Logs are a nice to have so don't error out
+		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
+		logOutp, logErr := logCmd.CombinedOutput()
+		if logErr != nil {
+			log.Errorf("Failed to retrieve logs for %s %s", buildID, logErr, string(logOutp))
+		} else {
+			// logs are returned in reverse chronological order as json
+			var logs []map[string]interface{}
+			if err := json.Unmarshal(logOutp, &logs); err != nil {
+				log.Errorf("Error unmarshalling logs %s", err)
+			} else {
+				filteredLogs := []string{}
+				for _, l := range logs {
+					if tp, ok := l["textPayload"]; ok {
+						filteredLogs = append(filteredLogs, tp.(string))
+					}
+				}
+				sort.Sort(sort.Reverse(sort.StringSlice(filteredLogs)))
+				// store it
+				logsKey := BuildLogsKey + tenantId + "/" + req.Name
+
+				if err := store.Write(store.NewRecord(logsKey, strings.Join(filteredLogs, "\n"))); err != nil {
+					log.Errorf("Error writing logs to store %s", err)
+				}
+			}
+
+		}
+
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))
 			fn.Status = "DeploymentError"
@@ -557,6 +599,41 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 		e.WriteGcloudIgnore(cmd.Dir)
 
 		outp, err := cmd.CombinedOutput()
+
+		var buildID string
+		reRes := buildLogsRegex.FindStringSubmatch(string(outp))
+		if len(reRes) > 1 {
+			buildID = reRes[1]
+		}
+
+		// Logs are a nice to have so don't error out
+		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
+		logOutp, logErr := logCmd.CombinedOutput()
+		if logErr != nil {
+			log.Errorf("Failed to retrieve logs for %s %s", buildID, logErr, string(logOutp))
+		} else {
+			// logs are returned in reverse chronological order as json
+			var logs []map[string]interface{}
+			if err := json.Unmarshal(logOutp, &logs); err != nil {
+				log.Errorf("Error unmarshalling logs %s", err)
+			} else {
+				filteredLogs := []string{}
+				for _, l := range logs {
+					if tp, ok := l["textPayload"]; ok {
+						filteredLogs = append(filteredLogs, tp.(string))
+					}
+				}
+				sort.Sort(sort.Reverse(sort.StringSlice(filteredLogs)))
+				// store it
+				logsKey := BuildLogsKey + tenantId + "/" + req.Name
+
+				if err := store.Write(store.NewRecord(logsKey, strings.Join(filteredLogs, "\n"))); err != nil {
+					log.Errorf("Error writing logs to store %s", err)
+				}
+			}
+
+		}
+
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))
 			fn.Status = "DeploymentError"
@@ -920,5 +997,38 @@ func (e *GoogleFunction) DeleteData(ctx context.Context, request *adminpb.Delete
 		e.deleteFunction(&fn, rec.Key)
 	}
 	log.Infof("Deleted %d functions for %s", len(recs), request.TenantId)
+	return nil
+}
+
+var (
+	logsFuncMap = map[string]func(e *GoogleFunction, ctx context.Context, req *function.LogsRequest, rsp *function.LogsResponse) error{
+		"build": buildLogs, // TODO add runtime logs
+	}
+)
+
+func (e *GoogleFunction) Logs(ctx context.Context, req *function.LogsRequest, rsp *function.LogsResponse) error {
+	f, ok := logsFuncMap[req.LogsType]
+	if !ok {
+		return errors.BadRequest("app.Logs", "Invalid logs_type specified")
+	}
+	return f(e, ctx, req, rsp)
+}
+
+func buildLogs(e *GoogleFunction, ctx context.Context, req *function.LogsRequest, rsp *function.LogsResponse) error {
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("app.Logs", "Unauthorized")
+	}
+	logsKey := BuildLogsKey + id + "/" + req.Name
+	recs, err := store.Read(logsKey)
+	if err != nil {
+		return errors.NotFound("app.Logs", "Build logs not found")
+	}
+	var ret string
+	if err := json.Unmarshal(recs[0].Value, &ret); err != nil {
+		log.Errorf("Error unmarshalling logs %s", err)
+		return errors.NotFound("app.Logs", "Build logs not found")
+	}
+	rsp.Logs = ret
 	return nil
 }
