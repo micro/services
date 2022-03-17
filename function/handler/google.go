@@ -73,6 +73,14 @@ var (
 		"ruby26":   "app.rb",
 		"php74":    "index.php",
 	}
+
+        GitIgnore = []string{
+                ".git",
+                "dist",
+                "node_modules",
+                "vendor",
+                "*.jar",
+        }
 )
 
 var (
@@ -178,6 +186,11 @@ func NewFunction() *GoogleFunction {
 		domain:   domain,
 		Function: new(Function),
 	}
+}
+
+func (e *GoogleFunction) WriteGcloudIgnore(dir string) error {
+        data := []byte(strings.Join(GitIgnore, "\n"))
+        return ioutil.WriteFile(filepath.Join(dir, ".gcloudignore"), data, 0644)
 }
 
 func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest, rsp *function.DeployResponse) error {
@@ -377,6 +390,10 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		}
 
 		cmd.Dir = sourceDir
+
+		// write gloud ignore file
+		e.WriteGcloudIgnore(cmd.Dir)
+
 		outp, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))
@@ -535,6 +552,10 @@ func (e *GoogleFunction) Update(ctx context.Context, req *function.UpdateRequest
 		}
 
 		cmd.Dir = sourceDir
+
+		// write gloud ignore file
+		e.WriteGcloudIgnore(cmd.Dir)
+
 		outp, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Error(fmt.Errorf(string(outp)))

@@ -92,6 +92,7 @@ func (e *avatar) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.
 		return errors.InternalServerError("avatar.generate", "upload avatar image error: %v", err)
 	}
 
+	rsp.Base64 = base64String
 	rsp.Url = uploadResp.Url
 
 	return nil
