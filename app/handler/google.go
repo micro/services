@@ -374,8 +374,8 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		if len(reRes) > 1 {
 			buildID = reRes[1]
 		}
-		log.Infof("Build ID %s %s", buildID, string(outp))
 
+		// Logs are a nice to have so don't error out
 		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
 		logOutp, logErr := logCmd.CombinedOutput()
 		if logErr != nil {
@@ -684,6 +684,8 @@ func (e *GoogleApp) deleteApp(ctx context.Context, tenantID string, srv *pb.Serv
 				return
 			}
 		}
+
+		store.Delete(BuildLogsKey + tenantID + "/" + srv.Id)
 	}(srv)
 
 	return nil
