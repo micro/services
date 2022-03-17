@@ -809,6 +809,9 @@ func (e *GoogleFunction) deleteFunction(fn *function.Func, key string) {
 
 	// delete the global key
 	store.Delete(FunctionKey + fn.Id)
+
+	// delete the build logs
+	store.Delete(strings.ReplaceAll(key, OwnerKey, BuildLogsKey))
 }
 
 func (e *GoogleFunction) List(ctx context.Context, req *function.ListRequest, rsp *function.ListResponse) error {
