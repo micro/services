@@ -198,24 +198,6 @@ func (domain *Domain) CreateSession(ctx context.Context, sess *user.Session) err
 	return store.Write(record)
 }
 
-func (domain *Domain) MigrateAllSessions(tenantID string) error {
-	sessKey := fmt.Sprintf("%ssession/", getStoreKeyPrefixForTenent(tenantID))
-	recs, err := domain.store.Read(sessKey, store.ReadPrefix())
-	if err != nil {
-		return err
-	}
-	for _, rec := range recs {
-		var sess user.Session
-		if err := json.Unmarshal(rec.Value, &sess); err != nil {
-			return err
-		}
-		if err := domain.store.Write(store.NewRecord(fmt.Sprintf("%ssession/user/%s/%s", getStoreKeyPrefixForTenent(tenantID), sess.UserId, sess.Id), sess)); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (domain *Domain) DeleteSession(ctx context.Context, id string) error {
 	sessKey := generateSessionStoreKey(ctx, id)
 	recs, err := domain.store.Read(sessKey)

@@ -25,7 +25,6 @@ func main() {
 
 	proto.RegisterUserHandler(srv.Server(), hd)
 	adminpb.RegisterAdminHandler(srv.Server(), hd)
-	proto.RegisterUserAdminHandler(srv.Server(), hd)
 	traceCloser := tracing.SetupOpentracing("user")
 	defer traceCloser.Close()
 
