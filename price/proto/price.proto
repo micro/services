@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package price;
+
+option go_package = "./proto;price";
+
+service Price {
+	rpc Add(AddRequest) returns (AddResponse) {}
+	rpc Get(GetRequest) returns (GetResponse) {}
+	rpc Index(IndexRequest) returns (IndexResponse) {}
+}
+
+message Index {
+	// name of item
+	string name = 1;
+	// symbol of item
+	string symbol = 2;
+	// currency of value
+	string currency = 3;
+}
+
+message Value {
+	// name of thing
+	string name = 1;
+	// price of thing
+	double price = 2;
+	// symbol of value
+	string symbol = 3;
+	// currency of thing
+	string currency = 4;
+	// time it was added
+	string timestamp = 5;
+}
+
+// Add a price
+message AddRequest {
+	// name of the thing e.g bitcoin
+	string name = 1;
+	// price of the thing e.g 10001.00
+	double price = 2;
+	// symbol of value
+	string symbol = 3;
+	// currency e.g USD
+	string currency = 4;
+}
+
+message AddResponse {
+	Value value = 1;
+}
+
+// Get the price of anything
+message GetRequest {
+	// name of the value
+	string name = 1;
+	// symbol of value
+	string symbol = 2;
+	// currency to get
+	string currency = 3;
+}
+
+message GetResponse {
+	repeated Value values = 1;
+}
+
+// Get the index for available prices
+message IndexRequest {
+
+}
+
+message IndexResponse {
+	repeated Index index = 1;
+}

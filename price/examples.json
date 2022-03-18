@@ -1,0 +1,41 @@
+{
+  "add": [
+    {
+      "title": "Add a price",
+      "description": "Add a price to the service",
+      "request": {
+        "name": "bitcoin",
+	"price": 39037.97,
+        "currency": "USD"
+      },
+      "response": {
+          "value": {
+		"name": "bitcoin",
+		"price": 39037.97,
+		"currency": "USD",
+		"timestamp": "2022-03-14T15:26:39.689652636Z"
+          }
+      }
+    }
+  ],
+  "price": [
+    {
+      "title": "Get the price",
+      "description": "Returns the last price of anything",
+      "request": {
+        "name": "bitcoin",
+        "currency": "USD"
+      },
+      "response": {
+          "values": [
+                {
+                        "name": "bitcoin",
+                        "price": 39037.97,
+                        "currency": "USD",
+                        "timestamp": "2022-03-14T15:26:39.689652636Z"
+                }
+          ]
+      }
+    }
+  ]
+}
