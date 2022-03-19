@@ -1,4 +1,4 @@
-Makes a list
+Make a list
 
 # Lists Service
 
