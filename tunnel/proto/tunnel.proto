@@ -22,7 +22,7 @@ message SendRequest {
 	map<string, string> params = 5;
 	// body of the request
 	string body = 6;
-	// full url e.g https://www.google.com/news
+	// alternatively specify a full url e.g https://www.google.com/news
 	string url = 7;
 }
 
@@ -31,7 +31,7 @@ message SendResponse {
 	string status = 1;
 	// the status code
 	int32 status_code = 2;
-	// headers to include e.g Content-Type: application/json
+	// headers included
 	map<string, string> headers = 3;
 	// body of the response
 	string body = 4;
