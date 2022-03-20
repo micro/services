@@ -1,0 +1,27 @@
+{
+  "send": [
+    {
+      "title": "Send a request",
+      "description": "Send a request through the tunnel",
+      "request": {
+        "url": "https://google.com"
+      },
+      "response": {
+        "status": "200 OK",
+        "status_code": 200,
+        "headers": {
+                "Cache-Control": "private, max-age=0",
+                "Content-Type": "text/html; charset=ISO-8859-1",
+                "Date": "Sun, 20 Mar 2022 21:33:55 GMT",
+                "Expires": "-1",
+                "P3p": "CP=\"This is not a P3P policy! See g.co/p3phelp for more info.\"",
+                "Server": "gws",
+                "Set-Cookie": "CONSENT=PENDING+060; expires=Tue, 19-Mar-2024 21:33:55 GMT; path=/; domain=.google.com; Secure",
+                "X-Frame-Options": "SAMEORIGIN",
+                "X-Xss-Protection": "0"
+        },
+        "body": "\u003c!doctype html\u003e\u003chtml ...."
+      }
+    }
+  ]
+}
