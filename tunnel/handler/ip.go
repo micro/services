@@ -30,7 +30,24 @@ func init() {
 	}
 }
 
-func isPrivateIP(addr string) bool {
+func isPrivateIP(host string) bool {
+	var addr string
+
+	// split on host port
+	h, _, err := net.SplitHostPort(host)
+	if err == nil {
+		host = h
+	}
+
+	// resolve the host
+	addrs, err := net.LookupHost(host)
+	if err != nil {
+		addr = host
+	} else {
+		addr = addrs[0]
+	}
+
+	logger.Info("Parsing address ", addr)
 	ip := net.ParseIP(addr)
 
 	if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
@@ -43,5 +60,6 @@ func isPrivateIP(addr string) bool {
 		}
 	}
 
+	logger.Info("No match for address ", addr)
 	return false
 }
