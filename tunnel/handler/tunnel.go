@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -154,6 +155,11 @@ func (e *Tunnel) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResp
 	if len(e.Proxy) > 0 {
 		proxyUrl, _ := url.Parse(e.Proxy)
 		client = &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
+		hreq.Header.Set("Micro-Endpoint", fmt.Sprintf("%s://%s", uri.Scheme, uri.Host))
+
+		// reset the host
+		hreq.URL.Host = proxyUrl.Host
+		hreq.Host = proxyUrl.Host
 	}
 
 	// set the authorization token
