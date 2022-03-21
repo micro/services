@@ -18,7 +18,7 @@
       }
     }
   ],
-  "price": [
+  "get": [
     {
       "title": "Get the price",
       "description": "Returns the last price of anything",
