@@ -47,19 +47,21 @@ func isPrivateIP(host string) bool {
 		addr = addrs[0]
 	}
 
-	logger.Info("Parsing address ", addr)
+	logger.Infof("Checking host %v address %v", host, addr)
 	ip := net.ParseIP(addr)
 
 	if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+		logger.Infof("Blocked ip local host %v address %v", host, addr)
 		return true
 	}
 
 	for _, block := range privateIPs {
 		if block.Contains(ip) {
+			logger.Infof("Blocked ip cidr host %v address %v", host, addr)
 			return true
 		}
 	}
 
-	logger.Info("No match for address ", addr)
+	logger.Infof("No match for ip host %v address %v", host, addr)
 	return false
 }

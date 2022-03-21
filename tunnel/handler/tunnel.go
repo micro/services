@@ -117,11 +117,13 @@ func (e *Tunnel) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResp
 
 	// check if its a private ip
 	if isPrivateIP(uri.Host) {
+		logger.Infof("Blocked private host %v", uri.Host)
 		return errors.BadRequest("tunnel.send", "cannot send to private ip")
 	}
 
 	// check if its in the block list
 	if e.Blocklist[strings.ToLower(uri.Host)] {
+		logger.Infof("Blocked host %v in blocklist", uri.Host)
 		return errors.Forbidden("tunnel.send", "request not allowed")
 	}
 
