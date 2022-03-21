@@ -7,17 +7,72 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 	"strings"
 
+	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/tunnel/proto"
 )
 
-type Tunnel struct{}
+type Tunnel struct {
+	Blocklist map[string]bool
+}
+
+// loadFile from the blob store
+func loadFile(p string) (string, error) {
+	name := path.Base(p)
+
+	f, err := os.Create("./" + name)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	reader, err := store.DefaultBlobStore.Read(p)
+	if err != nil {
+		return "", err
+	}
+
+	_, err = io.Copy(f, reader)
+	return "./" + name, err
+}
 
 func New() *Tunnel {
-	return &Tunnel{}
+
+	// get the ip city database
+	v, err := config.Get("tunnel.blocklist")
+	if err != nil {
+		logger.Fatalf("failed to get blocklist: %v", err)
+	}
+	path := v.String("")
+
+	// load from blob store if specified
+	if strings.HasPrefix(path, "blob://") {
+		f, err := loadFile(strings.TrimPrefix(path, "blob://"))
+		if err != nil {
+			logger.Fatal("failed to load hosts file: %v", err)
+		}
+		path = f
+	}
+
+	f, err := os.ReadFile(path)
+	if err != nil {
+		logger.Fatal("failed to read hosts file: %v", err)
+	}
+
+	blocklist := map[string]bool{}
+
+	for _, host := range strings.Split(string(f), "\n") {
+		blocklist[host] = true
+	}
+
+	return &Tunnel{
+		Blocklist: blocklist,
+	}
 }
 
 func (e *Tunnel) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResponse) error {
@@ -60,8 +115,14 @@ func (e *Tunnel) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResp
 		body = bytes.NewReader([]byte(req.Body))
 	}
 
+	// check if its a private ip
 	if isPrivateIP(uri.Host) {
 		return errors.BadRequest("tunnel.send", "cannot send to private ip")
+	}
+
+	// check if its in the block list
+	if e.Blocklist[strings.ToLower(uri.Host)] {
+		return errors.Forbidden("tunnel.send", "request not allowed")
 	}
 
 	// create a new request
