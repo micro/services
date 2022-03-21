@@ -51,6 +51,13 @@ func New() *Tunnel {
 	}
 	proxy := v.String("")
 
+	v, err = config.Get("tunnel.token")
+	if err != nil {
+		logger.Fatalf("failed to get token: %v", err)
+	}
+
+	token := v.String("")
+
 	v, err = config.Get("tunnel.blocklist")
 	if err != nil {
 		logger.Fatalf("failed to get blocklist: %v", err)
@@ -80,6 +87,7 @@ func New() *Tunnel {
 	return &Tunnel{
 		Blocklist: blocklist,
 		Proxy:     proxy,
+		Token:     token,
 	}
 }
 
