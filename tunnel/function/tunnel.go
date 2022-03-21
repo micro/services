@@ -2,10 +2,9 @@ package tunnel
 
 import (
 	"os"
-
+	"log"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
 )
 
 var (
@@ -23,13 +22,8 @@ func Send(w http.ResponseWriter, r *http.Request) {
 	// don't forward the token
 	r.Header.Del("Micro-Token")
 
-	url, err := url.Parse(r.Host)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
 	// reverse proxy the request
-	proxy := httputil.NewSingleHostReverseProxy(url)
+	log.Printf("Proxying request to: %v", r.URL.Host)
+	proxy := httputil.NewSingleHostReverseProxy(r.URL)
 	proxy.ServeHTTP(w, r)
 }
