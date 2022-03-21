@@ -19,6 +19,8 @@ import (
 )
 
 type Tunnel struct {
+	Proxy     string
+	Token     string
 	Blocklist map[string]bool
 }
 
@@ -42,9 +44,13 @@ func loadFile(p string) (string, error) {
 }
 
 func New() *Tunnel {
+	v, err := config.Get("tunnel.proxy")
+	if err != nil {
+		logger.Fatalf("failed to get blocklist: %v", err)
+	}
+	proxy := v.String("")
 
-	// get the ip city database
-	v, err := config.Get("tunnel.blocklist")
+	v, err = config.Get("tunnel.blocklist")
 	if err != nil {
 		logger.Fatalf("failed to get blocklist: %v", err)
 	}
@@ -72,6 +78,7 @@ func New() *Tunnel {
 
 	return &Tunnel{
 		Blocklist: blocklist,
+		Proxy:     proxy,
 	}
 }
 
@@ -140,8 +147,22 @@ func (e *Tunnel) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResp
 
 	logger.Infof("Making request %s %s", req.Method, uri.String())
 
+	// set client as default http client
+	client := http.DefaultClient
+
+	// use a proxy if specified
+	if len(e.Proxy) > 0 {
+		proxyUrl, _ := url.Parse(e.Proxy)
+		client = &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}}
+	}
+
+	// set the authorization token
+	if len(e.Token) > 0 {
+		hreq.Header.Set("Micro-Token", e.Token)
+	}
+
 	// make the request
-	hrsp, err := http.DefaultClient.Do(hreq)
+	hrsp, err := client.Do(hreq)
 	if err != nil {
 		return errors.InternalServerError("tunnel.send", err.Error())
 	}
