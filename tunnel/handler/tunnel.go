@@ -155,9 +155,12 @@ func (e *Tunnel) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendResp
 	if len(e.Proxy) > 0 {
 		hreq.Header.Set("Micro-Endpoint", fmt.Sprintf("%s://%s", uri.Scheme, uri.Host))
 
+		u, _ := url.Parse(e.Proxy)
+
 		// reset the host
-		hreq.URL.Host = e.Proxy
-		hreq.Host = e.Proxy
+		hreq.URL.Scheme = u.Scheme
+		hreq.URL.Host = u.Host
+		hreq.Host = u.Host
 	}
 
 	// set the authorization token
