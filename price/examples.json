@@ -37,5 +37,41 @@
           ]
       }
     }
+  ],
+  "index": [
+    {
+      "title": "Get the index",
+      "description": "Returns the index of available prices",
+      "request": {},
+      "response": {
+          "index": [
+                {
+                        "name": "Cardano",
+                        "symbol": "ADA",
+                        "currency": "EUR"
+                },
+                {
+                        "name": "Cardano",
+                        "symbol": "ADA",
+                        "currency": "USD"
+                },
+                {
+                        "name": "United Arab Emirates Dirham",
+                        "symbol": "AED",
+                        "currency": "EUR"
+                },
+                {
+                        "name": "United Arab Emirates Dirham",
+                        "symbol": "AED",
+                        "currency": "USD"
+                },
+                {
+                        "name": "Afghan Afghani",
+                        "symbol": "AFN",
+                        "currency": "EUR"
+                }
+          ]
+      }
+    }
   ]
 }
