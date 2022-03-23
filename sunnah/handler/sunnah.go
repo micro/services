@@ -23,6 +23,7 @@ type Sunnah struct {
 
 func New(key string) *Sunnah {
 	api.SetKey("X-API-Key", key)
+	api.SetCache(true, 0)
 
 	return &Sunnah{
 		apiKey: key,
