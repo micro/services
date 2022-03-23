@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package github;
+
+option go_package = "./proto;github";
+
+service Github {
+	rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse) {}
+}
+
+message AuthorizeRequest {
+	string installation_id = 1;
+	string code = 2;
+}
+
+message AuthorizeResponse {
+	string token = 1;
+}
+
