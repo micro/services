@@ -7,6 +7,7 @@ option go_package = "./proto;price";
 service Price {
 	rpc Add(AddRequest) returns (AddResponse) {}
 	rpc Get(GetRequest) returns (GetResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Index(IndexRequest) returns (IndexResponse) {}
 }
 
@@ -59,6 +60,20 @@ message GetRequest {
 }
 
 message GetResponse {
+	repeated Value values = 1;
+}
+
+// List prices for a given currency
+message ListRequest {
+	// currency to get
+	string currency = 1;
+	// limit number of values
+	int32 limit = 2;
+	// offset to read from
+	int32 offset = 3;
+}
+
+message ListResponse {
 	repeated Value values = 1;
 }
 

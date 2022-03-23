@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path"
+	"regexp"
 	"strings"
 	"time"
 
@@ -18,6 +19,10 @@ import (
 type Price struct {
 	Crawler *crawler.Crawler
 }
+
+var (
+	re = regexp.MustCompile("^[A-Z]{3}$")
+)
 
 func New() *Price {
 	// TODO: look for "crypto.provider" to determine the handler
@@ -53,6 +58,11 @@ func (p *Price) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse
 
 	timestamp := time.Now()
 
+	symbol := strings.ToUpper(req.Symbol)
+	if _, ok := crawler.Index[symbol]; ok {
+		return errors.BadRequest("price.add", "already indexed")
+	}
+
 	// create a value
 	value := &pb.Value{
 		Name:      req.Name,
@@ -64,19 +74,58 @@ func (p *Price) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse
 	// set response value
 	rsp.Value = value
 
-	// define a key
-	key := path.Join(
-		"price",
-		strings.ToLower(value.Symbol),
-		strings.ToLower(value.Currency),
-		fmt.Sprintf("%d", timestamp.Unix()),
-	)
+	for _, suffix := range []string{"latest", fmt.Sprintf("%d", timestamp.Unix())} {
+		// define a key
+		key := path.Join(
+			"price",
+			strings.ToLower(value.Symbol),
+			strings.ToLower(value.Currency),
+			suffix,
+		)
 
-	// TODO: add to index to search by name
+		// TODO: add to index to search by name
 
-	// create a record and store it
-	rec := store.NewRecord(key, value)
-	return store.Write(rec)
+		// create a record and store it
+		rec := store.NewRecord(key, value)
+		if err := store.Write(rec); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (p *Price) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+	// add currency if necessary
+	if len(req.Currency) == 0 {
+		req.Currency = "USD"
+	}
+
+	key := "/" + strings.ToLower(req.Currency) + "/latest"
+
+	if req.Limit <= 0 {
+		req.Limit = 100
+	}
+
+	if req.Offset < 0 {
+		req.Offset = 0
+	}
+
+	offset := uint(req.Offset)
+	limit := uint(req.Limit)
+
+	recs, err := store.Read(key, store.ReadSuffix(), store.ReadOffset(offset), store.ReadLimit(limit))
+	if err != nil && err != store.ErrNotFound {
+		return err
+	}
+
+	for _, rec := range recs {
+		value := new(pb.Value)
+		rec.Decode(value)
+		rsp.Values = append(rsp.Values, value)
+	}
+
+	return nil
 }
 
 func (p *Price) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse) error {
@@ -107,16 +156,39 @@ func (p *Price) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 		return errors.NotFound("price.get", "value not found")
 	}
 
-	// add currency if necessary
-	if len(req.Currency) > 0 {
-		key = path.Join(key, strings.ToLower(req.Currency))
+	var recs []*store.Record
+
+	// hard code to USD if no currency
+	// in future drop to allow listing
+	if len(req.Currency) == 0 {
+		req.Currency = "USD"
 	}
 
-	key = path.Join("price", key)
+	// add currency if necessary
+	if len(req.Currency) > 0 {
+		key = path.Join("price", key, strings.ToLower(req.Currency), "latest")
 
-	recs, err := store.Read(key, store.ReadPrefix(), store.ReadLimit(1), store.ReadOrder(store.OrderDesc))
-	if err != nil && err != store.ErrNotFound {
-		return err
+		r, err := store.Read(key, store.ReadPrefix(), store.ReadOrder(store.OrderDesc))
+		if err != nil && err != store.ErrNotFound {
+			return err
+		}
+		recs = r
+	} else {
+		// get a list of keys with prefix price/symbol and suffix /latest
+		keys, err := store.List(
+			store.ListPrefix(path.Join("price", key)),
+			store.ListSuffix("/latest"),
+		)
+		if err != nil && err != store.ErrNotFound {
+			return err
+		}
+		for _, key := range keys {
+			r, err := store.Read(key, store.ReadLimit(1))
+			if err != nil {
+				continue
+			}
+			recs = append(recs, r...)
+		}
 	}
 
 	// try get it directly
@@ -133,6 +205,10 @@ func (p *Price) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 	}
 
 	for _, rec := range recs {
+		// only get the latest valeus
+		if !strings.HasSuffix(rec.Key, "/latest") {
+			continue
+		}
 		value := new(pb.Value)
 		rec.Decode(value)
 		rsp.Values = append(rsp.Values, value)

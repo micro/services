@@ -44,6 +44,7 @@ func NewPriceEndpoints() []*api.Endpoint {
 type PriceService interface {
 	Add(ctx context.Context, in *AddRequest, opts ...client.CallOption) (*AddResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error)
 }
 
@@ -79,6 +80,16 @@ func (c *priceService) Get(ctx context.Context, in *GetRequest, opts ...client.C
 	return out, nil
 }
 
+func (c *priceService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
+	req := c.c.NewRequest(c.name, "Price.List", in)
+	out := new(ListResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *priceService) Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error) {
 	req := c.c.NewRequest(c.name, "Price.Index", in)
 	out := new(IndexResponse)
@@ -94,6 +105,7 @@ func (c *priceService) Index(ctx context.Context, in *IndexRequest, opts ...clie
 type PriceHandler interface {
 	Add(context.Context, *AddRequest, *AddResponse) error
 	Get(context.Context, *GetRequest, *GetResponse) error
+	List(context.Context, *ListRequest, *ListResponse) error
 	Index(context.Context, *IndexRequest, *IndexResponse) error
 }
 
@@ -101,6 +113,7 @@ func RegisterPriceHandler(s server.Server, hdlr PriceHandler, opts ...server.Han
 	type price interface {
 		Add(ctx context.Context, in *AddRequest, out *AddResponse) error
 		Get(ctx context.Context, in *GetRequest, out *GetResponse) error
+		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error
 	}
 	type Price struct {
@@ -120,6 +133,10 @@ func (h *priceHandler) Add(ctx context.Context, in *AddRequest, out *AddResponse
 
 func (h *priceHandler) Get(ctx context.Context, in *GetRequest, out *GetResponse) error {
 	return h.PriceHandler.Get(ctx, in, out)
+}
+
+func (h *priceHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
+	return h.PriceHandler.List(ctx, in, out)
 }
 
 func (h *priceHandler) Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error {

@@ -57,14 +57,6 @@ func (c *Crawler) GetPrices(base string) {
 	for symbol, value := range rsp.Data.Rates {
 		name := Index[symbol]
 
-		// store it
-		key := path.Join(
-			"price",
-			strings.ToLower(symbol),
-			strings.ToLower(rsp.Data.Base),
-			fmt.Sprintf("%d", rsp.Data.Timestamp),
-		)
-
 		val := &pb.Value{
 			Name:      name,
 			Price:     float64(1) / value,
@@ -72,15 +64,26 @@ func (c *Crawler) GetPrices(base string) {
 			Currency:  rsp.Data.Base,
 			Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
 		}
-		rec := store.NewRecord(key, val)
 
-		// save the record
-		if err := store.Write(rec); err != nil {
-			logger.Error("Failed to write symbol: %v error: %v", key, err)
+		for _, suffix := range []string{"latest", fmt.Sprintf("%d", rsp.Data.Timestamp)} {
+			// store it
+			key := path.Join(
+				"price",
+				strings.ToLower(symbol),
+				strings.ToLower(rsp.Data.Base),
+				suffix,
+			)
+
+			rec := store.NewRecord(key, val)
+
+			// save the record
+			if err := store.Write(rec); err != nil {
+				logger.Error("Failed to write symbol: %v error: %v", key, err)
+			}
 		}
 
 		// index the item for the future
-		key = path.Join(
+		key := path.Join(
 			"index",
 			strings.ToLower(symbol),
 			strings.ToLower(rsp.Data.Base),
@@ -177,22 +180,25 @@ func (c *Crawler) Get(symbol, currency string) (*pb.Value, error) {
 		Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
 	}
 
-	key := path.Join(
-		"price",
-		strings.ToLower(symbol),
-		strings.ToLower(rsp.Data.Base),
-		fmt.Sprintf("%d", rsp.Data.Timestamp),
-	)
+	// write historic record and latest
+	for _, suffix := range []string{"latest", fmt.Sprintf("%d", rsp.Data.Timestamp)} {
+		key := path.Join(
+			"price",
+			strings.ToLower(symbol),
+			strings.ToLower(rsp.Data.Base),
+			suffix,
+		)
 
-	rec := store.NewRecord(key, val)
+		rec := store.NewRecord(key, val)
 
-	// save the record
-	if err := store.Write(rec); err != nil {
-		logger.Error("Failed to write symbol: %v error: %v", symbol, err)
+		// save the record
+		if err := store.Write(rec); err != nil {
+			logger.Error("Failed to write symbol: %v error: %v", symbol, err)
+		}
 	}
 
 	// index the item for the future
-	key = path.Join(
+	key := path.Join(
 		"index",
 		strings.ToLower(symbol),
 		strings.ToLower(rsp.Data.Base),

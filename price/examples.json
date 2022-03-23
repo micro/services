@@ -38,6 +38,47 @@
       }
     }
   ],
+  "list": [
+    {
+      "title": "List prices",
+      "description": "Lists prices in the index by currency",
+      "request": {
+        "currency": "GBP"
+      },
+      "response": {
+          "values": [
+                {
+                        "name": "Cardano",
+                        "price": 0.7422161127934748,
+                        "symbol": "ADA",
+                        "currency": "GBP",
+                        "timestamp": "2022-03-23T11:25:00Z"
+                },
+                {
+                        "name": "United Arab Emirates Dirham",
+                        "price": 0.2060005608160323,
+                        "symbol": "AED",
+                        "currency": "GBP",
+                        "timestamp": "2022-03-23T11:31:00Z"
+                },
+                {
+                        "name": "Afghan Afghani",
+                        "price": 0.00863934615838992,
+                        "symbol": "AFN",
+                        "currency": "GBP",
+                        "timestamp": "2022-03-23T11:25:00Z"
+                },
+                {
+                        "name": "Albanian Lek",
+                        "price": 0.006836967586105941,
+                        "symbol": "ALL",
+                        "currency": "GBP",
+                        "timestamp": "2022-03-23T11:31:00Z"
+                }
+          ]
+      }
+    }
+  ],
   "index": [
     {
       "title": "Get the index",
