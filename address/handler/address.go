@@ -28,6 +28,12 @@ func field(key string, vals map[string]interface{}) string {
 	return ""
 }
 
+func New() *Address {
+	api.SetCache(true, 0)
+
+	return new(Address)
+}
+
 func (a *Address) lookupPostcode(q string, rsp interface{}) error {
 	u := fmt.Sprintf("%saddresses?api_key=%s&postcode=%s", a.Url, a.Key, q)
 	return api.Get(u, rsp)
