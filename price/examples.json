@@ -114,5 +114,17 @@
           ]
       }
     }
+  ],
+  "report": [
+    {
+      "title": "Report a price",
+      "description": "Report or flag price issues",
+      "request": {
+        "name": "bitcoin",
+        "symbol": "BTC",
+        "comment": "Price is not up to date"
+      },
+      "response": {}
+    }
   ]
 }
