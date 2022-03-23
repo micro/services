@@ -2,8 +2,5 @@
   "name": "vehicle",
   "icon": "🚗",
   "category": "logistics",
-  "display_name": "Vehicle",
-  "pricing": {
-    "Vehicle.Lookup": 100
-  }
+  "display_name": "Vehicle"
 }

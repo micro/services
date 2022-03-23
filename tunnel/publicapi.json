@@ -1,0 +1,9 @@
+{
+  "name": "tunnel",
+  "icon": "🕸️",
+  "category": "network",
+  "display_name": "Tunnel",
+  "pricing": {
+    "Tunnel.Send": 1
+  }
+}

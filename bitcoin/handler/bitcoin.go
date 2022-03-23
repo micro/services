@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/micro/micro/v3/service/config"
@@ -50,6 +51,10 @@ func New() *Bitcoin {
 func (b *Bitcoin) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceResponse) error {
 	if len(req.Symbol) <= 0 {
 		req.Symbol = "BTCUSD"
+	}
+
+	if !strings.HasPrefix(req.Symbol, "BTC") {
+		return errors.BadRequest("bitcoin.price", "Must be of format BTCXXX e.g BTCUSD")
 	}
 
 	// try the cache first

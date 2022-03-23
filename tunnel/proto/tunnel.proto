@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package tunnel;
+
+option go_package = "./proto;tunnel";
+
+service Tunnel {
+	rpc Send(SendRequest) returns (SendResponse) {}
+}
+
+// Send a request through the tunnel
+message SendRequest {
+	// method of the request e.g GET, POST, DELETE
+	string method = 1;
+	// host to send to e.g www.google.com
+	string host = 2;
+	// path to request e.g /news
+	string path = 3;
+	// headers to include e.g Content-Type: application/json
+	map<string, string> headers = 4;
+	// request params to include
+	map<string, string> params = 5;
+	// body of the request
+	string body = 6;
+	// alternatively specify a full url e.g https://www.google.com/news
+	string url = 7;
+}
+
+message SendResponse {
+	// the status
+	string status = 1;
+	// the status code
+	int32 status_code = 2;
+	// headers included
+	map<string, string> headers = 3;
+	// body of the response
+	string body = 4;
+}

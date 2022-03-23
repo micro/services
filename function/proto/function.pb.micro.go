@@ -53,6 +53,7 @@ type FunctionService interface {
 	Regions(ctx context.Context, in *RegionsRequest, opts ...client.CallOption) (*RegionsResponse, error)
 	Reserve(ctx context.Context, in *ReserveRequest, opts ...client.CallOption) (*ReserveResponse, error)
 	Runtimes(ctx context.Context, in *RuntimesRequest, opts ...client.CallOption) (*RuntimesResponse, error)
+	Logs(ctx context.Context, in *LogsRequest, opts ...client.CallOption) (*LogsResponse, error)
 }
 
 type functionService struct {
@@ -167,6 +168,16 @@ func (c *functionService) Runtimes(ctx context.Context, in *RuntimesRequest, opt
 	return out, nil
 }
 
+func (c *functionService) Logs(ctx context.Context, in *LogsRequest, opts ...client.CallOption) (*LogsResponse, error) {
+	req := c.c.NewRequest(c.name, "Function.Logs", in)
+	out := new(LogsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Function service
 
 type FunctionHandler interface {
@@ -180,6 +191,7 @@ type FunctionHandler interface {
 	Regions(context.Context, *RegionsRequest, *RegionsResponse) error
 	Reserve(context.Context, *ReserveRequest, *ReserveResponse) error
 	Runtimes(context.Context, *RuntimesRequest, *RuntimesResponse) error
+	Logs(context.Context, *LogsRequest, *LogsResponse) error
 }
 
 func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...server.HandlerOption) error {
@@ -194,6 +206,7 @@ func RegisterFunctionHandler(s server.Server, hdlr FunctionHandler, opts ...serv
 		Regions(ctx context.Context, in *RegionsRequest, out *RegionsResponse) error
 		Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error
 		Runtimes(ctx context.Context, in *RuntimesRequest, out *RuntimesResponse) error
+		Logs(ctx context.Context, in *LogsRequest, out *LogsResponse) error
 	}
 	type Function struct {
 		function
@@ -244,4 +257,8 @@ func (h *functionHandler) Reserve(ctx context.Context, in *ReserveRequest, out *
 
 func (h *functionHandler) Runtimes(ctx context.Context, in *RuntimesRequest, out *RuntimesResponse) error {
 	return h.FunctionHandler.Runtimes(ctx, in, out)
+}
+
+func (h *functionHandler) Logs(ctx context.Context, in *LogsRequest, out *LogsResponse) error {
+	return h.FunctionHandler.Logs(ctx, in, out)
 }

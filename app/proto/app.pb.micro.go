@@ -50,6 +50,7 @@ type AppService interface {
 	Status(ctx context.Context, in *StatusRequest, opts ...client.CallOption) (*StatusResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error)
+	Logs(ctx context.Context, in *LogsRequest, opts ...client.CallOption) (*LogsResponse, error)
 }
 
 type appService struct {
@@ -144,6 +145,16 @@ func (c *appService) Resolve(ctx context.Context, in *ResolveRequest, opts ...cl
 	return out, nil
 }
 
+func (c *appService) Logs(ctx context.Context, in *LogsRequest, opts ...client.CallOption) (*LogsResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Logs", in)
+	out := new(LogsResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for App service
 
 type AppHandler interface {
@@ -155,6 +166,7 @@ type AppHandler interface {
 	Status(context.Context, *StatusRequest, *StatusResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
 	Resolve(context.Context, *ResolveRequest, *ResolveResponse) error
+	Logs(context.Context, *LogsRequest, *LogsResponse) error
 }
 
 func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.HandlerOption) error {
@@ -167,6 +179,7 @@ func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.Handler
 		Status(ctx context.Context, in *StatusRequest, out *StatusResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error
+		Logs(ctx context.Context, in *LogsRequest, out *LogsResponse) error
 	}
 	type App struct {
 		app
@@ -209,4 +222,8 @@ func (h *appHandler) List(ctx context.Context, in *ListRequest, out *ListRespons
 
 func (h *appHandler) Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error {
 	return h.AppHandler.Resolve(ctx, in, out)
+}
+
+func (h *appHandler) Logs(ctx context.Context, in *LogsRequest, out *LogsResponse) error {
+	return h.AppHandler.Logs(ctx, in, out)
 }

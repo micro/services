@@ -1,8 +1,16 @@
 name: Downstream
 
 # Alert downstream repos
-on: [push]
-
+# [service].proto and examples.json are the only files that affect how the m3o clients generator 
+# will generate clients. Any internal changes to the service or how the service is implemented 
+# internally is not a concern and will not affect how internally m3o clients work.
+# Also, take under consideration this note https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#git-diff-comparisons
+on:
+  push:
+    paths:
+      - '**.proto'
+      - '**/examples.json'
+      - '**/publicapi.json'
 jobs:
   build:
     runs-on: ubuntu-latest

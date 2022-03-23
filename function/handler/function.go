@@ -11,6 +11,7 @@ var (
 	FunctionKey    = "function/func/"
 	OwnerKey       = "function/owner/"
 	ReservationKey = "function/reservation/"
+	BuildLogsKey   = "function/buildlogs/"
 )
 
 type Function struct{}

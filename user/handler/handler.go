@@ -634,14 +634,3 @@ func (s *User) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 	}
 	return s.domain.DeleteTenantData(request.TenantId)
 }
-
-func (s *User) MigrateSessions(ctx context.Context, request *pb.MigrateSessionsRequest, response *pb.MigrateSessionsResponse) error {
-	if _, err := pauth.VerifyMicroAdmin(ctx, "user.MigrateSessions"); err != nil {
-		return err
-	}
-
-	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
-		return errors.BadRequest("user.MigrateSessions", "Missing tenant ID")
-	}
-	return s.domain.MigrateAllSessions(request.TenantId)
-}

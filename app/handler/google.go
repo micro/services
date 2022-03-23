@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
 	"math/rand"
 	"os/exec"
+	"path/filepath"
+	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -24,6 +26,10 @@ import (
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
+)
+
+var (
+	buildLogsRegex = regexp.MustCompile("Logs are available at \\[https://console.cloud.google.com/cloud-build/builds/(.*)\\?project=")
 )
 
 type GoogleApp struct {
@@ -367,28 +373,70 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	rsp.Service = srv
 
 	go func(service *pb.Service) {
+		imageName := fmt.Sprintf("%s-docker.pkg.dev/%s/cloud-run-source-deploy/%s", req.Region, e.project, service.Id)
+		cmd := exec.Command("gcloud", "builds", "submit", "--project", e.project, "--format", "json",
+			"--pack", "image="+imageName, ".",
+		)
+
+		// set the command dir
+		cmd.Dir = gitter.RepoDir()
+		// write the gloudignore file
+		e.WriteGcloudIgnore(cmd.Dir)
+
+		// execute the command
+		outp, err := cmd.CombinedOutput()
+
+		var buildID string
+		reRes := buildLogsRegex.FindStringSubmatch(string(outp))
+		if len(reRes) > 1 {
+			buildID = reRes[1]
+		}
+
+		// Logs are a nice to have so don't error out
+		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
+		logOutp, logErr := logCmd.CombinedOutput()
+		if logErr != nil {
+			log.Errorf("Failed to retrieve logs for %s %s", buildID, logErr, string(logOutp))
+		} else {
+			// logs are returned in reverse chronological order as json
+			var logs []map[string]interface{}
+			if err := json.Unmarshal(logOutp, &logs); err != nil {
+				log.Errorf("Error unmarshalling logs %s", err)
+			} else {
+				filteredLogs := []string{}
+				for _, l := range logs {
+					if tp, ok := l["textPayload"]; ok {
+						filteredLogs = append(filteredLogs, tp.(string))
+					}
+				}
+				sort.Sort(sort.Reverse(sort.StringSlice(filteredLogs)))
+				// store it
+				logsKey := BuildLogsKey + id + "/" + req.Name
+
+				if err := store.Write(store.NewRecord(logsKey, strings.Join(filteredLogs, "\n"))); err != nil {
+					log.Errorf("Error writing logs to store %s", err)
+				}
+			}
+
+		}
+
 		// generate a unique service account for the app
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run",
+		cmd = exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run",
 			"deploy", service.Id, "--region", req.Region,
 			"--service-account", e.identity,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", req.Port),
-			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
+			"--allow-unauthenticated", "--max-instances", "1", "--image", imageName,
 		)
 
 		// if env vars exist then set them
 		if len(envVars) > 0 {
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
-
 		// set the command dir
 		cmd.Dir = gitter.RepoDir()
-
-		// write the gloudignore file
-		e.WriteGcloudIgnore(cmd.Dir)
-
 		// execute the command
-		outp, err := cmd.CombinedOutput()
+		outp, err = cmd.CombinedOutput()
 
 		// by this point the context may have been cancelled
 		acc, _ := auth.AccountFromContext(ctx)
@@ -524,26 +572,70 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 	updateRecords(srv)
 
 	go func(service *pb.Service) {
+		imageName := fmt.Sprintf("%s-docker.pkg.dev/%s/cloud-run-source-deploy/%s", service.Region, e.project, service.Id)
+		cmd := exec.Command("gcloud", "builds", "submit", "--project", e.project, "--format", "json",
+			"--pack", "image="+imageName, ".",
+		)
+
+		// set the command dir
+		cmd.Dir = gitter.RepoDir()
+		// write the gloudignore file
+		e.WriteGcloudIgnore(cmd.Dir)
+
+		// execute the command
+		outp, err := cmd.CombinedOutput()
+
+		var buildID string
+		reRes := buildLogsRegex.FindStringSubmatch(string(outp))
+		if len(reRes) > 1 {
+			buildID = reRes[1]
+		}
+
+		// Logs are a nice to have so don't error out
+		logCmd := exec.Command("gcloud", "logging", "read", "--project", e.project, "--format", "json", fmt.Sprintf(`resource.type=build AND resource.labels.build_id=%s`, buildID))
+		logOutp, logErr := logCmd.CombinedOutput()
+		if logErr != nil {
+			log.Errorf("Failed to retrieve logs for %s %s", buildID, logErr, string(logOutp))
+		} else {
+			// logs are returned in reverse chronological order as json
+			var logs []map[string]interface{}
+			if err := json.Unmarshal(logOutp, &logs); err != nil {
+				log.Errorf("Error unmarshalling logs %s", err)
+			} else {
+				filteredLogs := []string{}
+				for _, l := range logs {
+					if tp, ok := l["textPayload"]; ok {
+						filteredLogs = append(filteredLogs, tp.(string))
+					}
+				}
+				sort.Sort(sort.Reverse(sort.StringSlice(filteredLogs)))
+				// store it
+				logsKey := BuildLogsKey + id + "/" + req.Name
+
+				if err := store.Write(store.NewRecord(logsKey, strings.Join(filteredLogs, "\n"))); err != nil {
+					log.Errorf("Error writing logs to store %s", err)
+				}
+			}
+
+		}
+
+		// generate a unique service account for the app
 		// https://jsoverson.medium.com/how-to-deploy-node-js-functions-to-google-cloud-8bba05e9c10a
-		cmd := exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run", "deploy",
-			service.Id, "--region", service.Region, "--service-account", e.identity,
+		cmd = exec.Command("gcloud", "--project", e.project, "--quiet", "--format", "json", "run",
+			"deploy", service.Id, "--region", service.Region,
+			"--service-account", e.identity,
 			"--cpu", "1", "--memory", "256Mi", "--port", fmt.Sprintf("%d", service.Port),
-			"--allow-unauthenticated", "--max-instances", "1", "--source", ".",
+			"--allow-unauthenticated", "--max-instances", "1", "--image", imageName,
 		)
 
 		// if env vars exist then set them
 		if len(envVars) > 0 {
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
-
 		// set the command dir
 		cmd.Dir = gitter.RepoDir()
-
-		// write the gloudignore file
-		e.WriteGcloudIgnore(cmd.Dir)
-
 		// execute the command
-		outp, err := cmd.CombinedOutput()
+		outp, err = cmd.CombinedOutput()
 
 		// by this point the context may have been cancelled
 		acc, _ := auth.AccountFromContext(ctx)
@@ -658,6 +750,8 @@ func (e *GoogleApp) deleteApp(ctx context.Context, tenantID string, srv *pb.Serv
 				return
 			}
 		}
+
+		store.Delete(BuildLogsKey + tenantID + "/" + srv.Id)
 	}(srv)
 
 	return nil
@@ -845,5 +939,38 @@ func (a *App) Resolve(ctx context.Context, req *pb.ResolveRequest, rsp *pb.Resol
 	recs[0].Decode(srv)
 
 	rsp.Url = srv.Url
+	return nil
+}
+
+var (
+	logsFuncMap = map[string]func(e *GoogleApp, ctx context.Context, req *pb.LogsRequest, rsp *pb.LogsResponse) error{
+		"build": buildLogs, // TODO add runtime logs
+	}
+)
+
+func (e *GoogleApp) Logs(ctx context.Context, req *pb.LogsRequest, rsp *pb.LogsResponse) error {
+	f, ok := logsFuncMap[req.LogsType]
+	if !ok {
+		return errors.BadRequest("app.Logs", "Invalid logs_type specified")
+	}
+	return f(e, ctx, req, rsp)
+}
+
+func buildLogs(e *GoogleApp, ctx context.Context, req *pb.LogsRequest, rsp *pb.LogsResponse) error {
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("app.Logs", "Unauthorized")
+	}
+	logsKey := BuildLogsKey + id + "/" + req.Name
+	recs, err := store.Read(logsKey)
+	if err != nil {
+		return errors.NotFound("app.Logs", "Build logs not found")
+	}
+	var ret string
+	if err := json.Unmarshal(recs[0].Value, &ret); err != nil {
+		log.Errorf("Error unmarshalling logs %s", err)
+		return errors.NotFound("app.Logs", "Build logs not found")
+	}
+	rsp.Logs = ret
 	return nil
 }
