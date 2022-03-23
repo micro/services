@@ -216,6 +216,72 @@ func (c *Crawler) Get(symbol, currency string) (*pb.Value, error) {
 	return val, nil
 }
 
+func (c *Crawler) List(currency string) ([]*pb.Value, error) {
+	uri := "https://www.commodities-api.com/api/latest"
+	vals := url.Values{}
+	vals.Set("access_key", c.Key)
+	vals.Set("base", currency)
+
+	q := vals.Encode()
+	uri += "?" + q
+
+	var rsp Response
+
+	if err := api.Get(uri, &rsp); err != nil {
+		logger.Errorf("Failed to get list for currency %v: %v", currency, err)
+		return nil, err
+	}
+
+	var values []*pb.Value
+
+	for symbol, rate := range rsp.Data.Rates {
+		val := &pb.Value{
+			Name:      Index[symbol],
+			Price:     float64(1) / rate,
+			Symbol:    symbol,
+			Currency:  rsp.Data.Base,
+			Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
+		}
+
+		values = append(values, val)
+
+		// write historic record and latest
+		for _, suffix := range []string{"latest", fmt.Sprintf("%d", rsp.Data.Timestamp)} {
+			key := path.Join(
+				"price",
+				strings.ToLower(symbol),
+				strings.ToLower(rsp.Data.Base),
+				suffix,
+			)
+
+			rec := store.NewRecord(key, val)
+
+			// save the record
+			if err := store.Write(rec); err != nil {
+				logger.Error("Failed to write symbol: %v error: %v", symbol, err)
+			}
+		}
+
+		// index the item for the future
+		key := path.Join(
+			"index",
+			strings.ToLower(symbol),
+			strings.ToLower(rsp.Data.Base),
+		)
+
+		if err := store.Write(store.NewRecord(key, &pb.Index{
+			Name:     val.Name,
+			Symbol:   val.Symbol,
+			Currency: val.Currency,
+		})); err != nil {
+			logger.Error("Failed to write index: %v error: %v", key, err)
+		}
+	}
+
+	// return value
+	return values, nil
+}
+
 func New(key string) *Crawler {
 	return &Crawler{key}
 }

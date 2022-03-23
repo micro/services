@@ -119,6 +119,17 @@ func (p *Price) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespo
 		return err
 	}
 
+	if len(recs) == 0 {
+		values, err := p.Crawler.List(
+			strings.ToUpper(req.Currency),
+		)
+		if err != nil {
+			return errors.NotFound("price.lis", "no values available")
+		}
+		rsp.Values = values
+		return nil
+	}
+
 	for _, rec := range recs {
 		value := new(pb.Value)
 		rec.Decode(value)
