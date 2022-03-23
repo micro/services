@@ -2,11 +2,5 @@
   "name": "nft",
   "icon": "🪙",
   "category": "crypto",
-  "display_name": "NFTs",
-  "pricing": {
-    "Nft.Asset": 1,
-    "Nft.Assets": 1,
-    "Nft.Collection": 1,
-    "Nft.Collections": 1
-  }
+  "display_name": "NFTs"
 }
