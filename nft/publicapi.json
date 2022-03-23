@@ -6,6 +6,7 @@
   "pricing": {
     "Nft.Asset",
     "Nft.Assets",
+    "Nft.Create",
     "Nft.Collection",
     "Nft.Collections"
   }
