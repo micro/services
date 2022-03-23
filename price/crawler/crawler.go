@@ -9,6 +9,7 @@ import (
 
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/services/pkg/api"
 	pb "github.com/micro/services/price/proto"
 )
@@ -173,6 +174,10 @@ func (c *Crawler) Get(symbol, currency string) (*pb.Value, error) {
 	if err := api.Get(uri, &rsp); err != nil {
 		logger.Errorf("Failed to get symbols for %v:%v: %v", symbol, currency, err)
 		return nil, err
+	}
+
+	if _, ok := rsp.Data.Rates[symbol]; !ok {
+		return nil, errors.NotFound("crawler.get", "rate not found")
 	}
 
 	val := &pb.Value{

@@ -179,7 +179,6 @@ func (p *Price) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 				symbol = k
 				break
 			}
-
 		}
 	} else {
 		// key is defined as the value name
