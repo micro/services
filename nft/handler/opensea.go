@@ -37,6 +37,8 @@ func New() *OpenSea {
 
 	// set the api key
 	api.SetKey("X-API-KEY", key)
+	// set the cache
+	api.SetCache(true, time.Minute * 5)
 
 	return &OpenSea{
 		apiKey: key,
