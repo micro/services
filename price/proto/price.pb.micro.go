@@ -46,6 +46,7 @@ type PriceService interface {
 	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Index(ctx context.Context, in *IndexRequest, opts ...client.CallOption) (*IndexResponse, error)
+	Report(ctx context.Context, in *ReportRequest, opts ...client.CallOption) (*ReportResponse, error)
 }
 
 type priceService struct {
@@ -100,6 +101,16 @@ func (c *priceService) Index(ctx context.Context, in *IndexRequest, opts ...clie
 	return out, nil
 }
 
+func (c *priceService) Report(ctx context.Context, in *ReportRequest, opts ...client.CallOption) (*ReportResponse, error) {
+	req := c.c.NewRequest(c.name, "Price.Report", in)
+	out := new(ReportResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Price service
 
 type PriceHandler interface {
@@ -107,6 +118,7 @@ type PriceHandler interface {
 	Get(context.Context, *GetRequest, *GetResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
 	Index(context.Context, *IndexRequest, *IndexResponse) error
+	Report(context.Context, *ReportRequest, *ReportResponse) error
 }
 
 func RegisterPriceHandler(s server.Server, hdlr PriceHandler, opts ...server.HandlerOption) error {
@@ -115,6 +127,7 @@ func RegisterPriceHandler(s server.Server, hdlr PriceHandler, opts ...server.Han
 		Get(ctx context.Context, in *GetRequest, out *GetResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error
+		Report(ctx context.Context, in *ReportRequest, out *ReportResponse) error
 	}
 	type Price struct {
 		price
@@ -141,4 +154,8 @@ func (h *priceHandler) List(ctx context.Context, in *ListRequest, out *ListRespo
 
 func (h *priceHandler) Index(ctx context.Context, in *IndexRequest, out *IndexResponse) error {
 	return h.PriceHandler.Index(ctx, in, out)
+}
+
+func (h *priceHandler) Report(ctx context.Context, in *ReportRequest, out *ReportResponse) error {
+	return h.PriceHandler.Report(ctx, in, out)
 }

@@ -9,6 +9,7 @@ service Price {
 	rpc Get(GetRequest) returns (GetResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Index(IndexRequest) returns (IndexResponse) {}
+	rpc Report(ReportRequest) returns (ReportResponse) {}
 }
 
 message Index {
@@ -31,6 +32,17 @@ message Value {
 	string currency = 4;
 	// time it was added
 	string timestamp = 5;
+	// where it came from
+	string source = 6;
+	// who added it
+	string author = 7;
+}
+
+message Report {
+	string name = 1;
+	string symbol = 2;
+	string comment = 3;
+	string author = 4;
 }
 
 // Add a price
@@ -43,6 +55,10 @@ message AddRequest {
 	string symbol = 3;
 	// currency e.g USD
 	string currency = 4;
+	// source of the price
+	string source = 5;
+	// author of the price
+	string author = 6;
 }
 
 message AddResponse {
@@ -85,3 +101,16 @@ message IndexRequest {
 message IndexResponse {
 	repeated Index index = 1;
 }
+
+// Report an invalid price
+message ReportRequest {
+	// name of value
+	string name = 1;
+	// symbol of value
+	string symbol = 2;
+	// additional comment
+	string comment = 3;
+}
+
+message ReportResponse {}
+

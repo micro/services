@@ -63,6 +63,8 @@ func (c *Crawler) GetPrices(base string) {
 			Symbol:    symbol,
 			Currency:  rsp.Data.Base,
 			Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
+			Source:    "www.commodities-api.com",
+			Author:    "Micro",
 		}
 
 		for _, suffix := range []string{"latest", fmt.Sprintf("%d", rsp.Data.Timestamp)} {
@@ -178,6 +180,8 @@ func (c *Crawler) Get(symbol, currency string) (*pb.Value, error) {
 		Symbol:    symbol,
 		Currency:  rsp.Data.Base,
 		Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
+		Source:    "www.commodities-api.com",
+		Author:    "Micro",
 	}
 
 	// write historic record and latest
@@ -241,6 +245,8 @@ func (c *Crawler) List(currency string) ([]*pb.Value, error) {
 			Symbol:    symbol,
 			Currency:  rsp.Data.Base,
 			Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
+			Source:    "www.commodities-api.com",
+			Author:    "Micro",
 		}
 
 		values = append(values, val)

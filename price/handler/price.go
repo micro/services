@@ -12,6 +12,7 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/services/pkg/tenant"
 	"github.com/micro/services/price/crawler"
 	pb "github.com/micro/services/price/proto"
 )
@@ -63,12 +64,23 @@ func (p *Price) Add(ctx context.Context, req *pb.AddRequest, rsp *pb.AddResponse
 		return errors.BadRequest("price.add", "already indexed")
 	}
 
+	// can't use our author name
+	if len(req.Author) == 0 || req.Author == "Micro" {
+		req.Author = "User"
+	}
+
+	if len(req.Source) == 0 {
+		req.Source = "N/A"
+	}
+
 	// create a value
 	value := &pb.Value{
 		Name:      req.Name,
 		Price:     req.Price,
 		Currency:  req.Currency,
 		Timestamp: timestamp.Format(time.RFC3339Nano),
+		Source:    req.Source,
+		Author:    req.Author,
 	}
 
 	// set response value
@@ -256,4 +268,25 @@ func (p *Price) Index(ctx context.Context, req *pb.IndexRequest, rsp *pb.IndexRe
 	}
 
 	return nil
+}
+
+func (p *Price) Report(ctx context.Context, req *pb.ReportRequest, rsp *pb.ReportResponse) error {
+	if len(req.Name) == 0 {
+		return errors.BadRequest("price.report", "missing name")
+	}
+	if len(req.Symbol) == 0 {
+		return errors.BadRequest("price.report", "missing symbol")
+	}
+	if len(req.Comment) == 0 {
+		return errors.BadRequest("price.report", "missing comment")
+	}
+
+	id, _ := tenant.FromContext(ctx)
+
+	rec := store.NewRecord(
+		path.Join("report", req.Symbol, fmt.Sprintf("%d", time.Now().UnixNano())),
+		&pb.Report{Name: req.Name, Symbol: req.Symbol, Comment: req.Comment, Author: id},
+	)
+
+	return store.Write(rec)
 }
