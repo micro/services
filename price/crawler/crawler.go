@@ -14,6 +14,7 @@ import (
 )
 
 type Crawler struct {
+	Url string
 	Key string
 }
 
@@ -31,7 +32,7 @@ type Data struct {
 }
 
 func (c *Crawler) GetPrices(base string) {
-	uri := "https://www.commodities-api.com/api/latest"
+	uri := c.Url + "/latest"
 	vals := url.Values{}
 	vals.Set("access_key", c.Key)
 	vals.Set("base", base)
@@ -63,7 +64,7 @@ func (c *Crawler) GetPrices(base string) {
 			Symbol:    symbol,
 			Currency:  rsp.Data.Base,
 			Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
-			Source:    "www.commodities-api.com",
+			Source:    c.Url,
 			Author:    "Micro",
 		}
 
@@ -111,7 +112,7 @@ func (c *Crawler) Run() {
 	vals := url.Values{}
 	vals.Set("access_key", c.Key)
 	q := vals.Encode()
-	uri := "https://www.commodities-api.com/api/symbols?" + q
+	uri := c.Url + "/symbols?" + q
 
 	if err := api.Get(uri, &index); err != nil {
 		logger.Errorf("Failed to get index symbols: %v", err)
@@ -158,7 +159,7 @@ func (c *Crawler) Run() {
 }
 
 func (c *Crawler) Get(symbol, currency string) (*pb.Value, error) {
-	uri := "https://www.commodities-api.com/api/latest"
+	uri := c.Url + "/latest"
 	vals := url.Values{}
 	vals.Set("access_key", c.Key)
 	vals.Set("base", currency)
@@ -180,7 +181,7 @@ func (c *Crawler) Get(symbol, currency string) (*pb.Value, error) {
 		Symbol:    symbol,
 		Currency:  rsp.Data.Base,
 		Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
-		Source:    "www.commodities-api.com",
+		Source:    c.Url,
 		Author:    "Micro",
 	}
 
@@ -221,7 +222,7 @@ func (c *Crawler) Get(symbol, currency string) (*pb.Value, error) {
 }
 
 func (c *Crawler) List(currency string) ([]*pb.Value, error) {
-	uri := "https://www.commodities-api.com/api/latest"
+	uri := c.Url + "/latest"
 	vals := url.Values{}
 	vals.Set("access_key", c.Key)
 	vals.Set("base", currency)
@@ -245,7 +246,7 @@ func (c *Crawler) List(currency string) ([]*pb.Value, error) {
 			Symbol:    symbol,
 			Currency:  rsp.Data.Base,
 			Timestamp: time.Unix(rsp.Data.Timestamp, 0).Format(time.RFC3339Nano),
-			Source:    "www.commodities-api.com",
+			Source:    c.Url,
 			Author:    "Micro",
 		}
 
@@ -288,6 +289,6 @@ func (c *Crawler) List(currency string) ([]*pb.Value, error) {
 	return values, nil
 }
 
-func New(key string) *Crawler {
-	return &Crawler{key}
+func New(url, key string) *Crawler {
+	return &Crawler{Url: url, Key: key}
 }

@@ -27,7 +27,13 @@ var (
 
 func New() *Price {
 	// TODO: look for "crypto.provider" to determine the handler
-	v, err := config.Get("commodities.api_key")
+	v, err := config.Get("commodities.api_url")
+	if err != nil {
+		logger.Fatalf("commodities.api_url config not found: %v", err)
+	}
+	url := v.String("")
+	// TODO: look for "crypto.provider" to determine the handler
+	v, err = config.Get("commodities.api_key")
 	if err != nil {
 		logger.Fatalf("commodities.api_key config not found: %v", err)
 	}
@@ -36,7 +42,7 @@ func New() *Price {
 		logger.Fatal("commodities.api config not found")
 	}
 
-	c := crawler.New(key)
+	c := crawler.New(url, key)
 	go c.Run()
 
 	return &Price{c}
