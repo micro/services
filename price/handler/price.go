@@ -150,7 +150,13 @@ func (p *Price) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespo
 
 	for _, rec := range recs {
 		value := new(pb.Value)
-		rec.Decode(value)
+		if err := rec.Decode(value); err != nil {
+			continue
+		}
+		if len(value.Name) == 0 {
+			continue
+		}
+
 		rsp.Values = append(rsp.Values, value)
 	}
 
