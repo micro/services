@@ -27,6 +27,13 @@ const (
 
 type Quran struct{}
 
+func New() *Quran {
+	// enable the api cache
+	api.SetCache(true, 0)
+
+	return new(Quran)
+}
+
 // Chapters returns a list of the chapters of the Quran
 func (q *Quran) Chapters(ctx context.Context, req *pb.ChaptersRequest, rsp *pb.ChaptersResponse) error {
 	lang := "en"

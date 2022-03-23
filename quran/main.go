@@ -16,7 +16,7 @@ func main() {
 	)
 
 	// Register handler
-	pb.RegisterQuranHandler(srv.Server(), new(handler.Quran))
+	pb.RegisterQuranHandler(srv.Server(), handler.New())
 
 	// Run service
 	if err := srv.Run(); err != nil {
