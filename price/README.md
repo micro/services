@@ -1,6 +1,7 @@
-Get the price of anything
+Global prices index
 
 # Price Service
 
-Get the price of quite literally anything. Prices are defined by users. Feel free to contribute. 
+Get the price of quite literally anything. Commodity prices are updated every 10-15 minutes. Add your own prices 
+for anything not already indexed.
 
