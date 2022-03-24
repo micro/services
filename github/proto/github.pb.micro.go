@@ -42,7 +42,14 @@ func NewGithubEndpoints() []*api.Endpoint {
 // Client API for Github service
 
 type GithubService interface {
+	// Authorize the M3O Github app - completes the installation
 	Authorize(ctx context.Context, in *AuthorizeRequest, opts ...client.CallOption) (*AuthorizeResponse, error)
+	// Get list of all the repos accessible from this installation
+	ListRepos(ctx context.Context, in *ListReposRequest, opts ...client.CallOption) (*ListReposResponse, error)
+	// Get branches for a repo
+	ListBranches(ctx context.Context, in *ListBranchesRequest, opts ...client.CallOption) (*ListBranchesResponse, error)
+	// Get a token that can be used with this user's repo
+	Token(ctx context.Context, in *TokenRequest, opts ...client.CallOption) (*TokenResponse, error)
 }
 
 type githubService struct {
@@ -67,15 +74,55 @@ func (c *githubService) Authorize(ctx context.Context, in *AuthorizeRequest, opt
 	return out, nil
 }
 
+func (c *githubService) ListRepos(ctx context.Context, in *ListReposRequest, opts ...client.CallOption) (*ListReposResponse, error) {
+	req := c.c.NewRequest(c.name, "Github.ListRepos", in)
+	out := new(ListReposResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *githubService) ListBranches(ctx context.Context, in *ListBranchesRequest, opts ...client.CallOption) (*ListBranchesResponse, error) {
+	req := c.c.NewRequest(c.name, "Github.ListBranches", in)
+	out := new(ListBranchesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *githubService) Token(ctx context.Context, in *TokenRequest, opts ...client.CallOption) (*TokenResponse, error) {
+	req := c.c.NewRequest(c.name, "Github.Token", in)
+	out := new(TokenResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Github service
 
 type GithubHandler interface {
+	// Authorize the M3O Github app - completes the installation
 	Authorize(context.Context, *AuthorizeRequest, *AuthorizeResponse) error
+	// Get list of all the repos accessible from this installation
+	ListRepos(context.Context, *ListReposRequest, *ListReposResponse) error
+	// Get branches for a repo
+	ListBranches(context.Context, *ListBranchesRequest, *ListBranchesResponse) error
+	// Get a token that can be used with this user's repo
+	Token(context.Context, *TokenRequest, *TokenResponse) error
 }
 
 func RegisterGithubHandler(s server.Server, hdlr GithubHandler, opts ...server.HandlerOption) error {
 	type github interface {
 		Authorize(ctx context.Context, in *AuthorizeRequest, out *AuthorizeResponse) error
+		ListRepos(ctx context.Context, in *ListReposRequest, out *ListReposResponse) error
+		ListBranches(ctx context.Context, in *ListBranchesRequest, out *ListBranchesResponse) error
+		Token(ctx context.Context, in *TokenRequest, out *TokenResponse) error
 	}
 	type Github struct {
 		github
@@ -90,4 +137,16 @@ type githubHandler struct {
 
 func (h *githubHandler) Authorize(ctx context.Context, in *AuthorizeRequest, out *AuthorizeResponse) error {
 	return h.GithubHandler.Authorize(ctx, in, out)
+}
+
+func (h *githubHandler) ListRepos(ctx context.Context, in *ListReposRequest, out *ListReposResponse) error {
+	return h.GithubHandler.ListRepos(ctx, in, out)
+}
+
+func (h *githubHandler) ListBranches(ctx context.Context, in *ListBranchesRequest, out *ListBranchesResponse) error {
+	return h.GithubHandler.ListBranches(ctx, in, out)
+}
+
+func (h *githubHandler) Token(ctx context.Context, in *TokenRequest, out *TokenResponse) error {
+	return h.GithubHandler.Token(ctx, in, out)
 }

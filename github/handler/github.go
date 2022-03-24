@@ -3,12 +3,16 @@ package handler
 import (
 	"bytes"
 	"context"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/micro/micro/v3/proto/api"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/config"
@@ -16,6 +20,7 @@ import (
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
 	github "github.com/micro/services/github/proto"
+	"github.com/micro/services/pkg/auth"
 	"github.com/micro/services/pkg/tenant"
 )
 
@@ -23,6 +28,7 @@ type conf struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 	PEM          string `json:"pem"`
+	AppID        string `json:"app_id"`
 }
 
 func NewHandler(srv *service.Service) *Github {
@@ -52,7 +58,6 @@ type Github struct {
 3. call https://api.m3o.com/github/authorize with the code and installation ID so we can store the installation ID and exchange code for a GH user token (FRONTEND -> BACKEND)
 3. exchange the code for an access token; https://github.com/login/oauth/access_token -d '{"client_id": "<client ID>", "client_secret":"<secret>>", "code":"0f957374a642fe783c0c"}' -H "Content-Type: application/json"
 response: access_token=<TOKEN>&scope=&token_type=bearer (BACKEND -> GH)
-5. how can you be sure that an m3o user has access to an installation?? Probably pass the user access token and validate the user against the webhook passed in user
 6. On success load up orgs repo list and display to user to pick (probably proxy query through back end so we don't store the token on the frontend)
 7. UI will load list of projects via m3o.com rather than github directly
 8. once chosen, backend can pull the contents of a repo at will by authenticating as the installation https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps#authenticating-as-an-installation
@@ -63,7 +68,10 @@ How does second app work, i.e. already installed the GH app, how do i select and
 */
 
 const (
-	urlOauthAccessToken = "https://github.com/login/oauth/access_token"
+	urlOauthAccessToken   = "https://github.com/login/oauth/access_token"
+	urlInstallationTokens = "https://api.github.com/app/installations/%s/access_tokens"
+	urlRepoList           = "https://api.github.com/installation/repositories"
+	urlBranchesList       = "https://api.github.com/repos/%s/branches"
 
 	prefixInstallByTenant = "installByTenant"
 )
@@ -103,7 +111,7 @@ func (e *Github) Authorize(ctx context.Context, req *github.AuthorizeRequest, rs
 		return errors.InternalServerError(method, "Error authorising code with Github")
 	}
 	defer oauthRsp.Body.Close()
-	b, err := ioutil.ReadAll(oauthRsp.Body)
+	b, err = ioutil.ReadAll(oauthRsp.Body)
 	if err != nil || oauthRsp.StatusCode > 399 {
 		logger.Errorf("Error authorising code with Github %s %s", oauthRsp.Status, err)
 		return errors.InternalServerError(method, "Error authorising code with Github")
@@ -113,8 +121,6 @@ func (e *Github) Authorize(ctx context.Context, req *github.AuthorizeRequest, rs
 		logger.Errorf("Error authorising code with Github %s %s", oauthRsp.Status, err)
 		return errors.InternalServerError(method, "Error authorising code with Github")
 	}
-	acccessTok := oauthRspMap["access_token"]
-	rsp.Token = acccessTok
 	if err := store.Write(store.NewRecord(installationKey(tenantID, req.InstallationId), installation{
 		InstallationID: req.InstallationId,
 		TenantID:       tenantID})); err != nil {
@@ -126,6 +132,199 @@ func (e *Github) Authorize(ctx context.Context, req *github.AuthorizeRequest, rs
 
 func installationKey(tenantID, installationID string) string {
 	return fmt.Sprintf("%s/%s/%s", prefixInstallByTenant, tenantID, installationID)
+}
+
+func (e *Github) ListRepos(ctx context.Context, req *github.ListReposRequest, rsp *github.ListReposResponse) error {
+	method := "github.ListRepos"
+	tenantID, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized(method, "Unauthorized")
+	}
+	recs, err := store.Read(installationKey(tenantID, ""), store.ReadPrefix()) // TODO support multiple installations
+	if err != nil {
+		if err == store.ErrNotFound {
+			return errors.NotFound(method, "Github app not installed for tenant")
+		}
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	var install installation
+	if err := recs[0].Decode(&install); err != nil { // TODO support multiple installations
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+
+	tok, err := e.getInstallationToken(ctx, tenantID, install.InstallationID)
+	if err != nil {
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	repoReq, err := http.NewRequest("GET", urlRepoList, nil)
+	if err != nil {
+		logger.Errorf("Error retrieving repos %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	repoReq.Header.Set("Authorization", "Bearer "+tok)
+	repoReq.Header.Set("Accept", "application/vnd.github.v3+json")
+	repoRsp, err := http.DefaultClient.Do(repoReq)
+	if err != nil {
+		logger.Errorf("Error retrieving repos %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	defer repoRsp.Body.Close()
+	b, _ := ioutil.ReadAll(repoRsp.Body)
+
+	if repoRsp.StatusCode > 399 {
+		logger.Errorf("Error retrieving repos %s %s", repoRsp.Status, string(b))
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	rspObj := struct {
+		Repositories []struct {
+			FullName string `json:"full_name"`
+		} `json:"repositories"`
+	}{}
+	if err := json.Unmarshal(b, &rspObj); err != nil {
+		logger.Errorf("Error retrieving repos %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	rsp.Repos = make([]string, len(rspObj.Repositories))
+	for i, v := range rspObj.Repositories {
+		rsp.Repos[i] = v.FullName
+	}
+	return nil
+}
+
+func (e *Github) Token(ctx context.Context, req *github.TokenRequest, rsp *github.TokenResponse) error {
+	method := "github.Token"
+	_, err := auth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+	recs, err := store.Read(installationKey(req.TenantId, ""), store.ReadPrefix()) // TODO support multiple installations
+	if err != nil {
+		if err == store.ErrNotFound {
+			return errors.NotFound(method, "No installation found for tenant")
+		}
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving token")
+	}
+	var install installation
+	if err := recs[0].Decode(&install); err != nil { // TODO support multiple installations
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving token")
+	}
+
+	rsp.Token, err = e.getInstallationToken(ctx, req.TenantId, install.InstallationID)
+	if err != nil {
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving token")
+	}
+	return nil
+}
+
+func (e *Github) getInstallationToken(ctx context.Context, tenantID, installationID string) (string, error) {
+	// TODO support multiple installations per user
+	// make JWT
+	tok := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(10 * time.Minute).Unix(),  // 10 minute max
+		IssuedAt:  time.Now().Add(-60 * time.Second).Unix(), // allow for clock drift
+		Issuer:    e.conf.AppID,
+	})
+	p, _ := pem.Decode([]byte(e.conf.PEM))
+	pk, err := x509.ParsePKCS1PrivateKey(p.Bytes)
+	if err != nil {
+		logger.Fatalf("Failed to parse PEM %s", err)
+	}
+
+	jwtString, err := tok.SignedString(pk)
+	if err != nil {
+		logger.Errorf("Failed to generate signed JWT %s", err)
+		return "", err
+	}
+	tokReq, err := http.NewRequest("POST", fmt.Sprintf(urlInstallationTokens, installationID), nil)
+	if err != nil {
+		logger.Errorf("Failed to generate installation token %s", err)
+		return "", err
+	}
+	tokReq.Header.Set("Authorization", "Bearer "+jwtString)
+	tokReq.Header.Set("Accept", "application/vnd.github.v3+json")
+	tokRsp, err := http.DefaultClient.Do(tokReq)
+	if err != nil {
+		logger.Errorf("Failed to generate installation token %s", err)
+		return "", err
+	}
+	defer tokRsp.Body.Close()
+	b, _ := ioutil.ReadAll(tokRsp.Body)
+
+	if tokRsp.StatusCode > 399 {
+		logger.Errorf("Failed to generate installation token %s %s", tokRsp.Status, string(b))
+		return "", err
+	}
+
+	var rspMap map[string]interface{}
+	if err := json.Unmarshal(b, &rspMap); err != nil {
+		logger.Errorf("Failed to generate installation token %s 5s", tokRsp.Status, string(b))
+		return "", err
+	}
+	return rspMap["token"].(string), nil // TODO fix me
+}
+
+func (e *Github) ListBranches(ctx context.Context, req *github.ListBranchesRequest, rsp *github.ListBranchesResponse) error {
+	method := "github.ListBranches"
+	tenantID, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized(method, "Unauthorized")
+	}
+	recs, err := store.Read(installationKey(tenantID, ""), store.ReadPrefix()) // TODO support multiple installations
+	if err != nil {
+		if err == store.ErrNotFound {
+			return errors.NotFound(method, "Github app not installed for tenant")
+		}
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	var install installation
+	if err := recs[0].Decode(&install); err != nil { // TODO support multiple installations
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+
+	tok, err := e.getInstallationToken(ctx, tenantID, install.InstallationID)
+	if err != nil {
+		logger.Errorf("Error retrieving token %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	repoReq, err := http.NewRequest("GET", fmt.Sprintf(urlBranchesList, req.Repo), nil)
+	if err != nil {
+		logger.Errorf("Error retrieving repos %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	repoReq.Header.Set("Authorization", "Bearer "+tok)
+	repoReq.Header.Set("Accept", "application/vnd.github.v3+json")
+	repoRsp, err := http.DefaultClient.Do(repoReq)
+	if err != nil {
+		logger.Errorf("Error retrieving repos %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	defer repoRsp.Body.Close()
+	b, _ := ioutil.ReadAll(repoRsp.Body)
+
+	if repoRsp.StatusCode > 399 {
+		logger.Errorf("Error retrieving repos %s %s", repoRsp.Status, string(b))
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	var rspObj []struct {
+		Name string `json:"name"`
+	}
+	if err := json.Unmarshal(b, &rspObj); err != nil {
+		logger.Errorf("Error retrieving repos %s", err)
+		return errors.InternalServerError(method, "Error retrieving repos")
+	}
+	rsp.Branches = make([]string, len(rspObj))
+	for i, v := range rspObj {
+		rsp.Branches[i] = v.Name
+	}
+	return nil
 }
 
 func (e *Github) Webhook(ctx context.Context, req *api.Request, rsp *api.Response) error {

@@ -18,6 +18,7 @@ require (
 	github.com/enescakir/emoji v1.0.0
 	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
+	github.com/golang-jwt/jwt v0.0.0-20210529014511-0f726ea0e725
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.2.0
