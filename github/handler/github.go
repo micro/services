@@ -208,6 +208,7 @@ func (e *Github) Token(ctx context.Context, req *github.TokenRequest, rsp *githu
 		logger.Errorf("Error retrieving token %s", err)
 		return errors.InternalServerError(method, "Error retrieving token")
 	}
+	logger.Infof("Checking tenant ID %s $d", installationKey(req.TenantId, ""), len(recs))
 	var install installation
 	if err := recs[0].Decode(&install); err != nil { // TODO support multiple installations
 		logger.Errorf("Error retrieving token %s", err)
