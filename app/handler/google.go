@@ -685,6 +685,7 @@ func (e *GoogleApp) gitCreds(ctx context.Context, tenantID string) map[string]st
 	if tokRsp != nil {
 		creds["GIT_CREDENTIALS"] = "x-access-token:" + tokRsp.Token
 	}
+	log.Infof("Creds %v", creds)
 	return creds
 }
 
