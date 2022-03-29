@@ -15,7 +15,7 @@ func main() {
 		service.Version("latest"),
 	)
 
-	h := handler.NewFunction()
+	h := handler.NewFunction(srv)
 	// Register handler
 	pb.RegisterFunctionHandler(srv.Server(), h)
 	admin.RegisterAdminHandler(srv.Server(), h)
