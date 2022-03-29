@@ -18,6 +18,7 @@ require (
 	github.com/enescakir/emoji v1.0.0
 	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
+	github.com/golang-jwt/jwt v0.0.0-20210529014511-0f726ea0e725
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.2.0
@@ -58,6 +59,7 @@ require (
 	github.com/tkuchiki/go-timezone v0.2.2
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
+	github.com/xanzy/go-gitlab v0.35.1
 	go.mongodb.org/mongo-driver v1.7.2
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1

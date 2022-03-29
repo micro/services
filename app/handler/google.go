@@ -13,16 +13,19 @@ import (
 	"strings"
 	"time"
 
+	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/auth"
+	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/runtime/source/git"
 	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/app/domain"
 	pb "github.com/micro/services/app/proto"
+	github "github.com/micro/services/github/proto"
 	pauth "github.com/micro/services/pkg/auth"
+	"github.com/micro/services/pkg/git"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
@@ -45,6 +48,8 @@ type GoogleApp struct {
 	identity string
 	// Embed the app handler
 	*App
+
+	ghSvc github.GithubService
 }
 
 var (
@@ -79,7 +84,7 @@ func random(i int) string {
 	return fmt.Sprintf("%d", time.Now().Unix())
 }
 
-func New() *GoogleApp {
+func New(svc *service.Service) *GoogleApp {
 	v, err := config.Get("app.service_account_json")
 	if err != nil {
 		log.Fatalf("app.service_account_json: %v", err)
@@ -167,6 +172,7 @@ func New() *GoogleApp {
 		limit:    limit,
 		identity: identity,
 		App:      new(App),
+		ghSvc:    github.NewGithubService("github", svc.Client()),
 	}
 }
 
@@ -310,7 +316,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 	}
 
 	// checkout the code
-	gitter := git.NewGitter(map[string]string{})
+	gitter := git.NewGitter(e.gitCreds(ctx, id))
 	if err := gitter.Checkout(req.Repo, req.Branch); err != nil {
 		log.Errorf("Failed to download %s@%s\n", req.Repo, req.Branch)
 		return errors.InternalServerError("app.run", "Failed to download source")
@@ -517,7 +523,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 	}
 
 	// checkout the code
-	gitter := git.NewGitter(map[string]string{})
+	gitter := git.NewGitter(e.gitCreds(ctx, id))
 	if err := gitter.Checkout(srv.Repo, srv.Branch); err != nil {
 		log.Errorf("Failed to download %s@%s\n", srv.Repo, srv.Branch)
 		return errors.InternalServerError("app.run", "Failed to download source")
@@ -672,6 +678,16 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 
 	return err
 }
+
+func (e *GoogleApp) gitCreds(ctx context.Context, tenantID string) map[string]string {
+	creds := map[string]string{}
+	tokRsp, _ := e.ghSvc.Token(ctx, &github.TokenRequest{TenantId: tenantID}, client.WithAuthToken())
+	if tokRsp != nil {
+		creds[git.CredentialsKey] = tokRsp.Token
+	}
+	return creds
+}
+
 func (e *GoogleApp) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	log.Info("Received App.Delete request")
 

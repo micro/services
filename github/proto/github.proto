@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package github;
+
+option go_package = "./proto;github";
+
+service Github {
+	// Authorize the M3O Github app - completes the installation
+	rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse) {}
+	// Get list of all the repos accessible from this installation
+	rpc ListRepos(ListReposRequest) returns (ListReposResponse) {}
+	// Get branches for a repo
+	rpc ListBranches(ListBranchesRequest) returns (ListBranchesResponse) {}
+	// Get a token that can be used with this user's repo
+	rpc Token(TokenRequest) returns (TokenResponse){}
+}
+
+message AuthorizeRequest {
+	string installation_id = 1;
+	string code = 2;
+}
+
+message AuthorizeResponse {
+}
+
+message ListReposRequest {
+
+}
+
+message ListReposResponse {
+	repeated string repos = 1;
+}
+
+message TokenRequest {
+	string tenant_id = 1;
+}
+
+message TokenResponse {
+	string token = 1;
+}
+
+message ListBranchesRequest {
+	// full name <owner>/<repo> e.g. micro/services
+	string repo = 1;
+}
+
+message ListBranchesResponse {
+	repeated string branches = 1;
+}
