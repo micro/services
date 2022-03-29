@@ -2,5 +2,11 @@
   "name": "sunnah",
   "icon": "📖",
   "category": "religion",
-  "display_name": "Sunnah"
+  "display_name": "Sunnah",
+  "quotas": {
+    "Sunnah.Collections": 1000000,
+    "Sunnah.Chapters": 1000000,
+    "Sunnah.Books": 1000000,
+    "Sunnah.Hadiths": 1000000
+  }
 }
