@@ -685,7 +685,7 @@ func (e *GoogleApp) gitCreds(ctx context.Context, tenantID string) map[string]st
 	creds := map[string]string{}
 	tokRsp, _ := e.ghSvc.Token(ctx, &github.TokenRequest{TenantId: tenantID}, client.WithAuthToken())
 	if tokRsp != nil {
-		creds[git.CredentialsKey = tokRsp.Token
+		creds[git.CredentialsKey] = tokRsp.Token
 	}
 	log.Infof("Creds %v", creds)
 	return creds
