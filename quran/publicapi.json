@@ -2,5 +2,11 @@
   "name": "quran",
   "icon": "📖",
   "category": "religion",
-  "display_name": "Quran"
+  "display_name": "Quran",
+  "quotas": {
+    "Quran.Chapters": 1000000,
+    "Quran.Verses": 1000000,
+    "Quran.Summary": 1000000,
+    "Quran.Search": 1000000
+  }
 }
