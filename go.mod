@@ -59,6 +59,7 @@ require (
 	github.com/tkuchiki/go-timezone v0.2.2
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.2.1 // indirect
+	github.com/xanzy/go-gitlab v0.35.1
 	go.mongodb.org/mongo-driver v1.7.2
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1

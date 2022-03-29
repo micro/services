@@ -20,12 +20,12 @@ import (
 	"github.com/micro/micro/v3/service/context/metadata"
 	"github.com/micro/micro/v3/service/errors"
 	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/runtime/source/git"
 	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/app/domain"
 	pb "github.com/micro/services/app/proto"
 	github "github.com/micro/services/github/proto"
 	pauth "github.com/micro/services/pkg/auth"
+	"github.com/micro/services/pkg/git"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
@@ -521,6 +521,8 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 		log.Errorf("Won't update: % is %s", req.Name, srv.Status)
 		return errors.BadRequest("app.update", "% status: %s", req.Name, srv.Status)
 	}
+
+	// TODO https://api.github.com/repos/m3o/m3o/zipball/main
 
 	// checkout the code
 	gitter := git.NewGitter(e.gitCreds(ctx, id))
