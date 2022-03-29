@@ -21,6 +21,8 @@ import (
 	"github.com/micro/micro/v3/service/store"
 	github "github.com/micro/services/github/proto"
 	"github.com/micro/services/pkg/auth"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 )
 
@@ -56,13 +58,6 @@ type Github struct {
 1. Ask user to install app; send them to https://github.com/apps/m3o-apps-dev/installations/new?state=foobar
 2. On success GH callback to m3o.com/<SOMETHING/>?code=0f957374a642fe783c0c&installation_id=24302523&setup_action=install&state=foobar (GH -> FRONTEND)
 3. call https://api.m3o.com/github/authorize with the code and installation ID so we can store the installation ID and exchange code for a GH user token (FRONTEND -> BACKEND)
-3. exchange the code for an access token; https://github.com/login/oauth/access_token -d '{"client_id": "<client ID>", "client_secret":"<secret>>", "code":"0f957374a642fe783c0c"}' -H "Content-Type: application/json"
-response: access_token=<TOKEN>&scope=&token_type=bearer (BACKEND -> GH)
-6. On success load up orgs repo list and display to user to pick (probably proxy query through back end so we don't store the token on the frontend)
-7. UI will load list of projects via m3o.com rather than github directly
-8. once chosen, backend can pull the contents of a repo at will by authenticating as the installation https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps#authenticating-as-an-installation
-
-how can you be sure that an m3o user has access to an installation??
 
 How does second app work, i.e. already installed the GH app, how do i select and run a second GH repo? Store the user access token or something? What happens if that gets blown away? Do we need to redo something??
 */
@@ -208,7 +203,6 @@ func (e *Github) Token(ctx context.Context, req *github.TokenRequest, rsp *githu
 		logger.Errorf("Error retrieving token %s", err)
 		return errors.InternalServerError(method, "Error retrieving token")
 	}
-	logger.Infof("Checking tenant ID %s $d", installationKey(req.TenantId, ""), len(recs))
 	var install installation
 	if err := recs[0].Decode(&install); err != nil { // TODO support multiple installations
 		logger.Errorf("Error retrieving token %s", err)
@@ -267,7 +261,7 @@ func (e *Github) getInstallationToken(ctx context.Context, tenantID, installatio
 		logger.Errorf("Failed to generate installation token %s 5s", tokRsp.Status, string(b))
 		return "", err
 	}
-	return rspMap["token"].(string), nil // TODO fix me
+	return rspMap["token"].(string), nil
 }
 
 func (e *Github) ListBranches(ctx context.Context, req *github.ListBranchesRequest, rsp *github.ListBranchesResponse) error {
@@ -329,11 +323,33 @@ func (e *Github) ListBranches(ctx context.Context, req *github.ListBranchesReque
 }
 
 func (e *Github) Webhook(ctx context.Context, req *api.Request, rsp *api.Response) error {
-	//md, ok := metadata.FromContext(ctx)
-	//if !ok {
-	//	log.Errorf("Missing metadata from request")
-	//	return errors.BadRequest("github.Webhook", "Missing headers")
-	//}
+	// TODO
 	logger.Infof("Received webhook %v", req.Body)
+	return nil
+}
+
+func (e *Github) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest, response *adminpb.DeleteDataResponse) error {
+	method := "admin.DeleteData"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't delete all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+	keys, err := store.List(store.ListPrefix(installationKey(request.TenantId, "")))
+	if err != nil {
+		return err
+	}
+
+	for _, key := range keys {
+		err = store.Delete(key)
+		if err != nil {
+			return err
+		}
+	}
+	logger.Infof("Deleted %d objects from S3 for %s", len(keys), request.TenantId)
+
 	return nil
 }

@@ -522,8 +522,6 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 		return errors.BadRequest("app.update", "% status: %s", req.Name, srv.Status)
 	}
 
-	// TODO https://api.github.com/repos/m3o/m3o/zipball/main
-
 	// checkout the code
 	gitter := git.NewGitter(e.gitCreds(ctx, id))
 	if err := gitter.Checkout(srv.Repo, srv.Branch); err != nil {
@@ -687,7 +685,6 @@ func (e *GoogleApp) gitCreds(ctx context.Context, tenantID string) map[string]st
 	if tokRsp != nil {
 		creds[git.CredentialsKey] = tokRsp.Token
 	}
-	log.Infof("Creds %v", creds)
 	return creds
 }
 
