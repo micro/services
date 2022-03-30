@@ -168,3 +168,7 @@ func (c *contact) DeleteData(ctx context.Context, request *adminpb.DeleteDataReq
 	logger.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
 	return nil
 }
+
+func (c *contact) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

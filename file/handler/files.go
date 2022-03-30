@@ -232,3 +232,7 @@ func (e *File) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 
 	return nil
 }
+
+func (e *File) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

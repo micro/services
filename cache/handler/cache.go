@@ -44,7 +44,6 @@ func (c *Cache) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse
 		rsp.Ttl = 0
 	}
 
-
 	return nil
 }
 
@@ -161,5 +160,9 @@ func (c *Cache) DeleteData(ctx context.Context, request *adminpb.DeleteDataReque
 		}
 	}
 	log.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
+	return nil
+}
+
+func (c *Cache) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
 	return nil
 }

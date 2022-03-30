@@ -634,3 +634,7 @@ func (s *User) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 	}
 	return s.domain.DeleteTenantData(request.TenantId)
 }
+
+func (s *User) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

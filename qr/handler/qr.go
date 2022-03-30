@@ -135,3 +135,7 @@ func (q *Qr) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest,
 
 	return nil
 }
+
+func (q *Qr) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

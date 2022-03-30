@@ -608,3 +608,7 @@ func (s Space) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 	return nil
 
 }
+
+func (e *Space) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

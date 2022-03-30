@@ -484,3 +484,7 @@ func (e *Db) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest,
 	logger.Infof("Deleted %d tables for %s", dropCount, request.TenantId)
 	return nil
 }
+
+func (e *Db) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

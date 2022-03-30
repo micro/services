@@ -91,3 +91,7 @@ func (l *Location) DeleteData(ctx context.Context, request *adminpb.DeleteDataRe
 	logger.Infof("Deleted index for %s", request.TenantId)
 	return nil
 }
+
+func (l *Location) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

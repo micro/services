@@ -352,3 +352,7 @@ func (s *Search) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequ
 	}
 	return nil
 }
+
+func (s *Search) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

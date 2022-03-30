@@ -198,3 +198,7 @@ func (e *Url) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest
 
 	return nil
 }
+
+func (e *Url) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

@@ -152,3 +152,7 @@ func (e *Otp) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest
 	logger.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
 	return nil
 }
+
+func (e *Otp) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

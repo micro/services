@@ -353,3 +353,7 @@ func (e *Github) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequ
 
 	return nil
 }
+
+func (e *Github) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}
