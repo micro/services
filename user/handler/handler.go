@@ -650,9 +650,6 @@ func (s *User) Usage(ctx context.Context, request *adminpb.UsageRequest, respons
 	split := strings.Split(request.TenantId, "/")
 	tctx := tenant.NewContext(split[1], split[0], split[1])
 
-	tenantId := request.TenantId
-	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
-
 	var userCount, offset uint32
 	var limit uint32 = 100
 
