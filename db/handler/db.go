@@ -91,7 +91,6 @@ func (e *Db) tableName(ctx context.Context, t string) (string, error) {
 	return tableName, nil
 }
 
-// Call is a single request handler called via client.Call or the generated client code
 func (e *Db) Create(ctx context.Context, req *db.CreateRequest, rsp *db.CreateResponse) error {
 	if len(req.Record.AsMap()) == 0 {
 		return errors.BadRequest("db.create", "missing record")
@@ -486,5 +485,48 @@ func (e *Db) DeleteData(ctx context.Context, request *adminpb.DeleteDataRequest,
 }
 
 func (e *Db) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	method := "admin.Usage"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't grab all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	split := strings.Split(request.TenantId, "/")
+	tctx := tenant.NewContext(split[1], split[0], split[1])
+
+	tenantId := request.TenantId
+	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
+
+	db, err := e.GetDBConn(tctx)
+	if err != nil {
+		return err
+	}
+
+	var tables []string
+	if err := db.Table("information_schema.tables").Select("table_name").Where("table_schema = ?", "public").Find(&tables).Error; err != nil {
+		return err
+	}
+	var rowCount int64
+	for _, v := range tables {
+		if !strings.HasPrefix(v, tenantId) {
+			continue
+		}
+		var a int64
+		err = db.Table(v).Model(Record{}).Count(&a).Error
+		if err != nil {
+			return err
+		}
+		rowCount += a
+	}
+	response.Usage = map[string]*adminpb.Usage{
+		"Db.Create": &adminpb.Usage{Usage: rowCount, Units: "rows"},
+		// all other methods don't add rows so are not usage capped
+	}
+
 	return nil
+
 }
