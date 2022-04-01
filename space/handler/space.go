@@ -608,3 +608,37 @@ func (s Space) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 	return nil
 
 }
+
+func (s *Space) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	method := "admin.Usage"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't grab all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	rsp, err := s.client.ListObjects(&sthree.ListObjectsInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Prefix: aws.String(request.TenantId),
+	})
+	if err != nil {
+		log.Errorf("Error listing objects %s", err)
+		return errors.InternalServerError(method, "Error listing objects")
+	}
+
+	var totalSize int64
+	for _, v := range rsp.Contents {
+		totalSize += *v.Size
+	}
+	response.Usage = map[string]*adminpb.Usage{
+		"Space.Create": &adminpb.Usage{Usage: int64(totalSize), Units: "bytes"},
+		"Space.Update": &adminpb.Usage{Usage: int64(totalSize), Units: "bytes"},
+		"Space.Upload": &adminpb.Usage{Usage: int64(totalSize), Units: "bytes"},
+		// all other methods don't add to space so are not usage capped
+	}
+
+	return nil
+}

@@ -351,3 +351,7 @@ func (e *Image) DeleteData(ctx context.Context, request *adminpb.DeleteDataReque
 
 	return nil
 }
+
+func (e *Image) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

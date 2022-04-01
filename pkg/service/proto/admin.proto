@@ -6,7 +6,7 @@ option go_package = "./proto;admin";
 
 service Admin {
   rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse) {}
-
+  rpc Usage(UsageRequest) returns (UsageResponse) {}
 }
 
 message DeleteDataRequest {
@@ -14,3 +14,16 @@ message DeleteDataRequest {
 }
 
 message DeleteDataResponse {}
+
+message UsageRequest {
+  string tenant_id = 1;
+}
+
+message UsageResponse {
+  map<string,Usage> usage = 1; // map of endpoints to usage
+}
+
+message Usage {
+  int64 usage = 1; // A number that represents the usage
+  string units = 2;
+}

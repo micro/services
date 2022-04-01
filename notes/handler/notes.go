@@ -321,3 +321,7 @@ func (h *Notes) DeleteData(ctx context.Context, request *adminpb.DeleteDataReque
 	logger.Infof("Deleted %d keys for %s", len(keys), request.TenantId)
 	return nil
 }
+
+func (h *Notes) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}

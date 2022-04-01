@@ -15,6 +15,7 @@ import (
 	"github.com/micro/micro/v3/service/store"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
+	"github.com/micro/services/pkg/tenant"
 	"golang.org/x/crypto/bcrypt"
 
 	otp "github.com/micro/services/otp/proto"
@@ -633,4 +634,42 @@ func (s *User) DeleteData(ctx context.Context, request *adminpb.DeleteDataReques
 		return errors.BadRequest("user.DeleteData", "Missing tenant ID")
 	}
 	return s.domain.DeleteTenantData(request.TenantId)
+}
+
+func (s *User) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	method := "admin.Usage"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't grab all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	split := strings.Split(request.TenantId, "/")
+	tctx := tenant.NewContext(split[1], split[0], split[1])
+
+	var userCount, offset uint32
+	var limit uint32 = 100
+
+	for {
+		accs, err := s.domain.List(tctx, offset, limit)
+		if err != nil && err != domain.ErrNotFound {
+			return errors.InternalServerError("user.List", "Error retrieving user list")
+		}
+		numAccs := uint32(len(accs))
+		userCount += numAccs
+		if numAccs < limit {
+			break
+		}
+		offset += limit
+	}
+
+	response.Usage = map[string]*adminpb.Usage{
+		"User.Create": &adminpb.Usage{Usage: int64(userCount), Units: "users"},
+		// all other methods don't add users so are not usage capped
+	}
+
+	return nil
 }

@@ -802,6 +802,10 @@ func (e *GoogleApp) DeleteData(ctx context.Context, request *adminpb.DeleteDataR
 	return nil
 }
 
+func (e *GoogleApp) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}
+
 func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	log.Info("Received App.List request")
 

@@ -1016,6 +1016,10 @@ func (e *GoogleFunction) DeleteData(ctx context.Context, request *adminpb.Delete
 	return nil
 }
 
+func (e *GoogleFunction) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	return nil
+}
+
 var (
 	logsFuncMap = map[string]func(e *GoogleFunction, ctx context.Context, req *function.LogsRequest, rsp *function.LogsResponse) error{
 		"build": buildLogs, // TODO add runtime logs
