@@ -31,6 +31,7 @@ const renameTableStmt = `ALTER TABLE "%v" RENAME TO "%v"`
 
 var re = regexp.MustCompile("^[a-zA-Z0-9_]*$")
 var c = cache.New(5*time.Minute, 10*time.Minute)
+var usageCache = cache.New(30*time.Second, 10*time.Minute)
 
 type Record struct {
 	ID   string
@@ -501,6 +502,13 @@ func (e *Db) Usage(ctx context.Context, request *adminpb.UsageRequest, response 
 	tenantId := request.TenantId
 	tenantId = strings.Replace(strings.Replace(tenantId, "/", "_", -1), "-", "_", -1)
 
+	// Saving load on DB - do we have a cached response?
+	if ret, ok := usageCache.Get(tenantId); ok {
+		response.Usage = ret.(map[string]*adminpb.Usage)
+
+		return nil
+	}
+
 	db, err := e.GetDBConn(tctx)
 	if err != nil {
 		return err
@@ -526,7 +534,7 @@ func (e *Db) Usage(ctx context.Context, request *adminpb.UsageRequest, response 
 		"Db.Create": &adminpb.Usage{Usage: rowCount, Units: "rows"},
 		// all other methods don't add rows so are not usage capped
 	}
-
+	usageCache.Set(tenantId, response.Usage, 0)
 	return nil
 
 }

@@ -636,7 +636,8 @@ func (s *Space) Usage(ctx context.Context, request *adminpb.UsageRequest, respon
 	response.Usage = map[string]*adminpb.Usage{
 		"Space.Create": &adminpb.Usage{Usage: int64(totalSize), Units: "bytes"},
 		"Space.Update": &adminpb.Usage{Usage: int64(totalSize), Units: "bytes"},
-		// all other methods don't add users so are not usage capped
+		"Space.Upload": &adminpb.Usage{Usage: int64(totalSize), Units: "bytes"},
+		// all other methods don't add to space so are not usage capped
 	}
 
 	return nil
