@@ -2,8 +2,5 @@
   "name": "youtube",
   "icon": "📺",
   "category": "social",
-  "display_name": "YouTube",
-  "pricing": {
-    "Youtube.Search": 10000
-  }
+  "display_name": "YouTube"
 }
