@@ -5,7 +5,7 @@
         "description": "Create a simple text based comment",
         "run_check": false,
         "request": {
-            "title": "New Comment",
+            "subject": "New Comment",
             "text": "This is my comment"
         },
         "response": {
