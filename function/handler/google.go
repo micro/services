@@ -220,6 +220,9 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 		return errors.BadRequest("function.deploy", "invalid runtime")
 	}
 
+	// lowercase the name
+	req.Name = strings.ToLower(req.Name)
+
 	var match bool
 	for _, r := range GoogleRuntimes {
 		if r == req.Runtime {
@@ -294,7 +297,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 	}
 
 	if req.Entrypoint == "" {
-		req.Entrypoint = req.Name
+		req.Entrypoint = strings.ToTitle(req.Name)
 	}
 
 	// read the function by owner
