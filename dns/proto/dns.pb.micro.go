@@ -42,7 +42,7 @@ func NewDnsEndpoints() []*api.Endpoint {
 // Client API for Dns service
 
 type DnsService interface {
-	Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error)
+	Query(ctx context.Context, in *QueryRequest, opts ...client.CallOption) (*QueryResponse, error)
 }
 
 type dnsService struct {
@@ -57,9 +57,9 @@ func NewDnsService(name string, c client.Client) DnsService {
 	}
 }
 
-func (c *dnsService) Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error) {
-	req := c.c.NewRequest(c.name, "Dns.Resolve", in)
-	out := new(ResolveResponse)
+func (c *dnsService) Query(ctx context.Context, in *QueryRequest, opts ...client.CallOption) (*QueryResponse, error) {
+	req := c.c.NewRequest(c.name, "Dns.Query", in)
+	out := new(QueryResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,12 +70,12 @@ func (c *dnsService) Resolve(ctx context.Context, in *ResolveRequest, opts ...cl
 // Server API for Dns service
 
 type DnsHandler interface {
-	Resolve(context.Context, *ResolveRequest, *ResolveResponse) error
+	Query(context.Context, *QueryRequest, *QueryResponse) error
 }
 
 func RegisterDnsHandler(s server.Server, hdlr DnsHandler, opts ...server.HandlerOption) error {
 	type dns interface {
-		Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error
+		Query(ctx context.Context, in *QueryRequest, out *QueryResponse) error
 	}
 	type Dns struct {
 		dns
@@ -88,6 +88,6 @@ type dnsHandler struct {
 	DnsHandler
 }
 
-func (h *dnsHandler) Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error {
-	return h.DnsHandler.Resolve(ctx, in, out)
+func (h *dnsHandler) Query(ctx context.Context, in *QueryRequest, out *QueryResponse) error {
+	return h.DnsHandler.Query(ctx, in, out)
 }
