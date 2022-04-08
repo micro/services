@@ -1,0 +1,34 @@
+{
+  "query": [
+    {
+      "title": "Make a dns query",
+      "description": "Make a dns query over https",
+      "request": {
+        "name": "google.com"
+      },
+      "response": {
+		"status": 0,
+		"TC": false,
+		"RD": true,
+		"RA": true,
+		"AD": false,
+		"CD": false,
+		"question": [
+			{
+				"name": "google.com.",
+				"type": 1
+			}
+		],
+		"answer": [
+			{
+				"name": "google.com.",
+				"type": 1,
+				"TTL": 117,
+				"data": "142.250.178.14"
+			}
+		],
+		"provider": "google"
+      }
+    }
+  ]
+}

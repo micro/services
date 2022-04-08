@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package dns;
+
+option go_package = "./proto;dns";
+
+service Dns {
+	rpc Query(QueryRequest) returns (QueryResponse) {}
+}
+
+message Question {
+	// name to query
+	string name = 1;
+	// type of record
+	int32 type = 2;
+}
+
+message Answer {
+	// name resolved
+	string name = 1;
+	// type of record
+	int32 type = 2;
+	// time to live
+	int32 TTL = 3;
+	// the answer
+	string data = 4;
+}
+
+// Query an addresss
+message QueryRequest {
+	// name to resolve
+	string name = 1;
+	// type of query e.g A, AAAA, MX, SRV
+	string type = 2;
+}
+
+message QueryResponse {
+	int32 status = 1;
+	bool TC = 2;
+	bool RD = 3;
+	bool RA = 4;
+	bool AD = 5;
+	bool CD = 6;
+	repeated Question question = 7;
+	repeated Answer answer = 8;
+	string provider = 9;
+}
+
