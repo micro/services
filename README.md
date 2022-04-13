@@ -26,6 +26,12 @@ To call a service from another
 import "github.com/micro/services/helloworld/proto"
 ```
 
+Call it from the api
+
+```
+curl http://localhost:8080/helloworld
+```
+
 ## Contribute
 
 We welcome contributions of additional services:
