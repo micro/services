@@ -41,43 +41,5 @@
             "low": 115.83,
             "date": "2020-10-01"
         }
-    }],
-    "orderBook": [{
-        "title": "Order book history",
-        "description": "Returns historic order book for a given date",
-        "request": {
-            "stock": "AAPL",
-            "date": "2020-10-01",
-            "start": "2020-10-01T10:00:00Z",
-            "end": "2020-10-01T11:00:00Z",
-            "limit": 3
-        },
-        "response": {
-            "symbol": "AAPL",
-            "date": "2020-10-01",
-            "orders": [
-                {
-                        "ask_price": 117.49,
-                        "bid_price": 117.3,
-                        "ask_size": 1,
-                        "bid_size": 1,
-                        "timestamp": "2020-10-01T10:00:02.672770187Z"
-                },
-                {
-                        "ask_price": 117.47,
-                        "bid_price": 117.35,
-                        "ask_size": 2,
-                        "bid_size": 1,
-                        "timestamp": "2020-10-01T10:00:33.258111144Z"
-                },
-                {
-                        "ask_price": 117.47,
-                        "bid_price": 117.3,
-                        "ask_size": 2,
-                        "bid_size": 2,
-                        "timestamp": "2020-10-01T10:00:33.386282508Z"
-                }
-           ]
-        }
     }]
 }
