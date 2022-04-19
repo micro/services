@@ -40,10 +40,6 @@ type File struct {
 }
 
 func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.DeleteResponse) error {
-	if len(req.Path) == 0 {
-		return errors.BadRequest("file.read", "missing file path")
-	}
-
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {
 		tenantId = "micro"
@@ -131,6 +127,10 @@ func (e *File) Save(ctx context.Context, req *file.SaveRequest, rsp *file.SaveRe
 
 	if req.File == nil {
 		return errors.BadRequest("file.save", "missing file")
+	}
+
+	if len(req.File.Path) == 0 {
+		return errors.BadRequest("file.save", "missing file path")
 	}
 
 	log.Info("Received File.Save request")
