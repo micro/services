@@ -8,6 +8,7 @@ name: Downstream
 on:
   push:
     paths:
+      - '**/README.md'
       - '**.proto'
       - '**/examples.json'
       - '**/publicapi.json'
