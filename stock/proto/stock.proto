@@ -8,43 +8,6 @@ service Stock {
 	rpc Quote(QuoteRequest) returns (QuoteResponse) {}
 	rpc Price(PriceRequest) returns (PriceResponse) {}
 	rpc History(HistoryRequest) returns (HistoryResponse) {}
-	rpc OrderBook(OrderBookRequest) returns (OrderBookResponse) {}
-}
-
-message Order {
-	// the asking price
-	double ask_price = 2;
-	// the bidding price
-	double bid_price = 3;
-	// the ask size
-	int32 ask_size = 4;
-	// the bid size
-	int32 bid_size = 5;
-	// the UTC timestamp of the quote
-	string timestamp = 6;
-}
-
-// Get the historic order book and each trade by timestamp
-message OrderBookRequest {
-	// stock to retrieve e.g AAPL
-	string stock = 1;
-	// the date in format YYYY-MM-dd
-	string date = 2;
-	// optional RFC3339Nano start time e.g 2006-01-02T15:04:05.999999999Z07:00
-	string start = 3;
-	// optional RFC3339Nano end time e.g 2006-01-02T15:04:05.999999999Z07:00
-	string end = 4;
-	// limit number of prices
-	int32 limit = 5;
-}
-
-message OrderBookResponse {
-	// the stock symbol
-	string symbol = 1;
-	// date of the request
-	string date = 2;
-	// list of orders
-	repeated Order orders = 3;
 }
 
 // Get the last price for a given stock ticker
