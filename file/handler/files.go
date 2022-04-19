@@ -47,6 +47,10 @@ func (e *File) Delete(ctx context.Context, req *file.DeleteRequest, rsp *file.De
 
 	path := filepath.Join("file", tenantId, req.Project, req.Path)
 
+	if len(req.Project) == 0 && len(req.Path) == 0 {
+		return errors.BadRequest("file.delete", "missing path and project")
+	}
+
 	// delete one file
 	if !strings.HasSuffix(req.Path, "/") {
 		return store.Delete(path)
