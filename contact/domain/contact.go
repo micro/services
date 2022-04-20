@@ -111,10 +111,6 @@ func (c *contact) List(ctx context.Context, offset, limit uint) (result []*pb.Co
 		return nil, err
 	}
 
-	if len(records) == 0 {
-		return nil, errors.New("not found")
-	}
-
 	for _, rec := range records {
 		cinfo := &pb.ContactInfo{}
 		json.Unmarshal(rec.Value, cinfo)
