@@ -420,8 +420,10 @@ func (domain *Domain) MarkVerified(ctx context.Context, id, email string) error 
 	}
 
 	// mark as verified
+	t := time.Now().Unix()
 	user.Verified = true
-	user.Updated = time.Now().Unix()
+	user.Updated = t
+	user.VerificationDate = t
 
 	val, err := json.Marshal(user)
 	if err != nil {
