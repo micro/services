@@ -2,5 +2,11 @@
   "name": "db",
   "icon": "📦",
   "category": "storage",
-  "display_name": "DB"
+  "display_name": "DB",
+  "quotas": {
+    "Db.Create": 1000,
+    "Db.Read": 1000,
+    "Db.Update": 1000,
+    "Db.Delete": 1000
+  }
 }
