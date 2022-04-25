@@ -118,6 +118,7 @@ func (c *Crypto) News(ctx context.Context, req *pb.NewsRequest, rsp *pb.NewsResp
 		return errors.InternalServerError("crypto.news", "failed to get news")
 	}
 
+	rsp.Symbol = req.Symbol
 	for _, article := range respBody.News {
 		rsp.Articles = append(rsp.Articles, &pb.Article{
 			Title:       article.Title,
