@@ -1,7 +1,7 @@
 {
   "name": "thumbnail",
   "icon": "📸",
-  "category": "utility",
+  "category": "web",
   "display_name": "Thumbnail",
   "pricing": {
     "Thumbnail.Screenshot": 10000

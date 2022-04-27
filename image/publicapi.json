@@ -1,7 +1,7 @@
 {
   "name": "image",
   "icon": "🖼️",
-  "category": "utility",
+  "category": "web",
   "display_name": "Image",
   "pricing": {
     "Image.Upload": 10000

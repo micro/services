@@ -1,7 +1,7 @@
 {
   "name": "place",
   "icon": "🗺️",
-  "category": "utility",
+  "category": "logistics",
   "display_name": "Places",
   "pricing": {
     "Place.Search": 20000,
