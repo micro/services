@@ -1,7 +1,7 @@
 {
   "name": "email",
   "icon": "✉️",
-  "category": "communication",
+  "category": "messaging",
   "pricing": {
     "Email.Send": 10000
   },

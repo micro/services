@@ -1,7 +1,7 @@
 {
   "name": "sms",
   "icon": "📟",
-  "category": "communication",
+  "category": "messaging",
   "pricing": {
     "Sms.Send": 75000
   },
