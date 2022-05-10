@@ -2,8 +2,7 @@ Multiplayer wordle
 
 # Wordle Service
 
-Guess the WORDLE in six tries.
+Guess the WORDLE in six tries. Each guess must be a valid five-letter word.
 
-Each guess must be a valid five-letter word. Hit the enter button to submit.
-
-After each guess, the color of the tiles will change to show how close your guess was to the word.
+The highlight will show how close you are using [] square brackets for correct positions and {} parenthesis for 
+letters in the word but in the wrong position, anything not highlighted is incorrect.
