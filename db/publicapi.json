@@ -4,9 +4,9 @@
   "category": "storage",
   "display_name": "DB",
   "quotas": {
-    "Db.Create": 1000,
-    "Db.Read": 1000,
-    "Db.Update": 1000,
-    "Db.Delete": 1000
+    "Db.Create": 1000000,
+    "Db.Read": 1000000,
+    "Db.Update": 1000000,
+    "Db.Delete": 1000000
   }
 }
