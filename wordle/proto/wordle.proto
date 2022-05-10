@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package wordle;
+
+option go_package = "./proto;wordle";
+
+service Wordle {
+	rpc Guess(GuessRequest) returns (GuessResponse) {}
+	rpc Next(NextRequest) returns (NextResponse) {}
+}
+
+message Guess {
+	// the full guess word
+	string word = 1;
+	// the highlighted word e.g n[o]is{e}
+	// where [ ] is correct, { } is in word
+	string highlight = 2;
+	// individual characters
+	repeated Char chars = 3;
+	
+}
+
+message Char {
+	// the character itself
+	string letter = 1;
+	// position in the string
+	int32 position = 2;
+	// whether it was correct
+	bool correct = 3;
+	// whether it's in the word
+	bool in_word = 4;
+}
+
+// Make a guess
+message GuessRequest {
+	// player
+	string player = 1;
+	// guess word
+	string word = 2;
+}
+
+message GuessResponse {
+	// whether it was correct
+	bool correct = 1;
+	// number of tries left
+	int32 tries_left = 2;
+	// the guess words tried
+	repeated Guess guesses = 3;
+	// the actual word if failed
+	string answer = 4;
+	// informational message
+	string status = 5;
+}
+
+// When does the next game start
+message NextRequest {}
+
+message NextResponse {
+	// number of seconds
+	int32 seconds = 1;
+	// in hh:mm:ss
+	string duration = 2;
+}
