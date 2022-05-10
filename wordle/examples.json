@@ -1,0 +1,66 @@
+{
+  "guess": [
+    {
+      "title": "Make a guess",
+      "description": "Make a guess",
+      "request": {
+	"word": "noise"
+      },
+      "response": {
+        "correct": false,
+        "tries_left": 0,
+        "guesses": [
+                {
+                        "word": "noise",
+                        "highlight": "no{i}[s]e",
+                        "chars": [
+                                {
+                                        "letter": "n",
+                                        "position": 0,
+                                        "correct": false,
+                                        "in_word": false
+                                },
+                                {
+                                        "letter": "o",
+                                        "position": 1,
+                                        "correct": false,
+                                        "in_word": false
+                                },
+                                {
+                                        "letter": "i",
+                                        "position": 2,
+                                        "correct": false,
+                                        "in_word": true
+                                },
+                                {
+                                        "letter": "s",
+                                        "position": 3,
+                                        "correct": true,
+                                        "in_word": true
+                                },
+                                {
+                                        "letter": "e",
+                                        "position": 4,
+                                        "correct": false,
+                                        "in_word": false
+                                }
+                        ]
+                }
+        ],
+        "answer": "tipsy",
+        "status": "Reached guess limit"
+      }
+    }
+  ],
+  "next": [
+    {
+      "title": "Next game",
+      "description": "When is the next game",
+      "request": {},
+      "response": {
+        "seconds": 36944,
+        "duration": "10h15m44.854216477s"
+      }
+    }
+  ]
+}
