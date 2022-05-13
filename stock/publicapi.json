@@ -2,5 +2,10 @@
   "name": "stock",
   "icon": "📈",
   "category": "finance",
-  "display_name": "Stocks"
+  "display_name": "Stocks",
+  "pricing": {
+    "Stock.Quote": 1000,
+    "Stock.History": 1000,
+    "Stock.Price": 100
+  }
 }
