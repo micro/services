@@ -1,7 +1,7 @@
 {
   "name": "user",
   "icon": "👤",
-  "category": "authentication",
+  "category": "auth",
   "display_name": "Users",
   "pricing": {
     "User.SendMagicLink": 10000,
