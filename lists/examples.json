@@ -6,7 +6,7 @@
         "run_check": false,
         "request": {
             "title": "New List",
-            "text": "This is my list"
+            "items": ["This is my list"]
         },
         "response": {
             "list": {
@@ -14,7 +14,7 @@
                 "created": "2021-09-29T13:33:03+01:00",
                 "updated": "2021-09-29T13:33:03+01:00",
                 "title": "New List",
-                "text": "This is my list"
+                "items": ["This is my list"]
             }
         }
     }],
@@ -47,7 +47,7 @@
                         "created": "2021-09-29T13:33:03+01:00",
                         "updated": "2021-09-29T13:33:03+01:00",
                         "title": "New List",
-                        "text": "This is my list"
+                        "items": ["This is my list"]
                 }
             ]
         }
@@ -60,7 +60,7 @@
 	    "list": {
                 "id": "63c0cdf8-2121-11ec-a881-0242e36f037a",
                 "title": "Update List",
-                "text": "Updated list text"
+                "items": ["Updated list text"]
             }
         },
         "response": {
@@ -69,7 +69,7 @@
                 "created": "2021-09-29T13:33:03+01:00",
                 "updated": "2021-09-29T13:50:20+01:00",
                 "title": "Update List",
-                "text": "Updated list text"
+                "items": ["Updated list text"]
             }
         }
     }],
@@ -86,7 +86,7 @@
                 "created": "2021-09-29T13:33:03+01:00",
                 "updated": "2021-09-29T13:50:20+01:00",
                 "title": "Update List",
-                "text": "Updated list text"
+                "items": ["Updated list text"]
             }
         }
     }],
@@ -104,7 +104,7 @@
                 "created": "2021-09-29T13:33:03+01:00",
                 "updated": "2021-09-29T13:50:20+01:00",
                 "title": "Update List",
-                "text": "Updated list text"
+                "items": ["Updated list text"]
             }
         }
     }]
