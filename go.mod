@@ -103,16 +103,20 @@ require (
 	github.com/klauspost/compress v1.13.5 // indirect
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/likexian/gokit v0.21.11 // indirect
+	github.com/matoous/go-nanoid/v2 v2.0.0 // indirect
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/nightlyone/lockfile v1.0.0 // indirect
+	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.8.0 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
 	github.com/paulmach/go.geojson v1.4.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/cors v1.7.0 // indirect
+	github.com/rs/xid v1.4.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
+	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect

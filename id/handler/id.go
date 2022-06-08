@@ -3,19 +3,19 @@ package handler
 import (
 	"context"
 	"fmt"
-	"math/rand"
-	"time"
 	"github.com/google/uuid"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/mattheath/kala/bigflake"
 	"github.com/mattheath/kala/snowflake"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	pb "github.com/micro/services/id/proto"
 	"github.com/oklog/ulid"
 	"github.com/rs/xid"
 	"github.com/segmentio/ksuid"
 	"github.com/teris-io/shortid"
-	pb "github.com/micro/services/id/proto"
+	"math/rand"
+	"time"
 )
 
 type Id struct {
