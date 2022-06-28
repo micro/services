@@ -46,6 +46,23 @@ func NewUrl(svc *service.Service) *Url {
 	}
 }
 
+func (e *Url) Delete(ctx context.Context, req *url.DeleteRequest, rsp *url.DeleteResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("url.shorten", "not authorized")
+	}
+
+	id := strings.TrimPrefix(req.ShortURL, e.hostPrefix)
+
+	// delete the url
+	store.Delete("url/" + id)
+
+	// delete the owner
+	store.Delete("urlOwner/" + tenantId + "/" + id)
+
+	return nil
+}
+
 func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.ShortenResponse) error {
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {

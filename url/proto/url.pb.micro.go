@@ -45,6 +45,7 @@ type UrlService interface {
 	Shorten(ctx context.Context, in *ShortenRequest, opts ...client.CallOption) (*ShortenResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Proxy(ctx context.Context, in *ProxyRequest, opts ...client.CallOption) (*ProxyResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 }
 
 type urlService struct {
@@ -89,12 +90,23 @@ func (c *urlService) Proxy(ctx context.Context, in *ProxyRequest, opts ...client
 	return out, nil
 }
 
+func (c *urlService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
+	req := c.c.NewRequest(c.name, "Url.Delete", in)
+	out := new(DeleteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Url service
 
 type UrlHandler interface {
 	Shorten(context.Context, *ShortenRequest, *ShortenResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
 	Proxy(context.Context, *ProxyRequest, *ProxyResponse) error
+	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 }
 
 func RegisterUrlHandler(s server.Server, hdlr UrlHandler, opts ...server.HandlerOption) error {
@@ -102,6 +114,7 @@ func RegisterUrlHandler(s server.Server, hdlr UrlHandler, opts ...server.Handler
 		Shorten(ctx context.Context, in *ShortenRequest, out *ShortenResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Proxy(ctx context.Context, in *ProxyRequest, out *ProxyResponse) error
+		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 	}
 	type Url struct {
 		url
@@ -124,4 +137,8 @@ func (h *urlHandler) List(ctx context.Context, in *ListRequest, out *ListRespons
 
 func (h *urlHandler) Proxy(ctx context.Context, in *ProxyRequest, out *ProxyResponse) error {
 	return h.UrlHandler.Proxy(ctx, in, out)
+}
+
+func (h *urlHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
+	return h.UrlHandler.Delete(ctx, in, out)
 }

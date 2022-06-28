@@ -8,6 +8,14 @@ service Url {
 	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+}
+
+message DeleteRequest {
+	string shortURL = 1;
+}
+
+message DeleteResponse {
 }
 
 // Shorten a long URL
