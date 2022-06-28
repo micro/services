@@ -54,6 +54,13 @@ func (e *Url) Delete(ctx context.Context, req *url.DeleteRequest, rsp *url.Delet
 
 	id := strings.TrimPrefix(req.ShortURL, e.hostPrefix)
 
+	// check if exists
+	recs, err := store.Read("urlOwner/" + tenantId + "/" + id)
+	if err != nil || len(recs) == 0 {
+		// swallow error
+		return nil
+	}
+
 	// delete the url
 	store.Delete("url/" + id)
 
