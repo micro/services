@@ -11,6 +11,7 @@ service Url {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 }
 
+// Delete a URL
 message DeleteRequest {
 	string shortURL = 1;
 }
