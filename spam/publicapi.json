@@ -2,5 +2,8 @@
   "name": "spam",
   "icon": "🚫",
   "category": "messaging",
-  "display_name": "Spam"
+  "display_name": "Spam",
+  "pricing": {
+    "Spam.Classify": 1000
+  }
 }
