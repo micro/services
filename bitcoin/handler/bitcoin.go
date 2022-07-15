@@ -186,7 +186,7 @@ func (b *Bitcoin) Transaction(ctx context.Context, req *pb.TransactionRequest, r
 			PrevOut: &pb.Prev{
 				Value:   int64(prev["value"].(float64)),
 				Script:  prev["script"].(string),
-				Address: prev["address"].(string),
+				Address: prev["addr"].(string),
 				Spent:   prev["spent"].(bool),
 				TxIndex: int64(prev["tx_index"].(float64)),
 				N:       prev["n"].(string),
