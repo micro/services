@@ -1,5 +1,5 @@
-Realtime Bitcoin price
+Bitcoin price and info
 
 # Bitcoin Service
 
-Get the price of bitcoin in real time. Price is updated every 5 mins.
+Get the price, balance or transaction history of bitcoin in real time. 
