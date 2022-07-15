@@ -189,7 +189,7 @@ func (b *Bitcoin) Transaction(ctx context.Context, req *pb.TransactionRequest, r
 				Address: prev["addr"].(string),
 				Spent:   prev["spent"].(bool),
 				TxIndex: int64(prev["tx_index"].(float64)),
-				N:       prev["n"].(string),
+				N:       int64(prev["n"].(float64)),
 			},
 		})
 	}
