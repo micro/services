@@ -45,6 +45,17 @@
       }
     },
     {
+      "title": "Generate a URL-friendly unique ID",
+      "run_check": true,
+      "request": {
+        "type": "nanoid"
+      },
+      "response": {
+        "type": "nanoid",
+        "id": "yznF-9wXo0URikYX10XMv"
+      }
+    },
+    {
       "title": "Generate a short ID",
       "run_check": true,
       "request": {
@@ -89,6 +100,7 @@
             "ulid",
             "ksuid",
             "xid",
+            "nanoid",
             "shortid",
             "snowflake",
             "bigflake"
