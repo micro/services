@@ -1,7 +1,7 @@
 {
   "generate": [
     {
-      "title": "Generate a unique ID",
+      "title": "Generate an universally unique ID",
       "run_check": true,
       "request": {
         "type": "uuid"
@@ -9,6 +9,39 @@
       "response": {
         "type": "uuid",
         "id": "e9c427d8-cef1-48bd-ab89-59a6df29673b"
+      }
+    },
+    {
+      "title": "Generate an unique lexicographically ID",
+      "run_check": true,
+      "request": {
+        "type": "ulid"
+      },
+      "response": {
+        "type": "ulid",
+        "id": "01G81FHTX562P4HD0SD3SZM1PA"
+      }
+    },
+    {
+      "title": "Generate an unique k-sortable ID",
+      "run_check": true,
+      "request": {
+        "type": "ksuid"
+      },
+      "response": {
+        "type": "ksuid",
+        "id": "2BzSAIfCKDTb9lY6ZQ8vekYIVHT"
+      }
+    },
+    {
+      "title": "Generate a web-oriented globally unique ID",
+      "run_check": true,
+      "request": {
+        "type": "xid"
+      },
+      "response": {
+        "type": "xid",
+        "id": "cb8qgv24hjve3rmushhg"
       }
     },
     {
@@ -51,7 +84,15 @@
       "run_check": false,
       "request": {},
       "response": {
-        "types": ["uuid", "shortid", "snowflake", "bigflake"]
+        "types": [
+            "uuid",
+            "ulid",
+            "ksuid",
+            "xid",
+            "shortid",
+            "snowflake",
+            "bigflake"
+        ]
       }
     }
   ]
