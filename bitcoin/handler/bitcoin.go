@@ -184,7 +184,6 @@ func (b *Bitcoin) Transaction(ctx context.Context, req *pb.TransactionRequest, r
 		rsp.Inputs = append(rsp.Inputs, &pb.Input{
 			Script: in["script"].(string),
 			PrevOut: &pb.Prev{
-				Hash:    prev["hash"].(string),
 				Value:   int64(prev["value"].(float64)),
 				Script:  prev["script"].(string),
 				Address: prev["address"].(string),
