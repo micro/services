@@ -28,7 +28,7 @@ message Prev {
 	int64 value = 1;
 	string address = 2;
 	int64 tx_index = 3;
-	string n = 4;
+	int64 n = 4;
 	bool spent = 5;
 	string script = 6;
 }
