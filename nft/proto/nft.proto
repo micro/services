@@ -34,6 +34,8 @@ message CreateResponse {
 message CollectionsRequest {
 	int32 limit = 1;
 	int32 offset = 2;
+	// owner wallet address
+	string owner = 3;
 }
 
 message CollectionsResponse {
@@ -183,6 +185,8 @@ message AssetsRequest {
 	string collection = 5;
 	// A cursor pointing to the page to retrieve
 	string cursor = 6;
+	// owner wallet address
+	string owner = 7;
 }
 
 message AssetsResponse {

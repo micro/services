@@ -39,7 +39,7 @@ func New() *OpenSea {
 	// set the api key
 	api.SetKey("X-API-KEY", key)
 	// set the cache
-	api.SetCache(true, time.Minute * 5)
+	api.SetCache(true, time.Minute*5)
 
 	return &OpenSea{
 		apiKey: key,
@@ -80,6 +80,10 @@ func (o *OpenSea) Assets(ctx context.Context, req *pb.AssetsRequest, rsp *pb.Ass
 
 	if len(req.Collection) > 0 {
 		params += "&collection=" + req.Collection
+	}
+
+	if len(req.Owner) > 0 {
+		params += "&owner=" + req.Owner
 	}
 
 	var resp domain.AssetsResponse
@@ -298,6 +302,10 @@ func (o *OpenSea) Collections(ctx context.Context, req *pb.CollectionsRequest, r
 	}
 
 	params += fmt.Sprintf("limit=%d&offset=%d", limit, offset)
+
+	if len(req.Owner) > 0 {
+		params += "&asset_owner=" + req.Owner
+	}
 
 	var resp domain.CollectionsResponse
 
