@@ -108,6 +108,7 @@ func (id *Id) Types(ctx context.Context, req *pb.TypesRequest, rsp *pb.TypesResp
 		"ulid",
 		"ksuid",
 		"xid",
+		"nanoid",
 		"shortid",
 		"snowflake",
 		"bigflake",
