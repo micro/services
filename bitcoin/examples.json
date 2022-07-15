@@ -23,5 +23,85 @@
         "balance": 4134
       }
     }
+  ],
+  "transaction": [
+    {
+      "title": "Get a bitcoin transaction",
+      "description": "Returns the details of a bitcoin transaction",
+      "request": {
+        "hash": "f854aebae95150b379cc1187d848d58225f3c4157fe992bcd166f58bd5063449"
+      },
+      "response": {
+        "hash": "f854aebae95150b379cc1187d848d58225f3c4157fe992bcd166f58bd5063449",
+        "version": "1",
+        "vin_sz": "4",
+        "vout_sz": "1",
+        "lock_time": "0",
+        "size": "636",
+        "relay": "0.0.0.0",
+        "block_height": "293000",
+        "block_index": "293000",
+        "double_spend": false,
+        "weight": "2544",
+        "fee": "0",
+        "tx_index": "2575609657130668",
+        "inputs": [
+                {
+                        "prev_out": {
+                                "value": "16450000",
+                                "address": "1GbMfYui17L5m6sAy3L3WXAtf1P32bxJXq",
+                                "tx_index": "1194267486326601",
+                                "n": "1",
+                                "spent": true,
+                                "script": "76a914ab094789b6da7f68e726f8e413529af6b7e810d988ac"
+                        },
+                        "script": "4830450220504b1ccfddf508422bdd8b0fcda2b1483e87aee1b486c0130bc29226bbce3b4e022100b5befcfcf0d3bf6ebf0ac2f93badb19e3042c7bed456c398e743b885e782466c012103b1feb40b99e8ff18469484a50e8b52cc478d5f4f773a341fbd920a4ceaedd4bf"
+                },
+                {
+                        "prev_out": {
+                                "value": "10061545",
+                                "address": "19YtzZdcfs1V2ZCgyRWo8i2wLT8ND1Tu4L",
+                                "tx_index": "7635024539865532",
+                                "n": "36",
+                                "spent": true,
+                                "script": "76a9145dc94d5d47e32cd8f6bd4966167ddf3e6cc76f8b88ac"
+                        },
+                        "script": "48304502210086de855e03008abcc49335c775973eab9ace2e16c3bfe6536218c1d029287fdb0220129ced657870af63f61cdd4b941996f9a243d1f306e774fc9c5f3dea0af8d581012103cbe40d1d790799a6494c07f844eaf05b4c6deab0b9dee2ee45c8decead12c5cd"
+                },
+                {
+                        "prev_out": {
+                                "value": "70000000000",
+                                "address": "1BNiazBzCxJacAKo2yL83Wq1VJ18AYzNHy",
+                                "tx_index": "4802948443627331",
+                                "n": "1",
+                                "spent": true,
+                                "script": "76a91471ccb50e6f8965f679af29fd1d94918ac50495b488ac"
+                        },
+                        "script": "48304502201f1eb5b79279258a91c00dee09dff5d6f6ece7c01639e66a6bdd579136ecddee022100d4a9ed93183bf338e51ba80bc1dd10ff03e9e159bd8ea59db3a5c10aa0ccd3400121022667ee37e180c1ad2fef6f16aa52ed27799f629364dfe51e144dd683317dbbd2"
+                },
+                {
+                        "prev_out": {
+                                "value": "293710000",
+                                "address": "13XXaBufpMvqRqLkyDty1AXqueZHVe6iyy",
+                                "tx_index": "3278393642739160",
+                                "n": "0",
+                                "spent": true,
+                                "script": "76a9141bb640356f9943ef958197672a6d008dad75a8eb88ac"
+                        },
+                        "script": "483045022100baac0c25867855f62592872cfac522d59fddd590a6cc290c8ad3bbe6b1151b5802204f2713c565ce6b00e5ea00e955d35e3b0878af5474feda35ebbb73232122d5480121023ed3b44ad598e3834e561efed205c221b7bc2e577e752eeaa66e85e60d0381c9"
+                }
+        ],
+        "outputs": [
+                {
+                        "hash": "",
+                        "value": "70320221545",
+                        "script": "76a914e6aad9d712c419ea8febf009a3f3bfdd8d222fac88ac",
+                        "address": "1N2f642sbgCMbNtXFajz9XDACDFnFzdXzV",
+                        "tx_index": "2575609657130668",
+                        "spent": true
+                }
+        ]
+      }
+    }
   ]
 }
