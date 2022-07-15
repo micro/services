@@ -11,7 +11,7 @@ service Id {
 
 // Generate a unique ID. Defaults to uuid.
 message GenerateRequest {
-	// type of id e.g uuid, shortid, snowflake (64 bit), bigflake (128 bit)
+	// type of id; call 'Types' endpoint for available types
 	string type = 1;
 }
 
@@ -22,7 +22,7 @@ message GenerateResponse {
 	string type = 2;
 }
 
-// List the types of IDs available. No query params needed.
+// List the types of IDs available.
 message TypesRequest {}
 
 message TypesResponse {
