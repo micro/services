@@ -130,3 +130,82 @@ func (b *Bitcoin) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.Price
 
 	return nil
 }
+
+func (b *Bitcoin) Transaction(ctx context.Context, req *pb.TransactionRequest, rsp *pb.TransactionResponse) error {
+	if len(req.Hash) == 0 {
+		return errors.BadRequest("bitcoin.transaction", "missing hash")
+	}
+
+	uri := fmt.Sprintf("https://blockchain.info/rawtx/%s", req.Hash)
+
+	resp, err := http.Get(uri)
+	if err != nil {
+		logger.Errorf("Failed to get transaction: %v\n", err)
+		return errors.InternalServerError("bitcoin.transaction", "failed to get transaction")
+	}
+	defer resp.Body.Close()
+
+	buf, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get transaction (non 200): %d %v\n", resp.StatusCode, string(buf))
+		return errors.InternalServerError("bitcoin.transaction", "failed to get transaction")
+	}
+
+	var respBody map[string]interface{}
+
+	if err := json.Unmarshal(buf, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal transaction: %v\n", err)
+		return errors.InternalServerError("bitcoin.transaction", "failed to get transaction")
+	}
+
+	rsp.Hash = req.Hash
+	rsp.Version = int64(respBody["ver"].(float64))
+	rsp.VinSz = int64(respBody["vin_sz"].(float64))
+	rsp.VoutSz = int64(respBody["vout_sz"].(float64))
+	rsp.Size = int64(respBody["size"].(float64))
+	rsp.Weight = int64(respBody["weight"].(float64))
+	rsp.Fee = int64(respBody["fee"].(float64))
+	rsp.Relay = respBody["relayed_by"].(string)
+	rsp.LockTime = int64(respBody["lock_time"].(float64))
+	rsp.TxIndex = int64(respBody["tx_index"].(float64))
+	rsp.DoubleSpend = respBody["double_spend"].(bool)
+	rsp.BlockIndex = int64(respBody["block_index"].(float64))
+	rsp.BlockHeight = int64(respBody["block_height"].(float64))
+
+	inputs := respBody["inputs"].([]interface{})
+	outputs := respBody["outputs"].([]interface{})
+
+	for _, input := range inputs {
+		in := input.(map[string]interface{})
+
+		prev := in["prev_out"].(map[string]interface{})
+
+		rsp.Inputs = append(rsp.Inputs, &pb.Input{
+			Script: in["script"].(string),
+			PrevOut: &pb.Prev{
+				Hash:    prev["hash"].(string),
+				Value:   int64(prev["value"].(float64)),
+				Script:  prev["script"].(string),
+				Address: prev["address"].(string),
+				Spent:   prev["spent"].(bool),
+				TxIndex: int64(prev["tx_index"].(float64)),
+				N:       prev["n"].(string),
+			},
+		})
+	}
+
+	for _, output := range outputs {
+		out := output.(map[string]interface{})
+
+		rsp.Outputs = append(rsp.Outputs, &pb.Output{
+			Value:   int64(out["value"].(float64)),
+			Spent:   out["spent"].(bool),
+			Script:  out["script"].(string),
+			Address: out["addr"].(string),
+			TxIndex: int64(out["tx_index"].(float64)),
+		})
+	}
+
+	return nil
+}

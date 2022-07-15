@@ -7,6 +7,31 @@ option go_package = "./proto;bitcoin";
 service Bitcoin {
 	rpc Price(PriceRequest) returns (PriceResponse) {}
 	rpc Balance(BalanceRequest) returns (BalanceResponse) {}
+	rpc Transaction(TransactionRequest) returns (TransactionResponse) {}
+}
+
+message Input {
+	Prev prev_out = 1;
+	string script = 2;
+}
+
+message Output {
+	string hash = 1;
+	int64 value = 2;
+	string script = 3;
+	string address = 4;
+	int64 tx_index = 5;
+	bool spent = 6;
+}
+
+message Prev {
+	string hash = 1;
+	int64 value = 2;
+	string address = 3;
+	int64 tx_index = 4;
+	string n = 5;
+	bool spent = 6;
+	string script = 7;
 }
 
 // Get the price of bitcoin
@@ -31,4 +56,43 @@ message BalanceRequest {
 message BalanceResponse {
 	// total BTC as satoshis
 	int64 balance = 1;
+}
+
+// Get the details of a transaction
+message TransactionRequest {
+	// the transaction hash
+	string hash = 1;
+}
+
+message TransactionResponse {
+	// transaction hash
+	string hash = 1;
+	// the version
+	int64 version = 2;
+	// vin 
+	int64 vin_sz = 3;
+	// vout
+	int64 vout_sz = 4;
+	// lock time
+	int64 lock_time = 5;
+	// transaction size
+	int64 size = 6;
+	// relay
+	string relay = 7;
+	// block height
+	int64 block_height = 8;
+	// blck index
+	int64 block_index = 9;
+	// double spend
+	bool double_spend = 10;
+	// weight
+	int64 weight = 11;
+	// fees
+	int64 fee = 12;
+	// tx index
+	int64 tx_index = 13;
+	// inputs
+	repeated Input inputs = 14;
+	// outputs
+	repeated Output outputs = 15;
 }

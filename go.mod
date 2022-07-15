@@ -29,10 +29,12 @@ require (
 	github.com/kevinburke/twilio-go v0.0.0-20210327194925-1623146bcf73
 	github.com/likexian/doh-go v0.6.4
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
+	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/micro/v3 v3.9.1-0.20220227222118-3d0aa50678fe
 	github.com/minio/minio-go/v7 v7.0.16
 	github.com/o1egl/govatar v0.3.0
+	github.com/oklog/ulid v1.3.1
 	github.com/onsi/gomega v1.10.5
 	github.com/opensearch-project/opensearch-go v1.0.0
 	github.com/oschwald/geoip2-golang v1.5.0
@@ -42,6 +44,8 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pquerna/otp v1.3.0
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/rs/xid v1.4.0
+	github.com/segmentio/ksuid v1.0.4
 	github.com/sendgrid/sendgrid-go v3.10.0+incompatible
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/stretchr/testify v1.7.0
@@ -103,20 +107,16 @@ require (
 	github.com/klauspost/compress v1.13.5 // indirect
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/likexian/gokit v0.21.11 // indirect
-	github.com/matoous/go-nanoid/v2 v2.0.0 // indirect
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/nightlyone/lockfile v1.0.0 // indirect
-	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.8.0 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
 	github.com/paulmach/go.geojson v1.4.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/cors v1.7.0 // indirect
-	github.com/rs/xid v1.4.0 // indirect
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
-	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
