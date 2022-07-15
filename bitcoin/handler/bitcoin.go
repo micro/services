@@ -174,7 +174,7 @@ func (b *Bitcoin) Transaction(ctx context.Context, req *pb.TransactionRequest, r
 	rsp.BlockHeight = int64(respBody["block_height"].(float64))
 
 	inputs := respBody["inputs"].([]interface{})
-	outputs := respBody["outputs"].([]interface{})
+	outputs := respBody["out"].([]interface{})
 
 	for _, input := range inputs {
 		in := input.(map[string]interface{})
