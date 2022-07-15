@@ -43,6 +43,7 @@ func NewBitcoinEndpoints() []*api.Endpoint {
 
 type BitcoinService interface {
 	Price(ctx context.Context, in *PriceRequest, opts ...client.CallOption) (*PriceResponse, error)
+	Balance(ctx context.Context, in *BalanceRequest, opts ...client.CallOption) (*BalanceResponse, error)
 }
 
 type bitcoinService struct {
@@ -67,15 +68,27 @@ func (c *bitcoinService) Price(ctx context.Context, in *PriceRequest, opts ...cl
 	return out, nil
 }
 
+func (c *bitcoinService) Balance(ctx context.Context, in *BalanceRequest, opts ...client.CallOption) (*BalanceResponse, error) {
+	req := c.c.NewRequest(c.name, "Bitcoin.Balance", in)
+	out := new(BalanceResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Bitcoin service
 
 type BitcoinHandler interface {
 	Price(context.Context, *PriceRequest, *PriceResponse) error
+	Balance(context.Context, *BalanceRequest, *BalanceResponse) error
 }
 
 func RegisterBitcoinHandler(s server.Server, hdlr BitcoinHandler, opts ...server.HandlerOption) error {
 	type bitcoin interface {
 		Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error
+		Balance(ctx context.Context, in *BalanceRequest, out *BalanceResponse) error
 	}
 	type Bitcoin struct {
 		bitcoin
@@ -90,4 +103,8 @@ type bitcoinHandler struct {
 
 func (h *bitcoinHandler) Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error {
 	return h.BitcoinHandler.Price(ctx, in, out)
+}
+
+func (h *bitcoinHandler) Balance(ctx context.Context, in *BalanceRequest, out *BalanceResponse) error {
+	return h.BitcoinHandler.Balance(ctx, in, out)
 }

@@ -48,6 +48,40 @@ func New() *Bitcoin {
 	}
 }
 
+func (b *Bitcoin) Balance(ctx context.Context, req *pb.BalanceRequest, rsp *pb.BalanceResponse) error {
+	if len(req.Address) == 0 {
+		return errors.BadRequest("bitcoin.balance", "missing address")
+	}
+
+	uri := fmt.Sprintf("https://blockchain.info/balance?active=%s", req.Address)
+
+	resp, err := http.Get(uri)
+	if err != nil {
+		logger.Errorf("Failed to get balance: %v\n", err)
+		return errors.InternalServerError("bitcoin.balance", "failed to get price")
+	}
+	defer resp.Body.Close()
+
+	buf, _ := ioutil.ReadAll(resp.Body)
+
+	if resp.StatusCode != 200 {
+		logger.Errorf("Failed to get price (non 200): %d %v\n", resp.StatusCode, string(buf))
+		return errors.InternalServerError("bitcoin.balance", "failed to get price")
+	}
+
+	var respBody map[string]interface{}
+
+	if err := json.Unmarshal(buf, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal balance: %v\n", err)
+		return errors.InternalServerError("bitcoin.balance", "failed to get price")
+	}
+
+	info := respBody[req.Address].(map[string]interface{})
+	rsp.Balance = int64(info["final_balance"].(float64))
+
+	return nil
+}
+
 func (b *Bitcoin) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceResponse) error {
 	if len(req.Symbol) <= 0 {
 		req.Symbol = "BTCUSD"

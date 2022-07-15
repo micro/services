@@ -6,6 +6,7 @@ option go_package = "./proto;bitcoin";
 
 service Bitcoin {
 	rpc Price(PriceRequest) returns (PriceResponse) {}
+	rpc Balance(BalanceRequest) returns (BalanceResponse) {}
 }
 
 // Get the price of bitcoin
@@ -19,4 +20,15 @@ message PriceResponse {
 	string symbol = 1;
 	// The price of bitcoin
 	double price = 2;
+}
+
+// Get the BTC balance of an address
+message BalanceRequest {
+	// address to lookup
+	string address = 1;
+}
+
+message BalanceResponse {
+	// total BTC as satoshis
+	int64 balance = 1;
 }

@@ -11,5 +11,17 @@
         "price": 34682.74
       }
     }
+  ],
+  "balance": [
+    {
+      "title": "Get a bitcoin address balance",
+      "description": "Returns the balance of a bitcoin address",
+      "request": {
+        "address": "1MDUoxL1bGvMxhuoDYx6i11ePytECAk9QK"
+      },
+      "response": {
+        "balance": 4134
+      }
+    }
   ]
 }
