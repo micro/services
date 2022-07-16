@@ -46,7 +46,7 @@ message Session {
 	// the session id
 	string id = 1;
 	// the associated user id
-	string userId = 2;
+	string user_id = 2;
 	// unix timestamp
 	int64 created = 4;
 	// unix timestamp
@@ -113,7 +113,7 @@ message UpdateResponse {
 // Update the account password
 message UpdatePasswordRequest {
 	// the account id
-	string userId = 1;
+	string user_id = 1;
 	// the old password
 	string old_password = 2;
 	// the new password
