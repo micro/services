@@ -15,32 +15,32 @@ service Chat {
 	rpc Kick(KickRequest) returns (KickResponse);
 }
 
-// Create a new chat room
+// Create a new chat group
 message CreateRequest {
-	// name of the room
+	// name of the group
 	string name = 1;
 	// chat description
 	string description = 2;
 	// optional list of user ids
 	repeated string user_ids = 3;
-	// whether its a private room
+	// whether its a private group
 	bool private = 4;
 }
 
 message CreateResponse {
-	// the unique chat room
-	Room room = 1;
+	// the unique chat group
+	Group group = 1;
 }
 
 // List the messages in a chat
 message HistoryRequest {
-	// the chat room id to get
-	string room_id = 1;
+	// the chat group id to get
+	string group_id = 1;
 }
 
 // HistoryResponse contains the historical messages in a chat
 message HistoryResponse {
-	// messages in the chat room
+	// messages in the chat group
 	repeated Message messages = 1;
 }
 
@@ -51,17 +51,17 @@ message ListRequest {
 }
 
 message ListResponse {
-	repeated Room rooms = 1;
+	repeated Group groups = 1;
 }
 
-// Delete a chat room
+// Delete a chat group
 message DeleteRequest {
-	// the chat room id to delete
-	string room_id = 1;
+	// the chat group id to delete
+	string group_id = 1;
 }
 
 message DeleteResponse {
-	Room room = 1;
+	Group group = 1;
 }
 
 
@@ -70,8 +70,8 @@ message DeleteResponse {
 message SendRequest {
 	// a client side id, should be validated by the server to make the request retry safe
 	string client = 1;
-	// id of the chat room the message is being sent to / from
-	string room_id = 2;
+	// id of the chat group the message is being sent to / from
+	string group_id = 2;
 	// id of the user who sent the message
 	string user_id = 3;
 	// subject of the message
@@ -85,10 +85,10 @@ message SendResponse {
 	Message message = 1;
 }
 
-// Join a chat room
+// Join a chat group
 message JoinRequest {
-	// chat room to join
-	string room_id = 1;
+	// chat group to join
+	string group_id = 1;
 	// user id joining
 	string user_id = 2;
 }
@@ -97,8 +97,8 @@ message JoinResponse {
 	Message message = 1;
 }
 
-message Room {
-	// unique room id
+message Group {
+	// unique group id
 	string id = 1;
 	// name of the chat
 	string name = 2;
@@ -108,7 +108,7 @@ message Room {
 	string created_at = 4;
 	// list of users
 	repeated string user_ids = 5;
-	// whether its a private room
+	// whether its a private group
 	bool private = 6;
 }
 
@@ -119,7 +119,7 @@ message Message {
 	// a client side id, should be validated by the server to make the request retry safe
 	string client = 2;
 	// id of the chat the message is being sent to / from
-	string room_id = 3;
+	string group_id = 3;
 	// id of the user who sent the message
 	string user_id = 4;
 	// time the message was sent in RFC3339 format
@@ -130,38 +130,38 @@ message Message {
 	string text = 7;
 }
 
-// Leave a chat room
+// Leave a chat group
 message LeaveRequest {
-	// the chat room id
-	string room_id = 1;
+	// the chat group id
+	string group_id = 1;
 	// the user id
 	string user_id = 2;
 }
 
 message LeaveResponse {
-	Room room = 1;
+	Group group = 1;
 }
 
-// Invite a user to a chat room
+// Invite a user to a chat group
 message InviteRequest {
-	// the room id
-	string room_id = 1;
+	// the group id
+	string group_id = 1;
 	// the user id
 	string user_id = 2;
 }
 
 message InviteResponse {
-	Room room = 1;
+	Group group = 1;
 }
 
-// Kick a user from a chat room
+// Kick a user from a chat group
 message KickRequest {
-	// the chat room id
-	string room_id = 1;
+	// the chat group id
+	string group_id = 1;
 	// the user id
 	string user_id = 2;
 }
 
 message KickResponse {
-	Room room = 1;
+	Group group = 1;
 }

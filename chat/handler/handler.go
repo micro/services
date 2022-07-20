@@ -27,11 +27,11 @@ func (c *Chat) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	tenantId := tenant.Id(ctx)
 
 	// generate a unique id for the chat
-	roomId := uuid.New().String()
+	groupId := uuid.New().String()
 
-	// create a new room
-	room := &pb.Room{
-		Id:          roomId,
+	// create a new group
+	group := &pb.Group{
+		Id:          groupId,
 		Name:        req.Name,
 		Description: req.Description,
 		UserIds:     req.UserIds,
@@ -40,19 +40,19 @@ func (c *Chat) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 	}
 
 	// key to lookup the chat in the store using, e.g. "chat/usera-userb-userc"
-	key := path.Join(chatStoreKeyPrefix, tenantId, roomId)
+	key := path.Join(chatStoreKeyPrefix, tenantId, groupId)
 
-	// create a new record for the room
-	rec := store.NewRecord(key, room)
+	// create a new record for the group
+	rec := store.NewRecord(key, group)
 
-	// write a record for the new room
+	// write a record for the new group
 	if err := store.Write(rec); err != nil {
 		logger.Errorf("Error writing to the store. Key: %v. Error: %v", key, err)
-		return errors.InternalServerError("chat.new", "error creating chat room")
+		return errors.InternalServerError("chat.new", "error creating chat group")
 	}
 
-	// return the room
-	rsp.Room = room
+	// return the group
+	rsp.Group = group
 
 	return nil
 }
@@ -61,37 +61,37 @@ func (c *Chat) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delete
 	tenantId := tenant.Id(ctx)
 
 	// validate the request
-	if len(req.RoomId) == 0 {
-		return errors.BadRequest("chat.delete", "missing room id")
+	if len(req.GroupId) == 0 {
+		return errors.BadRequest("chat.delete", "missing group id")
 	}
 
-	key := path.Join(chatStoreKeyPrefix, tenantId, req.RoomId)
+	key := path.Join(chatStoreKeyPrefix, tenantId, req.GroupId)
 
 	// lookup the chat from the store to ensure it's valid
 	recs, err := store.Read(key, store.ReadLimit(1))
 	if err == store.ErrNotFound {
-		return errors.BadRequest("chat.delete", "room not found")
+		return errors.BadRequest("chat.delete", "group not found")
 	} else if err != nil {
-		logger.Errorf("Error reading from the store. Room ID: %v. Error: %v", req.RoomId, err)
-		return errors.InternalServerError("chat.delete", "error reading chat room")
+		logger.Errorf("Error reading from the store. Group ID: %v. Error: %v", req.GroupId, err)
+		return errors.InternalServerError("chat.delete", "error reading chat group")
 	}
 
-	room := new(pb.Room)
-	err = recs[0].Decode(room)
+	group := new(pb.Group)
+	err = recs[0].Decode(group)
 	if err != nil {
-		return errors.InternalServerError("chat.delete", "error reading chat room")
+		return errors.InternalServerError("chat.delete", "error reading chat group")
 	}
 	// set response
-	rsp.Room = room
+	rsp.Group = group
 
-	// delete the room
+	// delete the group
 	if err := store.Delete(key); err != nil {
-		return errors.InternalServerError("chat.delete", "error deleting chat room")
+		return errors.InternalServerError("chat.delete", "error deleting chat group")
 	}
 
 	// get all messages
 	// TODO: paginate the list
-	key = path.Join(messageStoreKeyPrefix, tenantId, req.RoomId)
+	key = path.Join(messageStoreKeyPrefix, tenantId, req.GroupId)
 	srecs, err := store.List(store.ListPrefix(key))
 	if err != nil {
 		return errors.InternalServerError("chat.delete", "failed to list messages")
@@ -104,7 +104,7 @@ func (c *Chat) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Delete
 		}
 	}
 
-	// TODO: notify users of the event that the room is deleted
+	// TODO: notify users of the event that the group is deleted
 
 	return nil
 }
@@ -115,29 +115,29 @@ func (c *Chat) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListRespon
 
 	key := path.Join(chatStoreKeyPrefix, tenantId) + "/"
 
-	// read all the rooms from the store for the user
+	// read all the groups from the store for the user
 	recs, err := store.Read(key, store.ReadPrefix())
 	if err != nil {
-		return errors.InternalServerError("chat.list", "error listing chat rooms")
+		return errors.InternalServerError("chat.list", "error listing chat groups")
 	}
 
-	// list all the rooms
+	// list all the groups
 	for _, rec := range recs {
-		room := new(pb.Room)
-		err := rec.Decode(room)
+		group := new(pb.Group)
+		err := rec.Decode(group)
 		if err != nil {
 			continue
 		}
 
 		if len(req.UserId) == 0 {
-			rsp.Rooms = append(rsp.Rooms, room)
+			rsp.Groups = append(rsp.Groups, group)
 			continue
 		}
 
 		// check if there's a user id match
-		for _, user := range room.UserIds {
+		for _, user := range group.UserIds {
 			if user == req.UserId {
-				rsp.Rooms = append(rsp.Rooms, room)
+				rsp.Groups = append(rsp.Groups, group)
 				break
 			}
 		}
@@ -152,25 +152,25 @@ func (c *Chat) History(ctx context.Context, req *pb.HistoryRequest, rsp *pb.Hist
 	tenantId := tenant.Id(ctx)
 
 	// validate the request
-	if len(req.RoomId) == 0 {
-		return errors.BadRequest("chat.history", "missing room id")
+	if len(req.GroupId) == 0 {
+		return errors.BadRequest("chat.history", "missing group id")
 	}
 
-	key := path.Join(chatStoreKeyPrefix, tenantId, req.RoomId)
+	key := path.Join(chatStoreKeyPrefix, tenantId, req.GroupId)
 
 	// lookup the chat from the store to ensure it's valid
 	if _, err := store.Read(key); err == store.ErrNotFound {
-		return errors.BadRequest("chat.history", "room not found")
+		return errors.BadRequest("chat.history", "group not found")
 	} else if err != nil {
-		logger.Errorf("Error reading from the store. Room ID: %v. Error: %v", req.RoomId, err)
-		return errors.InternalServerError("chat.history", "error reading chat room")
+		logger.Errorf("Error reading from the store. Group ID: %v. Error: %v", req.GroupId, err)
+		return errors.InternalServerError("chat.history", "error reading chat group")
 	}
 
 	// lookup the messages
-	key = path.Join(messageStoreKeyPrefix, tenantId, req.RoomId)
+	key = path.Join(messageStoreKeyPrefix, tenantId, req.GroupId)
 	recs, err := store.Read(key+"/", store.ReadPrefix())
 	if err != nil {
-		logger.Errorf("Error reading messages the store. Room ID: %v. Error: %v", req.RoomId, err)
+		logger.Errorf("Error reading messages the store. Group ID: %v. Error: %v", req.GroupId, err)
 		return errors.InternalServerError("chat.history", "failed to read messages")
 	}
 
@@ -191,36 +191,36 @@ func (c *Chat) Invite(ctx context.Context, req *pb.InviteRequest, rsp *pb.Invite
 	tenantId := tenant.Id(ctx)
 
 	// validate the request
-	if len(req.RoomId) == 0 {
-		return errors.BadRequest("chat.invite", "missing room id")
+	if len(req.GroupId) == 0 {
+		return errors.BadRequest("chat.invite", "missing group id")
 	}
 
 	if len(req.UserId) == 0 {
 		return errors.BadRequest("chat.invite", "missing user id")
 	}
 
-	key := path.Join(chatStoreKeyPrefix, tenantId, req.RoomId)
+	key := path.Join(chatStoreKeyPrefix, tenantId, req.GroupId)
 
 	// lookup the chat from the store to ensure it's valid
 	recs, err := store.Read(key)
 	if err == store.ErrNotFound {
-		return errors.BadRequest("chat.invite", "room not found")
+		return errors.BadRequest("chat.invite", "group not found")
 	} else if err != nil {
-		logger.Errorf("Error reading from the store. Room ID: %v. Error: %v", req.RoomId, err)
-		return errors.InternalServerError("chat.invite", "error reading chat room")
+		logger.Errorf("Error reading from the store. Group ID: %v. Error: %v", req.GroupId, err)
+		return errors.InternalServerError("chat.invite", "error reading chat group")
 	}
 
-	// check the user is in the room
-	room := new(pb.Room)
-	err = recs[0].Decode(room)
+	// check the user is in the group
+	group := new(pb.Group)
+	err = recs[0].Decode(group)
 	if err != nil {
-		return errors.InternalServerError("chat.invite", "Error reading room")
+		return errors.InternalServerError("chat.invite", "Error reading group")
 	}
 
 	var exists bool
 
-	// check the user is in the room
-	for _, user := range room.UserIds {
+	// check the user is in the group
+	for _, user := range group.UserIds {
 		if user == req.UserId {
 			exists = true
 			break
@@ -229,15 +229,15 @@ func (c *Chat) Invite(ctx context.Context, req *pb.InviteRequest, rsp *pb.Invite
 
 	// TODO: send join message
 	if !exists {
-		room.UserIds = append(room.UserIds, req.UserId)
+		group.UserIds = append(group.UserIds, req.UserId)
 		// write the record
-		rec := store.NewRecord(key, room)
+		rec := store.NewRecord(key, group)
 		if err := store.Write(rec); err != nil {
-			return errors.InternalServerError("chat.invite", "Error adding user to room")
+			return errors.InternalServerError("chat.invite", "Error adding user to group")
 		}
 	}
 
-	rsp.Room = room
+	rsp.Group = group
 
 	return nil
 }
@@ -248,8 +248,8 @@ func (c *Chat) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespon
 	tenantId := tenant.Id(ctx)
 
 	// validate the request
-	if len(req.RoomId) == 0 {
-		return errors.BadRequest("chat.send", "missing room id")
+	if len(req.GroupId) == 0 {
+		return errors.BadRequest("chat.send", "missing group id")
 	}
 	if len(req.UserId) == 0 {
 		return errors.BadRequest("chat.send", "missing user id")
@@ -258,29 +258,29 @@ func (c *Chat) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespon
 		return errors.BadRequest("chat.send", "missing text")
 	}
 
-	// check the room exists
-	key := path.Join(chatStoreKeyPrefix, tenantId, req.RoomId)
+	// check the group exists
+	key := path.Join(chatStoreKeyPrefix, tenantId, req.GroupId)
 
-	// lookup the chat room from the store to ensure it's valid
+	// lookup the chat group from the store to ensure it's valid
 	recs, err := store.Read(key, store.ReadLimit(1))
 	if err == store.ErrNotFound {
-		return errors.BadRequest("chat.send", "room not found")
+		return errors.BadRequest("chat.send", "group not found")
 	} else if err != nil {
-		logger.Errorf("Error reading from the store. Room ID: %v. Error: %v", req.RoomId, err)
-		return errors.InternalServerError("chat.send", "error reading chat room")
+		logger.Errorf("Error reading from the store. Group ID: %v. Error: %v", req.GroupId, err)
+		return errors.InternalServerError("chat.send", "error reading chat group")
 	}
 
-	// decode the room
-	room := new(pb.Room)
-	err = recs[0].Decode(room)
+	// decode the group
+	group := new(pb.Group)
+	err = recs[0].Decode(group)
 	if err != nil {
-		return errors.InternalServerError("chat.send", "error reading chat room")
+		return errors.InternalServerError("chat.send", "error reading chat group")
 	}
 
 	var exists bool
 
-	// check the user is in the room
-	for _, user := range room.UserIds {
+	// check the user is in the group
+	for _, user := range group.UserIds {
 		if user == req.UserId {
 			exists = true
 			break
@@ -288,14 +288,14 @@ func (c *Chat) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespon
 	}
 
 	if !exists {
-		return errors.BadRequest("chat.send", "user is not in the room")
+		return errors.BadRequest("chat.send", "user is not in the group")
 	}
 
 	// construct the message
 	msg := &pb.Message{
 		Id:      uuid.New().String(),
 		Client:  req.Client,
-		RoomId:  req.RoomId,
+		GroupId: req.GroupId,
 		UserId:  req.UserId,
 		Subject: req.Subject,
 		Text:    req.Text,
@@ -323,35 +323,35 @@ func (c *Chat) Join(ctx context.Context, req *pb.JoinRequest, stream pb.Chat_Joi
 	tenantId := tenant.Id(ctx)
 
 	// validate the request
-	if len(req.RoomId) == 0 {
-		return errors.BadRequest("chat.send", "missing room id")
+	if len(req.GroupId) == 0 {
+		return errors.BadRequest("chat.send", "missing group id")
 	}
 	if len(req.UserId) == 0 {
 		return errors.BadRequest("chat.send", "missing user id")
 	}
 
-	key := path.Join(chatStoreKeyPrefix, tenantId, req.RoomId)
+	key := path.Join(chatStoreKeyPrefix, tenantId, req.GroupId)
 
 	// lookup the chat from the store to ensure it's valid
 	recs, err := store.Read(key, store.ReadLimit(1))
 	if err == store.ErrNotFound {
-		return errors.BadRequest("chat.join", "room not found")
+		return errors.BadRequest("chat.join", "group not found")
 	} else if err != nil {
-		logger.Errorf("Error reading from the store. Room ID: %v. Error: %v", req.RoomId, err)
-		return errors.InternalServerError("chat.join", "Error reading room")
+		logger.Errorf("Error reading from the store. Group ID: %v. Error: %v", req.GroupId, err)
+		return errors.InternalServerError("chat.join", "Error reading group")
 	}
 
-	// check the user is in the room
-	room := new(pb.Room)
-	err = recs[0].Decode(room)
+	// check the user is in the group
+	group := new(pb.Group)
+	err = recs[0].Decode(group)
 	if err != nil {
-		return errors.InternalServerError("chat.join", "Error reading room")
+		return errors.InternalServerError("chat.join", "Error reading group")
 	}
 
 	var exists bool
 
-	// check the user is in the room
-	for _, user := range room.UserIds {
+	// check the user is in the group
+	for _, user := range group.UserIds {
 		if user == req.UserId {
 			exists = true
 			break
@@ -360,11 +360,11 @@ func (c *Chat) Join(ctx context.Context, req *pb.JoinRequest, stream pb.Chat_Joi
 
 	// TODO: send join message
 	if !exists {
-		room.UserIds = append(room.UserIds, req.UserId)
+		group.UserIds = append(group.UserIds, req.UserId)
 		// write the record
-		rec := store.NewRecord(key, room)
+		rec := store.NewRecord(key, group)
 		if err := store.Write(rec); err != nil {
-			return errors.InternalServerError("chat.join", "Error adding user to room")
+			return errors.InternalServerError("chat.join", "Error adding user to group")
 		}
 	}
 
@@ -372,14 +372,14 @@ func (c *Chat) Join(ctx context.Context, req *pb.JoinRequest, stream pb.Chat_Joi
 	// routines, they need a way of returning errors to the client
 	errChan := make(chan error)
 
-	eventKey := path.Join(chatEventKeyPrefix, tenantId, req.RoomId)
+	eventKey := path.Join(chatEventKeyPrefix, tenantId, req.GroupId)
 
 	// create an event stream to consume messages posted by other users into the chat. we'll use the
 	// user id as a queue to ensure each user recieves the message
 	evStream, err := events.Consume(eventKey, events.WithGroup(req.UserId), events.WithContext(ctx))
 	if err != nil {
-		logger.Errorf("Error streaming events. Room ID: %v. Error: %v", req.RoomId, err)
-		return errors.InternalServerError("chat.join", "Error joining the room")
+		logger.Errorf("Error streaming events. Group ID: %v. Error: %v", req.GroupId, err)
+		return errors.InternalServerError("chat.join", "Error joining the group")
 	}
 
 	for {
@@ -392,7 +392,7 @@ func (c *Chat) Join(ctx context.Context, req *pb.JoinRequest, stream pb.Chat_Joi
 			// cancel the context
 			var msg pb.Message
 			if err := ev.Unmarshal(&msg); err != nil {
-				logger.Errorf("Error unmarshaling message. Room ID: %v. Error: %v", req.RoomId, err)
+				logger.Errorf("Error unmarshaling message. Group ID: %v. Error: %v", req.GroupId, err)
 				errChan <- err
 				return nil
 			}
@@ -404,7 +404,7 @@ func (c *Chat) Join(ctx context.Context, req *pb.JoinRequest, stream pb.Chat_Joi
 
 			// publish the message to the stream
 			if err := stream.Send(&pb.JoinResponse{Message: &msg}); err != nil {
-				logger.Errorf("Error sending message to stream. ChatID: %v. Message ID: %v. Error: %v", msg.RoomId, msg.Id, err)
+				logger.Errorf("Error sending message to stream. ChatID: %v. Message ID: %v. Error: %v", msg.GroupId, msg.Id, err)
 				errChan <- err
 				return nil
 			}
@@ -419,51 +419,51 @@ func (c *Chat) Kick(ctx context.Context, req *pb.KickRequest, rsp *pb.KickRespon
 	tenantId := tenant.Id(ctx)
 
 	// validate the request
-	if len(req.RoomId) == 0 {
-		return errors.BadRequest("chat.kick", "missing room id")
+	if len(req.GroupId) == 0 {
+		return errors.BadRequest("chat.kick", "missing group id")
 	}
 	if len(req.UserId) == 0 {
 		return errors.BadRequest("chat.kick", "missing user id")
 	}
 
-	key := path.Join(chatStoreKeyPrefix, tenantId, req.RoomId)
+	key := path.Join(chatStoreKeyPrefix, tenantId, req.GroupId)
 
 	// lookup the chat from the store to ensure it's valid
 	recs, err := store.Read(key, store.ReadLimit(1))
 	if err == store.ErrNotFound {
-		return errors.BadRequest("chat.kick", "room not found")
+		return errors.BadRequest("chat.kick", "group not found")
 	} else if err != nil {
-		logger.Errorf("Error reading from the store. Chat ID: %v. Error: %v", req.RoomId, err)
-		return errors.InternalServerError("chat.kick", "Error reading room")
+		logger.Errorf("Error reading from the store. Chat ID: %v. Error: %v", req.GroupId, err)
+		return errors.InternalServerError("chat.kick", "Error reading group")
 	}
 
-	// check the user is in the room
-	room := new(pb.Room)
-	err = recs[0].Decode(room)
+	// check the user is in the group
+	group := new(pb.Group)
+	err = recs[0].Decode(group)
 	if err != nil {
-		return errors.InternalServerError("chat.kick", "Error reading room")
+		return errors.InternalServerError("chat.kick", "Error reading group")
 	}
 
 	var users []string
 
-	// check the user is in the room
-	for _, user := range room.UserIds {
+	// check the user is in the group
+	for _, user := range group.UserIds {
 		if user == req.UserId {
 			continue
 		}
 		users = append(users, user)
 	}
 
-	room.UserIds = users
+	group.UserIds = users
 
-	rec := store.NewRecord(key, room)
+	rec := store.NewRecord(key, group)
 	if err := store.Write(rec); err != nil {
-		return errors.InternalServerError("chat.kick", "Error leaveing from room")
+		return errors.InternalServerError("chat.kick", "Error leaveing from group")
 	}
 
 	// TODO: send leave message
 	// TODO: disconnect the actual event consumption
-	rsp.Room = room
+	rsp.Group = group
 
 	return nil
 }
@@ -472,51 +472,51 @@ func (c *Chat) Leave(ctx context.Context, req *pb.LeaveRequest, rsp *pb.LeaveRes
 	tenantId := tenant.Id(ctx)
 
 	// validate the request
-	if len(req.RoomId) == 0 {
-		return errors.BadRequest("chat.leave", "missing room id")
+	if len(req.GroupId) == 0 {
+		return errors.BadRequest("chat.leave", "missing group id")
 	}
 	if len(req.UserId) == 0 {
 		return errors.BadRequest("chat.leave", "missing user id")
 	}
 
-	key := path.Join(chatStoreKeyPrefix, tenantId, req.RoomId)
+	key := path.Join(chatStoreKeyPrefix, tenantId, req.GroupId)
 
 	// lookup the chat from the store to ensure it's valid
 	recs, err := store.Read(key, store.ReadLimit(1))
 	if err == store.ErrNotFound {
-		return errors.BadRequest("chat.leave", "room not found")
+		return errors.BadRequest("chat.leave", "group not found")
 	} else if err != nil {
-		logger.Errorf("Error reading from the store. Chat ID: %v. Error: %v", req.RoomId, err)
-		return errors.InternalServerError("chat.leave", "Error reading room")
+		logger.Errorf("Error reading from the store. Chat ID: %v. Error: %v", req.GroupId, err)
+		return errors.InternalServerError("chat.leave", "Error reading group")
 	}
 
-	// check the user is in the room
-	room := new(pb.Room)
-	err = recs[0].Decode(room)
+	// check the user is in the group
+	group := new(pb.Group)
+	err = recs[0].Decode(group)
 	if err != nil {
-		return errors.InternalServerError("chat.leave", "Error reading room")
+		return errors.InternalServerError("chat.leave", "Error reading group")
 	}
 
 	var users []string
 
-	// check the user is in the room
-	for _, user := range room.UserIds {
+	// check the user is in the group
+	for _, user := range group.UserIds {
 		if user == req.UserId {
 			continue
 		}
 		users = append(users, user)
 	}
 
-	room.UserIds = users
+	group.UserIds = users
 
-	rec := store.NewRecord(key, room)
+	rec := store.NewRecord(key, group)
 	if err := store.Write(rec); err != nil {
-		return errors.InternalServerError("chat.leave", "Error leaveing from room")
+		return errors.InternalServerError("chat.leave", "Error leaveing from group")
 	}
 
 	// TODO: send leave message
 	// TODO: disconnect the actual event consumption
-	rsp.Room = room
+	rsp.Group = group
 
 	return nil
 }
@@ -524,8 +524,8 @@ func (c *Chat) Leave(ctx context.Context, req *pb.LeaveRequest, rsp *pb.LeaveRes
 // createMessage is a helper function which creates a message in the event stream. It handles the
 // logic for ensuring client id is unique.
 func (c *Chat) createMessage(tenantId string, msg *pb.Message) error {
-	storekey := path.Join(messageStoreKeyPrefix, tenantId, msg.RoomId, msg.Id)
-	eventKey := path.Join(chatEventKeyPrefix, tenantId, msg.RoomId)
+	storekey := path.Join(messageStoreKeyPrefix, tenantId, msg.GroupId, msg.Id)
+	eventKey := path.Join(chatEventKeyPrefix, tenantId, msg.GroupId)
 
 	// send the message to the event stream
 	if err := events.Publish(eventKey, msg); err != nil {
