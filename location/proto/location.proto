@@ -54,7 +54,7 @@ message SearchRequest {
 	// type of entities to filter
 	string type = 3;
 	// Maximum number of entities to return
-	int64 numEntities = 4;
+	int64 limit = 4;
 }
 
 message SearchResponse {

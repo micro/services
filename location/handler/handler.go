@@ -65,7 +65,7 @@ func (l *Location) Search(ctx context.Context, req *loc.SearchRequest, rsp *loc.
 		Longitude: req.Center.Longitude,
 	}
 
-	entities := domain.Search(ctx, req.Type, entity, req.Radius, int(req.NumEntities))
+	entities := domain.Search(ctx, req.Type, entity, req.Radius, int(req.Limit))
 
 	for _, e := range entities {
 		rsp.Entities = append(rsp.Entities, e.ToProto())
