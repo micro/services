@@ -1,7 +1,7 @@
 {
   "now": [
     {
-      "title": "Returns current time, optionally with location",
+      "title": "Returns current UTC time",
       "run_check": true,
       "request": {},
       "response": {
@@ -9,6 +9,20 @@
         "timestamp": "2021-09-13T14:35:44.144293723Z",
         "location": "Prime Meridian",
         "timezone": "UTC",
+        "unix": "1631543744"
+      }
+    },
+    {
+      "title": "Returns current time for given location",
+      "run_check": true,
+      "request": {
+        "location": "London"
+      },
+      "response": {
+        "localtime": "15:35:44",
+        "timestamp": "2021-09-13T15:35:44.144293723+01:00",
+        "location": "Prime Meridian",
+        "timezone": "Europe/London",
         "unix": "1631543744"
       }
     }
