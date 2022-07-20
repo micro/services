@@ -34,7 +34,7 @@ func (c *Chat) Create(ctx context.Context, req *pb.CreateRequest, rsp *pb.Create
 		Id:          roomId,
 		Name:        req.Name,
 		Description: req.Description,
-		UserIds:       req.UserIds,
+		UserIds:     req.UserIds,
 		Private:     req.Private,
 		CreatedAt:   time.Now().Format(time.RFC3339Nano),
 	}
@@ -295,8 +295,8 @@ func (c *Chat) Send(ctx context.Context, req *pb.SendRequest, rsp *pb.SendRespon
 	msg := &pb.Message{
 		Id:      uuid.New().String(),
 		Client:  req.Client,
-		RoomId:    req.RoomId,
-		UserId:    req.UserId,
+		RoomId:  req.RoomId,
+		UserId:  req.UserId,
 		Subject: req.Subject,
 		Text:    req.Text,
 		SentAt:  time.Now().Format(time.RFC3339Nano),

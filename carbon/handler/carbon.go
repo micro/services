@@ -68,9 +68,9 @@ func (c *Carbon) Offset(ctx context.Context, req *pb.OffsetRequest, rsp *pb.Offs
 	//rsp.Currency = resp.Currency
 	for _, p := range resp.Projects {
 		rsp.Projects = append(rsp.Projects, &pb.Project{
-			Name: p.Name,
+			Name:       p.Name,
 			Percentage: p.Percentage,
-			Tonnes: p.Tonnes,
+			Tonnes:     p.Tonnes,
 		})
 	}
 

@@ -2,13 +2,13 @@ package handler
 
 import (
 	"context"
-	"strings"
 	"strconv"
+	"strings"
 
-	"googlemaps.github.io/maps"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
+	"googlemaps.github.io/maps"
 
 	pb "github.com/micro/services/place/proto"
 )
@@ -24,19 +24,19 @@ type Google struct {
 }
 
 func NewGoogle() *Google {
-        // Setup google maps
-        c, err := config.Get("google.apikey")
-        if err != nil {
-                logger.Fatalf("Error loading config: %v", err)
-        }
-        apiKey := c.String("")
-        if len(apiKey) == 0 {
-                logger.Fatalf("Missing required config: google.apikey")
-        }
-        m, err := maps.NewClient(maps.WithAPIKey(apiKey))
-        if err != nil {
-                logger.Fatalf("Error configuring google maps client: %v", err)
-        }
+	// Setup google maps
+	c, err := config.Get("google.apikey")
+	if err != nil {
+		logger.Fatalf("Error loading config: %v", err)
+	}
+	apiKey := c.String("")
+	if len(apiKey) == 0 {
+		logger.Fatalf("Missing required config: google.apikey")
+	}
+	m, err := maps.NewClient(maps.WithAPIKey(apiKey))
+	if err != nil {
+		logger.Fatalf("Error configuring google maps client: %v", err)
+	}
 
 	return &Google{
 		Maps: m,
@@ -99,15 +99,15 @@ func (g *Google) Nearby(ctx context.Context, req *pb.NearbyRequest, rsp *pb.Near
 		}
 
 		rsp.Results = append(rsp.Results, &pb.Result{
-			Address: res.FormattedAddress,
-			Location: res.Geometry.Location.String(),
-			Name: res.Name,
-			IconUrl: res.Icon,
-			Rating: float64(res.Rating),
-			OpenNow: openNow,
+			Address:      res.FormattedAddress,
+			Location:     res.Geometry.Location.String(),
+			Name:         res.Name,
+			IconUrl:      res.Icon,
+			Rating:       float64(res.Rating),
+			OpenNow:      openNow,
 			OpeningHours: hours,
-			Vicinity: res.Vicinity,
-			Types: res.Types,
+			Vicinity:     res.Vicinity,
+			Types:        res.Types,
 		})
 	}
 
@@ -167,15 +167,15 @@ func (g *Google) Search(ctx context.Context, req *pb.SearchRequest, rsp *pb.Sear
 			}
 		}
 		rsp.Results = append(rsp.Results, &pb.Result{
-			Address: res.FormattedAddress,
-			Location: res.Geometry.Location.String(),
-			Name: res.Name,
-			IconUrl: res.Icon,
-			Rating: float64(res.Rating),
-			OpenNow: openNow,
+			Address:      res.FormattedAddress,
+			Location:     res.Geometry.Location.String(),
+			Name:         res.Name,
+			IconUrl:      res.Icon,
+			Rating:       float64(res.Rating),
+			OpenNow:      openNow,
 			OpeningHours: hours,
-			Vicinity: res.Vicinity,
-			Types: res.Types,
+			Vicinity:     res.Vicinity,
+			Types:        res.Types,
 		})
 	}
 

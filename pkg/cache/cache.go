@@ -265,7 +265,7 @@ func (c *cache) Increment(key string, value int64) (int64, error) {
 
 	counter += value
 
-	if err := c.Set(key, fmt.Sprintf("%v",counter), time.Time{}); err != nil {
+	if err := c.Set(key, fmt.Sprintf("%v", counter), time.Time{}); err != nil {
 		return counter, err
 	}
 	return counter, nil

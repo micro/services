@@ -32,4 +32,3 @@ func (e *Emoji) Print(ctx context.Context, req *pb.PrintRequest, rsp *pb.PrintRe
 	rsp.Text = emoji.Parse(req.Text)
 	return nil
 }
-

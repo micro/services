@@ -112,7 +112,7 @@ func (s *Event) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadRespo
 	}
 
 	if req.Offset > 0 {
-		opts = append(opts, events.ReadOffset( uint(req.Offset)))
+		opts = append(opts, events.ReadOffset(uint(req.Offset)))
 	}
 
 	log.Infof("Tenant %v reading %v limit: %v offset: %v\n", id, req.Topic, req.Limit, req.Offset)

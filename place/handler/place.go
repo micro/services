@@ -1,6 +1,6 @@
 package handler
 
-type Place struct{
+type Place struct {
 	*Google
 }
 

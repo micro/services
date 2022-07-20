@@ -219,13 +219,12 @@ func (c *Crypto) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceR
 	}
 
 	// check the cache
-	cached, ok := c.Cache.Get("prices:"+req.Symbol)
+	cached, ok := c.Cache.Get("prices:" + req.Symbol)
 	if ok {
 		rsp.Symbol = req.Symbol
 		rsp.Price, _ = cached.(float64)
 		return nil
 	}
-
 
 	uri := fmt.Sprintf("%slast/crypto/%s?apikey=%s", c.Api, req.Symbol, c.Key)
 
@@ -254,7 +253,7 @@ func (c *Crypto) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.PriceR
 	rsp.Price = respBody["price"].(float64)
 
 	// set the cache
-	c.Cache.Set("prices:"+req.Symbol, rsp.Price, time.Minute * 5)
+	c.Cache.Set("prices:"+req.Symbol, rsp.Price, time.Minute*5)
 
 	return nil
 }

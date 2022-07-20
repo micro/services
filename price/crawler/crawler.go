@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/services/pkg/api"
 	pb "github.com/micro/services/price/proto"
 )

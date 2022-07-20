@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/mail"
 	"net/http"
+	"net/mail"
 	"regexp"
 
 	"github.com/micro/micro/v3/service"
