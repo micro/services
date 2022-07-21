@@ -26,7 +26,7 @@ import (
 const hostPrefix = "https://m3o.one/u/"
 
 var (
-	idRegex = regexp.MustCompile("[a-z-]+")
+	idRegex = regexp.MustCompile("[a-zA-Z0-9_-]+")
 )
 
 type Url struct {
@@ -58,7 +58,15 @@ func (e *Url) Delete(ctx context.Context, req *url.DeleteRequest, rsp *url.Delet
 		return errors.Unauthorized("url.shorten", "not authorized")
 	}
 
-	id := strings.TrimPrefix(req.ShortURL, e.hostPrefix)
+	if len(req.Id) == 0 && len(req.ShortURL) == 0 {
+		return errors.BadRequest("url.delete", "missing id or short url")
+	}
+
+	id := req.Id
+
+	if len(id) == 0 {
+		id = strings.TrimPrefix(req.ShortURL, e.hostPrefix)
+	}
 
 	// check if exists
 	recs, err := store.Read("urlOwner/" + tenantId + "/" + id)
@@ -82,7 +90,20 @@ func (e *Url) Create(ctx context.Context, req *url.CreateRequest, rsp *url.Creat
 		return errors.Unauthorized("url.create", "not authorized")
 	}
 
-	if len(req.Id) == 0 || !idRegex.MatchString(req.Id) {
+	if len(req.Id) == 0 {
+		sid, err := shortid.New(1, shortid.DefaultABC, 2342)
+		if err != nil {
+			return err
+		}
+
+		id, err := sid.Generate()
+		if err != nil {
+			return err
+		}
+		req.Id = id
+	}
+
+	if !idRegex.MatchString(req.Id) {
 		return errors.BadRequest("url.create", "invalid id")
 	}
 	_, err := u.Parse(req.DestinationURL)
@@ -132,7 +153,15 @@ func (e *Url) Update(ctx context.Context, req *url.UpdateRequest, rsp *url.Updat
 		return errors.Unauthorized("url.shorten", "not authorized")
 	}
 
-	id := strings.Replace(req.ShortURL, e.hostPrefix, "", -1)
+	if len(req.Id) == 0 && len(req.ShortURL) == 0 {
+		return errors.BadRequest("url.update", "missing id or short url")
+	}
+
+	id := req.Id
+
+	if len(id) == 0 {
+		id = strings.Replace(req.ShortURL, e.hostPrefix, "", -1)
+	}
 
 	// check the owner has this short url
 	records, err := store.Read("urlOwner/" + tenantId + "/" + id)

@@ -27,7 +27,10 @@ message CreateResponse {
 
 // Delete a URL
 message DeleteRequest {
-	string shortURL = 1;
+	// specify id or shortURL
+	string id = 1;
+	// optional shortURL
+	string shortURL = 2;
 }
 
 message DeleteResponse {
@@ -69,18 +72,19 @@ message ListResponse {
 
 // Update the destination for a short URL
 message UpdateRequest {
-	// the short url to update
-	string shortURL = 1;
+	// update by id
+	string id = 1;
+	// update by short url
+	string shortURL = 2;
 	// the destination to update to
-	string destinationURL = 2;
+	string destinationURL = 3;
 }
 
 message UpdateResponse {}
 
 // Resolve returns the destination URL of a short URL.
 message ResolveRequest {
-	// short url ID, without the domain, eg. if your short URL is
-	// `m3o.one/u/someshorturlid` then pass in `someshorturlid`
+	// short url to resolve
 	string shortURL = 1;
 }
 
