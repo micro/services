@@ -27,9 +27,9 @@ message CreateResponse {
 
 // Delete a URL
 message DeleteRequest {
-	// specify id or shortURL
+	// delete by id
 	string id = 1;
-	// optional shortURL
+	// delete by shortURL
 	string shortURL = 2;
 }
 
