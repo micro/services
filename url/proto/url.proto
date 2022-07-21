@@ -20,7 +20,7 @@ message DeleteRequest {
 message DeleteResponse {
 }
 
-// Shorten a long URL
+// Shorten a URL
 message ShortenRequest {
 	// the url to shorten
 	string destinationURL = 1;
