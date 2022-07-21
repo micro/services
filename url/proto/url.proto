@@ -5,11 +5,24 @@ package url;
 option go_package = "./proto;url";
 
 service Url {
+	rpc Create(CreateRequest) returns (CreateResponse) {}
 	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Resolve(ResolveRequest) returns (ResolveResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+}
+
+// Create a URL
+message CreateRequest {
+	// a unique id e.g uuid or my-url
+	string id = 1;
+	// destination url
+	string destinationURL = 2;
+}
+
+message CreateResponse {
+	URLPair url = 1;
 }
 
 // Delete a URL
@@ -32,10 +45,12 @@ message ShortenResponse {
 }
 
 message URLPair {
+	// url id
+	string id = 1;
 	// destination url
-	string destinationURL = 1;
+	string destinationURL = 2;
 	// shortened url
-	string shortURL = 2;
+	string shortURL = 3;
 	// time of creation
 	string created = 4;
 	// The number of times the short URL has been resolved

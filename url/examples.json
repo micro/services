@@ -1,4 +1,21 @@
 {
+    "create": [{
+        "title": "Create a URL",
+        "run_check": false,
+        "request": {
+	    "id": "my-site",
+            "destinationURL": "https://mysite.com/this-is-a-rather-long-web-address"
+        },
+        "response": {
+            "url": {
+	        "id": "my-site",
+                "shortURL": "https://m3o.one/u/my-site",
+                "destinationURL": "https://mysite.com/this-is-a-rather-long-web-address",
+                "created": "2022-03-01T16:04:11.341277162Z",
+                "hitCount": "0
+            }
+        }
+    }],
     "list": [{
         "title": "List your shortened URLs",
         "description": "List the token holder's shortened URLs",

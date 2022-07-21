@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"fmt"
+	u "net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +24,10 @@ import (
 )
 
 const hostPrefix = "https://m3o.one/u/"
+
+var (
+	idRegex = regexp.MustCompile("[a-z-]+")
+)
 
 type Url struct {
 	cache      cachepb.CacheService
@@ -66,6 +72,56 @@ func (e *Url) Delete(ctx context.Context, req *url.DeleteRequest, rsp *url.Delet
 
 	// delete the owner
 	store.Delete("urlOwner/" + tenantId + "/" + id)
+
+	return nil
+}
+
+func (e *Url) Create(ctx context.Context, req *url.CreateRequest, rsp *url.CreateResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("url.create", "not authorized")
+	}
+
+	if len(req.Id) == 0 || !idRegex.MatchString(req.Id) {
+		return errors.BadRequest("url.create", "invalid id")
+	}
+	_, err := u.Parse(req.DestinationURL)
+	if err != nil {
+		return errors.BadRequest("url.create", err.Error())
+	}
+
+	// the url id
+	id := req.Id
+
+	records, err := store.Read("url/" + req.Id)
+	if err != nil && err != store.ErrNotFound {
+		return err
+	}
+
+	if len(records) > 0 {
+		return errors.BadRequest("url.create", "id already exists")
+	}
+
+	val := &url.URLPair{
+		Id:             id,
+		DestinationURL: req.DestinationURL,
+		ShortURL:       e.hostPrefix + id,
+		Created:        time.Now().Format(time.RFC3339Nano),
+	}
+
+	// write a global key
+	key := "url/" + id
+	if err := store.Write(store.NewRecord(key, val)); err != nil {
+		return err
+	}
+
+	// write per owner key
+	key = "urlOwner/" + tenantId + "/" + id
+	if err := store.Write(store.NewRecord(key, val)); err != nil {
+		return err
+	}
+
+	rsp.Url = val
 
 	return nil
 }
@@ -127,6 +183,7 @@ func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.Sho
 	}
 
 	val := &url.URLPair{
+		Id:             id,
 		DestinationURL: req.DestinationURL,
 		ShortURL:       e.hostPrefix + id,
 		Created:        time.Now().Format(time.RFC3339Nano),
@@ -188,6 +245,13 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 			logger.Errorf("Error reading cache %s", err)
 			return errInternal
 		}
+
+		// set the id if not exists
+		if len(uri.Id) == 0 {
+			id := strings.Replace(req.ShortURL, e.hostPrefix, "", -1)
+			uri.Id = id
+		}
+
 		uri.HitCount, _ = strconv.ParseInt(crsp.Value, 10, 64)
 		rsp.UrlPairs = append(rsp.UrlPairs, uri)
 
@@ -214,6 +278,7 @@ func (e *Url) Resolve(ctx context.Context, req *url.ResolveRequest, rsp *url.Res
 	}
 
 	rsp.DestinationURL = uri.DestinationURL
+
 	go func() {
 		_, err := e.cache.Increment(context.Background(), &cachepb.IncrementRequest{
 			Key:   cacheKey(id),
