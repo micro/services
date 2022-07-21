@@ -196,7 +196,7 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 	return nil
 }
 
-func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyResponse) error {
+func (e *Url) Resolve(ctx context.Context, req *url.ResolveRequest, rsp *url.ResolveResponse) error {
 	id := strings.Replace(req.ShortURL, e.hostPrefix, "", -1)
 
 	records, err := store.Read("url/" + id)
@@ -205,7 +205,7 @@ func (e *Url) Proxy(ctx context.Context, req *url.ProxyRequest, rsp *url.ProxyRe
 	}
 
 	if len(records) == 0 {
-		return errors.NotFound("url.proxy", "not found")
+		return errors.NotFound("url.resolve", "not found")
 	}
 
 	uri := new(url.URLPair)

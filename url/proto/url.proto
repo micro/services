@@ -7,7 +7,7 @@ option go_package = "./proto;url";
 service Url {
 	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
-	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
+	rpc Resolve(ResolveRequest) returns (ResolveResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 }
@@ -62,13 +62,13 @@ message UpdateRequest {
 
 message UpdateResponse {}
 
-// Proxy returns the destination URL of a short URL.
-message ProxyRequest {
+// Resolve returns the destination URL of a short URL.
+message ResolveRequest {
 	// short url ID, without the domain, eg. if your short URL is
 	// `m3o.one/u/someshorturlid` then pass in `someshorturlid`
 	string shortURL = 1;
 }
 
-message ProxyResponse {
+message ResolveResponse {
 	string destinationURL = 1;
 }

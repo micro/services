@@ -33,7 +33,7 @@
             "shortURL": "https://m3o.one/u/f8f3f83f3f83g"
         }
     }],
-    "proxy": [{
+    "resolve": [{
         "title": "Resolve a short URL to a long destination URL",
         "run_check": false,
         "request": {

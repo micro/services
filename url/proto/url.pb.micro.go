@@ -44,7 +44,7 @@ func NewUrlEndpoints() []*api.Endpoint {
 type UrlService interface {
 	Shorten(ctx context.Context, in *ShortenRequest, opts ...client.CallOption) (*ShortenResponse, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
-	Proxy(ctx context.Context, in *ProxyRequest, opts ...client.CallOption) (*ProxyResponse, error)
+	Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 }
@@ -81,9 +81,9 @@ func (c *urlService) List(ctx context.Context, in *ListRequest, opts ...client.C
 	return out, nil
 }
 
-func (c *urlService) Proxy(ctx context.Context, in *ProxyRequest, opts ...client.CallOption) (*ProxyResponse, error) {
-	req := c.c.NewRequest(c.name, "Url.Proxy", in)
-	out := new(ProxyResponse)
+func (c *urlService) Resolve(ctx context.Context, in *ResolveRequest, opts ...client.CallOption) (*ResolveResponse, error) {
+	req := c.c.NewRequest(c.name, "Url.Resolve", in)
+	out := new(ResolveResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func (c *urlService) Delete(ctx context.Context, in *DeleteRequest, opts ...clie
 type UrlHandler interface {
 	Shorten(context.Context, *ShortenRequest, *ShortenResponse) error
 	List(context.Context, *ListRequest, *ListResponse) error
-	Proxy(context.Context, *ProxyRequest, *ProxyResponse) error
+	Resolve(context.Context, *ResolveRequest, *ResolveResponse) error
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 }
@@ -125,7 +125,7 @@ func RegisterUrlHandler(s server.Server, hdlr UrlHandler, opts ...server.Handler
 	type url interface {
 		Shorten(ctx context.Context, in *ShortenRequest, out *ShortenResponse) error
 		List(ctx context.Context, in *ListRequest, out *ListResponse) error
-		Proxy(ctx context.Context, in *ProxyRequest, out *ProxyResponse) error
+		Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 	}
@@ -148,8 +148,8 @@ func (h *urlHandler) List(ctx context.Context, in *ListRequest, out *ListRespons
 	return h.UrlHandler.List(ctx, in, out)
 }
 
-func (h *urlHandler) Proxy(ctx context.Context, in *ProxyRequest, out *ProxyResponse) error {
-	return h.UrlHandler.Proxy(ctx, in, out)
+func (h *urlHandler) Resolve(ctx context.Context, in *ResolveRequest, out *ResolveResponse) error {
+	return h.UrlHandler.Resolve(ctx, in, out)
 }
 
 func (h *urlHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {
