@@ -52,7 +52,7 @@ message ListResponse {
 	repeated URLPair urlPairs = 1;
 }
 
-// Update the destination for a short url
+// Update the destination for a short URL
 message UpdateRequest {
 	// the short url to update
 	string shortURL = 1;
