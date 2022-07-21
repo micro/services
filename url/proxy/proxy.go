@@ -22,21 +22,6 @@ var (
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-
-	// assuming /u/short-id
-	parts := strings.Split(r.URL.Path, "/")
-	if len(parts) < 3 {
-		return
-	}
-	// assuming its /u/ for url
-	if parts[1] != "u" {
-		return
-	}
-
-	// get the url id
-	//id := parts[2]
-
 	uri := url.URL{
 		Scheme: r.URL.Scheme,
 		Host:   r.URL.Host,
