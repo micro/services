@@ -70,6 +70,47 @@ func (e *Url) Delete(ctx context.Context, req *url.DeleteRequest, rsp *url.Delet
 	return nil
 }
 
+func (e *Url) Update(ctx context.Context, req *url.UpdateRequest, rsp *url.UpdateResponse) error {
+	tenantId, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("url.shorten", "not authorized")
+	}
+
+	id := strings.Replace(req.ShortURL, e.hostPrefix, "", -1)
+
+	// check the owner has this short url
+	records, err := store.Read("urlOwner/" + tenantId + "/" + id)
+	if err != nil {
+		return err
+	}
+
+	if len(records) == 0 {
+		return errors.NotFound("url.update", "not found")
+	}
+
+	uri := new(url.URLPair)
+	if err := records[0].Decode(uri); err != nil {
+		return err
+	}
+
+	// set the destination url
+	uri.DestinationURL = req.DestinationURL
+
+	// write a global key
+	key := "url/" + id
+	if err := store.Write(store.NewRecord(key, uri)); err != nil {
+		return err
+	}
+
+	// write per owner key
+	key = "urlOwner/" + tenantId + "/" + id
+	if err := store.Write(store.NewRecord(key, uri)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (e *Url) Shorten(ctx context.Context, req *url.ShortenRequest, rsp *url.ShortenResponse) error {
 	tenantId, ok := tenant.FromContext(ctx)
 	if !ok {

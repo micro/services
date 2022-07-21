@@ -8,6 +8,7 @@ service Url {
 	rpc Shorten(ShortenRequest) returns (ShortenResponse) {}
 	rpc List(ListRequest) returns (ListResponse) {}
 	rpc Proxy(ProxyRequest) returns (ProxyResponse) {}
+	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 }
 
@@ -50,6 +51,16 @@ message ListRequest {
 message ListResponse {
 	repeated URLPair urlPairs = 1;
 }
+
+// Update the destination for a short url
+message UpdateRequest {
+	// the short url to update
+	string shortURL = 1;
+	// the destination to update to
+	string destinationURL = 2;
+}
+
+message UpdateResponse {}
 
 // Proxy returns the destination URL of a short URL.
 message ProxyRequest {

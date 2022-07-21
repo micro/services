@@ -14,6 +14,15 @@
             }]
         }
     }],
+    "update": [{
+        "title": "Update a short URL",
+        "run_check": false,
+        "request": {
+            "shortURL": "https://m3o.one/u/f8f3f83f3f83g",
+            "destinationURL": "https://mynewsite.com/this-is-a-rather-long-web-address"
+        },
+        "response": {}
+    }],
     "shorten": [{
         "title": "Shorten a long URL",
         "run_check": false,
