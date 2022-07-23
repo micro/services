@@ -2,7 +2,7 @@
   "name": "url",
   "icon": "🔗",
   "category": "web",
-  "display_name": "URLs",
+  "display_name": "URL",
   "pricing": {
     "Url.Create": 10000
   }
