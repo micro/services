@@ -19,9 +19,9 @@ import (
 )
 
 const (
-	prefixStore       = "account"
-	prefixCounter     = "wallet/account"
-	prefixStoreByUser = "transactionByUser"
+	accountPrefix     = "account"
+	counterPrefix     = "wallet/account"
+	transactionPrefix = "transaction"
 )
 
 // Transaction represents a wallet transaction
@@ -61,7 +61,7 @@ func storeTransaction(userID string, delta int64, walletID, reference string, vi
 	}
 
 	if err := store.Write(&store.Record{
-		Key:   fmt.Sprintf("%s/%s/%s/%s", prefixStoreByUser, userID, walletID, rec.ID),
+		Key:   fmt.Sprintf("%s/%s/%s/%s", transactionPrefix, userID, walletID, rec.ID),
 		Value: trx,
 	}); err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func storeTransaction(userID string, delta int64, walletID, reference string, vi
 
 func NewHandler(svc *service.Service) *Wallet {
 	return &Wallet{
-		c: redis.NewCounter(prefixCounter),
+		c: redis.NewCounter(counterPrefix),
 	}
 }
 
@@ -207,7 +207,7 @@ func (b *Wallet) Transactions(ctx context.Context, request *pb.TransactionsReque
 		request.Id = "default"
 	}
 
-	recs, err := store.Read(fmt.Sprintf("%s/%s/%s/", prefixStoreByUser, tnt, request.Id), store.ReadPrefix())
+	recs, err := store.Read(fmt.Sprintf("%s/%s/%s/", transactionPrefix, tnt, request.Id), store.ReadPrefix())
 	if err != nil {
 		return err
 	}
@@ -223,7 +223,7 @@ func (b *Wallet) Transactions(ctx context.Context, request *pb.TransactionsReque
 		}
 		ret = append(ret, &pb.Transaction{
 			Id:        trx.ID,
-			Created:   trx.Created.Unix(),
+			Created:   trx.Created.Format(time.RFC3339Nano),
 			Amount:    trx.Amount,
 			Reference: trx.Reference,
 			Metadata:  trx.Metadata,
@@ -252,19 +252,22 @@ func (b *Wallet) Create(ctx context.Context, request *pb.CreateRequest, response
 	}
 
 	// create a composite key
-	key := fmt.Sprintf("%s/%s/%s", prefixStore, tnt, id)
+	key := fmt.Sprintf("%s/%s/%s", accountPrefix, tnt, id)
 
-	// create a new record
-	rec := store.NewRecord(key, &pb.Account{
+	acc := &pb.Account{
 		Id:          id,
 		Name:        request.Name,
 		Description: request.Description,
-	})
+	}
 
+	// create a new record
+	rec := store.NewRecord(key, acc)
 	// store it
 	if err := store.Write(rec); err != nil {
 		return err
 	}
+
+	response.Account = acc
 
 	return nil
 }
@@ -283,7 +286,7 @@ func (b *Wallet) Delete(ctx context.Context, request *pb.DeleteRequest, response
 	walletID := request.Id
 
 	// delete the account
-	key := fmt.Sprintf("%s/%s/%s", prefixStore, userID, walletID)
+	key := fmt.Sprintf("%s/%s/%s", accountPrefix, userID, walletID)
 	if err := store.Delete(key); err != nil {
 		return err
 	}
@@ -294,7 +297,7 @@ func (b *Wallet) Delete(ctx context.Context, request *pb.DeleteRequest, response
 	}
 
 	// delete all related transactions
-	recs, err := store.List(store.ListPrefix(fmt.Sprintf("%s/%s/%s/", prefixStoreByUser, userID, walletID)))
+	recs, err := store.List(store.ListPrefix(fmt.Sprintf("%s/%s/%s/", transactionPrefix, userID, walletID)))
 	if err != nil {
 		return err
 	}
@@ -314,16 +317,45 @@ func (w *Wallet) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResp
 		return errors.BadRequest("wallet.create", "unauthorized")
 	}
 
-	recs, err := store.Read(fmt.Sprintf("%s/%s/", prefixStore, tnt), store.ReadPrefix())
+	recs, err := store.Read(fmt.Sprintf("%s/%s/", accountPrefix, tnt), store.ReadPrefix())
 	if err != nil {
 		return err
 	}
 
+	var def bool
+
 	for _, rec := range recs {
 		acc := new(pb.Account)
 		rec.Decode(&acc)
+
+		bal, err := w.c.Read(ctx, redis.Key(tnt, acc.Id), "$balance$")
+		if err != nil && err != redis.Nil {
+			log.Errorf("Error reading from counter %s", err)
+			continue
+		}
+
+		// set balance
+		acc.Balance = bal
 		rsp.Accounts = append(rsp.Accounts, acc)
 	}
+
+	// someone has an account with id default
+	if def {
+		return nil
+	}
+
+	bal, err := w.c.Read(ctx, redis.Key(tnt, "default"), "$balance$")
+	if err != nil && err != redis.Nil {
+		log.Errorf("Error reading from counter %s", err)
+		return nil
+	}
+
+	// add default
+	rsp.Accounts = append(rsp.Accounts, &pb.Account{
+		Id:      "default",
+		Name:    "Default account",
+		Balance: bal,
+	})
 
 	return nil
 }

@@ -125,7 +125,7 @@ message Transaction {
 	// unique id of transaction
 	string id = 1;
 	// time of transaction
-	int64 created = 2;
+	string created = 2;
 	// amount in transaction
 	int64 amount = 3;
 	// reference note
