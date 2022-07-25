@@ -135,7 +135,7 @@ func (b *Wallet) Transfer(ctx context.Context, req *pb.TransferRequest, rsp *pb.
 
 	amount, err := b.c.read(ctx, tnt, req.FromId, "$wallet$")
 	if amount > req.Amount {
-		return errors.BadRequest("wallet.transfer", "insufficient wallet")
+		return errors.BadRequest("wallet.transfer", "insufficient credit")
 	}
 
 	_, err = b.c.decr(ctx, tnt, req.FromId, "$wallet$", req.Amount)
