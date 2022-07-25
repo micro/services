@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	prefixCounter         = "wallet-service/counter"
+	prefixCounter         = "wallet/counter"
 	prefixStoreByCustomer = "transactionByUser"
 )
 
