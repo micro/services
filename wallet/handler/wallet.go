@@ -24,7 +24,7 @@ import (
 const (
 	prefixStore           = "account"
 	prefixCounter         = "wallet/account"
-	prefixStoreByCustomer = "transactionByUser"
+	prefixStoreByUser = "transactionByUser"
 )
 
 type counter struct {
@@ -109,7 +109,7 @@ func storeTransaction(userID string, delta int64, walletID, reference string, vi
 	}
 
 	if err := store.Write(&store.Record{
-		Key:   fmt.Sprintf("%s/%s/%s/%s", prefixStoreByCustomer, userID, walletID, rec.ID),
+		Key:   fmt.Sprintf("%s/%s/%s/%s", prefixStoreByUser, userID, walletID, rec.ID),
 		Value: trx,
 	}); err != nil {
 		return nil, err
@@ -263,7 +263,7 @@ func (b *Wallet) Transactions(ctx context.Context, request *pb.TransactionsReque
 		return errors.BadRequest("wallet.transactions", "unauthorized")
 	}
 
-	recs, err := store.Read(fmt.Sprintf("%s/%s/%s/", prefixStoreByCustomer, tnt, request.Id), store.ReadPrefix())
+	recs, err := store.Read(fmt.Sprintf("%s/%s/%s/", prefixStoreByUser, tnt, request.Id), store.ReadPrefix())
 	if err != nil {
 		return err
 	}
@@ -306,7 +306,7 @@ func (b *Wallet) deleteAccount(ctx context.Context, userID, walletID string) err
 		return err
 	}
 
-	recs, err := store.List(store.ListPrefix(fmt.Sprintf("%s/%s/%s/", prefixStoreByCustomer, userID, walletID)))
+	recs, err := store.List(store.ListPrefix(fmt.Sprintf("%s/%s/%s/", prefixStoreByUser, userID, walletID)))
 	if err != nil {
 		return err
 	}
