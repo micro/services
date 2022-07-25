@@ -26,14 +26,6 @@ message Account {
 	int64 balance = 4;
 }
 
-// List your wallets
-message ListRequest {
-}
-
-message ListResponse {
-	repeated Account accounts = 1;
-}
-
 // Create a new wallet
 message CreateRequest {
 	// optional id
@@ -55,6 +47,14 @@ message DeleteRequest {
 }
 
 message DeleteResponse {}
+
+// List your wallets
+message ListRequest {
+}
+
+message ListResponse {
+	repeated Account accounts = 1;
+}
 
 // Make a transfer from one wallet to another
 message TransferRequest {
