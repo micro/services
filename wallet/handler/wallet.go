@@ -172,13 +172,13 @@ func (b Wallet) Credit(ctx context.Context, request *pb.CreditRequest, response 
 
 	// TODO idempotency
 	// increment the wallet
-	currBal, err := b.c.incr(ctx, tnt, request.Id, "$wallet$", request.Delta)
+	currBal, err := b.c.incr(ctx, tnt, request.Id, "$wallet$", request.Amount)
 	if err != nil {
 		return err
 	}
 
 	response.NewBalance = currBal
-	_, err = storeTransaction(tnt, request.Delta, request.Id, request.Reference, request.Visible, nil)
+	_, err = storeTransaction(tnt, request.Amount, request.Id, request.Reference, request.Visible, nil)
 	if err != nil {
 		return err
 	}
@@ -225,14 +225,14 @@ func (b *Wallet) Debit(ctx context.Context, request *pb.DebitRequest, response *
 
 	// TODO idempotency
 	// decrement the wallet
-	currBal, err := b.c.decr(ctx, tnt, request.Id, "$wallet$", request.Delta)
+	currBal, err := b.c.decr(ctx, tnt, request.Id, "$wallet$", request.Amount)
 	if err != nil {
 		return err
 	}
 
 	response.NewBalance = currBal
 
-	_, err = storeTransaction(tnt, -request.Delta, request.Id, request.Reference, request.Visible, nil)
+	_, err = storeTransaction(tnt, -request.Amount, request.Id, request.Reference, request.Visible, nil)
 	if err != nil {
 		return err
 	}
@@ -279,7 +279,7 @@ func (b *Wallet) Transactions(ctx context.Context, request *pb.TransactionsReque
 		ret = append(ret, &pb.Transaction{
 			Id:        trx.ID,
 			Created:   trx.Created.Unix(),
-			Delta:     trx.Amount,
+			Amount:    trx.Amount,
 			Reference: trx.Reference,
 			Metadata:  trx.Metadata,
 		})
