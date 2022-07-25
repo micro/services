@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	prefixStore           = "account"
-	prefixCounter         = "wallet/account"
+	prefixStore       = "account"
+	prefixCounter     = "wallet/account"
 	prefixStoreByUser = "transactionByUser"
 )
 
@@ -295,31 +295,6 @@ func (b *Wallet) Transactions(ctx context.Context, request *pb.TransactionsReque
 	return nil
 }
 
-func (b *Wallet) deleteAccount(ctx context.Context, userID, walletID string) error {
-	// delete the account
-	key := fmt.Sprintf("%s/%s/%s", prefixStore, userID, walletID)
-	if err := store.Delete(key); err != nil {
-		return err
-	}
-
-	if err := b.c.deleteWallet(ctx, userID, walletID); err != nil {
-		return err
-	}
-
-	recs, err := store.List(store.ListPrefix(fmt.Sprintf("%s/%s/%s/", prefixStoreByUser, userID, walletID)))
-	if err != nil {
-		return err
-	}
-
-	for _, rec := range recs {
-		if err := store.Delete(rec); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (b *Wallet) Create(ctx context.Context, request *pb.CreateRequest, response *pb.CreateResponse) error {
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
@@ -360,10 +335,32 @@ func (b *Wallet) Delete(ctx context.Context, request *pb.DeleteRequest, response
 		return errors.BadRequest("wallet.delete", "Missing wallet id")
 	}
 
-	if err := b.deleteAccount(ctx, tnt, request.Id); err != nil {
-		logger.Errorf("Error deleting customer %s", err)
+	userID := tnt
+	walletID := request.Id
+
+	// delete the account
+	key := fmt.Sprintf("%s/%s/%s", prefixStore, userID, walletID)
+	if err := store.Delete(key); err != nil {
 		return err
 	}
+
+	// delete the wallet
+	if err := b.c.deleteWallet(ctx, userID, walletID); err != nil {
+		return err
+	}
+
+	// delete all related transactions
+	recs, err := store.List(store.ListPrefix(fmt.Sprintf("%s/%s/%s/", prefixStoreByUser, userID, walletID)))
+	if err != nil {
+		return err
+	}
+
+	for _, rec := range recs {
+		if err := store.Delete(rec); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
