@@ -22,7 +22,8 @@ import (
 )
 
 const (
-	prefixCounter         = "wallet/counter"
+	prefixStore           = "account"
+	prefixCounter         = "wallet/account"
 	prefixStoreByCustomer = "transactionByUser"
 )
 
@@ -296,7 +297,7 @@ func (b *Wallet) Transactions(ctx context.Context, request *pb.TransactionsReque
 
 func (b *Wallet) deleteAccount(ctx context.Context, userID, walletID string) error {
 	// delete the account
-	key := fmt.Sprintf("wallet/%s/%s", userID, walletID)
+	key := fmt.Sprintf("%s/%s/%s", prefixStore, userID, walletID)
 	if err := store.Delete(key); err != nil {
 		return err
 	}
@@ -329,7 +330,7 @@ func (b *Wallet) Create(ctx context.Context, request *pb.CreateRequest, response
 	id := uuid.New().String()
 
 	// create a composite key
-	key := fmt.Sprintf("wallet/%s/%s", tnt, id)
+	key := fmt.Sprintf("%s/%s/%s", prefixStore, tnt, id)
 
 	// create a new record
 	rec := store.NewRecord(key, &pb.Account{
@@ -369,7 +370,7 @@ func (w *Wallet) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResp
 		return errors.BadRequest("wallet.create", "unauthorized")
 	}
 
-	recs, err := store.Read(fmt.Sprintf("wallet/%s/", tnt), store.ReadPrefix())
+	recs, err := store.Read(fmt.Sprintf("%s/%s/", prefixStore, tnt), store.ReadPrefix())
 	if err != nil {
 		return err
 	}
