@@ -90,6 +90,33 @@ type Wallet struct {
 	mtx sync.Mutex
 }
 
+func storeTransaction(userID string, delta int64, walletID, reference string, visible bool, meta map[string]string) (*Transaction, error) {
+	// record it
+	rec := &Transaction{
+		ID:         uuid.New().String(),
+		Created:    time.Now(),
+		Amount:     delta,
+		Reference:  reference,
+		Visible:    visible,
+		WalletID:   walletID,
+		ActionedBy: userID,
+		Metadata:   meta,
+	}
+
+	trx, err := json.Marshal(rec)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := store.Write(&store.Record{
+		Key:   fmt.Sprintf("%s/%s/%s/%s", prefixStoreByCustomer, userID, walletID, rec.ID),
+		Value: trx,
+	}); err != nil {
+		return nil, err
+	}
+	return rec, nil
+}
+
 func NewHandler(svc *service.Service) *Wallet {
 	redisConfig := struct {
 		Address  string
@@ -185,33 +212,6 @@ func (b Wallet) Credit(ctx context.Context, request *pb.CreditRequest, response 
 	}
 
 	return nil
-}
-
-func storeTransaction(userID string, delta int64, walletID, reference string, visible bool, meta map[string]string) (*Transaction, error) {
-	// record it
-	rec := &Transaction{
-		ID:         uuid.New().String(),
-		Created:    time.Now(),
-		Amount:     delta,
-		Reference:  reference,
-		Visible:    visible,
-		WalletID:   walletID,
-		ActionedBy: userID,
-		Metadata:   meta,
-	}
-
-	trx, err := json.Marshal(rec)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := store.Write(&store.Record{
-		Key:   fmt.Sprintf("%s/%s/%s/%s", prefixStoreByCustomer, userID, walletID, rec.ID),
-		Value: trx,
-	}); err != nil {
-		return nil, err
-	}
-	return rec, nil
 }
 
 func (b *Wallet) Debit(ctx context.Context, request *pb.DebitRequest, response *pb.DebitResponse) error {
