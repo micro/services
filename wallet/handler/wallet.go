@@ -72,7 +72,7 @@ func (c *counter) deleteWallet(ctx context.Context, userID, walletID string) err
 	return nil
 }
 
-// Transaction represents a wallet transaction (not including normal API usage). e.g. credit being added, promo codes, manual transaction for customer service etc
+// Transaction represents a wallet transaction
 type Transaction struct {
 	ID         string
 	Created    time.Time
@@ -85,7 +85,7 @@ type Transaction struct {
 }
 
 type Wallet struct {
-	c *counter // counts the wallet. Wallet is expressed in 1/10,000ths of a cent which allows us to price in fractions e.g. a request costs 0.0001 cents or 10,000 requests for 1 cent
+	c *counter
 	// for wallet transfers
 	mtx sync.Mutex
 }
