@@ -327,7 +327,10 @@ func (b *Wallet) Create(ctx context.Context, request *pb.CreateRequest, response
 	}
 
 	// generate a new id
-	id := uuid.New().String()
+	id := req.Id
+	if len(id == 0) {
+		id = uuid.New().String()
+	}
 
 	// create a composite key
 	key := fmt.Sprintf("%s/%s/%s", prefixStore, tnt, id)

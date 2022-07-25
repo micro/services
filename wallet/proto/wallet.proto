@@ -37,7 +37,7 @@ message CreateRequest {
 }
 
 message CreateResponse {
-	// wallet id
+	// the wallet created
 	Account account = 1;
 }
 
