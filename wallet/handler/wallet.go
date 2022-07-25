@@ -2,21 +2,18 @@ package handler
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"sort"
 	"sync"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	log "github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/store"
+	"github.com/micro/services/pkg/redis"
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/wallet/proto"
 )
@@ -26,51 +23,6 @@ const (
 	prefixCounter     = "wallet/account"
 	prefixStoreByUser = "transactionByUser"
 )
-
-type counter struct {
-	sync.RWMutex
-	redisClient *redis.Client
-}
-
-func (c *counter) incr(ctx context.Context, userID, walletID, path string, delta int64) (int64, error) {
-	return c.redisClient.IncrBy(ctx, fmt.Sprintf("%s:%s:%s:%s", prefixCounter, userID, walletID, path), delta).Result()
-}
-
-func (c *counter) decr(ctx context.Context, userID, walletID, path string, delta int64) (int64, error) {
-	return c.redisClient.DecrBy(ctx, fmt.Sprintf("%s:%s:%s:%s", prefixCounter, userID, walletID, path), delta).Result()
-}
-
-func (c *counter) read(ctx context.Context, userID, walletID, path string) (int64, error) {
-	ret, err := c.redisClient.Get(ctx, fmt.Sprintf("%s:%s:%s:%s", prefixCounter, userID, walletID, path)).Int64()
-	if err == redis.Nil {
-		return 0, nil
-	}
-	return ret, err
-}
-
-func (c *counter) reset(ctx context.Context, userID, walletID, path string) error {
-	return c.redisClient.Set(ctx, fmt.Sprintf("%s:%s:%s:%s", prefixCounter, userID, walletID, path), 0, 0).Err()
-}
-
-func (c *counter) deleteWallet(ctx context.Context, userID, walletID string) error {
-	keys, err := c.redisClient.Keys(ctx, fmt.Sprintf("%s:%s:%s:*", prefixCounter, userID, walletID)).Result()
-	if err != nil {
-		if err == redis.Nil {
-			return nil
-		}
-		return err
-	}
-
-	if len(keys) == 0 {
-		return nil
-	}
-
-	if err := c.redisClient.Del(ctx, keys...).Err(); err != nil && err != redis.Nil {
-		return err
-	}
-
-	return nil
-}
 
 // Transaction represents a wallet transaction
 type Transaction struct {
@@ -85,7 +37,7 @@ type Transaction struct {
 }
 
 type Wallet struct {
-	c *counter
+	c *redis.Counter
 	// for wallet transfers
 	mtx sync.Mutex
 }
@@ -118,31 +70,8 @@ func storeTransaction(userID string, delta int64, walletID, reference string, vi
 }
 
 func NewHandler(svc *service.Service) *Wallet {
-	redisConfig := struct {
-		Address  string
-		User     string
-		Password string
-	}{}
-	val, err := config.Get("micro.redis")
-	if err != nil {
-		log.Fatalf("No redis config found %s", err)
-	}
-	if err := val.Scan(&redisConfig); err != nil {
-		log.Fatalf("Error parsing redis config %s", err)
-	}
-	if len(redisConfig.Password) == 0 || len(redisConfig.User) == 0 || len(redisConfig.Password) == 0 {
-		log.Fatalf("Missing redis config %s", err)
-	}
-	rc := redis.NewClient(&redis.Options{
-		Addr:     redisConfig.Address,
-		Username: redisConfig.User,
-		Password: redisConfig.Password,
-		TLSConfig: &tls.Config{
-			InsecureSkipVerify: false,
-		},
-	})
 	b := &Wallet{
-		c: &counter{redisClient: rc},
+		c: redis.NewCounter(prefixCounter),
 	}
 	return b
 }
@@ -160,12 +89,12 @@ func (b *Wallet) Transfer(ctx context.Context, req *pb.TransferRequest, rsp *pb.
 		return errors.BadRequest("wallet.transfer", "missing ids")
 	}
 
-	amount, err := b.c.read(ctx, tnt, req.FromId, "$wallet$")
+	amount, err := b.c.Read(ctx, redis.Key(tnt, req.FromId), "$wallet$")
 	if amount < req.Amount {
 		return errors.BadRequest("wallet.transfer", "insufficient credit")
 	}
 
-	_, err = b.c.decr(ctx, tnt, req.FromId, "$wallet$", req.Amount)
+	_, err = b.c.Decr(ctx, redis.Key(tnt, req.FromId), "$wallet$", req.Amount)
 	if err != nil {
 		return err
 	}
@@ -175,7 +104,7 @@ func (b *Wallet) Transfer(ctx context.Context, req *pb.TransferRequest, rsp *pb.
 		return err
 	}
 
-	_, err = b.c.incr(ctx, tnt, req.ToId, "$wallet$", req.Amount)
+	_, err = b.c.Incr(ctx, redis.Key(tnt, req.ToId), "$wallet$", req.Amount)
 	if err != nil {
 		return err
 	}
@@ -200,7 +129,7 @@ func (b Wallet) Credit(ctx context.Context, request *pb.CreditRequest, response 
 
 	// TODO idempotency
 	// increment the wallet
-	currBal, err := b.c.incr(ctx, tnt, request.Id, "$wallet$", request.Amount)
+	currBal, err := b.c.Incr(ctx, redis.Key(tnt, request.Id), "$wallet$", request.Amount)
 	if err != nil {
 		return err
 	}
@@ -226,7 +155,7 @@ func (b *Wallet) Debit(ctx context.Context, request *pb.DebitRequest, response *
 
 	// TODO idempotency
 	// decrement the wallet
-	currBal, err := b.c.decr(ctx, tnt, request.Id, "$wallet$", request.Amount)
+	currBal, err := b.c.Decr(ctx, redis.Key(tnt, request.Id), "$wallet$", request.Amount)
 	if err != nil {
 		return err
 	}
@@ -247,7 +176,7 @@ func (b *Wallet) Balance(ctx context.Context, request *pb.BalanceRequest, respon
 		return errors.BadRequest("wallet.balance", "unauthorized")
 	}
 
-	currBal, err := b.c.read(ctx, tnt, request.Id, "$wallet$")
+	currBal, err := b.c.Read(ctx, redis.Key(tnt, request.Id), "$wallet$")
 	if err != nil && err != redis.Nil {
 		log.Errorf("Error reading from counter %s", err)
 		return errors.InternalServerError("wallet.Balance", "Error retrieving current wallet")
@@ -302,8 +231,8 @@ func (b *Wallet) Create(ctx context.Context, request *pb.CreateRequest, response
 	}
 
 	// generate a new id
-	id := req.Id
-	if len(id == 0) {
+	id := request.Id
+	if len(id) == 0 {
 		id = uuid.New().String()
 	}
 
@@ -345,7 +274,7 @@ func (b *Wallet) Delete(ctx context.Context, request *pb.DeleteRequest, response
 	}
 
 	// delete the wallet
-	if err := b.c.deleteWallet(ctx, userID, walletID); err != nil {
+	if err := b.c.Delete(ctx, redis.Key(userID, walletID)); err != nil {
 		return err
 	}
 
