@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package wallet;
+
+option go_package = "./proto;wallet";
+
+service Wallet {
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Credit(CreditRequest) returns (CreditResponse) {}
+	rpc Debit(DebitRequest) returns (DebitResponse) {}
+	rpc Balance(BalanceRequest) returns (BalanceResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Transactions(TransactionsRequest) returns (TransactionsResponse) {}
+	rpc Transfer(TransferRequest) returns (TransferResponse) {}
+}
+
+message Account {
+	// wallet id
+	string id = 1;
+	// name of the wallet
+	string name = 2;
+	// description of the wallet
+	string description = 3;
+	// current balance
+	int64 balance = 4;
+}
+
+// List your accounts
+message ListRequest {
+}
+
+message ListResponse {
+	repeated Account accounts = 1;
+}
+
+// Create a wallet
+message CreateRequest {
+	// name of the wallet
+	string name = 1;
+	// description for wallet
+	string description = 2;
+}
+
+message CreateResponse {
+	// wallet id
+	Account account = 1;
+}
+
+message TransferRequest {
+	// from email
+	string from_id = 1;
+	// to email
+	string to_id = 2;
+	// amount to transfer
+	int64 amount = 3;
+	// reference
+	string reference = 4;
+	// visible?
+	bool visible = 5;
+}
+
+message TransferResponse {}
+
+message CreditRequest {
+	string id = 1;
+	int64 delta = 2;
+	string idempotency_key = 3;
+	bool visible = 4;
+	string reference = 5;
+}
+
+message CreditResponse {
+	int64 new_balance = 1;
+}
+
+message DebitRequest {
+	string id = 1;
+	int64 delta = 2;
+	string idempotency_key = 3;
+	bool visible = 4;
+	string reference = 5;
+}
+
+message DebitResponse {
+	int64 new_balance = 1;
+}
+
+message BalanceRequest {
+	string id = 1;
+}
+
+message BalanceResponse {
+	int64 balance = 1;
+}
+
+message TransactionsRequest {
+	string id = 1;
+}
+
+message Transaction {
+	string id = 1;
+	int64 created = 2;
+	int64 delta = 3;
+	string reference = 4;
+	map<string,string> metadata = 5;
+}
+
+message TransactionsResponse {
+	repeated Transaction transactions = 1;
+}
+
+message DeleteRequest {
+	string id = 1;
+}
+
+message DeleteResponse {}
+

@@ -16,6 +16,7 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/enescakir/emoji v1.0.0
 	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
 	github.com/golang-jwt/jwt v0.0.0-20210529014511-0f726ea0e725
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
@@ -35,7 +36,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.16
 	github.com/o1egl/govatar v0.3.0
 	github.com/oklog/ulid v1.3.1
-	github.com/onsi/gomega v1.10.5
+	github.com/onsi/gomega v1.18.1
 	github.com/opensearch-project/opensearch-go v1.0.0
 	github.com/oschwald/geoip2-golang v1.5.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -72,10 +73,12 @@ require (
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/cdipaolo/goml v0.0.0-20190412180403-e1f51f713598 // indirect
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/dghubble/sling v1.3.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/evanphx/json-patch/v5 v5.0.0 // indirect
 	github.com/go-acme/lego/v3 v3.4.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
@@ -139,7 +142,7 @@ require (
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
@@ -149,6 +152,6 @@ require (
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )
