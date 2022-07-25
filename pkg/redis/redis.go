@@ -19,6 +19,13 @@ type Counter struct {
 	client *redis.Client
 }
 
+type Config struct {
+	Address  string `json:"address"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
+	Secure bool `json:"secure,omitempty"`
+}
+
 const Nil = redis.Nil
 
 func Key(args ...string) string {
@@ -66,29 +73,37 @@ func (c *Counter) Delete(ctx context.Context, key string) error {
 }
 
 func NewCounter(prefix string) *Counter {
-	redisConfig := struct {
-		Address  string
-		User     string
-		Password string
-	}{}
+	var redisConfig Config
+
 	val, err := config.Get("micro.redis")
 	if err != nil {
 		log.Fatalf("No redis config found %s", err)
 	}
+
 	if err := val.Scan(&redisConfig); err != nil {
 		log.Fatalf("Error parsing redis config %s", err)
 	}
-	if len(redisConfig.Password) == 0 || len(redisConfig.User) == 0 || len(redisConfig.Password) == 0 {
-		log.Fatalf("Missing redis config %s", err)
-	}
-	rc := redis.NewClient(&redis.Options{
+
+	log.Infof("Using %v", redisConfig)
+
+	opts := &redis.Options{
 		Addr:     redisConfig.Address,
-		Username: redisConfig.User,
+		Username: redisConfig.Username,
 		Password: redisConfig.Password,
-		TLSConfig: &tls.Config{
+	}
+	if redisConfig.Secure {
+		opts.TLSConfig = &tls.Config{
 			InsecureSkipVerify: false,
-		},
-	})
+		}
+	}
+
+	rc := redis.NewClient(opts)
+
+	_, err = rc.Ping(context.Background()).Result()
+	if err != nil {
+		log.Fatalf("Failed to ping redis: %v", err)
+	}
+
 	return &Counter{
 		prefix: prefix,
 		client: rc,

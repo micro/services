@@ -70,10 +70,9 @@ func storeTransaction(userID string, delta int64, walletID, reference string, vi
 }
 
 func NewHandler(svc *service.Service) *Wallet {
-	b := &Wallet{
+	return &Wallet{
 		c: redis.NewCounter(prefixCounter),
 	}
-	return b
 }
 
 func (b *Wallet) Transfer(ctx context.Context, req *pb.TransferRequest, rsp *pb.TransferResponse) error {
@@ -89,12 +88,12 @@ func (b *Wallet) Transfer(ctx context.Context, req *pb.TransferRequest, rsp *pb.
 		return errors.BadRequest("wallet.transfer", "missing ids")
 	}
 
-	amount, err := b.c.Read(ctx, redis.Key(tnt, req.FromId), "$wallet$")
+	amount, err := b.c.Read(ctx, redis.Key(tnt, req.FromId), "$balance$")
 	if amount < req.Amount {
 		return errors.BadRequest("wallet.transfer", "insufficient credit")
 	}
 
-	_, err = b.c.Decr(ctx, redis.Key(tnt, req.FromId), "$wallet$", req.Amount)
+	_, err = b.c.Decr(ctx, redis.Key(tnt, req.FromId), "$balance$", req.Amount)
 	if err != nil {
 		return err
 	}
@@ -104,7 +103,7 @@ func (b *Wallet) Transfer(ctx context.Context, req *pb.TransferRequest, rsp *pb.
 		return err
 	}
 
-	_, err = b.c.Incr(ctx, redis.Key(tnt, req.ToId), "$wallet$", req.Amount)
+	_, err = b.c.Incr(ctx, redis.Key(tnt, req.ToId), "$balance$", req.Amount)
 	if err != nil {
 		return err
 	}
@@ -117,10 +116,14 @@ func (b *Wallet) Transfer(ctx context.Context, req *pb.TransferRequest, rsp *pb.
 	return nil
 }
 
-func (b Wallet) Credit(ctx context.Context, request *pb.CreditRequest, response *pb.CreditResponse) error {
+func (b *Wallet) Credit(ctx context.Context, request *pb.CreditRequest, response *pb.CreditResponse) error {
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.BadRequest("wallet.credit", "unauthorized")
+	}
+
+	if len(request.Id) == 0 {
+		request.Id = "default"
 	}
 
 	if len(request.Reference) == 0 {
@@ -129,12 +132,12 @@ func (b Wallet) Credit(ctx context.Context, request *pb.CreditRequest, response 
 
 	// TODO idempotency
 	// increment the wallet
-	currBal, err := b.c.Incr(ctx, redis.Key(tnt, request.Id), "$wallet$", request.Amount)
+	currBal, err := b.c.Incr(ctx, redis.Key(tnt, request.Id), "$balance$", request.Amount)
 	if err != nil {
 		return err
 	}
 
-	response.NewBalance = currBal
+	response.Balance = currBal
 	_, err = storeTransaction(tnt, request.Amount, request.Id, request.Reference, request.Visible, nil)
 	if err != nil {
 		return err
@@ -153,14 +156,18 @@ func (b *Wallet) Debit(ctx context.Context, request *pb.DebitRequest, response *
 		return errors.BadRequest("wallet.debit", "Missing reference")
 	}
 
+	if len(request.Id) == 0 {
+		request.Id = "default"
+	}
+
 	// TODO idempotency
 	// decrement the wallet
-	currBal, err := b.c.Decr(ctx, redis.Key(tnt, request.Id), "$wallet$", request.Amount)
+	currBal, err := b.c.Decr(ctx, redis.Key(tnt, request.Id), "$balance$", request.Amount)
 	if err != nil {
 		return err
 	}
 
-	response.NewBalance = currBal
+	response.Balance = currBal
 
 	_, err = storeTransaction(tnt, -request.Amount, request.Id, request.Reference, request.Visible, nil)
 	if err != nil {
@@ -176,10 +183,25 @@ func (b *Wallet) Balance(ctx context.Context, request *pb.BalanceRequest, respon
 		return errors.BadRequest("wallet.balance", "unauthorized")
 	}
 
-	currBal, err := b.c.Read(ctx, redis.Key(tnt, request.Id), "$wallet$")
+	if len(request.Id) == 0 {
+		request.Id = "default"
+	}
+
+	key := fmt.Sprintf("%s/%s/%s", prefixStore, tnt, request.Id)
+	_, err := store.Read(key, store.ReadLimit(1))
+	if err != nil && err != store.ErrNotFound {
+		return errors.InternalServerError("wallet.balance", "error retrieving balance")
+	}
+	// no wallet
+	if err == store.ErrNotFound {
+		response.Balance = 0
+		return nil
+	}
+
+	currBal, err := b.c.Read(ctx, redis.Key(tnt, request.Id), "$balance$")
 	if err != nil && err != redis.Nil {
 		log.Errorf("Error reading from counter %s", err)
-		return errors.InternalServerError("wallet.Balance", "Error retrieving current wallet")
+		return errors.InternalServerError("wallet.Balance", "Error retrieving balance")
 	}
 
 	response.Balance = currBal
@@ -190,6 +212,10 @@ func (b *Wallet) Transactions(ctx context.Context, request *pb.TransactionsReque
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
 		return errors.BadRequest("wallet.transactions", "unauthorized")
+	}
+
+	if len(request.Id) == 0 {
+		request.Id = "default"
 	}
 
 	recs, err := store.Read(fmt.Sprintf("%s/%s/%s/", prefixStoreByUser, tnt, request.Id), store.ReadPrefix())

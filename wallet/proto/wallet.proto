@@ -87,7 +87,8 @@ message CreditRequest {
 }
 
 message CreditResponse {
-	int64 new_balance = 1;
+	// the new balance
+	int64 balance = 1;
 }
 
 // Debit a wallet
@@ -105,7 +106,8 @@ message DebitRequest {
 }
 
 message DebitResponse {
-	int64 new_balance = 1;
+	// the new balance
+	int64 balance = 1;
 }
 
 // Get the balance of a wallet
