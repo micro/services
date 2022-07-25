@@ -187,17 +187,6 @@ func (b *Wallet) Balance(ctx context.Context, request *pb.BalanceRequest, respon
 		request.Id = "default"
 	}
 
-	key := fmt.Sprintf("%s/%s/%s", prefixStore, tnt, request.Id)
-	_, err := store.Read(key, store.ReadLimit(1))
-	if err != nil && err != store.ErrNotFound {
-		return errors.InternalServerError("wallet.balance", "error retrieving balance")
-	}
-	// no wallet
-	if err == store.ErrNotFound {
-		response.Balance = 0
-		return nil
-	}
-
 	currBal, err := b.c.Read(ctx, redis.Key(tnt, request.Id), "$balance$")
 	if err != nil && err != redis.Nil {
 		log.Errorf("Error reading from counter %s", err)
