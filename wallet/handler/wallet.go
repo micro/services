@@ -71,7 +71,7 @@ func (c *counter) deleteWallet(ctx context.Context, userID, walletID string) err
 	return nil
 }
 
-// Transaction represents a wallet adjustment (not including normal API usage). e.g. credit being added, promo codes, manual adjustment for customer service etc
+// Transaction represents a wallet transaction (not including normal API usage). e.g. credit being added, promo codes, manual transaction for customer service etc
 type Transaction struct {
 	ID         string
 	Created    time.Time
@@ -79,7 +79,7 @@ type Transaction struct {
 	Reference  string // reference description
 	Visible    bool   // should this be visible to the customer? If false, it only displays to admins
 	WalletID   string
-	ActionedBy string // who made the adjustment
+	ActionedBy string // who made the transaction
 	Metadata   map[string]string
 }
 
