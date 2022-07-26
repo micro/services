@@ -58,9 +58,9 @@ message ListResponse {
 
 // Make a transfer from one wallet to another
 message TransferRequest {
-	// from email
+	// from wallet id
 	string from_id = 1;
-	// to email
+	// to wallet id
 	string to_id = 2;
 	// amount to transfer
 	int64 amount = 3;
