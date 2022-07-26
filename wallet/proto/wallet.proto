@@ -1,0 +1,147 @@
+syntax = "proto3";
+
+package wallet;
+
+option go_package = "./proto;wallet";
+
+service Wallet {
+	rpc Create(CreateRequest) returns (CreateResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Credit(CreditRequest) returns (CreditResponse) {}
+	rpc Debit(DebitRequest) returns (DebitResponse) {}
+	rpc Balance(BalanceRequest) returns (BalanceResponse) {}
+	rpc List(ListRequest) returns (ListResponse) {}
+	rpc Transactions(TransactionsRequest) returns (TransactionsResponse) {}
+	rpc Transfer(TransferRequest) returns (TransferResponse) {}
+}
+
+message Account {
+	// wallet id
+	string id = 1;
+	// name of the wallet
+	string name = 2;
+	// description of the wallet
+	string description = 3;
+	// current balance
+	int64 balance = 4;
+}
+
+// Create a new wallet
+message CreateRequest {
+	// optional id
+	string id = 1;
+	// name of the wallet
+	string name = 2;
+	// description for wallet
+	string description = 3;
+}
+
+message CreateResponse {
+	// the wallet created
+	Account account = 1;
+}
+
+// Delete a wallet
+message DeleteRequest {
+	string id = 1;
+}
+
+message DeleteResponse {}
+
+// List your wallets
+message ListRequest {
+}
+
+message ListResponse {
+	repeated Account accounts = 1;
+}
+
+// Make a transfer from one wallet to another
+message TransferRequest {
+	// from email
+	string from_id = 1;
+	// to email
+	string to_id = 2;
+	// amount to transfer
+	int64 amount = 3;
+	// reference
+	string reference = 4;
+	// visible?
+	bool visible = 5;
+}
+
+message TransferResponse {}
+
+// Add credit to a wallet
+message CreditRequest {
+	// wallet id
+	string id = 1;
+	// amount to credit
+	int64 amount = 2;
+	// idempotency key
+	string idempotency_key = 3;
+	// if the transaction is visible
+	bool visible = 4;
+	// reference note
+	string reference = 5;
+}
+
+message CreditResponse {
+	// the new balance
+	int64 balance = 1;
+}
+
+// Debit a wallet
+message DebitRequest {
+	// wallet
+	string id = 1;
+	// amount to debit
+	int64 amount = 2;
+	// idempotency key
+	string idempotency_key = 3;
+	// if the transaction is visible
+	bool visible = 4;
+	// reference note
+	string reference = 5;
+}
+
+message DebitResponse {
+	// the new balance
+	int64 balance = 1;
+}
+
+// Get the balance of a wallet
+message BalanceRequest {
+	// wallet id
+	string id = 1;
+}
+
+message BalanceResponse {
+	// current balance
+	int64 balance = 1;
+}
+
+message Transaction {
+	// unique id of transaction
+	string id = 1;
+	// time of transaction
+	string created = 2;
+	// amount in transaction
+	int64 amount = 3;
+	// reference note
+	string reference = 4;
+	// associated metadata
+	map<string,string> metadata = 5;
+}
+
+// List the transactions for a wallet
+message TransactionsRequest {
+	// wallet id
+	string id = 1;
+}
+
+message TransactionsResponse {
+	// list of transactions
+	repeated Transaction transactions = 1;
+}
+
