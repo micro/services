@@ -34,7 +34,6 @@
         }
     }],
     "credit": [{
-    "credit": [{
         "title": "Credit wallet",
         "run_check": false,
         "request": {
