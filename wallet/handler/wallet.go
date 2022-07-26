@@ -20,7 +20,7 @@ import (
 
 const (
 	accountPrefix     = "account"
-	counterPrefix     = "wallet/account"
+	counterPrefix     = "wallet"
 	transactionPrefix = "transaction"
 )
 

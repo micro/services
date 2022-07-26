@@ -23,7 +23,7 @@ type Config struct {
 	Address  string `json:"address"`
 	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
-	Secure bool `json:"secure,omitempty"`
+	Secure   bool   `json:"secure,omitempty"`
 }
 
 const Nil = redis.Nil
@@ -105,7 +105,7 @@ func NewCounter(prefix string) *Counter {
 	}
 
 	return &Counter{
-		prefix: prefix,
+		prefix: Key(prefix, "counter"),
 		client: rc,
 	}
 }
