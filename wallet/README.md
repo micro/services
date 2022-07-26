@@ -1,5 +1,5 @@
-Digital Wallet 
+Virtual Wallet 
 
 # Wallet Service
 
-A digital wallet you can manage multiple currencies from. Credit, debit, transfer and more.
+A virtual wallet you to manage multiple currencies from anywhere. Credit, debit, transfer and more.
