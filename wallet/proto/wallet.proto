@@ -25,8 +25,6 @@ message Account {
 	string description = 3;
 	// current balance
 	int64 balance = 4;
-	// currency of balance
-	string currency = 5;
 }
 
 // Create a new wallet
@@ -37,8 +35,6 @@ message CreateRequest {
 	string name = 2;
 	// description for wallet
 	string description = 3;
-	// specify a currency
-	string currency = 4;
 }
 
 message CreateResponse {

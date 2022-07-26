@@ -12,8 +12,7 @@
                         "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
                         "name": "Greatness",
                         "description": "No description needed",
-                        "balance": "0",
-			"currency": "USD"
+                        "balance": "0"
                 }
         }
     }],
@@ -28,8 +27,7 @@
                         "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
                         "name": "Greatness",
                         "description": "No description needed",
-                        "balance": "0",
-			"currency": "USD"
+                        "balance": "0"
                 }
         }
     }],
@@ -68,8 +66,7 @@
                         "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
                         "name": "Greatness",
                         "description": "No description needed",
-                        "balance": "5",
-			"currency": "USD"
+                        "balance": "5"
                 }]
         }
     }],

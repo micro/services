@@ -258,7 +258,6 @@ func (b *Wallet) Create(ctx context.Context, request *pb.CreateRequest, response
 		Id:          id,
 		Name:        request.Name,
 		Description: request.Description,
-		Currency:    request.Currency,
 	}
 
 	// create a new record
@@ -318,10 +317,8 @@ func (w *Wallet) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResp
 		return errors.BadRequest("wallet.read", "unauthorized")
 	}
 
-	var currency string
 	if len(req.Id) == 0 {
 		req.Id = "default"
-		currency = "MU"
 	}
 
 	recs, err := store.Read(fmt.Sprintf("%s/%s/%s", accountPrefix, tnt, req.Id), store.ReadLimit(1))
@@ -343,10 +340,6 @@ func (w *Wallet) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResp
 
 	// set balance
 	acc.Balance = bal
-
-	if len(currency) > 0 {
-		acc.Currency = currency
-	}
 
 	rsp.Account = acc
 
@@ -397,7 +390,6 @@ func (w *Wallet) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResp
 		Id:       "default",
 		Name:     "Default account",
 		Balance:  bal,
-		Currency: "MU",
 	})
 
 	return nil
