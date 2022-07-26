@@ -1,0 +1,120 @@
+{
+    "create": [{
+        "title": "Create a new wallet",
+        "description": "Create a new wallet by name",
+        "run_check": false,
+        "request": {
+            "name": "Greatness",
+            "description": "No explanation needed"
+        },
+        "response": {
+               "account": {
+                        "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
+                        "name": "Greatness",
+                        "description": "No description needed",
+                        "balance": "0"
+                }
+        }
+    }],
+    "credit": [{
+        "title": "Credit wallet",
+        "run_check": false,
+        "request": {
+            "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
+	    "amount": "10",
+	    "reference": "test credit",
+	    "visible": true
+        },
+        "response": {
+	    "balance": "10"
+        }
+    }],
+    "debit": [{
+        "title": "Debit wallet",
+        "run_check": false,
+        "request": {
+            "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
+	    "amount": "5",
+	    "reference": "test debit",
+	    "visible": true
+        },
+        "response": {
+	    "balance": "5"
+        }
+    }],
+    "list": [{
+        "title": "List wallets",
+        "run_check": false,
+        "request": {},
+        "response": {
+               "accounts": [{
+                        "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
+                        "name": "Greatness",
+                        "description": "No description needed",
+                        "balance": "5"
+                }]
+        }
+    }],
+    "transfer": [{
+        "title": "Transfer money",
+        "run_check": false,
+        "request": {
+            "from_id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
+            "to_id": "default",
+	    "amount": "5",
+	    "reference": "transfer money",
+	    "visible": true
+        },
+        "response": {}
+    }],
+    "balance": [{
+        "title": "Get balance",
+        "run_check": false,
+        "request": {
+            "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6"
+        },
+        "response": {
+	    "balance": "0"
+        }
+    }],
+    "transactions": [{
+        "title": "List transactions",
+        "run_check": false,
+        "request": {
+        	"id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6"
+	},
+        "response": {
+		"transactions": [
+			{
+				"id": "a5455d1a-c090-4cf1-a6a1-8ef8fb38b462",
+				"created": "2022-07-25T21:54:13.380533678+01:00",
+				"amount": "10",
+				"reference": "test credit",
+				"metadata": {}
+			},
+			{
+				"id": "a5455d1a-c090-4cf1-a6a1-8ef8fb38b462",
+				"created": "2022-07-25T21:54:10.380533678+01:00",
+				"amount": "5",
+				"reference": "test debit",
+				"metadata": {}
+			},
+			{
+				"id": "a4b82d66-aafa-480f-8f5c-b68564ccea6f",
+				"created": "2022-07-26T08:38:55.022032883+01:00",
+				"amount": "-5",
+				"reference": "transfer",
+				"metadata": {}
+			}
+		]
+	}
+    }],
+    "delete": [{
+        "title": "Delete a wallet",
+        "run_check": false,
+        "request": {
+            "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6"
+        },
+        "response": {}
+    }]
+}
