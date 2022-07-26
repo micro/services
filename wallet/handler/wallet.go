@@ -258,6 +258,7 @@ func (b *Wallet) Create(ctx context.Context, request *pb.CreateRequest, response
 		Id:          id,
 		Name:        request.Name,
 		Description: request.Description,
+		Currency:    request.Currency,
 	}
 
 	// create a new record
@@ -311,6 +312,47 @@ func (b *Wallet) Delete(ctx context.Context, request *pb.DeleteRequest, response
 	return nil
 }
 
+func (w *Wallet) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {
+	tnt, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.BadRequest("wallet.read", "unauthorized")
+	}
+
+	var currency string
+	if len(req.Id) == 0 {
+		req.Id = "default"
+		currency = "MU"
+	}
+
+	recs, err := store.Read(fmt.Sprintf("%s/%s/%s", accountPrefix, tnt, req.Id), store.ReadLimit(1))
+	if err != nil {
+		return err
+	}
+	if len(recs) == 0 {
+		return nil
+	}
+
+	acc := new(pb.Account)
+	recs[0].Decode(&acc)
+
+	bal, err := w.c.Read(ctx, redis.Key(tnt, acc.Id), "$balance$")
+	if err != nil && err != redis.Nil {
+		log.Errorf("Error reading from counter %s", err)
+		return errors.BadRequest("wallet.read", "error reading balance")
+	}
+
+	// set balance
+	acc.Balance = bal
+
+	if len(currency) > 0 {
+		acc.Currency = currency
+	}
+
+	rsp.Account = acc
+
+	return nil
+}
+
 func (w *Wallet) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	tnt, ok := tenant.FromContext(ctx)
 	if !ok {
@@ -352,9 +394,10 @@ func (w *Wallet) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResp
 
 	// add default
 	rsp.Accounts = append(rsp.Accounts, &pb.Account{
-		Id:      "default",
-		Name:    "Default account",
-		Balance: bal,
+		Id:       "default",
+		Name:     "Default account",
+		Balance:  bal,
+		Currency: "MU",
 	})
 
 	return nil

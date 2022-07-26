@@ -7,6 +7,7 @@ option go_package = "./proto;wallet";
 service Wallet {
 	rpc Create(CreateRequest) returns (CreateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Read(ReadRequest) returns (ReadResponse) {}
 	rpc Credit(CreditRequest) returns (CreditResponse) {}
 	rpc Debit(DebitRequest) returns (DebitResponse) {}
 	rpc Balance(BalanceRequest) returns (BalanceResponse) {}
@@ -24,6 +25,8 @@ message Account {
 	string description = 3;
 	// current balance
 	int64 balance = 4;
+	// currency of balance
+	string currency = 5;
 }
 
 // Create a new wallet
@@ -34,6 +37,8 @@ message CreateRequest {
 	string name = 2;
 	// description for wallet
 	string description = 3;
+	// specify a currency
+	string currency = 4;
 }
 
 message CreateResponse {
@@ -47,6 +52,16 @@ message DeleteRequest {
 }
 
 message DeleteResponse {}
+
+// Get wallet by id
+message ReadRequest {
+	// wallet id
+	string id = 1;
+}
+
+message ReadResponse {
+	Account account = 1;
+}
 
 // List your wallets
 message ListRequest {

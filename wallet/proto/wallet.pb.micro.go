@@ -44,6 +44,7 @@ func NewWalletEndpoints() []*api.Endpoint {
 type WalletService interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
+	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 	Credit(ctx context.Context, in *CreditRequest, opts ...client.CallOption) (*CreditResponse, error)
 	Debit(ctx context.Context, in *DebitRequest, opts ...client.CallOption) (*DebitResponse, error)
 	Balance(ctx context.Context, in *BalanceRequest, opts ...client.CallOption) (*BalanceResponse, error)
@@ -77,6 +78,16 @@ func (c *walletService) Create(ctx context.Context, in *CreateRequest, opts ...c
 func (c *walletService) Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error) {
 	req := c.c.NewRequest(c.name, "Wallet.Delete", in)
 	out := new(DeleteResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *walletService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
+	req := c.c.NewRequest(c.name, "Wallet.Read", in)
+	out := new(ReadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -149,6 +160,7 @@ func (c *walletService) Transfer(ctx context.Context, in *TransferRequest, opts 
 type WalletHandler interface {
 	Create(context.Context, *CreateRequest, *CreateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
+	Read(context.Context, *ReadRequest, *ReadResponse) error
 	Credit(context.Context, *CreditRequest, *CreditResponse) error
 	Debit(context.Context, *DebitRequest, *DebitResponse) error
 	Balance(context.Context, *BalanceRequest, *BalanceResponse) error
@@ -161,6 +173,7 @@ func RegisterWalletHandler(s server.Server, hdlr WalletHandler, opts ...server.H
 	type wallet interface {
 		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
+		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
 		Credit(ctx context.Context, in *CreditRequest, out *CreditResponse) error
 		Debit(ctx context.Context, in *DebitRequest, out *DebitResponse) error
 		Balance(ctx context.Context, in *BalanceRequest, out *BalanceResponse) error
@@ -185,6 +198,10 @@ func (h *walletHandler) Create(ctx context.Context, in *CreateRequest, out *Crea
 
 func (h *walletHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
 	return h.WalletHandler.Delete(ctx, in, out)
+}
+
+func (h *walletHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
+	return h.WalletHandler.Read(ctx, in, out)
 }
 
 func (h *walletHandler) Credit(ctx context.Context, in *CreditRequest, out *CreditResponse) error {

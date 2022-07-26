@@ -12,10 +12,28 @@
                         "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
                         "name": "Greatness",
                         "description": "No description needed",
-                        "balance": "0"
+                        "balance": "0",
+			"currency": "USD"
                 }
         }
     }],
+    "read": [{
+        "title": "Read a wallet",
+        "run_check": false,
+        "request": {
+            "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6"
+        },
+        "response": {
+               "account": {
+                        "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
+                        "name": "Greatness",
+                        "description": "No description needed",
+                        "balance": "0",
+			"currency": "USD"
+                }
+        }
+    }],
+    "credit": [{
     "credit": [{
         "title": "Credit wallet",
         "run_check": false,
@@ -51,7 +69,8 @@
                         "id": "b6407edd-2e26-45c0-9e2c-343689bbe5f6",
                         "name": "Greatness",
                         "description": "No description needed",
-                        "balance": "5"
+                        "balance": "5",
+			"currency": "USD"
                 }]
         }
     }],
