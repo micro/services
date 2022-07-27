@@ -32,7 +32,7 @@ require (
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro/v3 v3.9.1-0.20220227222118-3d0aa50678fe
+	github.com/micro/micro/v3 v3.11.1-0.20220726112607-61fbcaa8acf2
 	github.com/minio/minio-go/v7 v7.0.16
 	github.com/o1egl/govatar v0.3.0
 	github.com/oklog/ulid v1.3.1
