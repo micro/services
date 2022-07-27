@@ -93,6 +93,14 @@ func (o *OpenSea) Assets(ctx context.Context, req *pb.AssetsRequest, rsp *pb.Ass
 	}
 
 	for _, asset := range resp.Assets {
+		// check description length
+		if len(asset.Description) > 2048 {
+			asset.Description = asset.Description[:2048]
+		}
+
+		if asset.Collection != nil && len(asset.Collection.Description) > 2048 {
+			asset.Collection.Description = asset.Collection.Description[:2048]
+		}
 		rsp.Assets = append(rsp.Assets, assetToPb(asset))
 	}
 	rsp.Next = resp.Next
