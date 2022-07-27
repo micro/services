@@ -4,9 +4,9 @@
   "category": "crypto",
   "display_name": "NFTs",
   "pricing": {
-    "Nft.Asset": 10,
-    "Nft.Assets": 10,
-    "Nft.Collection": 10,
-    "Nft.Collections": 10
+    "Nft.Asset": 100,
+    "Nft.Assets": 100,
+    "Nft.Collection": 100,
+    "Nft.Collections": 100
   }
 }
