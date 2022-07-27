@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVICES=`find . -maxdepth 2 -type d -name proto | cut -f 2 -d /`
+SERVICES=`find . -maxdepth 2 -type d -name proto | cut -f 2 -d / | sort`
 
 cat << EOF
 package services

@@ -88,6 +88,14 @@ func (b *Wallet) Transfer(ctx context.Context, req *pb.TransferRequest, rsp *pb.
 		return errors.BadRequest("wallet.transfer", "missing ids")
 	}
 
+	// check the wallets exist
+	for _, id := range []string{req.FromId, req.ToId} {
+		_, err := store.Read(fmt.Sprintf("%s/%s/%s", accountPrefix, tnt, id), store.ReadLimit(1))
+		if err != nil {
+			return errors.BadRequest("wallet.transfer", "invalid account")
+		}
+	}
+
 	amount, err := b.c.Read(ctx, redis.Key(tnt, req.FromId), "$balance$")
 	if amount < req.Amount {
 		return errors.BadRequest("wallet.transfer", "insufficient credit")
@@ -387,9 +395,9 @@ func (w *Wallet) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResp
 
 	// add default
 	rsp.Accounts = append(rsp.Accounts, &pb.Account{
-		Id:       "default",
-		Name:     "Default account",
-		Balance:  bal,
+		Id:      "default",
+		Name:    "Default account",
+		Balance: bal,
 	})
 
 	return nil

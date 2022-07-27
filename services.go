@@ -70,6 +70,7 @@ import (
 	"github.com/micro/services/url/proto"
 	"github.com/micro/services/user/proto"
 	"github.com/micro/services/vehicle/proto"
+	"github.com/micro/services/wallet/proto"
 	"github.com/micro/services/weather/proto"
 	"github.com/micro/services/wordle/proto"
 	"github.com/micro/services/youtube/proto"
@@ -144,6 +145,7 @@ type Client struct {
 	Url        url.UrlService
 	User       user.UserService
 	Vehicle    vehicle.VehicleService
+	Wallet     wallet.WalletService
 	Weather    weather.WeatherService
 	Wordle     wordle.WordleService
 	Youtube    youtube.YoutubeService
@@ -219,6 +221,7 @@ func NewClient(c client.Client) *Client {
 		Url:        url.NewUrlService("url", c),
 		User:       user.NewUserService("user", c),
 		Vehicle:    vehicle.NewVehicleService("vehicle", c),
+		Wallet:     wallet.NewWalletService("wallet", c),
 		Weather:    weather.NewWeatherService("weather", c),
 		Wordle:     wordle.NewWordleService("wordle", c),
 		Youtube:    youtube.NewYoutubeService("youtube", c),
