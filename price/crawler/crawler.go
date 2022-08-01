@@ -1,7 +1,7 @@
 package crawler
 
 import (
-	"fmt"
+	//"fmt"
 	"net/url"
 	"path"
 	"strings"
@@ -69,7 +69,7 @@ func (c *Crawler) GetPrices(base string) {
 			Author:    "Micro",
 		}
 
-		for _, suffix := range []string{"latest", fmt.Sprintf("%d", rsp.Data.Timestamp)} {
+		for _, suffix := range []string{"latest"} { //, fmt.Sprintf("%d", rsp.Data.Timestamp)} {
 			// store it
 			key := path.Join(
 				"price",
@@ -191,7 +191,7 @@ func (c *Crawler) Get(symbol, currency string) (*pb.Value, error) {
 	}
 
 	// write historic record and latest
-	for _, suffix := range []string{"latest", fmt.Sprintf("%d", rsp.Data.Timestamp)} {
+	for _, suffix := range []string{"latest"} { //, fmt.Sprintf("%d", rsp.Data.Timestamp)} {
 		key := path.Join(
 			"price",
 			strings.ToLower(symbol),
@@ -258,7 +258,7 @@ func (c *Crawler) List(currency string) ([]*pb.Value, error) {
 		values = append(values, val)
 
 		// write historic record and latest
-		for _, suffix := range []string{"latest", fmt.Sprintf("%d", rsp.Data.Timestamp)} {
+		for _, suffix := range []string{"latest"} { //, fmt.Sprintf("%d", rsp.Data.Timestamp)} {
 			key := path.Join(
 				"price",
 				strings.ToLower(symbol),

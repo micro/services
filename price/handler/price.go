@@ -43,7 +43,7 @@ func New() *Price {
 	}
 
 	c := crawler.New(url, key)
-	go c.Run()
+	//go c.Run()
 
 	return &Price{c}
 }
