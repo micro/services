@@ -114,7 +114,7 @@ func (q *Qr) Codes(ctx context.Context, req *qr.CodesRequest, rsp *qr.CodesRespo
 	for _, rec := range recs {
 		code := new(QrCode)
 		rec.Decode(&code)
-		id := strings.TrimSuffix(strings.Split(code.Filename, "/")[2], ".png")
+		id := strings.TrimSuffix(strings.Split(code.Filename, "/")[1], ".png")
 
 		rsp.Codes = append(rsp.Codes, &qr.Code{
 			Id:      id,
