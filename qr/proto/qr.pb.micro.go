@@ -44,6 +44,8 @@ func NewQrEndpoints() []*api.Endpoint {
 type QrService interface {
 	// Generate a QR code
 	Generate(ctx context.Context, in *GenerateRequest, opts ...client.CallOption) (*GenerateResponse, error)
+	// List your QR codes
+	Codes(ctx context.Context, in *CodesRequest, opts ...client.CallOption) (*CodesResponse, error)
 }
 
 type qrService struct {
@@ -68,16 +70,29 @@ func (c *qrService) Generate(ctx context.Context, in *GenerateRequest, opts ...c
 	return out, nil
 }
 
+func (c *qrService) Codes(ctx context.Context, in *CodesRequest, opts ...client.CallOption) (*CodesResponse, error) {
+	req := c.c.NewRequest(c.name, "Qr.Codes", in)
+	out := new(CodesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Qr service
 
 type QrHandler interface {
 	// Generate a QR code
 	Generate(context.Context, *GenerateRequest, *GenerateResponse) error
+	// List your QR codes
+	Codes(context.Context, *CodesRequest, *CodesResponse) error
 }
 
 func RegisterQrHandler(s server.Server, hdlr QrHandler, opts ...server.HandlerOption) error {
 	type qr interface {
 		Generate(ctx context.Context, in *GenerateRequest, out *GenerateResponse) error
+		Codes(ctx context.Context, in *CodesRequest, out *CodesResponse) error
 	}
 	type Qr struct {
 		qr
@@ -92,4 +107,8 @@ type qrHandler struct {
 
 func (h *qrHandler) Generate(ctx context.Context, in *GenerateRequest, out *GenerateResponse) error {
 	return h.QrHandler.Generate(ctx, in, out)
+}
+
+func (h *qrHandler) Codes(ctx context.Context, in *CodesRequest, out *CodesResponse) error {
+	return h.QrHandler.Codes(ctx, in, out)
 }

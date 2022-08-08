@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -94,6 +95,35 @@ func (q *Qr) Generate(ctx context.Context, request *qr.GenerateRequest, response
 		return errors.InternalServerError("qr.generate", "Error while generating QR code")
 	}
 	response.Qr = fmt.Sprintf("%s/%s/%s", q.cdnPrefix, nsPrefix, rec.Filename)
+	return nil
+}
+
+func (q *Qr) Codes(ctx context.Context, req *qr.CodesRequest, rsp *qr.CodesResponse) error {
+	ten, ok := tenant.FromContext(ctx)
+	if !ok {
+		log.Errorf("Error retrieving tenant")
+		return errors.Unauthorized("qr.codes", "Unauthorized")
+	}
+
+	nsPrefix := namespacePrefix(ten)
+	recs, err := store.Read(fmt.Sprintf("%s/%s/", prefixByTenant, nsPrefix), store.ReadPrefix())
+	if err != nil {
+		return errors.InternalServerError("qr.codes", "Failed to read codes")
+	}
+
+	for _, rec := range recs {
+		code := new(QrCode)
+		rec.Decode(&code)
+		id := strings.TrimSuffix(strings.Split(code.Filename, "/")[2], ".png")
+
+		rsp.Codes = append(rsp.Codes, &qr.Code{
+			Id:      id,
+			Text:    code.Text,
+			File:    fmt.Sprintf("%s/%s/%s", q.cdnPrefix, nsPrefix, code.Filename),
+			Created: time.Unix(code.Created, 0).Format(time.RFC3339Nano),
+		})
+	}
+
 	return nil
 }
 

@@ -7,6 +7,19 @@ option go_package = "./proto;qr";
 service Qr {
 	// Generate a QR code
 	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
+	// List your QR codes
+	rpc Codes(CodesRequest) returns (CodesResponse) {}
+	
+}
+
+message Code {
+	string id = 1;
+	// text of the QR code
+	string text = 2;
+	// file name
+	string file = 3;
+	// time of creation
+	string created = 4;
 }
 
 // Generate a QR code with a specific text and size
@@ -20,4 +33,12 @@ message GenerateRequest {
 message GenerateResponse {
 	// link to the QR code image in PNG format
 	string qr = 1;
+}
+
+// List your QR codes
+message CodesRequest {
+}
+
+message CodesResponse {
+	repeated Code codes = 1;
 }
