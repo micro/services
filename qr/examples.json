@@ -9,5 +9,20 @@
         "response": {
           "qr": "http://cdn.m3ocontent.com/micro/qr/micro/dom/1799e942-35cb-414f-845f-58dd625e6f0f.png"
         }
+    }],
+    "codes": [{
+        "title": "List codes",
+        "run_check": false,
+        "request": {},
+        "response": {
+		"codes": [
+			{
+				"id": "c1c363da-1070-4f6b-8761-1b90c924eff6",
+				"text": "Helloworld",
+				"file": "https://cdn.m3ocontent.com/micro/qr/micro/asim/c1c363da-1070-4f6b-8761-1b90c924eff6.png",
+				"created": "2022-08-08T10:42:14Z"
+			}
+		]
+	}
     }]
 }
