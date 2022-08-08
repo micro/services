@@ -82,7 +82,6 @@ Services available thus far:
 - github - # Github Service
 - joke - Funny Jokes
 - dns - DNS over HTTPS (DoH)
-- webhook - # Webhook Service
 - twilio - Twilio SMS service
 - Wordle - Multiplayer wordle
 
