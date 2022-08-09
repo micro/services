@@ -4,10 +4,10 @@
       "title": "Get bitcoin price",
       "description": "Returns the last traded price of bitcoin",
       "request": {
-        "symbol": "BTCUSD"
+        "symbol": "USD"
       },
       "response": {
-        "symbol": "BTCUSD",
+        "symbol": "USD",
         "price": 34682.74
       }
     }
