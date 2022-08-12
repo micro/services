@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package ethereum;
+
+option go_package = "./proto;ethereum";
+
+service Ethereum {
+	rpc Balance(BalanceRequest) returns (BalanceResponse) {}
+	rpc Transaction(TransactionRequest) returns (TransactionResponse) {}
+}
+
+// Get the balance of an ethereum wallet
+message BalanceRequest {
+	// address of wallet
+	string address = 1;
+}
+
+message BalanceResponse {
+	// the account balance (in wei)
+	int64 balance = 1;
+}
+
+// Get transaction details by hash
+message TransactionRequest {
+	// tx hash
+	string hash = 1;
+}
+
+message TransactionResponse {
+	// tx hash
+	string hash = 1;
+	// the block hash
+	string block_hash = 2;
+	// the block number
+	string block_number = 3;
+	// sent from
+	string from_address = 4;
+	// gas
+	string gas = 5;
+	// gas price
+	string gas_price = 6;
+	// max fee per gas
+	string max_fee_per_gas = 7;
+	// max priority fee per gas
+	string max_priority_fee_per_gas = 8;
+	// input
+	string input = 9;
+	// the nonce
+	string nonce = 10;
+	// to address
+	string to_address = 11;
+	// transaction index
+	string tx_index = 12;
+	// value of transaction
+	string value = 13;
+	// type of transaction
+	string type = 14;
+	// chain id
+	string chain_id = 15;
+	string v = 16;
+	string r = 17;
+	string s = 18; 
+}
