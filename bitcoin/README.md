@@ -1,4 +1,4 @@
-Bitcoin price and info
+Bitcoin price and transaction info
 
 # Bitcoin Service
 
