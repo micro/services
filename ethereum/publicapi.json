@@ -2,5 +2,9 @@
   "name": "ethereum",
   "icon": "₿",
   "category": "crypto",
-  "display_name": "Ethereum"
+  "display_name": "Ethereum",
+  "pricing": {
+    "Ethereum.Balance": 100,
+    "Ethereum.Transaction": 100
+  }
 }
