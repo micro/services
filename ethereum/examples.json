@@ -12,6 +12,18 @@
       }
     }
   ],
+  "broadcast": [
+    {
+      "run_check": false,
+      "title": "Broadcast a transaction",
+      "request": {
+        "hex": "0xf904808000831cfde080"
+      },
+      "response": {
+        "hash": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d5145a99d05921026d1527331"
+      }
+    }
+  ],
   "transaction": [
     {
       "run_check": false,
