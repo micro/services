@@ -4,8 +4,8 @@
   "category": "crypto",
   "display_name": "Ethereum",
   "pricing": {
-    "Ethereum.Balance": 100,
-    "Ethereum.Broadcast": 100,
-    "Ethereum.Transaction": 100
+    "Ethereum.Balance": 1000,
+    "Ethereum.Broadcast": 1000,
+    "Ethereum.Transaction": 1000
   }
 }
