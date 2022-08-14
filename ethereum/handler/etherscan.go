@@ -80,6 +80,29 @@ func (e *Etherscan) Balance(ctx context.Context, req *pb.BalanceRequest, rsp *pb
 	return nil
 }
 
+func (e *Etherscan) Broadcast(ctx context.Context, req *pb.BroadcastRequest, rsp *pb.BroadcastResponse) error {
+	if len(req.Hex) == 0 {
+		return errors.BadRequest("ethereum.broadcast", "missing hex")
+	}
+
+	uri := e.url("proxy", "eth_sendRawTransaction", map[string]interface{}{
+		"hex": req.Hex,
+	})
+
+	var resp map[string]interface{}
+	if err := api.Get(uri, &resp); err != nil {
+		return errors.InternalServerError("ethereum.broadcast", err.Error())
+	}
+
+	if v, ok := resp["id"]; !ok || v.(float64) != 1.00 {
+		logger.Errorf("Failed to broadcast %v", resp)
+		return errors.InternalServerError("ethereum.broadcast", "failed to broadcast transaction")
+	}
+
+	rsp.Hash, _ = resp["result"].(string)
+	return nil
+}
+
 func (e *Etherscan) Transaction(ctx context.Context, req *pb.TransactionRequest, rsp *pb.TransactionResponse) error {
 	if len(req.Hash) == 0 {
 		return errors.BadRequest("ethereum.transaction", "missing hash")
@@ -91,7 +114,7 @@ func (e *Etherscan) Transaction(ctx context.Context, req *pb.TransactionRequest,
 
 	var resp map[string]interface{}
 	if err := api.Get(uri, &resp); err != nil {
-		return errors.InternalServerError("ethereum.balance", err.Error())
+		return errors.InternalServerError("ethereum.transaction", err.Error())
 	}
 
 	if v, ok := resp["id"]; !ok || v.(float64) != 1.00 {

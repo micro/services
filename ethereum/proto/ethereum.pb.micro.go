@@ -43,6 +43,7 @@ func NewEthereumEndpoints() []*api.Endpoint {
 
 type EthereumService interface {
 	Balance(ctx context.Context, in *BalanceRequest, opts ...client.CallOption) (*BalanceResponse, error)
+	Broadcast(ctx context.Context, in *BroadcastRequest, opts ...client.CallOption) (*BroadcastResponse, error)
 	Transaction(ctx context.Context, in *TransactionRequest, opts ...client.CallOption) (*TransactionResponse, error)
 }
 
@@ -68,6 +69,16 @@ func (c *ethereumService) Balance(ctx context.Context, in *BalanceRequest, opts 
 	return out, nil
 }
 
+func (c *ethereumService) Broadcast(ctx context.Context, in *BroadcastRequest, opts ...client.CallOption) (*BroadcastResponse, error) {
+	req := c.c.NewRequest(c.name, "Ethereum.Broadcast", in)
+	out := new(BroadcastResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *ethereumService) Transaction(ctx context.Context, in *TransactionRequest, opts ...client.CallOption) (*TransactionResponse, error) {
 	req := c.c.NewRequest(c.name, "Ethereum.Transaction", in)
 	out := new(TransactionResponse)
@@ -82,12 +93,14 @@ func (c *ethereumService) Transaction(ctx context.Context, in *TransactionReques
 
 type EthereumHandler interface {
 	Balance(context.Context, *BalanceRequest, *BalanceResponse) error
+	Broadcast(context.Context, *BroadcastRequest, *BroadcastResponse) error
 	Transaction(context.Context, *TransactionRequest, *TransactionResponse) error
 }
 
 func RegisterEthereumHandler(s server.Server, hdlr EthereumHandler, opts ...server.HandlerOption) error {
 	type ethereum interface {
 		Balance(ctx context.Context, in *BalanceRequest, out *BalanceResponse) error
+		Broadcast(ctx context.Context, in *BroadcastRequest, out *BroadcastResponse) error
 		Transaction(ctx context.Context, in *TransactionRequest, out *TransactionResponse) error
 	}
 	type Ethereum struct {
@@ -103,6 +116,10 @@ type ethereumHandler struct {
 
 func (h *ethereumHandler) Balance(ctx context.Context, in *BalanceRequest, out *BalanceResponse) error {
 	return h.EthereumHandler.Balance(ctx, in, out)
+}
+
+func (h *ethereumHandler) Broadcast(ctx context.Context, in *BroadcastRequest, out *BroadcastResponse) error {
+	return h.EthereumHandler.Broadcast(ctx, in, out)
 }
 
 func (h *ethereumHandler) Transaction(ctx context.Context, in *TransactionRequest, out *TransactionResponse) error {

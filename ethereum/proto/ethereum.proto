@@ -6,6 +6,7 @@ option go_package = "./proto;ethereum";
 
 service Ethereum {
 	rpc Balance(BalanceRequest) returns (BalanceResponse) {}
+	rpc Broadcast(BroadcastRequest) returns (BroadcastResponse) {}
 	rpc Transaction(TransactionRequest) returns (TransactionResponse) {}
 }
 
@@ -18,6 +19,17 @@ message BalanceRequest {
 message BalanceResponse {
 	// the account balance (in wei)
 	int64 balance = 1;
+}
+
+// Broadcast presigned transaction to ethereum network
+message BroadcastRequest {
+	// raw transaction data to broadcast
+	string hex = 1;
+}
+
+message BroadcastResponse {
+	// the transaction hash
+	string hash = 1;
 }
 
 // Get transaction details by hash
