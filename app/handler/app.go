@@ -12,6 +12,8 @@ import (
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/app/proto"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 )
 
@@ -132,6 +134,34 @@ func (a *App) Reserve(ctx context.Context, req *pb.ReserveRequest, rsp *pb.Reser
 		Created: rsrv.Created.Format(time.RFC3339Nano),
 		Expires: rsrv.Expires.Format(time.RFC3339Nano),
 		Token:   rsrv.Token,
+	}
+
+	return nil
+}
+
+func (a *App) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	method := "admin.Usage"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't grab all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	id := request.TenantId
+	key := OwnerKey + id + "/"
+
+	recs, err := store.List(store.ListPrefix(key))
+	if err != nil {
+		return err
+	}
+
+	apps := len(recs)
+
+	response.Usage = map[string]*adminpb.Usage{
+		"App.Run": &adminpb.Usage{Usage: int64(apps), Units: "apps"},
 	}
 
 	return nil

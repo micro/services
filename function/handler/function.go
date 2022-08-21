@@ -1,7 +1,13 @@
 package handler
 
 import (
+	"context"
 	"regexp"
+
+	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/store"
+	pauth "github.com/micro/services/pkg/auth"
+	adminpb "github.com/micro/services/pkg/service/proto"
 )
 
 var (
@@ -15,3 +21,31 @@ var (
 )
 
 type Function struct{}
+
+func (a *Function) Usage(ctx context.Context, request *adminpb.UsageRequest, response *adminpb.UsageResponse) error {
+	method := "admin.Usage"
+	_, err := pauth.VerifyMicroAdmin(ctx, method)
+	if err != nil {
+		return err
+	}
+
+	if len(request.TenantId) < 10 { // deliberate length check so we don't grab all the things
+		return errors.BadRequest(method, "Missing tenant ID")
+	}
+
+	id := request.TenantId
+	key := OwnerKey + id + "/"
+
+	recs, err := store.List(store.ListPrefix(key))
+	if err != nil {
+		return err
+	}
+
+	funcs := len(recs)
+
+	response.Usage = map[string]*adminpb.Usage{
+		"Function.Deploy": &adminpb.Usage{Usage: int64(funcs), Units: "functions"},
+	}
+
+	return nil
+}
