@@ -12,7 +12,7 @@
         "height": 100
       },
       "response": {
-        "url": "cdn.images.m3o.com/account-id/cat.png"
+        "url": "cdn.images.m3o.com/your-account-id/cat.png"
       }
     },
     {
@@ -56,7 +56,7 @@
         "outputURL": true
       },
       "response": {
-        "url": "cdn.images.m3o.com/account-id/cat.jpeg"
+        "url": "cdn.images.m3o.com/your-account-id/cat.jpeg"
       }
     }
   ],
@@ -69,7 +69,7 @@
         "name": "cat.jpeg"
       },
       "response": {
-        "url": "cdn.images.m3o.com/account-id/cat.jpeg"
+        "url": "cdn.images.m3o.com/your-account-id/cat.jpeg"
       }
     },
     {
@@ -80,7 +80,7 @@
         "name": "cat.jpeg"
       },
       "response": {
-        "url": "cdn.images.m3o.com/account-id/cat.jpeg"
+        "url": "cdn.images.m3o.com/your-account-id/cat.jpeg"
       }
     }
   ],
