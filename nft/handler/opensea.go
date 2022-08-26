@@ -103,6 +103,10 @@ func (o *OpenSea) Assets(ctx context.Context, req *pb.AssetsRequest, rsp *pb.Ass
 			asset.Description = asset.Description[:2048]
 		}
 
+		if asset.Contract != nil && len(asset.Contract.Description) > 2048 {
+			asset.Contract.Description = asset.Contract.Description[:2048]
+		}
+
 		if asset.Collection != nil && len(asset.Collection.Description) > 2048 {
 			asset.Collection.Description = asset.Collection.Description[:2048]
 		}
