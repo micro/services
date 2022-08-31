@@ -50,6 +50,7 @@ type Domain struct {
 	store      store.Store
 	sengridKey string
 	fromEmail  string
+	verifyUrl  string
 }
 
 var (
@@ -58,7 +59,7 @@ var (
 )
 
 func New(st store.Store) *Domain {
-	var key, email string
+	var key, email, url string
 	cfg, err := config.Get("micro.user.sendgrid.api_key")
 	if err == nil {
 		key = cfg.String("")
@@ -66,6 +67,10 @@ func New(st store.Store) *Domain {
 	cfg, err = config.Get("micro.user.sendgrid.from_email")
 	if err == nil {
 		email = cfg.String(defaultSender)
+	}
+	cfg, err = config.Get("micro.user.verify_email_url")
+	if err == nil {
+		url = cfg.String("http://localhost:8080/user/VerifyEmail")
 	}
 	if len(key) == 0 {
 		logger.Info("No email key found")
@@ -76,6 +81,7 @@ func New(st store.Store) *Domain {
 		sengridKey: key,
 		store:      st,
 		fromEmail:  email,
+		verifyUrl:  url,
 	}
 }
 
@@ -86,7 +92,7 @@ func (domain *Domain) SendEmail(fromName, toAddress, toUsername, subject, textCo
 	from := mail.NewEmail(fromName, domain.fromEmail)
 	to := mail.NewEmail(toUsername, toAddress)
 
-	uri := "https://user.m3o.com"
+	uri := domain.verifyUrl
 	query := "?token=" + token + "&redirectUrl=" + url.QueryEscape(redirctUrl) + "&failureRedirectUrl=" + url.QueryEscape(failureRedirectUrl)
 
 	// set the text content
