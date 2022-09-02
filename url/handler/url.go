@@ -292,6 +292,10 @@ func (e *Url) List(ctx context.Context, req *url.ListRequest, rsp *url.ListRespo
 func (e *Url) Resolve(ctx context.Context, req *url.ResolveRequest, rsp *url.ResolveResponse) error {
 	id := strings.Replace(req.ShortURL, e.hostPrefix, "", -1)
 
+	if len(req.Id) > 0 {
+		id = req.Id
+	}
+
 	records, err := store.Read("url/" + id)
 	if err != nil {
 		return err

@@ -84,8 +84,10 @@ message UpdateResponse {}
 
 // Resolve returns the destination URL of a short URL.
 message ResolveRequest {
+	// resolve by id
+	string id = 1;
 	// short url to resolve
-	string shortURL = 1;
+	string shortURL = 2;
 }
 
 message ResolveResponse {
