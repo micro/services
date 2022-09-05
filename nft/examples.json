@@ -60,7 +60,7 @@
                                         "id": 218344593,
                                         "timestamp": "2021-12-08T13:52:33",
                                         "block_hash": "0xe168736f9f7f9bf610c04c0705165ef2ca470ddfc5fedb6d0337701f1d083d32",
-                                        "block_number": "13765159",
+                                        "block_number": 13765159,
                                         "from_account": {
                                                 "username": "austincountach",
                                                 "profile_url": "https://storage.googleapis.com/opensea-static/opensea-profile/31.png",
@@ -72,7 +72,7 @@
                                                 "address": "0x7be8076f4ea4a4ad08075c2508e481d6c946d12b"
                                         },
                                         "transaction_hash": "0xd3bfa0ffe5d37af6854f485606ceb349634e957ff5778570ea396288fe8914db",
-                                        "transaction_index": "176"
+                                        "transaction_index": 176
                                 },
                                 "payment_token": {
                                         "id": 1,
@@ -271,7 +271,7 @@
               "id": 63641091,
               "timestamp": "2020-11-30T18:44:26",
               "block_hash": "0xe3eacbc6f4d6bb43525b69baffe09477f452f0f5e1a5b1d5232dc23b6cb176cb",
-              "block_number": "11361817",
+              "block_number": 11361817,
               "from_account": {
                 "username": "GoWestBTC",
                 "profile_url": "https://storage.googleapis.com/opensea-static/opensea-profile/4.png",
@@ -283,7 +283,7 @@
                 "address": "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"
               },
               "transaction_hash": "0xf4af5563f3c4c3b26dee3ab027902f113bee5985b28d9ede5b81ab42b46abb30",
-              "transaction_index": "58"
+              "transaction_index": 58
             },
             "payment_token": {
               "id": 1,
