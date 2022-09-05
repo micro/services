@@ -95,7 +95,7 @@ message Contract {
 	// payout address
 	string payout_address = 9;
 	// seller fees
-	double seller_fees = 10;
+	string seller_fees = 10;
 }
 
 message Collection {
@@ -116,7 +116,7 @@ message Collection {
 	// image used in the banner for the collection
 	string banner_image_url = 8;
 	// the fees that get paid out when a sale is made
-	double seller_fees = 9;
+	string seller_fees = 9;
 	// the collection's approval status on OpenSea
 	string safelist_request_status = 10;
 	// a list of the contracts associated with this collection
@@ -153,11 +153,11 @@ message Transaction {
 	int32 id = 1;
 	string timestamp = 2;
 	string block_hash = 3;
-	double block_number = 4;
+	string block_number = 4;
 	User from_account = 5;
 	User to_account = 6;
 	string transaction_hash = 7;
-	double transaction_index = 8;
+	string transaction_index = 8;
 }
 
 message Token {

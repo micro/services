@@ -150,7 +150,7 @@ func contractToPb(contract *domain.Contract) *pb.Contract {
 		Schema:        contract.Schema,
 		Symbol:        contract.Symbol,
 		PayoutAddress: contract.PayoutAddress,
-		SellerFees:    contract.SellerFees,
+		SellerFees:    fmt.Sprintf("%v", contract.SellerFees),
 	}
 }
 
@@ -167,7 +167,7 @@ func collectionToPb(collection *domain.Collection) *pb.Collection {
 		PayoutAddress:         collection.PayoutAddress,
 		ExternalLink:          collection.ExternalLink,
 		BannerImageUrl:        collection.BannerImageUrl,
-		SellerFees:            collection.DevSellerFeeBasisPoints,
+		SellerFees:            fmt.Sprintf("%v", collection.DevSellerFeeBasisPoints),
 		SafelistRequestStatus: collection.SafelistRequestStatus,
 		PrimaryAssetContracts: func() []*pb.Contract {
 			cons := make([]*pb.Contract, len(collection.PrimaryAssetContracts))
@@ -251,7 +251,7 @@ func assetToPb(asset *domain.Asset) *pb.Asset {
 				Id:          asset.LastSale.Transaction.Id,
 				Timestamp:   asset.LastSale.Transaction.Timestamp,
 				BlockHash:   asset.LastSale.Transaction.BlockHash,
-				BlockNumber: asset.LastSale.Transaction.BlockNumber,
+				BlockNumber: fmt.Sprintf("%v", asset.LastSale.Transaction.BlockNumber),
 				FromAccount: &pb.User{
 					Username:   asset.LastSale.Transaction.FromAccount.User.Username,
 					ProfileUrl: asset.LastSale.Transaction.FromAccount.ProfileUrl,
@@ -263,7 +263,7 @@ func assetToPb(asset *domain.Asset) *pb.Asset {
 					Address:    asset.LastSale.Transaction.ToAccount.Address,
 				},
 				TransactionHash:  asset.LastSale.Transaction.TransactionHash,
-				TransactionIndex: asset.LastSale.Transaction.TransactionIndex,
+				TransactionIndex: fmt.Sprintf("%v", asset.LastSale.Transaction.TransactionIndex),
 			},
 			PaymentToken: paymentTokenToPb(asset.LastSale.PaymentToken),
 		}
