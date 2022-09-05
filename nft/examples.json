@@ -27,7 +27,7 @@
                                 "symbol": "CC",
                                 "description": "The Cryptocards collection was created at the dawn of what is considered cryptoart or NFTs today being minted on January 2018. \n\nIt is the only NFT collection chronicling the history of Bitcoin including over 50 cards with a total supply of 7.851.\n\nThe initial CryptoCards were issued as a ERC-20, but we developed an ERC1155 wrapper to make them available on OpenSea.\n\nBeware of other fake collections on OS. Stay safe and join the community: https://discord.gg/m9nUKEzcWJ",
                                 "payout_address": "0xb7e0c211fb088e42aa9fd936b0a9c52985fbd273",
-                                "seller_fees": ""
+                                "seller_fees": 0
                         },
                         "collection": {
                                 "name": "The CryptoCards Collection (2018)",
@@ -153,7 +153,7 @@
             "symbol": "PUNK",
             "description": "CryptoPunks launched as a fixed set of 10,000 items in mid-2017 and became one of the inspirations for the ERC-721 standard. They have been featured in places like The New York Times, Christie’s of London, Art|Basel Miami, and The PBS NewsHour.",
             "payout_address": "",
-            "seller_fees": ""
+            "seller_fees": 0
           },
           "collection": {
             "name": "CryptoPunks",
@@ -164,7 +164,7 @@
             "payout_address": "",
             "external_link": "",
             "banner_image_url": "https://lh3.googleusercontent.com/48oVuDyfe_xhs24BC2TTVcaYCX7rrU5mpuQLyTgRDbKHj2PtzKZsQ5qC3xTH4ar34wwAXxEKH8uUDPAGffbg7boeGYqX6op5vBDcbA=s2500",
-            "seller_fees": "0",
+            "seller_fees": 0,
             "safelist_request_status": "verified",
             "primary_asset_contracts": [
               {
@@ -177,7 +177,7 @@
                 "symbol": "PUNK",
                 "description": "CryptoPunks launched as a fixed set of 10,000 items in mid-2017 and became one of the inspirations for the ERC-721 standard. They have been featured in places like The New York Times, Christie’s of London, Art|Basel Miami, and The PBS NewsHour.",
                 "payout_address": "",
-                "seller_fees": ""
+                "seller_fees": 0
               }
             ],
             "traits": {},
@@ -353,7 +353,7 @@
           "payout_address": "0xdcd382be6cc4f1971c667ffda85c7a287605afe4",
           "external_link": "",
           "banner_image_url": "https://lh3.googleusercontent.com/svc_rQkHVGf3aMI14v3pN-ZTI7uDRwN-QayvixX-nHSMZBgb1L1LReSg1-rXj4gNLJgAB0-yD8ERoT-Q2Gu4cy5AuSg-RdHF9bOxFDw=s2500",
-          "seller_fees": "500",
+          "seller_fees": 500,
           "safelist_request_status": "verified",
           "primary_asset_contracts": [
             {
@@ -366,7 +366,7 @@
               "symbol": "DOODLE",
               "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury.",
               "payout_address": "0xdcd382be6cc4f1971c667ffda85c7a287605afe4",
-              "seller_fees": ""
+              "seller_fees": 0
             }
           ],
           "traits": {

@@ -55,7 +55,7 @@ type Contract struct {
 	// payout address
 	PayoutAddress string `json:"payout_address,omitempty"`
 	// seller fees
-	SellerFees string `json:"seller_fees_basis_points,omitempty"`
+	SellerFees float64 `json:"seller_fees_basis_points,omitempty"`
 }
 
 type Collection struct {
@@ -68,7 +68,7 @@ type Collection struct {
 
 	ExternalLink            string                 `json:"external_link,omitempty"`
 	BannerImageUrl          string                 `json:"banner_image_url,omitempty"`
-	DevSellerFeeBasisPoints string                 `json:"dev_seller_fee_basis_points,omitempty"`
+	DevSellerFeeBasisPoints float64                 `json:"dev_seller_fee_basis_points,omitempty"`
 	SafelistRequestStatus   string                 `json:"safelist_request_status,omitempty"`
 	PrimaryAssetContracts   []Contract             `json:"primary_asset_contracts,omitempty"`
 	Traits                  map[string]interface{} `json:"traits,omitempty"`

@@ -6,7 +6,7 @@ package nft
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/structpb"
+	_ "github.com/golang/protobuf/ptypes/struct"
 	math "math"
 )
 

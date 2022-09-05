@@ -95,7 +95,7 @@ message Contract {
 	// payout address
 	string payout_address = 9;
 	// seller fees
-	string seller_fees = 10;
+	double seller_fees = 10;
 }
 
 message Collection {
@@ -116,7 +116,7 @@ message Collection {
 	// image used in the banner for the collection
 	string banner_image_url = 8;
 	// the fees that get paid out when a sale is made
-	string seller_fees = 9;
+	double seller_fees = 9;
 	// the collection's approval status on OpenSea
 	string safelist_request_status = 10;
 	// a list of the contracts associated with this collection
