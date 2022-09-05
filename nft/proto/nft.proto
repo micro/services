@@ -157,7 +157,7 @@ message Transaction {
 	User from_account = 5;
 	User to_account = 6;
 	string transaction_hash = 7;
-	string transaction_index = 8;
+	double transaction_index = 8;
 }
 
 message Token {

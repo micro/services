@@ -111,7 +111,7 @@ type Transaction struct {
 	FromAccount      *User  `json:"from_account,omitempty"`
 	ToAccount        *User  `json:"to_account,omitempty"`
 	TransactionHash  string `json:"transaction_hash,omitempty"`
-	TransactionIndex string `json:"transaction_index,omitempty"`
+	TransactionIndex float64 `json:"transaction_index,omitempty"`
 }
 
 type Token struct {
