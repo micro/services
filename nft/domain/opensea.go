@@ -107,7 +107,7 @@ type Transaction struct {
 	Id               int32  `json:"id,omitempty"`
 	Timestamp        string `json:"timestamp,omitempty"`
 	BlockHash        string `json:"block_hash,omitempty"`
-	BlockNumber      string `json:"block_number,omitempty"`
+	BlockNumber      float64 `json:"block_number,omitempty"`
 	FromAccount      *User  `json:"from_account,omitempty"`
 	ToAccount        *User  `json:"to_account,omitempty"`
 	TransactionHash  string `json:"transaction_hash,omitempty"`

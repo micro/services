@@ -153,7 +153,7 @@ message Transaction {
 	int32 id = 1;
 	string timestamp = 2;
 	string block_hash = 3;
-	string block_number = 4;
+	double block_number = 4;
 	User from_account = 5;
 	User to_account = 6;
 	string transaction_hash = 7;

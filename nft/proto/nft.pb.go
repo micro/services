@@ -912,14 +912,14 @@ type Transaction struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id               int32  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Timestamp        string `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	BlockHash        string `protobuf:"bytes,3,opt,name=block_hash,json=blockHash,proto3" json:"block_hash,omitempty"`
-	BlockNumber      string `protobuf:"bytes,4,opt,name=block_number,json=blockNumber,proto3" json:"block_number,omitempty"`
-	FromAccount      *User  `protobuf:"bytes,5,opt,name=from_account,json=fromAccount,proto3" json:"from_account,omitempty"`
-	ToAccount        *User  `protobuf:"bytes,6,opt,name=to_account,json=toAccount,proto3" json:"to_account,omitempty"`
-	TransactionHash  string `protobuf:"bytes,7,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
-	TransactionIndex string `protobuf:"bytes,8,opt,name=transaction_index,json=transactionIndex,proto3" json:"transaction_index,omitempty"`
+	Id               int32   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Timestamp        string  `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	BlockHash        string  `protobuf:"bytes,3,opt,name=block_hash,json=blockHash,proto3" json:"block_hash,omitempty"`
+	BlockNumber      float64 `protobuf:"fixed64,4,opt,name=block_number,json=blockNumber,proto3" json:"block_number,omitempty"`
+	FromAccount      *User   `protobuf:"bytes,5,opt,name=from_account,json=fromAccount,proto3" json:"from_account,omitempty"`
+	ToAccount        *User   `protobuf:"bytes,6,opt,name=to_account,json=toAccount,proto3" json:"to_account,omitempty"`
+	TransactionHash  string  `protobuf:"bytes,7,opt,name=transaction_hash,json=transactionHash,proto3" json:"transaction_hash,omitempty"`
+	TransactionIndex string  `protobuf:"bytes,8,opt,name=transaction_index,json=transactionIndex,proto3" json:"transaction_index,omitempty"`
 }
 
 func (x *Transaction) Reset() {
@@ -975,11 +975,11 @@ func (x *Transaction) GetBlockHash() string {
 	return ""
 }
 
-func (x *Transaction) GetBlockNumber() string {
+func (x *Transaction) GetBlockNumber() float64 {
 	if x != nil {
 		return x.BlockNumber
 	}
-	return ""
+	return 0
 }
 
 func (x *Transaction) GetFromAccount() *User {
@@ -1631,7 +1631,7 @@ var file_proto_nft_proto_rawDesc = []byte{
 	0x61, 0x6d, 0x70, 0x12, 0x1d, 0x0a, 0x0a, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x68, 0x61, 0x73,
 	0x68, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x61,
 	0x73, 0x68, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x6e, 0x75, 0x6d, 0x62,
-	0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x4e,
+	0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x01, 0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x4e,
 	0x75, 0x6d, 0x62, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x0c, 0x66, 0x72, 0x6f, 0x6d, 0x5f, 0x61, 0x63,
 	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x6e, 0x66,
 	0x74, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x52, 0x0b, 0x66, 0x72, 0x6f, 0x6d, 0x41, 0x63, 0x63, 0x6f,
