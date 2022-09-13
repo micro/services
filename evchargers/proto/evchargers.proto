@@ -110,6 +110,8 @@ message Connection {
 	ConnectionType connection_type = 9;
 
 	ChargerType level = 10;
+	// status of the connection
+	StatusType status = 11;	
 }
 
 // Retrieve reference data as used by this API and in conjunction with the Search endpoint

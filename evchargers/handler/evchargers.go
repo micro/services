@@ -261,6 +261,7 @@ func marshalConnections(in []Connection) []*evchargers.Connection {
 			Voltage: float32(v.Voltage),
 			Power:   float32(v.Power),
 			Current: strconv.Itoa(int(v.CurrentTypeID)),
+			Status:  marshalStatusType(v.StatusType),
 		}
 	}
 	return res
