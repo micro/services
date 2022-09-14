@@ -24,6 +24,64 @@
       }
     }
   ],
+  "lookup": [
+    {
+      "title": "Lookup transactions by address",
+      "description": "Returns transactions by address",
+      "request": {
+        "address": "1MDUoxL1bGvMxhuoDYx6i11ePytECAk9QK"
+      },
+      "response": {
+        "address": "1AJbsFZ64EpEfS5UAjAfcUG8pH8Jn3rn1F",
+        "hash": "660d4ef3a743e3e696ad990364e555c271ad504b",
+        "num_tx": "82",
+        "num_unredeemed": "1",
+        "total_received": "15443919556",
+        "total_sent": "15441506556",
+        "final_balance": "2413000",
+        "transactions": [
+                {
+                        "hash": "",
+                        "version": "1",
+                        "vin_sz": "3",
+                        "vout_sz": "2",
+                        "lock_time": "0",
+                        "size": "521",
+                        "relay": "0.0.0.0",
+                        "block_height": "643714",
+                        "block_index": "643714",
+                        "double_spend": false,
+                        "weight": "2084",
+                        "fee": "49068",
+                        "tx_index": "2389146460931387",
+                        "inputs": [
+                                {
+                                        "prev_out": {
+                                                "value": "752664",
+                                                "address": "1PAiaQe6KEaEtCQEpLLnLF57QyiuCp42H8",
+                                                "tx_index": "1539199749776760",
+                                                "n": "0",
+                                                "spent": true,
+                                                "script": "76a914f329377f8f4c6f9e4a532bfb99b06d110d5277ab88ac"
+                                        },
+                                        "script": "483045022100d990e9b0d35a76da1c5e2d719d20f"
+                                },
+                                {
+                                        "prev_out": {
+                                                "value": "832293",
+                                                "address": "1PAiaQe6KEaEtCQEpLLnLF57QyiuCp42H8",
+                                                "tx_index": "7675399417361352",
+                                                "n": "0",
+                                                "spent": true,
+                                                "script": "76a914f329377f8f4c6f9e4a532bfb99b06d110d5277ab88ac"
+                                        },
+                                        "script": "483045022100b9b72e676237bc72c2a66b273965"
+				}
+			]
+		}]
+       }
+    }
+  ],
   "transaction": [
     {
       "title": "Get a bitcoin transaction",
