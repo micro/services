@@ -102,15 +102,22 @@ func (b *Bitcoin) Lookup(ctx context.Context, req *pb.LookupRequest, rsp *pb.Loo
 
 			prev := in["prev_out"].(map[string]interface{})
 
+			script, _ := prev["script"].(string)
+			addr, _ := prev["addr"].(string)
+			spent, _ := prev["spent"].(bool)
+			n, _ := prev["n"].(float64)
+			txIndex, _ := prev["tx_index"].(float64)
+			value, _ := prev["value"].(float64)
+
 			rspTx.Inputs = append(rspTx.Inputs, &pb.Input{
 				Script: in["script"].(string),
 				PrevOut: &pb.Prev{
-					Value:   int64(prev["value"].(float64)),
-					Script:  prev["script"].(string),
-					Address: prev["addr"].(string),
-					Spent:   prev["spent"].(bool),
-					TxIndex: int64(prev["tx_index"].(float64)),
-					N:       int64(prev["n"].(float64)),
+					Value:   int64(value),
+					Script:  script,
+					Address: addr,
+					Spent:   spent,
+					TxIndex: int64(txIndex),
+					N:       int64(n),
 				},
 			})
 		}
