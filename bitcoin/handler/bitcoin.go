@@ -2,16 +2,14 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strings"
 	"time"
 
 	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/bitcoin/proto"
+	"github.com/micro/services/pkg/api"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -20,6 +18,8 @@ type Bitcoin struct {
 }
 
 func New() *Bitcoin {
+	api.SetCache(true, time.Minute*5)
+
 	return &Bitcoin{
 		Cache: cache.New(5*time.Minute, 10*time.Minute),
 	}
@@ -32,29 +32,103 @@ func (b *Bitcoin) Balance(ctx context.Context, req *pb.BalanceRequest, rsp *pb.B
 
 	uri := fmt.Sprintf("https://blockchain.info/balance?active=%s", req.Address)
 
-	resp, err := http.Get(uri)
-	if err != nil {
-		logger.Errorf("Failed to get balance: %v\n", err)
-		return errors.InternalServerError("bitcoin.balance", "failed to get price")
-	}
-	defer resp.Body.Close()
-
-	buf, _ := ioutil.ReadAll(resp.Body)
-
-	if resp.StatusCode != 200 {
-		logger.Errorf("Failed to get price (non 200): %d %v\n", resp.StatusCode, string(buf))
-		return errors.InternalServerError("bitcoin.balance", "failed to get price")
-	}
-
 	var respBody map[string]interface{}
 
-	if err := json.Unmarshal(buf, &respBody); err != nil {
+	if err := api.Get(uri, &respBody); err != nil {
 		logger.Errorf("Failed to unmarshal balance: %v\n", err)
 		return errors.InternalServerError("bitcoin.balance", "failed to get price")
 	}
 
 	info := respBody[req.Address].(map[string]interface{})
 	rsp.Balance = int64(info["final_balance"].(float64))
+
+	return nil
+}
+
+func (b *Bitcoin) Lookup(ctx context.Context, req *pb.LookupRequest, rsp *pb.LookupResponse) error {
+	if len(req.Address) == 0 {
+		return errors.BadRequest("bitcoin.lookup", "missing address")
+	}
+
+	uri := fmt.Sprintf("https://blockchain.info/rawaddr/%s", req.Address)
+
+	if req.Limit <= 0 || req.Limit > 50 {
+		req.Limit = 50
+	}
+
+	uri += fmt.Sprintf("?limit=%d&offset=%d", req.Limit, req.Offset)
+
+	var respBody map[string]interface{}
+
+	if err := api.Get(uri, &respBody); err != nil {
+		logger.Errorf("Failed to unmarshal address: %v\n", err)
+		return errors.InternalServerError("bitcoin.lookup", "failed to get address")
+	}
+
+	rsp.Address = req.Address
+	rsp.Hash = respBody["hash160"].(string)
+	rsp.NumTx = int64(respBody["n_tx"].(float64))
+	rsp.NumUnredeemed = int64(respBody["n_unredeemed"].(float64))
+	rsp.TotalReceived = int64(respBody["total_received"].(float64))
+	rsp.TotalSent = int64(respBody["total_sent"].(float64))
+	rsp.FinalBalance = int64(respBody["final_balance"].(float64))
+
+	for _, tx := range respBody["txs"].([]interface{}) {
+		transaction := tx.(map[string]interface{})
+
+		// result of transaction
+		rspTx := new(pb.Transaction)
+
+		rspTx.Result = int64(transaction["result"].(float64))
+		rspTx.Balance = int64(transaction["balance"].(float64))
+		rspTx.Version = int64(transaction["ver"].(float64))
+		rspTx.VinSz = int64(transaction["vin_sz"].(float64))
+		rspTx.VoutSz = int64(transaction["vout_sz"].(float64))
+		rspTx.Size = int64(transaction["size"].(float64))
+		rspTx.Weight = int64(transaction["weight"].(float64))
+		rspTx.Fee = int64(transaction["fee"].(float64))
+		rspTx.Relay = transaction["relayed_by"].(string)
+		rspTx.LockTime = int64(transaction["lock_time"].(float64))
+		rspTx.TxIndex = int64(transaction["tx_index"].(float64))
+		rspTx.DoubleSpend = transaction["double_spend"].(bool)
+		rspTx.BlockIndex = int64(transaction["block_index"].(float64))
+		rspTx.BlockHeight = int64(transaction["block_height"].(float64))
+
+		inputs := transaction["inputs"].([]interface{})
+		outputs := transaction["out"].([]interface{})
+
+		for _, input := range inputs {
+			in := input.(map[string]interface{})
+
+			prev := in["prev_out"].(map[string]interface{})
+
+			rspTx.Inputs = append(rspTx.Inputs, &pb.Input{
+				Script: in["script"].(string),
+				PrevOut: &pb.Prev{
+					Value:   int64(prev["value"].(float64)),
+					Script:  prev["script"].(string),
+					Address: prev["addr"].(string),
+					Spent:   prev["spent"].(bool),
+					TxIndex: int64(prev["tx_index"].(float64)),
+					N:       int64(prev["n"].(float64)),
+				},
+			})
+		}
+
+		for _, output := range outputs {
+			out := output.(map[string]interface{})
+
+			rspTx.Outputs = append(rspTx.Outputs, &pb.Output{
+				Value:   int64(out["value"].(float64)),
+				Spent:   out["spent"].(bool),
+				Script:  out["script"].(string),
+				Address: out["addr"].(string),
+				TxIndex: int64(out["tx_index"].(float64)),
+			})
+		}
+
+		rsp.Transactions = append(rsp.Transactions, rspTx)
+	}
 
 	return nil
 }
@@ -79,23 +153,9 @@ func (b *Bitcoin) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.Price
 
 	uri := "https://blockchain.info/ticker"
 
-	resp, err := http.Get(uri)
-	if err != nil {
-		logger.Errorf("Failed to get price: %v\n", err)
-		return errors.InternalServerError("bitcoin.price", "failed to get price")
-	}
-	defer resp.Body.Close()
-
-	buf, _ := ioutil.ReadAll(resp.Body)
-
-	if resp.StatusCode != 200 {
-		logger.Errorf("Failed to get price (non 200): %d %v\n", resp.StatusCode, string(buf))
-		return errors.InternalServerError("bitcoin.price", "failed to get price")
-	}
-
 	var respBody map[string]interface{}
 
-	if err := json.Unmarshal(buf, &respBody); err != nil {
+	if err := api.Get(uri, &respBody); err != nil {
 		logger.Errorf("Failed to unmarshal price: %v\n", err)
 		return errors.InternalServerError("bitcoin.price", "failed to get price")
 	}
@@ -121,23 +181,9 @@ func (b *Bitcoin) Transaction(ctx context.Context, req *pb.TransactionRequest, r
 
 	uri := fmt.Sprintf("https://blockchain.info/rawtx/%s", req.Hash)
 
-	resp, err := http.Get(uri)
-	if err != nil {
-		logger.Errorf("Failed to get transaction: %v\n", err)
-		return errors.InternalServerError("bitcoin.transaction", "failed to get transaction")
-	}
-	defer resp.Body.Close()
-
-	buf, _ := ioutil.ReadAll(resp.Body)
-
-	if resp.StatusCode != 200 {
-		logger.Errorf("Failed to get transaction (non 200): %d %v\n", resp.StatusCode, string(buf))
-		return errors.InternalServerError("bitcoin.transaction", "failed to get transaction")
-	}
-
 	var respBody map[string]interface{}
 
-	if err := json.Unmarshal(buf, &respBody); err != nil {
+	if err := api.Get(uri, &respBody); err != nil {
 		logger.Errorf("Failed to unmarshal transaction: %v\n", err)
 		return errors.InternalServerError("bitcoin.transaction", "failed to get transaction")
 	}

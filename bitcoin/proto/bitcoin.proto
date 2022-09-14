@@ -5,6 +5,7 @@ package bitcoin;
 option go_package = "./proto;bitcoin";
 
 service Bitcoin {
+	rpc Lookup(LookupRequest) returns (LookupResponse) {}
 	rpc Price(PriceRequest) returns (PriceResponse) {}
 	rpc Balance(BalanceRequest) returns (BalanceResponse) {}
 	rpc Transaction(TransactionRequest) returns (TransactionResponse) {}
@@ -33,6 +34,43 @@ message Prev {
 	string script = 6;
 }
 
+message Transaction {
+	// transaction hash
+	string hash = 1;
+	// the version
+	int64 version = 2;
+	// vin 
+	int64 vin_sz = 3;
+	// vout
+	int64 vout_sz = 4;
+	// lock time
+	int64 lock_time = 5;
+	// transaction size
+	int64 size = 6;
+	// relay
+	string relay = 7;
+	// block height
+	int64 block_height = 8;
+	// blck index
+	int64 block_index = 9;
+	// double spend
+	bool double_spend = 10;
+	// weight
+	int64 weight = 11;
+	// fees
+	int64 fee = 12;
+	// tx index
+	int64 tx_index = 13;
+	// inputs
+	repeated Input inputs = 14;
+	// outputs
+	repeated Output outputs = 15;
+	// result of transaction
+	int64 result = 16;
+	// balance after transaction
+	int64 balance = 17;
+}
+
 // Get the price of bitcoin
 message PriceRequest {
 	// symbol to use e.g BTCUSD
@@ -57,7 +95,7 @@ message BalanceResponse {
 	int64 balance = 1;
 }
 
-// Get the details of a transaction
+// Get transaction details by hash
 message TransactionRequest {
 	// the transaction hash
 	string hash = 1;
@@ -95,3 +133,33 @@ message TransactionResponse {
 	// outputs
 	repeated Output outputs = 15;
 }
+
+// Get details for a bitcoin address
+message LookupRequest {
+	// bitcoin address
+	string address = 1;
+	// limit num transactions (max: 50)
+	int32 limit = 2;
+	// offset transactions
+	int32 offset = 3;
+}
+
+message LookupResponse {
+	// address requested
+	string address = 1;
+	// hash160
+	string hash = 2;
+	// number of transactions
+	int64 num_tx = 3;
+	// number of unredeemed
+	int64 num_unredeemed = 4;
+	// total received
+	int64 total_received = 5;
+	// total sent
+	int64 total_sent = 6;
+	// final balanace
+	int64 final_balance = 7;
+	// list of transactions
+	repeated Transaction transactions = 8;
+}
+

@@ -42,6 +42,7 @@ func NewBitcoinEndpoints() []*api.Endpoint {
 // Client API for Bitcoin service
 
 type BitcoinService interface {
+	Lookup(ctx context.Context, in *LookupRequest, opts ...client.CallOption) (*LookupResponse, error)
 	Price(ctx context.Context, in *PriceRequest, opts ...client.CallOption) (*PriceResponse, error)
 	Balance(ctx context.Context, in *BalanceRequest, opts ...client.CallOption) (*BalanceResponse, error)
 	Transaction(ctx context.Context, in *TransactionRequest, opts ...client.CallOption) (*TransactionResponse, error)
@@ -57,6 +58,16 @@ func NewBitcoinService(name string, c client.Client) BitcoinService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *bitcoinService) Lookup(ctx context.Context, in *LookupRequest, opts ...client.CallOption) (*LookupResponse, error) {
+	req := c.c.NewRequest(c.name, "Bitcoin.Lookup", in)
+	out := new(LookupResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *bitcoinService) Price(ctx context.Context, in *PriceRequest, opts ...client.CallOption) (*PriceResponse, error) {
@@ -92,6 +103,7 @@ func (c *bitcoinService) Transaction(ctx context.Context, in *TransactionRequest
 // Server API for Bitcoin service
 
 type BitcoinHandler interface {
+	Lookup(context.Context, *LookupRequest, *LookupResponse) error
 	Price(context.Context, *PriceRequest, *PriceResponse) error
 	Balance(context.Context, *BalanceRequest, *BalanceResponse) error
 	Transaction(context.Context, *TransactionRequest, *TransactionResponse) error
@@ -99,6 +111,7 @@ type BitcoinHandler interface {
 
 func RegisterBitcoinHandler(s server.Server, hdlr BitcoinHandler, opts ...server.HandlerOption) error {
 	type bitcoin interface {
+		Lookup(ctx context.Context, in *LookupRequest, out *LookupResponse) error
 		Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error
 		Balance(ctx context.Context, in *BalanceRequest, out *BalanceResponse) error
 		Transaction(ctx context.Context, in *TransactionRequest, out *TransactionResponse) error
@@ -112,6 +125,10 @@ func RegisterBitcoinHandler(s server.Server, hdlr BitcoinHandler, opts ...server
 
 type bitcoinHandler struct {
 	BitcoinHandler
+}
+
+func (h *bitcoinHandler) Lookup(ctx context.Context, in *LookupRequest, out *LookupResponse) error {
+	return h.BitcoinHandler.Lookup(ctx, in, out)
 }
 
 func (h *bitcoinHandler) Price(ctx context.Context, in *PriceRequest, out *PriceResponse) error {
