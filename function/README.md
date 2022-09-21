@@ -1,4 +1,4 @@
-Serverless functions
+Serverless lambda functions
 
 # Function Service
 
