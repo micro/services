@@ -33,14 +33,16 @@ message Service {
 	string status = 7;
 	// app url
 	string url = 8;
+	// raw backend endpoint
+	string backend = 9;
 	// time of creation
-	string created = 9;
+	string created = 10;
 	// last updated
-	string updated = 10;
+	string updated = 11;
 	// associated env vars
-	map<string,string> env_vars = 11;
+	map<string,string> env_vars = 12;
 	// custom domains
-	repeated string custom_domains = 12;
+	repeated string custom_domains = 13;
 }
 
 // Delete an app

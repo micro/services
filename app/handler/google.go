@@ -831,6 +831,9 @@ func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListR
 
 		// set the custom domain
 		if len(e.domain) > 0 {
+			// set the backend
+			srv.Backend = srv.Url
+			// vanity url
 			srv.Url = fmt.Sprintf("https://%s.%s", srv.Id, e.domain)
 		}
 
@@ -907,6 +910,8 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 	if srv.Status == currentStatus && srv.Url == currentUrl && srv.Updated == updatedAt {
 		// set the custom domain
 		if len(e.domain) > 0 {
+			// set the backend
+			rsp.Service.Backend = srv.Url
 			rsp.Service.Url = fmt.Sprintf("https://%s.%s", srv.Id, e.domain)
 		}
 		return nil
@@ -933,6 +938,8 @@ func (e *GoogleApp) Status(ctx context.Context, req *pb.StatusRequest, rsp *pb.S
 
 	// set the custom domain
 	if len(e.domain) > 0 {
+		// set the backend
+		rsp.Service.Backend = srv.Url
 		rsp.Service.Url = fmt.Sprintf("https://%s.%s", srv.Id, e.domain)
 	}
 
