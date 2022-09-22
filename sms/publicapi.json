@@ -3,7 +3,7 @@
   "icon": "📟",
   "category": "messaging",
   "pricing": {
-    "Sms.Send": 75000
+    "Sms.Send": 100000
   },
   "display_name": "SMS"
 }
