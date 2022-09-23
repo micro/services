@@ -547,8 +547,12 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 	for k, v := range req.EnvVars {
 		// skip zero vals
 		if len(v) == 0 {
+			// delete it
+			delete(srv.EnvVars, k)
 			continue
 		}
+		// update the env vars
+		srv.EnvVars[k] = v
 		envVars = append(envVars, k+"="+v)
 	}
 
