@@ -297,7 +297,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 	}
 
 	if req.Entrypoint == "" {
-		req.Entrypoint = strings.ToTitle(req.Name)
+		req.Entrypoint = strings.ToUpper(req.Name[0:1]) + req.Name[1:]
 	}
 
 	// read the function by owner
