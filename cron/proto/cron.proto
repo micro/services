@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package cron;
+
+option go_package = "./proto;cron";
+
+service Cron {
+	rpc Schedule(ScheduleRequest) returns (ScheduleResponse) {}
+	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+	rpc Jobs(JobsRequest) returns (JobsResponse) {}
+}
+
+// a cron job
+message Job {
+	// job id
+	string id = 1;
+	// name
+	string name = 2;
+	// description
+	string description = 3;
+	// scheduled interval
+	string interval = 4;
+	// callback url
+	string callback = 5;
+}
+
+// Schedule a cron job
+message ScheduleRequest {
+	// unique id of job
+	string id = 1;
+	// name of cron
+	string name = 2;
+	// description
+	string description = 3;
+	// interval e.g * * * *
+	string interval = 4;
+	// callback url
+	string callback = 5;
+}
+
+message ScheduleResponse {
+	Job job = 1;
+}
+
+// Delete a cron job
+message DeleteRequest {
+	// id of the cron job
+	string id = 1;
+}
+
+message DeleteResponse {}
+
+// List all cron jobs
+message JobsRequest {}
+
+message JobsResponse {
+	repeated Job jobs = 1;
+}

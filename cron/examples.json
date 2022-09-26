@@ -1,0 +1,48 @@
+
+{
+    "schedule": [{
+        "title": "Schedule a job",
+        "run_check": false,
+        "request": {
+		"name": "test",
+		"description": "testing",
+		"interval": "* * * * *",
+		"callback": "https://google.com"
+        },
+        "response": {
+		"jobs": [
+			{
+				"id": "0c8cf9f7-3a61-4e91-b249-00a970044c95",
+				"name": "test",
+				"description": "testing",
+				"interval": "* * * * *",
+				"callback": "https://google.com"
+			}
+		]
+	}
+    }],
+    "delete": [{
+        "title": "Delete a job",
+        "run_check": false,
+        "request": {
+		"id": "0c8cf9f7-3a61-4e91-b249-00a970044c95"
+        },
+        "response": {}
+    }],
+    "schedule": [{
+        "title": "List jobs",
+        "run_check": false,
+        "request": {},
+        "response": {
+		"jobs": [
+			{
+				"id": "0c8cf9f7-3a61-4e91-b249-00a970044c95",
+				"name": "test",
+				"description": "testing",
+				"interval": "* * * * *",
+				"callback": "https://google.com"
+			}
+		]
+	}
+    }]
+}
