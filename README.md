@@ -105,6 +105,10 @@ Call it from the api
 curl http://localhost:8080/helloworld
 ```
 
+## Hosting
+
+Micro Services are hosted on the [M3O](https://m3o.com) platform.
+
 ## Contribute
 
 We welcome contributions of additional services:
