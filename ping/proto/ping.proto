@@ -38,7 +38,7 @@ message UrlResponse {
 	int32 code = 2;
 }
 
-// Ping a TCP port is open
+// Ping a TCP port to check if it's open
 message TcpRequest {
 	// address to dial
 	string address = 1;
