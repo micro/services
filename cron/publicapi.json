@@ -2,5 +2,8 @@
   "name": "cron",
   "icon": "⚙️",
   "category": "utility",
-  "display_name": "Cron"
+  "display_name": "Cron",
+  "pricing": {
+    "Cron.Schedule": 1000000
+  }
 }
