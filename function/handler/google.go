@@ -110,6 +110,13 @@ func random(i int) string {
 	return fmt.Sprintf("%d", time.Now().Unix())
 }
 
+func toEntrypoint(name, lang string) string {
+	if strings.HasPrefix(lang, "go") {
+		return strings.ToUpper(name[0:1]) + name[1:]
+	}
+	return name
+}
+
 func NewFunction(svc *service.Service) *GoogleFunction {
 	v, err := config.Get("function.service_account_json")
 	if err != nil {
@@ -297,7 +304,7 @@ func (e *GoogleFunction) Deploy(ctx context.Context, req *function.DeployRequest
 	}
 
 	if req.Entrypoint == "" {
-		req.Entrypoint = strings.ToUpper(req.Name[0:1]) + req.Name[1:]
+		req.Entrypoint = toEntrypoint(req.Name, req.Runtime)
 	}
 
 	// read the function by owner
