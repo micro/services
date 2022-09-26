@@ -29,7 +29,7 @@
         },
         "response": {}
     }],
-    "schedule": [{
+    "jobs": [{
         "title": "List jobs",
         "run_check": false,
         "request": {},
