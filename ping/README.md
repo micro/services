@@ -1,7 +1,7 @@
-Ping any URL
+Ping any IP
 
 # Ping Service
 
-Use ping to monitor services, check uptime and availability of any HTTP URL or TCP endpoint. 
+Use ping to monitor services, check uptime and availability of any HTTP URL, IP or TCP endpoint. 
 
 
