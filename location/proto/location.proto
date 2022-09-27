@@ -2,14 +2,10 @@ syntax = "proto3";
 
 option go_package = "./proto;location";
 
-// The location service stores GPS points for tracking purposes
-// and provides endpoints to query those points.
 package location;
 
 service Location {
-	// Read locations
 	rpc Read(ReadRequest) returns (ReadResponse) {}
-	// Save locations
 	rpc Save(SaveRequest) returns (SaveResponse) {}
 	rpc Search(SearchRequest) returns (SearchResponse) {}
 }
