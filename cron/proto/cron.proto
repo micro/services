@@ -39,6 +39,7 @@ message ScheduleRequest {
 }
 
 message ScheduleResponse {
+	// the scheduled job
 	Job job = 1;
 }
 
