@@ -36,7 +36,7 @@ func generateAccountTenantKey(tenantId, userId string) string {
 	return fmt.Sprintf("%saccount/id/%s", getStoreKeyPrefixForTenent(tenantId), userId)
 }
 func generateAccountTenantEmailKey(tenantId, email string) string {
-	return fmt.Sprintf("%sacccount/email/%s", getStoreKeyPrefixForTenent(tenantId), email)
+	return fmt.Sprintf("%saccount/email/%s", getStoreKeyPrefixForTenent(tenantId), email)
 }
 func generateAccountTenantUsernameKey(tenantId, username string) string {
 	return fmt.Sprintf("%saccount/username/%s", getStoreKeyPrefixForTenent(tenantId), username)
@@ -47,7 +47,7 @@ func generateAccountStoreKey(ctx context.Context, userId string) string {
 }
 
 func generateAccountEmailStoreKey(ctx context.Context, email string) string {
-	return fmt.Sprintf("%sacccount/email/%s", getStoreKeyPrefix(ctx), email)
+	return fmt.Sprintf("%saccount/email/%s", getStoreKeyPrefix(ctx), email)
 }
 
 func generateAccountUsernameStoreKey(ctx context.Context, username string) string {
