@@ -20,21 +20,21 @@ message Job {
 	string description = 3;
 	// scheduled interval
 	string interval = 4;
-	// callback url
+	// callback url e.g https://google.com
 	string callback = 5;
 }
 
 // Schedule a cron job
 message ScheduleRequest {
-	// unique id of job
+	// unique id of job (optional)
 	string id = 1;
 	// name of cron
 	string name = 2;
 	// description
 	string description = 3;
-	// interval e.g * * * *
+	// interval e.g * * * * *
 	string interval = 4;
-	// callback url
+	// callback url e.g https://google.com
 	string callback = 5;
 }
 
