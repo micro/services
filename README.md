@@ -118,7 +118,7 @@ curl http://localhost:8080/helloworld
 
 Micro Services are hosted on the [M3O](https://m3o.com) platform as serverless building blocks.
 
-M3O codifies protobuf to openapi specs and generates clients for the hosted services accessible via a HTTP API.
+M3O codifies protobuf to openapi specs and generates clients for the hosted services.
 
 Find the source for M3O in https://github.com/m3o/m3o.
 
