@@ -14,7 +14,7 @@ Read more about the reason for Micro Services in [this blog post](https://micro.
 
 ## Interfaces
 
-Every service starts with a protobuf interface definition, which is a standard used by Google and everyone else now that gRPC is so dominant. The idea is to define the API in protobuf, code generate and implement the handlers for it. The services can be called by other services on the platform using those code generated clients or an API Gateway, which Micro provides. External calls via the via use the same for but with HTTP/JSON endpoints and encoding.
+Every service starts with a protobuf interface definition, which is a standard used by Google and everyone else now that gRPC is so dominant. The idea is to define the API in protobuf, code generate and implement the handlers for it. The services can be called by other services on the platform using those code generated clients or an API Gateway, which Micro provides. External calls via the API use the same format but with HTTP/JSON endpoints.
 
 ## Services
 
