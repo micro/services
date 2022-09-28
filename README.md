@@ -8,6 +8,10 @@ Micro services provide the fundamental building blocks for any products, apps or
 or combined to create powerful distributed systems. The services are intended to be consumed by each other using RPC 
 and from the external world through a Micro API.
 
+## Interfaces
+
+Every service starts with a protobuf interface definition, which is a standard used by Google and everyone else now that gRPC is so dominant. The idea is to define the API in protobuf, code generate and implement the handlers for it. The service can be called by other services on the platform using that code generation and then an API Gateway, which Micro provides, can be used to call services externally using the same format but using HTTP/JSON.
+
 ## Services
 
 Services available thus far:
@@ -108,7 +112,11 @@ curl http://localhost:8080/helloworld
 
 ## Hosting
 
-Micro Services are hosted on the [M3O](https://m3o.com) platform.
+Micro Services are hosted on the [M3O](https://m3o.com) platform as serverless building blocks.
+
+M3O codifies protobuf to openapi specs and generates clients for the hosted services accessible via a HTTP API.
+
+Find the source for M3O in https://github.com/m3o/m3o.
 
 ## Contribute
 
