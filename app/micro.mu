@@ -1,1 +1,0 @@
-service app
