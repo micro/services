@@ -4,7 +4,6 @@
   "category": "hosting",
   "display_name": "Functions",
   "pricing": {
-    "Function.Deploy": 1000000,
     "Function.Reserve": 1000000
   }
 }
