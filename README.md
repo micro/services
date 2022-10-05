@@ -114,6 +114,12 @@ Call it from the api
 curl http://localhost:8080/helloworld
 ```
 
+From the command line
+
+```
+micro helloworld call
+```
+
 ## Hosting
 
 Micro Services are hosted on the [M3O](https://m3o.com) platform as serverless building blocks.
