@@ -98,11 +98,15 @@ Services available thus far:
 
 Micro Services depend on [Micro](https://github.com/micro/micro)
 
+### Install Micro
+
 Install and run the server first
 
 ```
 micro server
 ```
+
+### Run a Service
 
 Run a service from source
 
@@ -110,22 +114,24 @@ Run a service from source
 micro run github.com/micro/services/helloworld
 ```
 
+### Calling Services
+
 To call a service from another
 
-```
+```go
 import "github.com/micro/services/helloworld/proto"
 ```
 
-Call it from the api
+Call it through the API
 
 ```
-curl http://localhost:8080/helloworld
+curl "http://localhost:8080/helloworld/Call?name=Alice"
 ```
 
 From the command line
 
 ```
-micro helloworld call
+micro helloworld call --name=Alice
 ```
 
 ## Hosting
