@@ -98,7 +98,7 @@ Services available thus far:
 
 Micro Services depend on [Micro](https://github.com/micro/micro)
 
-### Install Micro
+### Run Micro
 
 Install and run the server first
 
