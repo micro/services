@@ -96,6 +96,14 @@ Services available thus far:
 
 ## Usage
 
+Micro Services depend on [Micro](https://github.com/micro/micro)
+
+Install and run the server first
+
+```
+micro server
+```
+
 Run a service from source
 
 ```
