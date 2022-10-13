@@ -122,7 +122,7 @@ micro helloworld call
 
 ## Hosting
 
-Micro Services are hosted on the [M3O](https://m3o.com) platform as serverless building blocks.
+Micro Services are hosted on [M3O](https://m3o.com) as programmable building blocks.
 
 M3O converts protobuf to openapi specs and generates clients for the hosted services.
 
