@@ -5,18 +5,18 @@ package ai;
 option go_package = "./proto;ai";
 
 service Ai {
-	rpc Call(Request) returns (Response) {}
+	rpc Call(CallRequest) returns (CallResponse) {}
 	rpc Moderate(ModerateRequest) returns (ModerateResponse) {}
 }
 
 // Make a request to the AI
-message Request {
+message CallRequest {
 	// text to pass in
 	string text = 1;
 }
 
 // Response from the AI
-message Response {
+message CallResponse {
 	// text returned
 	string text = 2;
 }

@@ -42,7 +42,7 @@ func NewAiEndpoints() []*api.Endpoint {
 // Client API for Ai service
 
 type AiService interface {
-	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	Call(ctx context.Context, in *CallRequest, opts ...client.CallOption) (*CallResponse, error)
 	Moderate(ctx context.Context, in *ModerateRequest, opts ...client.CallOption) (*ModerateResponse, error)
 }
 
@@ -58,9 +58,9 @@ func NewAiService(name string, c client.Client) AiService {
 	}
 }
 
-func (c *aiService) Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+func (c *aiService) Call(ctx context.Context, in *CallRequest, opts ...client.CallOption) (*CallResponse, error) {
 	req := c.c.NewRequest(c.name, "Ai.Call", in)
-	out := new(Response)
+	out := new(CallResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -81,13 +81,13 @@ func (c *aiService) Moderate(ctx context.Context, in *ModerateRequest, opts ...c
 // Server API for Ai service
 
 type AiHandler interface {
-	Call(context.Context, *Request, *Response) error
+	Call(context.Context, *CallRequest, *CallResponse) error
 	Moderate(context.Context, *ModerateRequest, *ModerateResponse) error
 }
 
 func RegisterAiHandler(s server.Server, hdlr AiHandler, opts ...server.HandlerOption) error {
 	type ai interface {
-		Call(ctx context.Context, in *Request, out *Response) error
+		Call(ctx context.Context, in *CallRequest, out *CallResponse) error
 		Moderate(ctx context.Context, in *ModerateRequest, out *ModerateResponse) error
 	}
 	type Ai struct {
@@ -101,7 +101,7 @@ type aiHandler struct {
 	AiHandler
 }
 
-func (h *aiHandler) Call(ctx context.Context, in *Request, out *Response) error {
+func (h *aiHandler) Call(ctx context.Context, in *CallRequest, out *CallResponse) error {
 	return h.AiHandler.Call(ctx, in, out)
 }
 

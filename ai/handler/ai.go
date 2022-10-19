@@ -30,7 +30,7 @@ func New() *Ai {
 	return &Ai{}
 }
 
-func (e *Ai) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
+func (e *Ai) Call(ctx context.Context, req *pb.CallRequest, rsp *pb.CallResponse) error {
 	if len(req.Text) == 0 {
 		return errors.BadRequest("ai.call", "missing text")
 	}
