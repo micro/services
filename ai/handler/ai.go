@@ -69,6 +69,41 @@ func (e *Ai) Call(ctx context.Context, req *pb.CallRequest, rsp *pb.CallResponse
 	return nil
 }
 
+func (e *Ai) Check(ctx context.Context, req *pb.CheckRequest, rsp *pb.CheckResponse) error {
+	if len(req.Text) == 0 {
+		return errors.BadRequest("ai.check", "missing text")
+	}
+
+	uri := "https://api.openai.com/v1/edits"
+
+	if len(req.Instruction) == 0 {
+		req.Instruction = "Check the spelling and grammar"
+	}
+
+	var resp map[string]interface{}
+	if err := api.Post(uri, map[string]interface{}{
+		"model":       "text-davinci-edit-001",
+		"input":       req.Text,
+		"instruction": req.Instruction,
+	}, &resp); err != nil {
+		log.Errorf("Failed AI call: %v\n", err)
+		return errors.InternalServerError("ai.check", "Failed to make request")
+	}
+
+	v := resp["choices"]
+	if v == nil {
+		return nil
+	}
+
+	// get first choice
+	choice := v.([]interface{})[0].(map[string]interface{})
+
+	// set response text
+	rsp.Text = choice["text"].(string)
+
+	return nil
+}
+
 func (e *Ai) Moderate(ctx context.Context, req *pb.ModerateRequest, rsp *pb.ModerateResponse) error {
 	if len(req.Text) == 0 {
 		return errors.BadRequest("ai.moderate", "missing text")

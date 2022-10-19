@@ -5,6 +5,7 @@
   "display_name": "AI",
   "pricing": {
     "Ai.Call": 50000,
+    "Ai.Check": 50000,
     "Ai.Moderate": 50000
   }
 }

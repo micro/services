@@ -9,6 +9,16 @@
 	  "text": "\n\nLeonardo da Vinci was an Italian Renaissance architect, musician, inventor, engineer, and painter."
         }
     }],
+    "check": [{
+        "title": "Check text",
+        "run_check": false,
+        "request": {
+          "text": "What day of the wek is it?"
+        },
+        "response": {
+          "text": "What is the day of the week?\n"
+	}
+    }],
     "moderate": [{
         "title": "Moderate hate speech",
         "run_check": false,

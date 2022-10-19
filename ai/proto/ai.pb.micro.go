@@ -43,6 +43,7 @@ func NewAiEndpoints() []*api.Endpoint {
 
 type AiService interface {
 	Call(ctx context.Context, in *CallRequest, opts ...client.CallOption) (*CallResponse, error)
+	Check(ctx context.Context, in *CheckRequest, opts ...client.CallOption) (*CheckResponse, error)
 	Moderate(ctx context.Context, in *ModerateRequest, opts ...client.CallOption) (*ModerateResponse, error)
 }
 
@@ -68,6 +69,16 @@ func (c *aiService) Call(ctx context.Context, in *CallRequest, opts ...client.Ca
 	return out, nil
 }
 
+func (c *aiService) Check(ctx context.Context, in *CheckRequest, opts ...client.CallOption) (*CheckResponse, error) {
+	req := c.c.NewRequest(c.name, "Ai.Check", in)
+	out := new(CheckResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *aiService) Moderate(ctx context.Context, in *ModerateRequest, opts ...client.CallOption) (*ModerateResponse, error) {
 	req := c.c.NewRequest(c.name, "Ai.Moderate", in)
 	out := new(ModerateResponse)
@@ -82,12 +93,14 @@ func (c *aiService) Moderate(ctx context.Context, in *ModerateRequest, opts ...c
 
 type AiHandler interface {
 	Call(context.Context, *CallRequest, *CallResponse) error
+	Check(context.Context, *CheckRequest, *CheckResponse) error
 	Moderate(context.Context, *ModerateRequest, *ModerateResponse) error
 }
 
 func RegisterAiHandler(s server.Server, hdlr AiHandler, opts ...server.HandlerOption) error {
 	type ai interface {
 		Call(ctx context.Context, in *CallRequest, out *CallResponse) error
+		Check(ctx context.Context, in *CheckRequest, out *CheckResponse) error
 		Moderate(ctx context.Context, in *ModerateRequest, out *ModerateResponse) error
 	}
 	type Ai struct {
@@ -103,6 +116,10 @@ type aiHandler struct {
 
 func (h *aiHandler) Call(ctx context.Context, in *CallRequest, out *CallResponse) error {
 	return h.AiHandler.Call(ctx, in, out)
+}
+
+func (h *aiHandler) Check(ctx context.Context, in *CheckRequest, out *CheckResponse) error {
+	return h.AiHandler.Check(ctx, in, out)
 }
 
 func (h *aiHandler) Moderate(ctx context.Context, in *ModerateRequest, out *ModerateResponse) error {

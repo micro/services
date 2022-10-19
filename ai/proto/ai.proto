@@ -6,6 +6,7 @@ option go_package = "./proto;ai";
 
 service Ai {
 	rpc Call(CallRequest) returns (CallResponse) {}
+	rpc Check(CheckRequest) returns (CheckResponse) {}
 	rpc Moderate(ModerateRequest) returns (ModerateResponse) {}
 }
 
@@ -18,6 +19,19 @@ message CallRequest {
 // Response from the AI
 message CallResponse {
 	// text returned
+	string text = 2;
+}
+
+// Check or edit text/code
+message CheckRequest {
+	// text/code to check
+	string text = 1;
+	// instruction hint e.g check the grammar
+	string instruction = 2;
+}
+
+message CheckResponse {
+	// response output
 	string text = 2;
 }
 
