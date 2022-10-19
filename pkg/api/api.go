@@ -3,10 +3,12 @@ package api
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"path"
 	"sync"
 	"time"
 )
@@ -93,6 +95,22 @@ func Post(url string, ureq, rsp interface{}) error {
 		return err
 	}
 
+	// encode the data
+	data := base64.StdEncoding.EncodeToString(b)
+
+	// create a key
+	key := path.Join(url, data)
+
+	// check the cache if its enabled
+	mtx.RLock()
+	if cache != nil {
+		if val, ok := cache[key]; ok {
+			mtx.RUnlock()
+			return json.Unmarshal(val.([]byte), rsp)
+		}
+	}
+	mtx.RUnlock()
+
 	req, err := http.NewRequest("POST", url, bytes.NewReader(b))
 	if err != nil {
 		return err
@@ -119,6 +137,24 @@ func Post(url string, ureq, rsp interface{}) error {
 
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("Non 200 response %v: %v", resp.StatusCode, string(b))
+	}
+
+	if cache != nil {
+		mtx.Lock()
+
+		// cache the value
+		cache[key] = b
+
+		// delete it when the ttl expires
+		if cacheTTL > time.Duration(0) {
+			go func() {
+				time.Sleep(cacheTTL)
+				mtx.Lock()
+				delete(cache, key)
+				mtx.Unlock()
+			}()
+		}
+		mtx.Unlock()
 	}
 
 	return json.Unmarshal(b, rsp)

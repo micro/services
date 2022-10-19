@@ -1,0 +1,40 @@
+{
+    "call": [{
+        "title": "Call the AI",
+        "run_check": false,
+        "request": {
+          "text": "who is leonardo davinci"
+        },
+        "response": {
+	  "text": "\n\nLeonardo da Vinci was an Italian Renaissance architect, musician, inventor, engineer, and painter."
+        }
+    }],
+    "moderate": [{
+        "title": "Moderate hate speech",
+        "run_check": false,
+        "request": {
+          "text": "I want to kill him"
+        },
+        "response": {
+		"flagged": true,
+		"categories": {
+			"hate": false,
+			"hate/threatening": false,
+			"self-harm": false,
+			"sexual": false,
+			"sexual/minors": false,
+			"violence": true,
+			"violence/graphic": false
+		},
+		"scores": {
+			"hate": 0.013155348598957062,
+			"hate/threatening": 0.0037288155872374773,
+			"self-harm": 0.0002420183882350102,
+			"sexual": 0.0005528798210434616,
+			"sexual/minors": 0.00009280459198635072,
+			"violence": 0.9706985354423523,
+			"violence/graphic": 0.0022974952589720488
+		}
+	}
+    }]
+}
