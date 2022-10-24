@@ -35,6 +35,10 @@ type Headlines struct {
 	Data map[string][]*Article `json:"data"`
 }
 
+type TopStories struct {
+	Data []*Article `json:"data"`
+}
+
 var (
 	apiURL = "https://api.thenewsapi.com"
 )
@@ -150,19 +154,13 @@ func (n *News) TopStories(ctx context.Context, req *pb.TopStoriesRequest, rsp *p
 	vals.Set("language", language)
 
 	uri := fmt.Sprintf("%s%s?%s", apiURL, path, vals.Encode())
-	var resp *Headlines
+	var resp *TopStories
 	if err := api.Get(uri, &resp); err != nil {
 		return errors.InternalServerError("news.top", err.Error())
 	}
 
 	for _, articles := range resp.Data {
-		for _, v := range articles {
-			rsp.Articles = append(rsp.Articles, toProto(v))
-
-			for _, a := range v.Similar {
-				rsp.Articles = append(rsp.Articles, toProto(a))
-			}
-		}
+		rsp.Articles = append(rsp.Articles, toProto(articles))
 	}
 
 	return nil
