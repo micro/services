@@ -80,8 +80,8 @@ func (n *News) Headlines(ctx context.Context, req *pb.HeadlinesRequest, rsp *pb.
 	}
 
 	var seen bool
-	for _, locale := range Locales {
-		if locale == req.Locale {
+	for _, loc := range Locales {
+		if loc == locale {
 			seen = true
 			break
 		}
