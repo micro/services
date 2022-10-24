@@ -149,6 +149,9 @@ func (b *Bitcoin) Price(ctx context.Context, req *pb.PriceRequest, rsp *pb.Price
 		req.Symbol = strings.TrimPrefix(req.Symbol, "BTC")
 	}
 
+	// upper case
+	req.Symbol = strings.ToUpper(req.Symbol)
+
 	// try the cache first
 	if price, ok := b.Cache.Get("price:" + req.Symbol); ok {
 		rsp.Symbol = req.Symbol
