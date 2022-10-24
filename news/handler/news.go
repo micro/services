@@ -114,3 +114,56 @@ func (n *News) Headlines(ctx context.Context, req *pb.HeadlinesRequest, rsp *pb.
 
 	return nil
 }
+
+func (n *News) TopStories(ctx context.Context, req *pb.TopStoriesRequest, rsp *pb.TopStoriesResponse) error {
+	path := "/v1/news/top"
+	locale := "us"
+	language := "en"
+	date := time.Now().Format("2006-01-02")
+
+	if len(req.Locale) > 0 {
+		locale = req.Locale
+	}
+	if len(req.Language) > 0 {
+		language = req.Language
+	}
+
+	if len(req.Date) > 0 {
+		date = req.Date
+	}
+
+	var seen bool
+	for _, loc := range Locales {
+		if loc == locale {
+			seen = true
+			break
+		}
+	}
+	if !seen {
+		return errors.BadRequest("news.top-stories", "invalid locale")
+	}
+
+	vals := url.Values{}
+	vals.Set("api_token", n.apiKey)
+	vals.Set("locale", locale)
+	vals.Set("published_on", date)
+	vals.Set("language", language)
+
+	uri := fmt.Sprintf("%s%s?%s", apiURL, path, vals.Encode())
+	var resp *Headlines
+	if err := api.Get(uri, &resp); err != nil {
+		return errors.InternalServerError("news.top", err.Error())
+	}
+
+	for _, articles := range resp.Data {
+		for _, v := range articles {
+			rsp.Articles = append(rsp.Articles, toProto(v))
+
+			for _, a := range v.Similar {
+				rsp.Articles = append(rsp.Articles, toProto(a))
+			}
+		}
+	}
+
+	return nil
+}

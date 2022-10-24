@@ -43,6 +43,7 @@ func NewNewsEndpoints() []*api.Endpoint {
 
 type NewsService interface {
 	Headlines(ctx context.Context, in *HeadlinesRequest, opts ...client.CallOption) (*HeadlinesResponse, error)
+	TopStories(ctx context.Context, in *TopStoriesRequest, opts ...client.CallOption) (*TopStoriesResponse, error)
 }
 
 type newsService struct {
@@ -67,15 +68,27 @@ func (c *newsService) Headlines(ctx context.Context, in *HeadlinesRequest, opts 
 	return out, nil
 }
 
+func (c *newsService) TopStories(ctx context.Context, in *TopStoriesRequest, opts ...client.CallOption) (*TopStoriesResponse, error) {
+	req := c.c.NewRequest(c.name, "News.TopStories", in)
+	out := new(TopStoriesResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for News service
 
 type NewsHandler interface {
 	Headlines(context.Context, *HeadlinesRequest, *HeadlinesResponse) error
+	TopStories(context.Context, *TopStoriesRequest, *TopStoriesResponse) error
 }
 
 func RegisterNewsHandler(s server.Server, hdlr NewsHandler, opts ...server.HandlerOption) error {
 	type news interface {
 		Headlines(ctx context.Context, in *HeadlinesRequest, out *HeadlinesResponse) error
+		TopStories(ctx context.Context, in *TopStoriesRequest, out *TopStoriesResponse) error
 	}
 	type News struct {
 		news
@@ -90,4 +103,8 @@ type newsHandler struct {
 
 func (h *newsHandler) Headlines(ctx context.Context, in *HeadlinesRequest, out *HeadlinesResponse) error {
 	return h.NewsHandler.Headlines(ctx, in, out)
+}
+
+func (h *newsHandler) TopStories(ctx context.Context, in *TopStoriesRequest, out *TopStoriesResponse) error {
+	return h.NewsHandler.TopStories(ctx, in, out)
 }
