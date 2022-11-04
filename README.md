@@ -142,7 +142,7 @@ http://localhost:8082/helloworld/Call
 
 ## Hosting
 
-Micro Services are hosted on [M3O](https://m3o.com) as programmable building blocks.
+Micro Services are hosted on [M3O](https://m3o.com) as serverless building blocks.
 
 M3O converts protobuf to openapi specs and generates clients for the hosted services.
 
