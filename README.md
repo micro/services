@@ -114,7 +114,7 @@ Run a service from source
 micro run github.com/micro/services/helloworld
 ```
 
-### Calling Services
+### Call a Service
 
 To call a service from another
 
@@ -132,6 +132,12 @@ From the command line
 
 ```
 micro helloworld call --name=Alice
+```
+
+Browse to
+
+```
+http://localhost:8082/helloworld/Call
 ```
 
 ## Hosting
