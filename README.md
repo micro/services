@@ -6,7 +6,7 @@ Real world Micro services
 
 Micro services provide the fundamental building blocks for any products, apps or services. They can be used in isolation 
 or combined to create powerful distributed systems. The services are intended to be consumed by each other using RPC 
-and from the external world through an API.
+and externally through the Micro API.
 
 ## Rationale
 
