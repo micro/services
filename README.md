@@ -1,12 +1,12 @@
 # Micro Services [![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/micro/services?tab=doc) [![License](https://img.shields.io/:license-apache-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Reusable real world Micro services.
+Real world Micro services
 
 ## Overview
 
 Micro services provide the fundamental building blocks for any products, apps or services. They can be used in isolation 
 or combined to create powerful distributed systems. The services are intended to be consumed by each other using RPC 
-and from the external world through an API.
+and externally through the Micro API.
 
 ## Rationale
 
@@ -114,7 +114,7 @@ Run a service from source
 micro run github.com/micro/services/helloworld
 ```
 
-### Calling Services
+### Call a Service
 
 To call a service from another
 
@@ -134,9 +134,15 @@ From the command line
 micro helloworld call --name=Alice
 ```
 
+Browse to
+
+```
+http://localhost:8082/helloworld/Call
+```
+
 ## Hosting
 
-Micro Services are hosted on [M3O](https://m3o.com) as programmable building blocks.
+Micro Services are hosted on [M3O](https://m3o.com) as serverless building blocks.
 
 M3O converts protobuf to openapi specs and generates clients for the hosted services.
 
