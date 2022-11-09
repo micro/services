@@ -35,7 +35,7 @@ type Image struct {
 
 func NewImage() *Image {
 	var hp string
-	cfg, err := config.Get("micro.image.host_prefix")
+	cfg, err := config.Get("image.host_prefix")
 	if err != nil {
 		hp = cfg.String(hostPrefix)
 	}
