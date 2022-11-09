@@ -65,7 +65,7 @@ type meta struct {
 
 func NewSpace(srv *service.Service) *Space {
 	var c conf
-	val, err := config.Get("micro.space")
+	val, err := config.Get("space")
 	if err != nil {
 		log.Fatalf("Failed to load config %s", err)
 	}
