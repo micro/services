@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"googlemaps.github.io/maps"
 
@@ -26,8 +27,69 @@ type Google struct {
 }
 
 func (r *Google) Directions(ctx context.Context, req *pb.DirectionsRequest, rsp *pb.DirectionsResponse) error {
-	// TODO: implement eta
-	return ErrUnimplemented
+	// query google maps
+	routes, _, err := r.Maps.Directions(ctx, &maps.DirectionsRequest{
+		Origin: pointToString(req.Origin), Destination: pointToString(req.Destination),
+	})
+	if err != nil {
+		logger.Errorf("Error geocoding: %v. Origin: '%v', Destination: '%v'", err, pointToString(req.Origin), pointToString(req.Destination))
+		return ErrDownstream
+	}
+	if len(routes) == 0 {
+		return ErrNoRoutes
+	}
+
+	// decode the points
+	points, err := routes[0].OverviewPolyline.Decode()
+	if err != nil {
+		logger.Errorf("Error decoding polyline: %v", err)
+		return ErrDownstream
+	}
+
+	// return the result
+	rsp.Waypoints = make([]*pb.Waypoint, len(points))
+	for i, p := range points {
+		rsp.Waypoints[i] = &pb.Waypoint{
+			Location: &pb.Point{
+				Latitude:  p.Lat,
+				Longitude: p.Lng,
+			},
+		}
+	}
+
+	legs := routes[0].Legs
+
+	var distance int
+	var duration time.Duration
+
+	for i, leg := range legs {
+		var intersection []*pb.Intersection
+		for _, waypoint := range leg.ViaWaypoint {
+			intersection = append(intersection, &pb.Intersection{
+				Location: &pb.Point{
+					Latitude:  waypoint.Location.Lat,
+					Longitude: waypoint.Location.Lng,
+				},
+			})
+		}
+		rsp.Directions = append(rsp.Directions, &pb.Direction{
+			Name:          fmt.Sprintf("leg %d", i),
+			Distance:      float64(leg.Distance.Meters),
+			Duration:      float64(leg.Duration.Seconds()),
+			Intersections: intersection,
+		})
+		distance += leg.Distance.Meters
+		duration += leg.Duration
+	}
+
+	// total distance/duration
+
+	// in meters
+	rsp.Distance = float64(distance)
+	// in seconds
+	rsp.Duration = float64(duration.Seconds())
+
+	return nil
 }
 
 // Calculate the ETAs for a route
