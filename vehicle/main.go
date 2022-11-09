@@ -16,13 +16,13 @@ func main() {
 		service.Version("latest"),
 	)
 
-	v, err := config.Get("dvla.api_key")
+	v, err := config.Get("vehicle.api_key")
 	if err != nil {
-		logger.Fatalf("sunnha.api_key config not found: %v", err)
+		logger.Fatalf("vehicle.api_key config not found: %v", err)
 	}
 	key := v.String("")
 	if len(key) == 0 {
-		logger.Fatal("dvla.api_key config not found")
+		logger.Fatal("vehicle.api_key config not found")
 	}
 
 	h := handler.New(key)
