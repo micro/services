@@ -62,7 +62,7 @@ type catIndicesEntry struct {
 }
 
 func New(srv *service.Service) *Search {
-	v, err := config.Get("micro.search")
+	v, err := config.Get("search")
 	if err != nil {
 		log.Fatalf("Failed to load config %s", err)
 	}
