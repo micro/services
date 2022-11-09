@@ -23,21 +23,21 @@ type Time struct {
 
 func New() *Time {
 	// TODO: look for "weather.provider" to determine the handler
-	v, err := config.Get("weatherapi.api")
+	v, err := config.Get("time.api")
 	if err != nil {
-		logger.Fatalf("weatherapi.api config not found: %v", err)
+		logger.Fatalf("time.api config not found: %v", err)
 	}
 	api := v.String("")
 	if len(api) == 0 {
-		logger.Fatal("weatherapi.api config not found")
+		logger.Fatal("time.api config not found")
 	}
-	v, err = config.Get("weatherapi.key")
+	v, err = config.Get("time.key")
 	if err != nil {
-		logger.Fatalf("weatherapi.key config not found: %v", err)
+		logger.Fatalf("time.key config not found: %v", err)
 	}
 	key := v.String("")
 	if len(key) == 0 {
-		logger.Fatal("weatherapi.key config not found")
+		logger.Fatal("time.key config not found")
 	}
 
 	return &Time{
