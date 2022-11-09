@@ -42,7 +42,7 @@ type conf struct {
 }
 
 func New() *Evchargers {
-	val, err := config.Get("micro.evchargers")
+	val, err := config.Get("evchargers")
 	if err != nil {
 		log.Fatalf("Failed to load config")
 	}
