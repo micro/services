@@ -36,7 +36,7 @@ type Qr struct {
 }
 
 func New() *Qr {
-	v, err := config.Get("micro.qr.cdnprefix")
+	v, err := config.Get("qr.cdnprefix")
 	if err != nil {
 		log.Fatalf("Failed to get CDN prefix %s", err)
 	}
