@@ -31,15 +31,15 @@ type Sent struct {
 	SendgridMsgID string
 }
 
-type sendgridConf struct {
+type emailConf struct {
 	Key       string `json:"key"`
 	EmailFrom string `json:"email_from"`
 	PoolName  string `json:"ip_pool_name"`
 }
 
 func NewEmailHandler(svc *service.Service) *Email {
-	c := sendgridConf{}
-	val, err := config.Get("sendgridapi")
+	c := emailConf{}
+	val, err := config.Get("email")
 	if err != nil {
 		log.Warnf("Error getting config: %v", err)
 	}
@@ -57,7 +57,7 @@ func NewEmailHandler(svc *service.Service) *Email {
 }
 
 type Email struct {
-	config  sendgridConf
+	config  emailConf
 	spamSvc spampb.SpamService
 }
 
