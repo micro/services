@@ -22,21 +22,21 @@ type Weather struct {
 
 func New() *Weather {
 	// TODO: look for "weather.provider" to determine the handler
-	v, err := config.Get("weatherapi.api")
+	v, err := config.Get("weather.api")
 	if err != nil {
-		logger.Fatalf("weatherapi.api config not found: %v", err)
+		logger.Fatalf("weather.api config not found: %v", err)
 	}
 	api := v.String("")
 	if len(api) == 0 {
-		logger.Fatal("weatherapi.api config not found")
+		logger.Fatal("weather.api config not found")
 	}
-	v, err = config.Get("weatherapi.key")
+	v, err = config.Get("weather.key")
 	if err != nil {
-		logger.Fatalf("weatherapi.key config not found: %v", err)
+		logger.Fatalf("weather.key config not found: %v", err)
 	}
 	key := v.String("")
 	if len(key) == 0 {
-		logger.Fatal("weatherapi.key config not found")
+		logger.Fatal("weather.key config not found")
 	}
 
 	return &Weather{
