@@ -1,19 +1,15 @@
 package main
 
 import (
+	"database/sql"
+
 	pb "github.com/micro/services/db/proto"
 	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
-
 	"github.com/micro/services/db/handler"
-
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
-
-	"database/sql"
-
 	"github.com/micro/micro/v3/service/config"
-
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -27,7 +23,7 @@ func main() {
 	)
 
 	// Connect to the database
-	cfg, err := config.Get("micro.db.database")
+	cfg, err := config.Get("db.address")
 	if err != nil {
 		logger.Fatalf("Error loading config: %v", err)
 	}
