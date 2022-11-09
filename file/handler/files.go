@@ -23,7 +23,7 @@ const hostPrefix = "https://cdn.m3ocontent.com"
 
 func NewFile() *File {
 	var hp string
-	cfg, err := config.Get("micro.image.host_prefix")
+	cfg, err := config.Get("file.host_prefix")
 	if err != nil {
 		hp = cfg.String(hostPrefix)
 	}

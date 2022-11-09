@@ -23,7 +23,7 @@ type conf struct {
 }
 
 func New() *Holidays {
-	val, err := config.Get("micro.holidays")
+	val, err := config.Get("holidays")
 	if err != nil {
 		log.Fatalf("Failed to load config %s", err)
 	}
