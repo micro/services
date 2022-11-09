@@ -24,7 +24,7 @@ type Spam struct {
 }
 
 func New() *Spam {
-	val, err := config.Get("micro.spam")
+	val, err := config.Get("spam")
 	if err != nil {
 		log.Fatalf("Failed to load config")
 	}
