@@ -1,0 +1,9 @@
+{
+  "access_key": "",
+  "base_url": "https://foo.bar.com",
+  "endpoint": "ams3.digitaloceanspaces.com",
+  "region": "ams3",
+  "secret_key": "",
+  "space_name": "bucket",
+  "ssl": true
+}

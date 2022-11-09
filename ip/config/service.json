@@ -1,0 +1,9 @@
+{
+	"asn":{
+		"database":"blob://ip/GeoLite2-ASN.mmdb"
+	},
+	"city":{
+		"database":"blob://ip/GeoLite2-City.mmdb"
+	}
+}
+

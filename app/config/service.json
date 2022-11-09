@@ -1,0 +1,20 @@
+{
+  "address": "https://europe-west1-run.googleapis.com/",
+  "domain": "foo.com",
+  "project": "foo-apis",
+  "project_id": "1234356646",
+  "service_account": "gcloud-deploy-service-account@foo-apis.iam.gserviceaccount.com",
+  "service_account_json": {
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "client_email": "gcloud-deploy-service-account@foo-apis.iam.gserviceaccount.com",
+    "client_id": "123435353532532532523523",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gcloud-deploy-service-account%40foo-apis.iam.gserviceaccount.com",
+    "private_key": "",
+    "private_key_id": "",
+    "project_id": "foo-apis",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "type": "service_account"
+  },
+  "service_identity": "app-service-identity"
+}
