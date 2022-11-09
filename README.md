@@ -155,3 +155,9 @@ We welcome contributions of additional services:
 - Services must be built using the Micro platform
 - Any dependency must be configured using the Micro Config
 - All services must include a README.md and be well commented
+
+## Config
+
+Config for each service should be stored under the service key by name
+
+E.g db postgres host address `db.address`

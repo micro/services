@@ -4,3 +4,5 @@ Explore NFT Assets
 
 Explore NFT collections and assets with a simple API. 
 
+Powered by OpenSea
+
