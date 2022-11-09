@@ -37,7 +37,7 @@ type Url struct {
 func NewUrl(svc *service.Service) *Url {
 	var hp string
 
-	cfg, err := config.Get("micro.url.host_prefix")
+	cfg, err := config.Get("url.host_prefix")
 	if err != nil {
 		hp = cfg.String(hostPrefix)
 	}
