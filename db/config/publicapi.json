@@ -2,13 +2,5 @@
   "name": "db",
   "icon": "📦",
   "category": "storage",
-  "display_name": "DB",
-  "quotas": {
-    "Db.Create": 1000000,
-    "Db.Count": 1000000,
-    "Db.Read": 1000000,
-    "Db.Update": 1000000,
-    "Db.Delete": 1000000,
-    "Db.ListTables": 1000000
-  }
+  "display_name": "DB"
 }
