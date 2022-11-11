@@ -9,7 +9,9 @@ import (
 
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/errors"
+	"github.com/micro/micro/v3/service/logger"
 	log "github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 
 	pb "github.com/micro/services/holidays/proto"
 )
@@ -43,6 +45,18 @@ type nagerCountry struct {
 }
 
 func (h *Holidays) Countries(ctx context.Context, request *pb.CountriesRequest, response *pb.CountriesResponse) error {
+	key := "countries"
+	recs, err := store.Read(key, store.ReadLimit(1))
+	if err == nil && len(recs) == 1 {
+		var countries []*pb.Country
+		if err := recs[0].Decode(&countries); err == nil {
+			response.Countries = countries
+			return nil
+		} else {
+			logger.Errorf("Failed to get countries from store: %v", err)
+		}
+	}
+
 	rsp, err := http.Get(h.conf.NagerHost + "/api/v3/AvailableCountries")
 	if err != nil {
 		log.Errorf("Error listing available countries %s", err)
@@ -63,13 +77,22 @@ func (h *Holidays) Countries(ctx context.Context, request *pb.CountriesRequest, 
 		log.Errorf("Error processing available countries %s", err)
 		return errors.InternalServerError("holidays.countries", "Error retrieving country list")
 	}
-	response.Countries = make([]*pb.Country, len(rspArr))
-	for i, c := range rspArr {
-		response.Countries[i] = &pb.Country{
+
+	var countries []*pb.Country
+
+	for _, c := range rspArr {
+		countries = append(countries, &pb.Country{
 			Code: c.CountryCode,
 			Name: c.Name,
-		}
+		})
 	}
+
+	// save the countries
+	store.Write(store.NewRecord(key, countries))
+
+	// set response
+	response.Countries = countries
+
 	return nil
 }
 
@@ -89,6 +112,20 @@ func (h Holidays) List(ctx context.Context, request *pb.ListRequest, response *p
 	if len(request.CountryCode) == 0 {
 		return errors.BadRequest("holidays.list", "Missing country code argument")
 	}
+
+	key := fmt.Sprintf("holidays/%d/%s", request.Year, request.CountryCode)
+
+	recs, err := store.Read(key, store.ReadLimit(1))
+	if err == nil && len(recs) == 1 {
+		var holidays []*pb.Holiday
+		if err := recs[0].Decode(&holidays); err == nil {
+			response.Holidays = holidays
+			return nil
+		} else {
+			logger.Errorf("Failed to get holidays from store: %v", err)
+		}
+	}
+
 	rsp, err := http.Get(fmt.Sprintf("%s/api/v3/PublicHolidays/%d/%s", h.conf.NagerHost, request.Year, request.CountryCode))
 	if err != nil {
 		log.Errorf("Error listing available countries %s", err)
@@ -110,17 +147,24 @@ func (h Holidays) List(ctx context.Context, request *pb.ListRequest, response *p
 		return errors.InternalServerError("holidays.countries", "Error retrieving holidays list")
 	}
 
-	response.Holidays = make([]*pb.Holiday, len(rspArr))
-	for i, c := range rspArr {
-		response.Holidays[i] = &pb.Holiday{
+	var holidays []*pb.Holiday
+
+	for _, c := range rspArr {
+		holidays = append(holidays, &pb.Holiday{
 			Date:        c.Date,
 			Name:        c.Name,
 			LocalName:   c.LocalName,
 			CountryCode: c.CountryCode,
 			Regions:     c.Counties,
 			Types:       c.Types,
-		}
+		})
 	}
+
+	// save holidays
+	store.Write(store.NewRecord(key, holidays))
+
+	// write response
+	response.Holidays = holidays
 
 	return nil
 }
