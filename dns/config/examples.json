@@ -36,33 +36,29 @@
       "title": "Whois query",
       "description": "Make a whois query",
       "request": {
-        "name": "google.com"
+        "name": "x.com"
       },
       "response": {
-        "id": "2138514_DOMAIN_COM-VRSN",
-        "domain": "google.com",
-        "whois_server": "whois.markmonitor.com",
-        "registrar_url": "http://www.markmonitor.com",
-        "created": "1997-09-15T04:00:00Z",
-        "updated": "2019-09-09T15:39:04Z",
-        "expiry": "2028-09-14T04:00:00Z",
-        "registrar": "MarkMonitor Inc.",
-        "registrar_id": "292",
-        "abuse_email": "abusecomplaints@markmonitor.com",
-        "abuse_phone": "+1.2083895770",
+        "id": "1026563_DOMAIN_COM-VRSN",
+        "domain": "x.com",
+        "whois_server": "whois.godaddy.com",
+        "registrar_url": "https://www.godaddy.com",
+        "created": "1993-04-02T05:00:00Z",
+        "updated": "2022-10-04T00:33:10Z",
+        "expiry": "2026-10-20T19:56:17Z",
+        "registrar": "GoDaddy.com, LLC",
+        "registrar_id": "146",
+        "abuse_email": "abuse@godaddy.com",
+        "abuse_phone": "+1.4806242505",
         "status": [
                 "clientdeleteprohibited",
+                "clientrenewprohibited",
                 "clienttransferprohibited",
-                "clientupdateprohibited",
-                "serverdeleteprohibited",
-                "servertransferprohibited",
-                "serverupdateprohibited"
+                "clientupdateprohibited"
         ],
         "nameservers": [
-                "ns1.google.com",
-                "ns2.google.com",
-                "ns3.google.com",
-                "ns4.google.com"
+                "ns71.domaincontrol.com",
+                "ns72.domaincontrol.com"
         ]
       }
     }
