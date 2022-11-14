@@ -5,7 +5,8 @@ import (
 
 	"github.com/likexian/doh-go"
 	"github.com/likexian/doh-go/dns"
-
+	"github.com/likexian/whois"
+	"github.com/likexian/whois-parser"
 	"github.com/micro/micro/v3/service/errors"
 	pb "github.com/micro/services/dns/proto"
 )
@@ -60,5 +61,37 @@ func (d *Dns) Query(ctx context.Context, req *pb.QueryRequest, rsp *pb.QueryResp
 
 	rsp.Provider = resp.Provider
 
+	return nil
+}
+
+func (d *Dns) Whois(ctx context.Context, req *pb.WhoisRequest, rsp *pb.WhoisResponse) error {
+	if len(req.Domain) == 0 {
+		return errors.BadRequest("dns.whois", "missing domain")
+	}
+
+	result, err := whois.Whois(req.Domain)
+	if err != nil {
+		return err
+	}
+
+	// parse the response
+	res, err := whoisparser.Parse(result)
+	if err != nil {
+		return err
+	}
+
+	rsp.Id = res.Domain.ID
+	rsp.Domain = res.Domain.Domain
+	rsp.WhoisServer = res.Domain.WhoisServer
+	rsp.RegistrarUrl = res.Registrar.ReferralURL
+	rsp.Created = res.Domain.CreatedDate
+	rsp.Updated = res.Domain.UpdatedDate
+	rsp.Expiry = res.Domain.ExpirationDate
+	rsp.Status = res.Domain.Status
+	rsp.Registrar = res.Registrar.Name
+	rsp.RegistrarId = res.Registrar.ID
+	rsp.AbuseEmail = res.Registrar.Email
+	rsp.AbusePhone = res.Registrar.Phone
+	rsp.Nameservers = res.Domain.NameServers
 	return nil
 }

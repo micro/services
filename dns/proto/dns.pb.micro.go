@@ -43,6 +43,7 @@ func NewDnsEndpoints() []*api.Endpoint {
 
 type DnsService interface {
 	Query(ctx context.Context, in *QueryRequest, opts ...client.CallOption) (*QueryResponse, error)
+	Whois(ctx context.Context, in *WhoisRequest, opts ...client.CallOption) (*WhoisResponse, error)
 }
 
 type dnsService struct {
@@ -67,15 +68,27 @@ func (c *dnsService) Query(ctx context.Context, in *QueryRequest, opts ...client
 	return out, nil
 }
 
+func (c *dnsService) Whois(ctx context.Context, in *WhoisRequest, opts ...client.CallOption) (*WhoisResponse, error) {
+	req := c.c.NewRequest(c.name, "Dns.Whois", in)
+	out := new(WhoisResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Dns service
 
 type DnsHandler interface {
 	Query(context.Context, *QueryRequest, *QueryResponse) error
+	Whois(context.Context, *WhoisRequest, *WhoisResponse) error
 }
 
 func RegisterDnsHandler(s server.Server, hdlr DnsHandler, opts ...server.HandlerOption) error {
 	type dns interface {
 		Query(ctx context.Context, in *QueryRequest, out *QueryResponse) error
+		Whois(ctx context.Context, in *WhoisRequest, out *WhoisResponse) error
 	}
 	type Dns struct {
 		dns
@@ -90,4 +103,8 @@ type dnsHandler struct {
 
 func (h *dnsHandler) Query(ctx context.Context, in *QueryRequest, out *QueryResponse) error {
 	return h.DnsHandler.Query(ctx, in, out)
+}
+
+func (h *dnsHandler) Whois(ctx context.Context, in *WhoisRequest, out *WhoisResponse) error {
+	return h.DnsHandler.Whois(ctx, in, out)
 }

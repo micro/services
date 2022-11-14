@@ -29,6 +29,7 @@ require (
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/kevinburke/twilio-go v0.0.0-20210327194925-1623146bcf73
 	github.com/likexian/doh-go v0.6.4
+	github.com/likexian/whois v1.14.3
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
@@ -56,7 +57,7 @@ require (
 	go.mongodb.org/mongo-driver v1.7.2
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
-	golang.org/x/text v0.3.6
+	golang.org/x/text v0.3.7
 	google.golang.org/api v0.59.0
 	google.golang.org/protobuf v1.27.1
 	googlemaps.github.io/maps v1.3.1
@@ -109,7 +110,8 @@ require (
 	github.com/kevinburke/rest v0.0.0-20210506044642-5611499aa33c // indirect
 	github.com/klauspost/compress v1.13.5 // indirect
 	github.com/lib/pq v1.9.0 // indirect
-	github.com/likexian/gokit v0.21.11 // indirect
+	github.com/likexian/gokit v0.25.9 // indirect
+	github.com/likexian/whois-parser v1.24.2 // indirect
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
 	github.com/miekg/dns v1.1.31 // indirect
 	github.com/nightlyone/lockfile v1.0.0 // indirect
@@ -140,9 +142,9 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
-	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
+	golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

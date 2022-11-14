@@ -6,6 +6,7 @@ option go_package = "./proto;dns";
 
 service Dns {
 	rpc Query(QueryRequest) returns (QueryResponse) {}
+	rpc Whois(WhoisRequest) returns (WhoisResponse) {}
 }
 
 message Question {
@@ -46,3 +47,41 @@ message QueryResponse {
 	string provider = 9;
 }
 
+message Domain {
+	// domain id
+	string id = 1;
+}
+
+// Check who owns a domain
+message WhoisRequest {
+	string domain = 1;
+}
+
+message WhoisResponse {
+	// domain id
+	string id = 1;
+	// domain name
+	string domain = 2;
+	// whois server
+	string whois_server = 3;
+	// registrar
+	string registrar_url = 4;
+	// time of creation
+	string created = 5;
+	// time of update
+	string updated = 6;
+	// time of expiry
+	string expiry = 7;
+	// the registrar
+	string registrar = 8;
+	// the registrar iana id
+	string registrar_id = 9;
+	// abuse email
+	string abuse_email = 10;
+	// abuse phone
+	string abuse_phone = 11;
+	// status of domain
+	repeated string status = 12;
+	// nameservers
+	repeated string nameservers = 13;
+}

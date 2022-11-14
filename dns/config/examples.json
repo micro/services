@@ -30,5 +30,41 @@
 		"provider": "google"
       }
     }
+  ],
+  "whois": [
+    {
+      "title": "Whois query",
+      "description": "Make a whois query",
+      "request": {
+        "name": "google.com"
+      },
+      "response": {
+        "id": "2138514_DOMAIN_COM-VRSN",
+        "domain": "google.com",
+        "whois_server": "whois.markmonitor.com",
+        "registrar_url": "http://www.markmonitor.com",
+        "created": "1997-09-15T04:00:00Z",
+        "updated": "2019-09-09T15:39:04Z",
+        "expiry": "2028-09-14T04:00:00Z",
+        "registrar": "MarkMonitor Inc.",
+        "registrar_id": "292",
+        "abuse_email": "abusecomplaints@markmonitor.com",
+        "abuse_phone": "+1.2083895770",
+        "status": [
+                "clientdeleteprohibited",
+                "clienttransferprohibited",
+                "clientupdateprohibited",
+                "serverdeleteprohibited",
+                "servertransferprohibited",
+                "serverupdateprohibited"
+        ],
+        "nameservers": [
+                "ns1.google.com",
+                "ns2.google.com",
+                "ns3.google.com",
+                "ns4.google.com"
+        ]
+      }
+    }
   ]
 }
