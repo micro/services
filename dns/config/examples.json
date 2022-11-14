@@ -36,7 +36,7 @@
       "title": "Whois query",
       "description": "Make a whois query",
       "request": {
-        "name": "x.com"
+        "domaine": "x.com"
       },
       "response": {
         "id": "1026563_DOMAIN_COM-VRSN",
