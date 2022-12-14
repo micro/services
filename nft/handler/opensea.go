@@ -321,17 +321,26 @@ func (o *OpenSea) Collections(ctx context.Context, req *pb.CollectionsRequest, r
 
 	params += fmt.Sprintf("limit=%d&offset=%d", limit, offset)
 
+	var colls []*domain.Collection
+
+	var err error
+
 	if len(req.Owner) > 0 {
 		params += "&asset_owner=" + req.Owner
+		err = api.Get(uri+params, &colls)
+	} else {
+		var resp domain.CollectionsResponse
+		err = api.Get(uri+params, &resp)
+		if err == nil {
+			colls = resp.Collections
+		}
 	}
 
-	var resp domain.CollectionsResponse
-
-	if err := api.Get(uri+params, &resp); err != nil {
+	if err != nil {
 		return errors.InternalServerError("nft.collections", "failed to get collections: %v", err)
 	}
 
-	for _, collection := range resp.Collections {
+	for _, collection := range colls {
 		rsp.Collections = append(rsp.Collections, collectionToPb(collection))
 	}
 
