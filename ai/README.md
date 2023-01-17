@@ -1,4 +1,4 @@
-AI as a service
+Powered by OpenAI
 
 # Ai Service
 
