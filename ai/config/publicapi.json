@@ -4,8 +4,9 @@
   "category": "ai",
   "display_name": "AI",
   "pricing": {
-    "Ai.Call": 50000,
-    "Ai.Check": 50000,
+    "Ai.Complete": 50000,
+    "Ai.Edit": 50000,
+    "Ai.Generate": 50000,
     "Ai.Moderate": 50000
   }
 }

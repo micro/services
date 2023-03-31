@@ -51,7 +51,7 @@ message ModerateResponse {
 	map<string,double> scores = 3;
 }
 
-// Generage an image from prompt
+// Generate an image from prompt
 message GenerateRequest {
 	// text description of image
 	string text = 1;
