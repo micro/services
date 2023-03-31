@@ -30,9 +30,9 @@ func New() *Ai {
 	return &Ai{}
 }
 
-func (e *Ai) Call(ctx context.Context, req *pb.CallRequest, rsp *pb.CallResponse) error {
+func (e *Ai) Complete(ctx context.Context, req *pb.CompleteRequest, rsp *pb.CompleteResponse) error {
 	if len(req.Text) == 0 {
-		return errors.BadRequest("ai.call", "missing text")
+		return errors.BadRequest("ai.complete", "missing text")
 	}
 
 	// get the tenant
@@ -45,14 +45,14 @@ func (e *Ai) Call(ctx context.Context, req *pb.CallRequest, rsp *pb.CallResponse
 
 	var resp map[string]interface{}
 	if err := api.Post(uri, map[string]interface{}{
-		"model":       "text-davinci-002",
+		"model":       "text-davinci-003",
 		"prompt":      req.Text,
 		"max_tokens":  1000,
 		"temperature": 0,
 		"user":        tnt,
 	}, &resp); err != nil {
 		log.Errorf("Failed AI call: %v\n", err)
-		return errors.InternalServerError("ai.call", "Failed to make request")
+		return errors.InternalServerError("ai.complete", "Failed to make request")
 	}
 
 	v := resp["choices"]
@@ -69,15 +69,15 @@ func (e *Ai) Call(ctx context.Context, req *pb.CallRequest, rsp *pb.CallResponse
 	return nil
 }
 
-func (e *Ai) Check(ctx context.Context, req *pb.CheckRequest, rsp *pb.CheckResponse) error {
+func (e *Ai) Edit(ctx context.Context, req *pb.EditRequest, rsp *pb.EditResponse) error {
 	if len(req.Text) == 0 {
-		return errors.BadRequest("ai.check", "missing text")
+		return errors.BadRequest("ai.edit", "missing text")
 	}
 
 	uri := "https://api.openai.com/v1/edits"
 
 	if len(req.Instruction) == 0 {
-		req.Instruction = "Check the spelling and grammar"
+		req.Instruction = "Edit the spelling and grammar"
 	}
 
 	var resp map[string]interface{}
@@ -87,7 +87,7 @@ func (e *Ai) Check(ctx context.Context, req *pb.CheckRequest, rsp *pb.CheckRespo
 		"instruction": req.Instruction,
 	}, &resp); err != nil {
 		log.Errorf("Failed AI call: %v\n", err)
-		return errors.InternalServerError("ai.check", "Failed to make request")
+		return errors.InternalServerError("ai.edit", "Failed to make request")
 	}
 
 	v := resp["choices"]
@@ -141,6 +141,58 @@ func (e *Ai) Moderate(ctx context.Context, req *pb.ModerateRequest, rsp *pb.Mode
 	// set the scores
 	for k, v := range results["category_scores"].(map[string]interface{}) {
 		rsp.Scores[k] = v.(float64)
+	}
+
+	return nil
+}
+
+func (e *Ai) Image(ctx context.Context, req *pb.ImageRequest, rsp *pb.ImageResponse) error {
+	if len(req.Text) == 0 {
+		return errors.BadRequest("ai.image", "missing image text")
+	}
+
+	// get the tenant
+	tnt, ok := tenant.FromContext(ctx)
+	if !ok {
+		tnt = "micro"
+	}
+
+	uri := "https://api.openai.com/v1/images/generations"
+
+	if req.Limit == 0 || req.Limit > 10 {
+		req.Limit = 1
+	}
+
+	switch req.Size {
+	case "256x256", "512x512", "1024x1024":
+	default:
+		req.Size = "1024x1024"
+	}
+
+	var resp map[string]interface{}
+	if err := api.Post(uri, map[string]interface{}{
+		"prompt": req.Text,
+		"n":      req.Limit,
+		"size":   req.Size,
+		"user":   tnt,
+		"response_format": "b64_json",
+	}, &resp); err != nil {
+		log.Errorf("Failed AI Image generation: %v\n", err)
+		return errors.InternalServerError("ai.image", "Failed to make request")
+	}
+
+	v := resp["data"]
+	if v == nil {
+		return nil
+	}
+
+	for _, i := range v.([]interface{}) {
+		d := i.(map[string]interface{})
+		rsp.Images = append(rsp.Images, &pb.Image{
+			// TODO: upload image
+			//Url: d["url"].(string),
+			Base64: d["b64_json"].(string),
+		})
 	}
 
 	return nil

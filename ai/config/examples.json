@@ -1,6 +1,6 @@
 {
-    "call": [{
-        "title": "Call the AI",
+    "complete": [{
+        "title": "Complete the text",
         "run_check": false,
         "request": {
           "text": "who is leonardo davinci"
@@ -9,14 +9,24 @@
 	  "text": "\n\nLeonardo da Vinci was an Italian Renaissance architect, musician, inventor, engineer, and painter."
         }
     }],
-    "check": [{
-        "title": "Check text",
+    "edit": [{
+        "title": "Edit text",
         "run_check": false,
         "request": {
           "text": "What day of the wek is it?"
         },
         "response": {
           "text": "What is the day of the week?\n"
+	}
+    }],
+    "image": [{
+        "title": "Generate image",
+        "run_check": false,
+        "request": {
+          "text": "a cat on a ball"
+        },
+        "response": {
+          "images": [{"base64": "iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAIAAADwf7zU..."}]
 	}
     }],
     "moderate": [{

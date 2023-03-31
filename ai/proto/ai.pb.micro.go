@@ -42,9 +42,10 @@ func NewAiEndpoints() []*api.Endpoint {
 // Client API for Ai service
 
 type AiService interface {
-	Call(ctx context.Context, in *CallRequest, opts ...client.CallOption) (*CallResponse, error)
-	Check(ctx context.Context, in *CheckRequest, opts ...client.CallOption) (*CheckResponse, error)
+	Complete(ctx context.Context, in *CompleteRequest, opts ...client.CallOption) (*CompleteResponse, error)
+	Edit(ctx context.Context, in *EditRequest, opts ...client.CallOption) (*EditResponse, error)
 	Moderate(ctx context.Context, in *ModerateRequest, opts ...client.CallOption) (*ModerateResponse, error)
+	Image(ctx context.Context, in *ImageRequest, opts ...client.CallOption) (*ImageResponse, error)
 }
 
 type aiService struct {
@@ -59,9 +60,9 @@ func NewAiService(name string, c client.Client) AiService {
 	}
 }
 
-func (c *aiService) Call(ctx context.Context, in *CallRequest, opts ...client.CallOption) (*CallResponse, error) {
-	req := c.c.NewRequest(c.name, "Ai.Call", in)
-	out := new(CallResponse)
+func (c *aiService) Complete(ctx context.Context, in *CompleteRequest, opts ...client.CallOption) (*CompleteResponse, error) {
+	req := c.c.NewRequest(c.name, "Ai.Complete", in)
+	out := new(CompleteResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -69,9 +70,9 @@ func (c *aiService) Call(ctx context.Context, in *CallRequest, opts ...client.Ca
 	return out, nil
 }
 
-func (c *aiService) Check(ctx context.Context, in *CheckRequest, opts ...client.CallOption) (*CheckResponse, error) {
-	req := c.c.NewRequest(c.name, "Ai.Check", in)
-	out := new(CheckResponse)
+func (c *aiService) Edit(ctx context.Context, in *EditRequest, opts ...client.CallOption) (*EditResponse, error) {
+	req := c.c.NewRequest(c.name, "Ai.Edit", in)
+	out := new(EditResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -89,19 +90,31 @@ func (c *aiService) Moderate(ctx context.Context, in *ModerateRequest, opts ...c
 	return out, nil
 }
 
+func (c *aiService) Image(ctx context.Context, in *ImageRequest, opts ...client.CallOption) (*ImageResponse, error) {
+	req := c.c.NewRequest(c.name, "Ai.Image", in)
+	out := new(ImageResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Ai service
 
 type AiHandler interface {
-	Call(context.Context, *CallRequest, *CallResponse) error
-	Check(context.Context, *CheckRequest, *CheckResponse) error
+	Complete(context.Context, *CompleteRequest, *CompleteResponse) error
+	Edit(context.Context, *EditRequest, *EditResponse) error
 	Moderate(context.Context, *ModerateRequest, *ModerateResponse) error
+	Image(context.Context, *ImageRequest, *ImageResponse) error
 }
 
 func RegisterAiHandler(s server.Server, hdlr AiHandler, opts ...server.HandlerOption) error {
 	type ai interface {
-		Call(ctx context.Context, in *CallRequest, out *CallResponse) error
-		Check(ctx context.Context, in *CheckRequest, out *CheckResponse) error
+		Complete(ctx context.Context, in *CompleteRequest, out *CompleteResponse) error
+		Edit(ctx context.Context, in *EditRequest, out *EditResponse) error
 		Moderate(ctx context.Context, in *ModerateRequest, out *ModerateResponse) error
+		Image(ctx context.Context, in *ImageRequest, out *ImageResponse) error
 	}
 	type Ai struct {
 		ai
@@ -114,14 +127,18 @@ type aiHandler struct {
 	AiHandler
 }
 
-func (h *aiHandler) Call(ctx context.Context, in *CallRequest, out *CallResponse) error {
-	return h.AiHandler.Call(ctx, in, out)
+func (h *aiHandler) Complete(ctx context.Context, in *CompleteRequest, out *CompleteResponse) error {
+	return h.AiHandler.Complete(ctx, in, out)
 }
 
-func (h *aiHandler) Check(ctx context.Context, in *CheckRequest, out *CheckResponse) error {
-	return h.AiHandler.Check(ctx, in, out)
+func (h *aiHandler) Edit(ctx context.Context, in *EditRequest, out *EditResponse) error {
+	return h.AiHandler.Edit(ctx, in, out)
 }
 
 func (h *aiHandler) Moderate(ctx context.Context, in *ModerateRequest, out *ModerateResponse) error {
 	return h.AiHandler.Moderate(ctx, in, out)
+}
+
+func (h *aiHandler) Image(ctx context.Context, in *ImageRequest, out *ImageResponse) error {
+	return h.AiHandler.Image(ctx, in, out)
 }
