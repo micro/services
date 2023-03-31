@@ -146,9 +146,9 @@ func (e *Ai) Moderate(ctx context.Context, req *pb.ModerateRequest, rsp *pb.Mode
 	return nil
 }
 
-func (e *Ai) Image(ctx context.Context, req *pb.ImageRequest, rsp *pb.ImageResponse) error {
+func (e *Ai) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.GenerateResponse) error {
 	if len(req.Text) == 0 {
-		return errors.BadRequest("ai.image", "missing image text")
+		return errors.BadRequest("ai.generate", "missing image text")
 	}
 
 	// get the tenant
@@ -177,8 +177,8 @@ func (e *Ai) Image(ctx context.Context, req *pb.ImageRequest, rsp *pb.ImageRespo
 		"user":   tnt,
 		"response_format": "b64_json",
 	}, &resp); err != nil {
-		log.Errorf("Failed AI Image generation: %v\n", err)
-		return errors.InternalServerError("ai.image", "Failed to make request")
+		log.Errorf("Failed AI Generate generation: %v\n", err)
+		return errors.InternalServerError("ai.generate", "Failed to make request")
 	}
 
 	v := resp["data"]

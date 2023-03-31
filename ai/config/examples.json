@@ -19,7 +19,7 @@
           "text": "What is the day of the week?\n"
 	}
     }],
-    "image": [{
+    "generate": [{
         "title": "Generate image",
         "run_check": false,
         "request": {

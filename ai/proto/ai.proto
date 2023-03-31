@@ -8,7 +8,7 @@ service Ai {
 	rpc Complete(CompleteRequest) returns (CompleteResponse) {}
 	rpc Edit(EditRequest) returns (EditResponse) {}
 	rpc Moderate(ModerateRequest) returns (ModerateResponse) {}
-	rpc Image(ImageRequest) returns (ImageResponse) {}
+	rpc Generate(GenerateRequest) returns (GenerateResponse) {}
 }
 
 // Make a request to the AI
@@ -52,7 +52,7 @@ message ModerateResponse {
 }
 
 // Generage an image from prompt
-message ImageRequest {
+message GenerateRequest {
 	// text description of image
 	string text = 1;
 	// number of images to generate (max 10)
@@ -68,7 +68,7 @@ message Image {
 	string base64 = 2;
 }
 
-message ImageResponse {
+message GenerateResponse {
 	// image urls
 	repeated Image images = 1;
 }

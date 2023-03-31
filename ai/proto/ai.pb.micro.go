@@ -45,7 +45,7 @@ type AiService interface {
 	Complete(ctx context.Context, in *CompleteRequest, opts ...client.CallOption) (*CompleteResponse, error)
 	Edit(ctx context.Context, in *EditRequest, opts ...client.CallOption) (*EditResponse, error)
 	Moderate(ctx context.Context, in *ModerateRequest, opts ...client.CallOption) (*ModerateResponse, error)
-	Image(ctx context.Context, in *ImageRequest, opts ...client.CallOption) (*ImageResponse, error)
+	Generate(ctx context.Context, in *GenerateRequest, opts ...client.CallOption) (*GenerateResponse, error)
 }
 
 type aiService struct {
@@ -90,9 +90,9 @@ func (c *aiService) Moderate(ctx context.Context, in *ModerateRequest, opts ...c
 	return out, nil
 }
 
-func (c *aiService) Image(ctx context.Context, in *ImageRequest, opts ...client.CallOption) (*ImageResponse, error) {
-	req := c.c.NewRequest(c.name, "Ai.Image", in)
-	out := new(ImageResponse)
+func (c *aiService) Generate(ctx context.Context, in *GenerateRequest, opts ...client.CallOption) (*GenerateResponse, error) {
+	req := c.c.NewRequest(c.name, "Ai.Generate", in)
+	out := new(GenerateResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ type AiHandler interface {
 	Complete(context.Context, *CompleteRequest, *CompleteResponse) error
 	Edit(context.Context, *EditRequest, *EditResponse) error
 	Moderate(context.Context, *ModerateRequest, *ModerateResponse) error
-	Image(context.Context, *ImageRequest, *ImageResponse) error
+	Generate(context.Context, *GenerateRequest, *GenerateResponse) error
 }
 
 func RegisterAiHandler(s server.Server, hdlr AiHandler, opts ...server.HandlerOption) error {
@@ -114,7 +114,7 @@ func RegisterAiHandler(s server.Server, hdlr AiHandler, opts ...server.HandlerOp
 		Complete(ctx context.Context, in *CompleteRequest, out *CompleteResponse) error
 		Edit(ctx context.Context, in *EditRequest, out *EditResponse) error
 		Moderate(ctx context.Context, in *ModerateRequest, out *ModerateResponse) error
-		Image(ctx context.Context, in *ImageRequest, out *ImageResponse) error
+		Generate(ctx context.Context, in *GenerateRequest, out *GenerateResponse) error
 	}
 	type Ai struct {
 		ai
@@ -139,6 +139,6 @@ func (h *aiHandler) Moderate(ctx context.Context, in *ModerateRequest, out *Mode
 	return h.AiHandler.Moderate(ctx, in, out)
 }
 
-func (h *aiHandler) Image(ctx context.Context, in *ImageRequest, out *ImageResponse) error {
-	return h.AiHandler.Image(ctx, in, out)
+func (h *aiHandler) Generate(ctx context.Context, in *GenerateRequest, out *GenerateResponse) error {
+	return h.AiHandler.Generate(ctx, in, out)
 }
