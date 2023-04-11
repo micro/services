@@ -17,6 +17,29 @@
       }
     }
   ],
+  "get": [
+    {
+      "title": "Get an app",
+      "run_check": false,
+      "request": {"name": "helloworld"},
+      "response": {
+          "service": {
+		"id": "helloworld",
+		"name": "helloworld",
+		"repo": "github.com/asim/helloworld",
+		"branch": "master",
+		"region": "europe-west1",
+		"port": 8080,
+		"status": "Running",
+		"url": "https://helloworld.m3o.app",
+		"created": "2021-12-15T09:48:50.864124234Z",
+		"updated": "2021-12-15T09:50:13.722008Z",
+		"env_vars": {},
+		"custom_domains": []
+          }
+      }
+    }
+  ],
   "list": [
     {
       "title": "List the apps",

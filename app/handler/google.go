@@ -810,6 +810,42 @@ func (e *GoogleApp) Usage(ctx context.Context, request *adminpb.UsageRequest, re
 	return nil
 }
 
+func (e *GoogleApp) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse) error {
+	log.Info("Received App.List request")
+
+	id, ok := tenant.FromContext(ctx)
+	if !ok {
+		id = "micro"
+	}
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest("app.get", "missing name")
+	}
+
+	key := OwnerKey + id + "/" + req.Name
+
+	recs, err := store.Read(key)
+	if err != nil {
+		return err
+	}
+
+	rsp.Service = new(pb.Service)
+
+	if err := rec.Decode(rsp.Service); err != nil {
+		return errors.InternalServerError("app.get", err.Error())
+	}
+
+	// set the custom domain
+	if len(e.domain) > 0 {
+		// set the backend
+		rsp.Service.Backend = rsp.Service.Url
+		// vanity url
+		rsp.Service.Url = fmt.Sprintf("https://%s.%s", rsp.Service.Id, e.domain)
+	}
+
+	return nil
+}
+
 func (e *GoogleApp) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
 	log.Info("Received App.List request")
 

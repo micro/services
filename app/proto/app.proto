@@ -8,6 +8,7 @@ service App {
 	rpc Reserve(ReserveRequest) returns (ReserveResponse) {}
 	rpc Regions(RegionsRequest) returns (RegionsResponse) {}
 	rpc Run(RunRequest) returns (RunResponse) {}
+	rpc Get(GetRequest) returns (GetResponse) {}
 	rpc Update(UpdateRequest) returns (UpdateResponse) {}
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 	rpc Status(StatusRequest) returns (StatusResponse) {}
@@ -60,6 +61,15 @@ message ListRequest {
 message ListResponse {
 	// all the apps
 	repeated Service services = 1;
+}
+
+// Get an app by name
+message GetRequest {
+	string name = 1;
+}
+
+message GetResponse {
+	Service service = 1;
 }
 
 // Run an app from source

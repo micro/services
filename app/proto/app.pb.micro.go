@@ -45,6 +45,7 @@ type AppService interface {
 	Reserve(ctx context.Context, in *ReserveRequest, opts ...client.CallOption) (*ReserveResponse, error)
 	Regions(ctx context.Context, in *RegionsRequest, opts ...client.CallOption) (*RegionsResponse, error)
 	Run(ctx context.Context, in *RunRequest, opts ...client.CallOption) (*RunResponse, error)
+	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
 	Status(ctx context.Context, in *StatusRequest, opts ...client.CallOption) (*StatusResponse, error)
@@ -88,6 +89,16 @@ func (c *appService) Regions(ctx context.Context, in *RegionsRequest, opts ...cl
 func (c *appService) Run(ctx context.Context, in *RunRequest, opts ...client.CallOption) (*RunResponse, error) {
 	req := c.c.NewRequest(c.name, "App.Run", in)
 	out := new(RunResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appService) Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error) {
+	req := c.c.NewRequest(c.name, "App.Get", in)
+	out := new(GetResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -161,6 +172,7 @@ type AppHandler interface {
 	Reserve(context.Context, *ReserveRequest, *ReserveResponse) error
 	Regions(context.Context, *RegionsRequest, *RegionsResponse) error
 	Run(context.Context, *RunRequest, *RunResponse) error
+	Get(context.Context, *GetRequest, *GetResponse) error
 	Update(context.Context, *UpdateRequest, *UpdateResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
 	Status(context.Context, *StatusRequest, *StatusResponse) error
@@ -174,6 +186,7 @@ func RegisterAppHandler(s server.Server, hdlr AppHandler, opts ...server.Handler
 		Reserve(ctx context.Context, in *ReserveRequest, out *ReserveResponse) error
 		Regions(ctx context.Context, in *RegionsRequest, out *RegionsResponse) error
 		Run(ctx context.Context, in *RunRequest, out *RunResponse) error
+		Get(ctx context.Context, in *GetRequest, out *GetResponse) error
 		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
 		Status(ctx context.Context, in *StatusRequest, out *StatusResponse) error
@@ -202,6 +215,10 @@ func (h *appHandler) Regions(ctx context.Context, in *RegionsRequest, out *Regio
 
 func (h *appHandler) Run(ctx context.Context, in *RunRequest, out *RunResponse) error {
 	return h.AppHandler.Run(ctx, in, out)
+}
+
+func (h *appHandler) Get(ctx context.Context, in *GetRequest, out *GetResponse) error {
+	return h.AppHandler.Get(ctx, in, out)
 }
 
 func (h *appHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {
