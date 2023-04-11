@@ -824,14 +824,14 @@ func (e *GoogleApp) Get(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResp
 
 	key := OwnerKey + id + "/" + req.Name
 
-	recs, err := store.Read(key)
+	rec, err := store.Read(key)
 	if err != nil {
 		return err
 	}
 
 	rsp.Service = new(pb.Service)
 
-	if err := rec.Decode(rsp.Service); err != nil {
+	if err := rec[0].Decode(rsp.Service); err != nil {
 		return errors.InternalServerError("app.get", err.Error())
 	}
 
