@@ -1,4 +1,4 @@
-Traditions and practices of the Islamic prophet, Muhammad (pbuh)
+Way of Life
 
 # Sunnah Service
 

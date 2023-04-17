@@ -1,4 +1,4 @@
-The Holy Quran
+Guidance from God
 
 # Quran Service
 
