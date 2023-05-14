@@ -395,6 +395,9 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 		// execute the command
 		outp, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Errorf("Build failed: %v output: %s\n", err, string(outp))
+		}
 
 		var buildID string
 		reRes := buildLogsRegex.FindStringSubmatch(string(outp))
