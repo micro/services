@@ -321,7 +321,6 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		log.Errorf("Failed to download %s@%s\n", req.Repo, req.Branch)
 		return errors.InternalServerError("app.run", "Failed to download source")
 	}
-	sourceDir := filepath.Join(gitter.RepoDir(), req.Path)
 
 	// TODO validate name and use custom domain name
 
@@ -382,12 +381,15 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 
 	go func(service *pb.Service) {
 		imageName := fmt.Sprintf("%s-docker.pkg.dev/%s/cloud-run-source-deploy/%s", req.Region, e.project, service.Id)
+		source := "."
+		if len(req.Path) > 0 {
+			source = "--git-source-dir=" + req.Path + " " + source
+		}
 		cmd := exec.Command("gcloud", "builds", "submit", "--project", e.project, "--format", "json",
-			"--pack", "image="+imageName, ".",
+			"--pack", "image="+imageName, source,
 		)
+		cmd.Dir = gitter.RepoDir()
 
-		// set the command dir
-		cmd.Dir = sourceDir
 		// write the gloudignore file
 		e.WriteGcloudIgnore(cmd.Dir)
 
@@ -441,8 +443,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		if len(envVars) > 0 {
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
-		// set the command dir
-		cmd.Dir = sourceDir
+		cmd.Dir = gitter.RepoDir()
 		// execute the command
 		outp, err = cmd.CombinedOutput()
 
@@ -531,8 +532,6 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 		return errors.InternalServerError("app.run", "Failed to download source")
 	}
 
-	sourceDir := filepath.Join(gitter.RepoDir(), srv.Path)
-
 	// TODO validate name and use custom domain name
 
 	// process the env vars to the required format
@@ -587,12 +586,16 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 
 	go func(service *pb.Service) {
 		imageName := fmt.Sprintf("%s-docker.pkg.dev/%s/cloud-run-source-deploy/%s", service.Region, e.project, service.Id)
+		source := "."
+		if len(service.Path) > 0 {
+			source = "--git-source-dir=" + service.Path + " " + source
+		}
 		cmd := exec.Command("gcloud", "builds", "submit", "--project", e.project, "--format", "json",
-			"--pack", "image="+imageName, ".",
+			"--pack", "image="+imageName, source,
 		)
 
 		// set the command dir
-		cmd.Dir = sourceDir
+		cmd.Dir = gitter.RepoDir()
 		// write the gloudignore file
 		e.WriteGcloudIgnore(cmd.Dir)
 
@@ -647,7 +650,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
 		// set the command dir
-		cmd.Dir = sourceDir
+		cmd.Dir = gitter.RepoDir()
 		// execute the command
 		outp, err = cmd.CombinedOutput()
 
