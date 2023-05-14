@@ -321,6 +321,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		log.Errorf("Failed to download %s@%s\n", req.Repo, req.Branch)
 		return errors.InternalServerError("app.run", "Failed to download source")
 	}
+	sourceDir := filepath.Join(gitter.RepoDir(), req.Path)
 
 	// TODO validate name and use custom domain name
 
@@ -338,6 +339,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		Branch:  req.Branch,
 		Region:  req.Region,
 		Port:    req.Port,
+		Path: req.Path,
 		Status:  domain.StatusDeploying,
 		EnvVars: req.EnvVars,
 		Created: time.Now().Format(time.RFC3339Nano),
@@ -385,7 +387,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		)
 
 		// set the command dir
-		cmd.Dir = gitter.RepoDir()
+		cmd.Dir = sourceDir
 		// write the gloudignore file
 		e.WriteGcloudIgnore(cmd.Dir)
 
@@ -440,7 +442,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
 		// set the command dir
-		cmd.Dir = gitter.RepoDir()
+		cmd.Dir = sourceDir
 		// execute the command
 		outp, err = cmd.CombinedOutput()
 
@@ -529,6 +531,8 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 		return errors.InternalServerError("app.run", "Failed to download source")
 	}
 
+	sourceDir := filepath.Join(gitter.RepoDir(), srv.Path)
+
 	// TODO validate name and use custom domain name
 
 	// process the env vars to the required format
@@ -588,7 +592,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 		)
 
 		// set the command dir
-		cmd.Dir = gitter.RepoDir()
+		cmd.Dir = sourceDir
 		// write the gloudignore file
 		e.WriteGcloudIgnore(cmd.Dir)
 
@@ -643,7 +647,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 			cmd.Args = append(cmd.Args, "--set-env-vars", strings.Join(envVars, ","))
 		}
 		// set the command dir
-		cmd.Dir = gitter.RepoDir()
+		cmd.Dir = sourceDir
 		// execute the command
 		outp, err = cmd.CombinedOutput()
 

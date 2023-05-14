@@ -44,6 +44,8 @@ message Service {
 	map<string,string> env_vars = 12;
 	// custom domains
 	repeated string custom_domains = 13;
+	// path for the app
+	string path = 14;
 }
 
 // Delete an app
@@ -86,6 +88,8 @@ message RunRequest {
 	int32 port = 5;
 	// associated env vars to pass in
 	map<string,string> env_vars = 6;
+	// path to code
+	string path = 7;
 }
 
 message RunResponse {
