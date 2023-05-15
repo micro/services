@@ -514,6 +514,7 @@ func (e *GoogleApp) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.U
 	}
 
 	srv := new(pb.Service)
+	srv.EnvVars = make(map[string]string)
 
 	if err := recs[0].Decode(srv); err != nil {
 		return err
