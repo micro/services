@@ -2,8 +2,6 @@ module github.com/micro/services
 
 go 1.20
 
-//replace github.com/micro/micro/v3 => ../micro
-
 require (
 	cloud.google.com/go/translate v1.6.0
 	github.com/PuerkitoBio/goquery v1.6.1
@@ -36,7 +34,7 @@ require (
 	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
-	github.com/micro/micro/v3 v3.16.1-0.20230514073437-dda318a11a48
+	github.com/micro/micro/v3 v3.18.3-0.20230517112315-d051312fb5a0
 	github.com/minio/minio-go/v7 v7.0.16
 	github.com/o1egl/govatar v0.3.0
 	github.com/oklog/ulid v1.3.1
