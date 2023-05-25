@@ -3,20 +3,20 @@ package handler
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"io/ioutil"
+	"net/http"
 	"sync"
 
-	"github.com/robfig/cron/v3"
 	"github.com/google/uuid"
 	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/store"
-	"github.com/micro/services/pkg/tenant"
 	log "github.com/micro/micro/v3/service/logger"
+	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/cron/proto"
+	"github.com/micro/services/pkg/tenant"
+	"github.com/robfig/cron/v3"
 )
 
-type Cron struct{
+type Cron struct {
 	sync.Mutex
 	jobs map[string]*cron.Cron
 }
@@ -40,7 +40,7 @@ func (c *Cron) Start() {
 		// read all jobs
 
 		for {
-			recs, err := store.Read(jobPrefix + "/", store.ReadPrefix(), store.ReadLimit(limit), store.ReadOffset(offset))
+			recs, err := store.Read(jobPrefix+"/", store.ReadPrefix(), store.ReadLimit(limit), store.ReadOffset(offset))
 			if err != nil {
 				log.Errorf("Failed to start: %v", err)
 				return
@@ -128,11 +128,11 @@ func (c *Cron) Schedule(ctx context.Context, req *pb.ScheduleRequest, rsp *pb.Sc
 	}
 
 	job := &pb.Job{
-		Id: req.Id,
-		Name: req.Name,
+		Id:          req.Id,
+		Name:        req.Name,
 		Description: req.Description,
-		Interval: req.Interval,
-		Callback: req.Callback,
+		Interval:    req.Interval,
+		Callback:    req.Callback,
 	}
 
 	// start the job
@@ -152,10 +152,9 @@ func (c *Cron) Schedule(ctx context.Context, req *pb.ScheduleRequest, rsp *pb.Sc
 }
 
 func (c *Cron) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
-	if len(req.Id) == 0{
+	if len(req.Id) == 0 {
 		return errors.BadRequest("cron.delete", "missing id")
 	}
-
 
 	tnt, _ := tenant.FromContext(ctx)
 	key := fmt.Sprintf("%s/%s/%s", jobPrefix, tnt, req.Id)

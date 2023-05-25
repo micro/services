@@ -338,7 +338,7 @@ func (e *GoogleApp) Run(ctx context.Context, req *pb.RunRequest, rsp *pb.RunResp
 		Branch:  req.Branch,
 		Region:  req.Region,
 		Port:    req.Port,
-		Path: req.Path,
+		Path:    req.Path,
 		Status:  domain.StatusDeploying,
 		EnvVars: req.EnvVars,
 		Created: time.Now().Format(time.RFC3339Nano),

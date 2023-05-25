@@ -14,7 +14,6 @@ require (
 	github.com/crufter/lexer v0.0.0-20120907053443-23fe8c7add01
 	github.com/dghubble/go-twitter v0.0.0-20210609183100-2fdbf421508e
 	github.com/disintegration/imaging v1.6.2
-	github.com/enescakir/emoji v1.0.0
 	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
@@ -31,7 +30,6 @@ require (
 	github.com/likexian/doh-go v0.6.4
 	github.com/likexian/whois v1.14.3
 	github.com/likexian/whois-parser v1.24.2
-	github.com/m3o/goduckgo v0.0.0-20210630141545-c760fe67b945
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/mattheath/kala v0.0.0-20171219141654-d6276794bf0e
 	github.com/micro/micro/v3 v3.18.3-0.20230517112315-d051312fb5a0

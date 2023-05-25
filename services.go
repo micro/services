@@ -3,8 +3,7 @@ package services
 import (
 	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/services/address/proto"
-	"github.com/micro/services/analytics/proto"
-	"github.com/micro/services/answer/proto"
+	"github.com/micro/services/ai/proto"
 	"github.com/micro/services/app/proto"
 	"github.com/micro/services/avatar/proto"
 	"github.com/micro/services/bitcoin/proto"
@@ -13,12 +12,13 @@ import (
 	"github.com/micro/services/chat/proto"
 	"github.com/micro/services/comments/proto"
 	"github.com/micro/services/contact/proto"
+	"github.com/micro/services/cron/proto"
 	"github.com/micro/services/crypto/proto"
 	"github.com/micro/services/currency/proto"
 	"github.com/micro/services/db/proto"
 	"github.com/micro/services/dns/proto"
 	"github.com/micro/services/email/proto"
-	"github.com/micro/services/emoji/proto"
+	"github.com/micro/services/ethereum/proto"
 	"github.com/micro/services/evchargers/proto"
 	"github.com/micro/services/event/proto"
 	"github.com/micro/services/file/proto"
@@ -33,7 +33,6 @@ import (
 	"github.com/micro/services/id/proto"
 	"github.com/micro/services/image/proto"
 	"github.com/micro/services/ip/proto"
-	"github.com/micro/services/joke/proto"
 	"github.com/micro/services/lists/proto"
 	"github.com/micro/services/location/proto"
 	"github.com/micro/services/memegen/proto"
@@ -55,6 +54,7 @@ import (
 	"github.com/micro/services/routing/proto"
 	"github.com/micro/services/rss/proto"
 	"github.com/micro/services/search/proto"
+	"github.com/micro/services/secret/proto"
 	"github.com/micro/services/sentiment/proto"
 	"github.com/micro/services/sms/proto"
 	"github.com/micro/services/space/proto"
@@ -72,14 +72,12 @@ import (
 	"github.com/micro/services/vehicle/proto"
 	"github.com/micro/services/wallet/proto"
 	"github.com/micro/services/weather/proto"
-	"github.com/micro/services/wordle/proto"
 	"github.com/micro/services/youtube/proto"
 )
 
 type Client struct {
 	Address    address.AddressService
-	Analytics  analytics.AnalyticsService
-	Answer     answer.AnswerService
+	Ai         ai.AiService
 	App        app.AppService
 	Avatar     avatar.AvatarService
 	Bitcoin    bitcoin.BitcoinService
@@ -88,12 +86,13 @@ type Client struct {
 	Chat       chat.ChatService
 	Comments   comments.CommentsService
 	Contact    contact.ContactService
+	Cron       cron.CronService
 	Crypto     crypto.CryptoService
 	Currency   currency.CurrencyService
 	Db         db.DbService
 	Dns        dns.DnsService
 	Email      email.EmailService
-	Emoji      emoji.EmojiService
+	Ethereum   ethereum.EthereumService
 	Evchargers evchargers.EvchargersService
 	Event      event.EventService
 	File       file.FileService
@@ -108,7 +107,6 @@ type Client struct {
 	Id         id.IdService
 	Image      image.ImageService
 	Ip         ip.IpService
-	Joke       joke.JokeService
 	Lists      lists.ListsService
 	Location   location.LocationService
 	Memegen    memegen.MemegenService
@@ -130,6 +128,7 @@ type Client struct {
 	Routing    routing.RoutingService
 	Rss        rss.RssService
 	Search     search.SearchService
+	Secret     secret.SecretService
 	Sentiment  sentiment.SentimentService
 	Sms        sms.SmsService
 	Space      space.SpaceService
@@ -147,15 +146,13 @@ type Client struct {
 	Vehicle    vehicle.VehicleService
 	Wallet     wallet.WalletService
 	Weather    weather.WeatherService
-	Wordle     wordle.WordleService
 	Youtube    youtube.YoutubeService
 }
 
 func NewClient(c client.Client) *Client {
 	return &Client{
 		Address:    address.NewAddressService("address", c),
-		Analytics:  analytics.NewAnalyticsService("analytics", c),
-		Answer:     answer.NewAnswerService("answer", c),
+		Ai:         ai.NewAiService("ai", c),
 		App:        app.NewAppService("app", c),
 		Avatar:     avatar.NewAvatarService("avatar", c),
 		Bitcoin:    bitcoin.NewBitcoinService("bitcoin", c),
@@ -164,12 +161,13 @@ func NewClient(c client.Client) *Client {
 		Chat:       chat.NewChatService("chat", c),
 		Comments:   comments.NewCommentsService("comments", c),
 		Contact:    contact.NewContactService("contact", c),
+		Cron:       cron.NewCronService("cron", c),
 		Crypto:     crypto.NewCryptoService("crypto", c),
 		Currency:   currency.NewCurrencyService("currency", c),
 		Db:         db.NewDbService("db", c),
 		Dns:        dns.NewDnsService("dns", c),
 		Email:      email.NewEmailService("email", c),
-		Emoji:      emoji.NewEmojiService("emoji", c),
+		Ethereum:   ethereum.NewEthereumService("ethereum", c),
 		Evchargers: evchargers.NewEvchargersService("evchargers", c),
 		Event:      event.NewEventService("event", c),
 		File:       file.NewFileService("file", c),
@@ -184,7 +182,6 @@ func NewClient(c client.Client) *Client {
 		Id:         id.NewIdService("id", c),
 		Image:      image.NewImageService("image", c),
 		Ip:         ip.NewIpService("ip", c),
-		Joke:       joke.NewJokeService("joke", c),
 		Lists:      lists.NewListsService("lists", c),
 		Location:   location.NewLocationService("location", c),
 		Memegen:    memegen.NewMemegenService("memegen", c),
@@ -206,6 +203,7 @@ func NewClient(c client.Client) *Client {
 		Routing:    routing.NewRoutingService("routing", c),
 		Rss:        rss.NewRssService("rss", c),
 		Search:     search.NewSearchService("search", c),
+		Secret:     secret.NewSecretService("secret", c),
 		Sentiment:  sentiment.NewSentimentService("sentiment", c),
 		Sms:        sms.NewSmsService("sms", c),
 		Space:      space.NewSpaceService("space", c),
@@ -223,7 +221,6 @@ func NewClient(c client.Client) *Client {
 		Vehicle:    vehicle.NewVehicleService("vehicle", c),
 		Wallet:     wallet.NewWalletService("wallet", c),
 		Weather:    weather.NewWeatherService("weather", c),
-		Wordle:     wordle.NewWordleService("wordle", c),
 		Youtube:    youtube.NewYoutubeService("youtube", c),
 	}
 }

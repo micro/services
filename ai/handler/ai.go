@@ -171,10 +171,10 @@ func (e *Ai) Generate(ctx context.Context, req *pb.GenerateRequest, rsp *pb.Gene
 
 	var resp map[string]interface{}
 	if err := api.Post(uri, map[string]interface{}{
-		"prompt": req.Text,
-		"n":      req.Limit,
-		"size":   req.Size,
-		"user":   tnt,
+		"prompt":          req.Text,
+		"n":               req.Limit,
+		"size":            req.Size,
+		"user":            tnt,
 		"response_format": "b64_json",
 	}, &resp); err != nil {
 		log.Errorf("Failed AI Generate generation: %v\n", err)

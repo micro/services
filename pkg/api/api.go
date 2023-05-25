@@ -159,3 +159,39 @@ func Post(url string, ureq, rsp interface{}) error {
 
 	return json.Unmarshal(b, rsp)
 }
+
+// Call the DELETE method for a URL
+func Delete(url string, rsp interface{}) error {
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range keys {
+		req.Header.Set(k, v)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("Non 200 response %v: %v", resp.StatusCode, string(b))
+	}
+
+	if cache != nil {
+		mtx.Lock()
+		// cache the value
+		delete(cache, url)
+		mtx.Unlock()
+	}
+
+	return json.Unmarshal(b, rsp)
+}

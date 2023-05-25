@@ -3,14 +3,14 @@ package main
 import (
 	"database/sql"
 
+	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/micro/micro/v3/service"
+	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/logger"
+	"github.com/micro/services/db/handler"
 	pb "github.com/micro/services/db/proto"
 	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tracing"
-	"github.com/micro/services/db/handler"
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/config"
-	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 var dbAddress = "postgresql://postgres:postgres@localhost:5432/db?sslmode=disable"
