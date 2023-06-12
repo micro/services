@@ -2,5 +2,9 @@
   "name": "db",
   "icon": "📦",
   "category": "storage",
-  "display_name": "DB"
+  "display_name": "DB",
+  "pricing": {
+    "Db.Create": 100,
+    "Db.Update": 100
+  }
 }
