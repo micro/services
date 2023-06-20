@@ -1,9 +1,0 @@
-{
-  "name": "holidays",
-  "icon": "🏖️",
-  "category": "travel",
-  "display_name": "Holidays",
-  "pricing": {
-    "Holidays.List": 100
-  }
-}

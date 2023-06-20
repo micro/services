@@ -1,9 +1,0 @@
-{
-  "name": "address",
-  "icon": "🏠",
-  "category": "logistics",
-  "pricing": {
-    "Address.LookupPostcode": 50000
-  },
-  "display_name": "Address"
-}

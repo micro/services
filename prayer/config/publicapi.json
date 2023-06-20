@@ -1,9 +1,0 @@
-{
-  "name": "prayer",
-  "icon": "🙏",
-  "category": "religion",
-  "display_name": "Prayer",
-  "quotas": {
-    "Prayer.Times": 1000000
-  }
-}

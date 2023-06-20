@@ -1,9 +1,0 @@
-{
-  "name": "spam",
-  "icon": "🚫",
-  "category": "messaging",
-  "display_name": "Spam",
-  "pricing": {
-    "Spam.Classify": 1000
-  }
-}

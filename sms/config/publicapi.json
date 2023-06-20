@@ -1,9 +1,0 @@
-{
-  "name": "sms",
-  "icon": "📟",
-  "category": "messaging",
-  "pricing": {
-    "Sms.Send": 100000
-  },
-  "display_name": "SMS"
-}

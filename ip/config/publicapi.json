@@ -1,9 +1,0 @@
-{
-  "name": "ip",
-  "icon": "🗺️",
-  "category": "web",
-  "display_name": "IP Geolocation",
-  "pricing": {
-    "Ip.Lookup": 100
-  }
-}
