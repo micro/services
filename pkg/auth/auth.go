@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 
-	"github.com/micro/micro/v3/service/auth"
-	"github.com/micro/micro/v3/service/errors"
+	"micro.dev/v4/service/auth"
+	"micro.dev/v4/service/errors"
 )
 
 func VerifyMicroAdmin(ctx context.Context, method string) (*auth.Account, error) {

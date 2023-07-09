@@ -2,12 +2,11 @@ package main
 
 import (
 	iproto "github.com/micro/services/image/proto"
-	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/thumbnail/handler"
 	pb "github.com/micro/services/thumbnail/proto"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/logger"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/logger"
 )
 
 func main() {
@@ -19,8 +18,6 @@ func main() {
 
 	// Register handler
 	pb.RegisterThumbnailHandler(srv.Server(), handler.NewThumbnail(iproto.NewImageService("image", srv.Client())))
-	traceCloser := tracing.SetupOpentracing("thumbnail")
-	defer traceCloser.Close()
 
 	// Run service
 	if err := srv.Run(); err != nil {

@@ -8,12 +8,12 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	"github.com/micro/micro/v3/service/errors"
-	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/cron/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/robfig/cron/v3"
+	"micro.dev/v4/service/errors"
+	log "micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 )
 
 type Cron struct {

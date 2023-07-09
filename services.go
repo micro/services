@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/micro/micro/v3/service/client"
 	"github.com/micro/services/address/proto"
 	"github.com/micro/services/ai/proto"
 	"github.com/micro/services/app/proto"
@@ -73,6 +72,7 @@ import (
 	"github.com/micro/services/wallet/proto"
 	"github.com/micro/services/weather/proto"
 	"github.com/micro/services/youtube/proto"
+	"micro.dev/v4/service/client"
 )
 
 type Client struct {

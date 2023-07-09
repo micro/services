@@ -1,13 +1,13 @@
 
 GOPATH:=$(shell go env GOPATH)
-MODIFY=Mproto/imports/api.proto=github.com/micro/micro/v3/proto/api
+MODIFY=Mproto/imports/api.proto=micro.dev/v4/proto/api
 
 .PHONY: init
 init:
 	go get -u github.com/golang/protobuf/proto
 	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get github.com/micro/micro/v3/cmd/protoc-gen-micro
-	go get github.com/micro/micro/v3/cmd/protoc-gen-openapi
+	go get micro.dev/v4/cmd/protoc-gen-micro
+	go get micro.dev/v4/cmd/protoc-gen-openapi
 
 .PHONY: api
 api:

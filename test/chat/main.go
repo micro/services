@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/logger"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/logger"
 
 	"github.com/micro/services/test/chat/handler"
 	pb "github.com/micro/services/test/chat/proto"

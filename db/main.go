@@ -4,13 +4,12 @@ import (
 	"database/sql"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/db/handler"
 	pb "github.com/micro/services/db/proto"
 	admin "github.com/micro/services/pkg/service/proto"
-	"github.com/micro/services/pkg/tracing"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/logger"
 )
 
 var dbAddress = "postgresql://postgres:postgres@localhost:5432/db?sslmode=disable"
@@ -39,8 +38,6 @@ func main() {
 	pb.RegisterDbHandler(srv.Server(), h)
 	admin.RegisterAdminHandler(srv.Server(), h)
 
-	traceCloser := tracing.SetupOpentracing("db")
-	defer traceCloser.Close()
 	// Run service
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

@@ -1,13 +1,12 @@
 package main
 
 import (
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 
 	otp "github.com/micro/services/otp/proto"
 	adminpb "github.com/micro/services/pkg/service/proto"
-	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/user/handler"
 	proto "github.com/micro/services/user/proto"
 )
@@ -25,8 +24,6 @@ func main() {
 
 	proto.RegisterUserHandler(srv.Server(), hd)
 	adminpb.RegisterAdminHandler(srv.Server(), hd)
-	traceCloser := tracing.SetupOpentracing("user")
-	defer traceCloser.Close()
 
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

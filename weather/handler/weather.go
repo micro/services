@@ -9,10 +9,10 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/weather/proto"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
 )
 
 type Weather struct {

@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/spam/handler"
 	pb "github.com/micro/services/spam/proto"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/logger"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/logger"
 )
 
 func main() {
@@ -18,9 +17,6 @@ func main() {
 
 	// Register handler
 	pb.RegisterSpamHandler(srv.Server(), handler.New())
-
-	traceCloser := tracing.SetupOpentracing("spam")
-	defer traceCloser.Close()
 
 	// Run service
 	if err := srv.Run(); err != nil {

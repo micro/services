@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/otp/proto"
 	pauth "github.com/micro/services/pkg/auth"
 	"github.com/micro/services/pkg/cache"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
 
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"

@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	geo "github.com/hailocab/go-geoindex"
-	"github.com/micro/micro/v3/service/errors"
 	common "github.com/micro/services/location/proto"
 	"github.com/micro/services/pkg/tenant"
+	"micro.dev/v4/service/errors"
 )
 
 var (

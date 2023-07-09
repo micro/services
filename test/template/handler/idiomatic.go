@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	log "github.com/micro/micro/v3/service/logger"
+	log "micro.dev/v4/service/logger"
 
 	idiomatic "github.com/micro/services/test/template/proto"
 )

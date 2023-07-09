@@ -3,12 +3,11 @@ package main
 import (
 	"time"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
 	admin "github.com/micro/services/pkg/service/proto"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 
-	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/rss/handler"
 	pb "github.com/micro/services/rss/proto"
 )
@@ -35,8 +34,6 @@ func main() {
 	// Register handler
 	pb.RegisterRssHandler(srv.Server(), rss)
 	admin.RegisterAdminHandler(srv.Server(), rss)
-	traceCloser := tracing.SetupOpentracing("rss")
-	defer traceCloser.Close()
 
 	// Run service
 	if err := srv.Run(); err != nil {

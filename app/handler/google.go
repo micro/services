@@ -13,14 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/auth"
-	"github.com/micro/micro/v3/service/client"
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/context/metadata"
-	"github.com/micro/micro/v3/service/errors"
-	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/app/domain"
 	pb "github.com/micro/services/app/proto"
 	github "github.com/micro/services/github/proto"
@@ -29,6 +21,14 @@ import (
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/teris-io/shortid"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/auth"
+	"micro.dev/v4/service/client"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/context/metadata"
+	"micro.dev/v4/service/errors"
+	log "micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 )
 
 var (

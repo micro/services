@@ -8,13 +8,12 @@ import (
 
 	"github.com/micro/services/ip/handler"
 	pb "github.com/micro/services/ip/proto"
-	"github.com/micro/services/pkg/tracing"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
 	"github.com/oschwald/geoip2-golang"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 )
 
 // loadFile from the blob store
@@ -90,9 +89,6 @@ func main() {
 
 	// Register handler
 	pb.RegisterIpHandler(srv.Server(), &handler.Ip{CityReader: cr, ASNReader: ar})
-
-	traceCloser := tracing.SetupOpentracing("ip")
-	defer traceCloser.Close()
 
 	// Run service
 	if err := srv.Run(); err != nil {

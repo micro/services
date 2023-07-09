@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/micro/micro/v3/service/store"
+	"micro.dev/v4/service/store"
 )
 
 var (

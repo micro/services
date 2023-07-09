@@ -3,11 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/micro/micro/v3/service"
 	"github.com/micro/services/location/handler"
 	pb "github.com/micro/services/location/proto"
 	admin "github.com/micro/services/pkg/service/proto"
-	"github.com/micro/services/pkg/tracing"
+	"micro.dev/v4/service"
 )
 
 func main() {
@@ -21,9 +20,6 @@ func main() {
 
 	// TODO reinstate me
 	//service.Subscribe(subscriber.Topic, new(subscriber.Location))
-	traceCloser := tracing.SetupOpentracing("location")
-	defer traceCloser.Close()
-
 	if err := location.Run(); err != nil {
 		log.Fatal(err)
 	}

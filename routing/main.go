@@ -1,14 +1,13 @@
 package main
 
 import (
-	"github.com/micro/services/pkg/tracing"
 	"github.com/micro/services/routing/handler"
 	pb "github.com/micro/services/routing/proto"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/logger"
 	"googlemaps.github.io/maps"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/logger"
 )
 
 func main() {
@@ -61,8 +60,6 @@ func main() {
 		logger.Fatalf("%s is an unsupported mode", mode)
 	}
 
-	traceCloser := tracing.SetupOpentracing("routing")
-	defer traceCloser.Close()
 	// Run service
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

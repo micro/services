@@ -8,11 +8,11 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/time/proto"
 	"github.com/tkuchiki/go-timezone"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
 )
 
 type Time struct {

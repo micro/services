@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/store"
 	pb "github.com/micro/services/function/proto"
 	"github.com/micro/services/pkg/tenant"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/store"
 )
 
 var (

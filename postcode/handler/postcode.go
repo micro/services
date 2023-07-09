@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/postcode/proto"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
 )
 
 var (

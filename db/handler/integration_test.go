@@ -7,9 +7,9 @@ import (
 
 	"database/sql"
 
-	"github.com/micro/micro/v3/service/auth"
 	db "github.com/micro/services/db/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+	"micro.dev/v4/service/auth"
 )
 
 const dbAddr = "postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable"

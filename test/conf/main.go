@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/config"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/config"
 )
 
 type keyConfig struct {

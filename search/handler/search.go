@@ -12,10 +12,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/errors"
-	log "github.com/micro/micro/v3/service/logger"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
@@ -23,6 +19,10 @@ import (
 	open "github.com/opensearch-project/opensearch-go"
 	openapi "github.com/opensearch-project/opensearch-go/opensearchapi"
 	"google.golang.org/protobuf/types/known/structpb"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/errors"
+	log "micro.dev/v4/service/logger"
 )
 
 var (

@@ -4,14 +4,14 @@ import (
 	"context"
 	"log"
 
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/services/location/domain"
 	loc "github.com/micro/services/location/proto"
 	"github.com/micro/services/location/subscriber"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
 )
 
 type Location struct{}

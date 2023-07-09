@@ -4,10 +4,10 @@ import (
 	"context"
 	"regexp"
 
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/store"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/store"
 )
 
 var (

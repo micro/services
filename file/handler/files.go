@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/errors"
-	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
 	file "github.com/micro/services/file/proto"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/errors"
+	log "micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 )
 
 const pathPrefix = "files"

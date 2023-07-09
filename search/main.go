@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/logger"
 	admin "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/search/handler"
 	pb "github.com/micro/services/search/proto"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/logger"
 )
 
 func main() {

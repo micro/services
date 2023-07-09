@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/micro/micro/v3/service"
-	"github.com/micro/micro/v3/service/errors"
-	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/pkg/redis"
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/wallet/proto"
+	"micro.dev/v4/service"
+	"micro.dev/v4/service/errors"
+	log "micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 )
 
 const (

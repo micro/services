@@ -7,11 +7,11 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
-	log "github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
+	log "micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 
 	pb "github.com/micro/services/holidays/proto"
 )

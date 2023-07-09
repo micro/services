@@ -16,14 +16,14 @@ import (
 	"strings"
 
 	"github.com/disintegration/imaging"
-	"github.com/micro/micro/v3/service/config"
-	merrors "github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
 	img "github.com/micro/services/image/proto"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
+	"micro.dev/v4/service/config"
+	merrors "micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 )
 
 const pathPrefix = "images"

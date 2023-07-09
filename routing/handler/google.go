@@ -7,9 +7,9 @@ import (
 
 	"googlemaps.github.io/maps"
 
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	pb "github.com/micro/services/routing/proto"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
 )
 
 var (

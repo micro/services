@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 
-	"github.com/micro/micro/v3/service/errors"
 	"github.com/micro/services/sentiment/model"
 	pb "github.com/micro/services/sentiment/proto"
+	"micro.dev/v4/service/errors"
 )
 
 type Sentiment struct{}

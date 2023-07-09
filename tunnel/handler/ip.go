@@ -3,7 +3,7 @@ package handler
 import (
 	"net"
 
-	"github.com/micro/micro/v3/service/logger"
+	"micro.dev/v4/service/logger"
 )
 
 var (

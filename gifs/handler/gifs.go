@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/micro/micro/v3/service/config"
-	"github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
 	gifs "github.com/micro/services/gifs/proto"
+	"micro.dev/v4/service/config"
+	"micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
 )
 
 const (

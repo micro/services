@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/micro/v3/service/config"
-	merrors "github.com/micro/micro/v3/service/errors"
-	"github.com/micro/micro/v3/service/logger"
-	"github.com/micro/micro/v3/service/store"
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/secret/proto"
+	"micro.dev/v4/service/config"
+	merrors "micro.dev/v4/service/errors"
+	"micro.dev/v4/service/logger"
+	"micro.dev/v4/service/store"
 )
 
 const (
