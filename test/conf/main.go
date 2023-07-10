@@ -54,6 +54,9 @@ func main() {
 		}
 	}()
 
-	// run the service
-	service.Run()
+	// new service
+	srv := service.New()
+
+	// run service
+	srv.Run()
 }
