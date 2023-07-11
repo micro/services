@@ -6,13 +6,12 @@ package db
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_ "google.golang.org/protobuf/types/known/structpb"
+	_ "github.com/golang/protobuf/ptypes/struct"
 	math "math"
 )
 
 import (
 	context "context"
-	api "micro.dev/v4/service/api"
 	client "micro.dev/v4/service/client"
 	server "micro.dev/v4/service/server"
 )
@@ -29,16 +28,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
-
-// Api Endpoints for Db service
-
-func NewDbEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
-}
 
 // Client API for Db service
 
