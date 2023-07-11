@@ -17,7 +17,6 @@ require (
 	github.com/go-ping/ping v0.0.0-20211130115550-779d1e919534
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gojuno/go.osrm v0.1.1-0.20200217151037-435fc3e1d3d4
-	github.com/golang-jwt/jwt v0.0.0-20210529014511-0f726ea0e725
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/golang/protobuf v1.5.3
 	github.com/google/uuid v1.3.0
@@ -63,7 +62,7 @@ require (
 	gorm.io/datatypes v1.0.1
 	gorm.io/driver/postgres v1.4.5
 	gorm.io/gorm v1.24.1-0.20221019064659-5dd2bb482755
-	micro.dev/v4 v4.0.0-20230709195553-e9acd02cbde2
+	micro.dev/v4 v4.0.0-20230711133525-bd1ed7c0892a
 )
 
 require (
@@ -82,6 +81,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/evanphx/json-patch/v5 v5.5.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/golang-jwt/jwt v0.0.0-20210529014511-0f726ea0e725 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect

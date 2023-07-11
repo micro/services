@@ -347,7 +347,7 @@ github.com/o1egl/govatar v0.3.0/go.mod h1:YeDGDII+2Ji1RcBKvb1KqaPhk4PmuZyBq+rPYc
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
-github.com/onsi/ginkgo/v2 v2.9.5 h1:+6Hr4uxzP4XIUyAkg61dWBw8lb/gc4/X5luuxN/EC+Q=
+github.com/onsi/ginkgo/v2 v2.9.2 h1:BA2GMJOtfGAfagzYtrAlufIP0lq6QERkFmHLMLPwFSU=
 github.com/onsi/gomega v1.27.6 h1:ENqfyGeS5AX/rlXDd/ETokDz93u0YufY1Pgxuy/PvWE=
 github.com/onsi/gomega v1.27.6/go.mod h1:PIQNjfQwkP3aQAH7lf7j87O/5FiNr+ZR8+ipb+qQlhg=
 github.com/opensearch-project/opensearch-go v1.0.0 h1:8Gh7B7Un5BxuxWAgmzleEF7lpOtC71pCgPp7lKr3ca8=
@@ -686,5 +686,5 @@ gorm.io/gorm v1.24.1-0.20221019064659-5dd2bb482755/go.mod h1:DVrVomtaYTbqs7gB/x2
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt0JzvZhAg=
-micro.dev/v4 v4.0.0-20230709195553-e9acd02cbde2 h1:+x+lZJSVQFyRx/WWaLU7/1qVIVQjKIX3WElonhQy/WQ=
-micro.dev/v4 v4.0.0-20230709195553-e9acd02cbde2/go.mod h1:AKckofEO7LiDfjUE7zKkPsEko8/oWXwI/HXylYIO/FE=
+micro.dev/v4 v4.0.0-20230711133525-bd1ed7c0892a h1:4dTyTHagz+qbCbfrZsB8HXzpfhQAwi3tlWESXbiTq+Q=
+micro.dev/v4 v4.0.0-20230711133525-bd1ed7c0892a/go.mod h1:or6kPbX/anUDJMISOr8EY+vRJqiGhR6B699W5r3ZBnU=

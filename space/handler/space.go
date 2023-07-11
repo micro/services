@@ -14,7 +14,6 @@ import (
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/space/proto"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
-	"micro.dev/v4/proto/api"
 	"micro.dev/v4/service"
 	"micro.dev/v4/service/config"
 	"micro.dev/v4/service/errors"
@@ -425,73 +424,6 @@ func (s *Space) reconstructMeta(ctx context.Context, method, objectName string, 
 		return nil, errors.InternalServerError(method, "Error reading object")
 	}
 	return md, nil
-}
-
-func (s *Space) Download(ctx context.Context, req *api.Request, rsp *api.Response) error {
-	method := "space.Download"
-	tnt, ok := tenant.FromContext(ctx)
-	if !ok {
-		return errors.Unauthorized(method, "Unauthorized")
-	}
-	var input map[string]string
-	if err := json.Unmarshal([]byte(req.Body), &input); err != nil {
-		log.Errorf("Error unmarshalling %s", err)
-		return errors.BadRequest(method, "Request in unexpected format")
-	}
-	name := input["name"]
-	if len(name) == 0 {
-		return errors.BadRequest(method, "Missing name param")
-	}
-
-	objectName := fmt.Sprintf("%s/%s", tnt, name)
-
-	_, err := s.client.HeadObject(&sthree.HeadObjectInput{
-		Bucket: aws.String(s.conf.SpaceName),
-		Key:    aws.String(objectName),
-	})
-	if err != nil {
-		aerr, ok := err.(awserr.Error)
-		if ok && aerr.Code() == "NotFound" {
-			return errors.BadRequest(method, "Object not found")
-		}
-		log.Errorf("Error s3 %s", err)
-		return errors.InternalServerError(method, "Error reading object")
-	}
-
-	gooreq, _ := s.client.GetObjectRequest(&sthree.GetObjectInput{
-		Bucket: aws.String(s.conf.SpaceName),
-		Key:    aws.String(objectName),
-	})
-	urlStr, err := gooreq.Presign(5 * time.Second)
-	if err != nil {
-		aerr, ok := err.(awserr.Error)
-		if ok && aerr.Code() == "NoSuchKey" {
-			return errors.BadRequest(method, "Object not found")
-		}
-		log.Errorf("Error presigning url %s", err)
-		return errors.InternalServerError(method, "Error reading object")
-	}
-
-	// replace hostname or url with our base
-	split := strings.SplitN(urlStr, s.conf.Endpoint, 2)
-	urlStr = s.conf.BaseURL + split[1]
-
-	rsp.Header = map[string]*api.Pair{
-		"Location": {
-			Key:    "Location",
-			Values: []string{urlStr},
-		},
-	}
-	rsp.StatusCode = 302
-
-	resp := map[string]interface{}{
-		"url": urlStr,
-	}
-
-	b, _ := json.Marshal(resp)
-	rsp.Body = string(b)
-
-	return nil
 }
 
 func (s Space) Upload(ctx context.Context, request *pb.UploadRequest, response *pb.UploadResponse) error {
