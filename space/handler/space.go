@@ -426,6 +426,58 @@ func (s *Space) reconstructMeta(ctx context.Context, method, objectName string, 
 	return md, nil
 }
 
+func (s *Space) Download(ctx context.Context, req *pb.DownloadRequest, rsp *pb.DownloadResponse) error {
+	method := "Space.Download"
+	tnt, ok := tenant.FromContext(ctx)
+	if !ok {
+		return errors.Unauthorized(method, "Unauthorized")
+	}
+
+	if len(req.Name) == 0 {
+		return errors.BadRequest(method, "Missing name")
+	}
+
+	name := req.Name
+
+	objectName := fmt.Sprintf("%s/%s", tnt, name)
+
+	_, err := s.client.HeadObject(&sthree.HeadObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if ok && aerr.Code() == "NotFound" {
+			return errors.BadRequest(method, "Object not found")
+		}
+		log.Errorf("Error s3 %s", err)
+		return errors.InternalServerError(method, "Error reading object")
+	}
+
+	gooreq, _ := s.client.GetObjectRequest(&sthree.GetObjectInput{
+		Bucket: aws.String(s.conf.SpaceName),
+		Key:    aws.String(objectName),
+	})
+	urlStr, err := gooreq.Presign(5 * time.Second)
+	if err != nil {
+		aerr, ok := err.(awserr.Error)
+		if ok && aerr.Code() == "NoSuchKey" {
+			return errors.BadRequest(method, "Object not found")
+		}
+		log.Errorf("Error presigning url %s", err)
+		return errors.InternalServerError(method, "Error reading object")
+	}
+
+	// replace hostname or url with our base
+	split := strings.SplitN(urlStr, s.conf.Endpoint, 2)
+	urlStr = s.conf.BaseURL + split[1]
+
+	// set response url
+	rsp.Url = urlStr
+
+	return nil
+}
+
 func (s Space) Upload(ctx context.Context, request *pb.UploadRequest, response *pb.UploadResponse) error {
 	method := "space.Upload"
 	tnt, ok := tenant.FromContext(ctx)

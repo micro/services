@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	srv := service.New()
+
 	go func() {
 		for {
 			logger.Infof("This is a log line %s", time.Now())
@@ -15,5 +17,5 @@ func main() {
 		}
 	}()
 
-	service.Run()
+	srv.Run()
 }
