@@ -686,5 +686,5 @@ gorm.io/gorm v1.24.1-0.20221019064659-5dd2bb482755/go.mod h1:DVrVomtaYTbqs7gB/x2
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt0JzvZhAg=
-micro.dev/v4 v4.0.0-20230711133525-bd1ed7c0892a h1:4dTyTHagz+qbCbfrZsB8HXzpfhQAwi3tlWESXbiTq+Q=
-micro.dev/v4 v4.0.0-20230711133525-bd1ed7c0892a/go.mod h1:or6kPbX/anUDJMISOr8EY+vRJqiGhR6B699W5r3ZBnU=
+micro.dev/v4 v4.0.0-alpha.0.20230713084305-2a3944bd2428 h1:diiHITXq+W3itg7M/zyzdcMIuGlXNkGukb7UD7gmd0I=
+micro.dev/v4 v4.0.0-alpha.0.20230713084305-2a3944bd2428/go.mod h1:or6kPbX/anUDJMISOr8EY+vRJqiGhR6B699W5r3ZBnU=

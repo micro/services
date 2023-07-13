@@ -13,7 +13,7 @@ import (
 	chat "github.com/micro/services/test/chat/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"micro.dev/v4/service"
-	"micro.dev/v4/service/context/metadata"
+	metadata "micro.dev/v4/service/context"
 	"micro.dev/v4/service/logger"
 )
 

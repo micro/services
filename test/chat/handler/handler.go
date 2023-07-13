@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"micro.dev/v4/service/context/metadata"
+	metadata "micro.dev/v4/service/context"
 	"micro.dev/v4/service/errors"
 	"micro.dev/v4/service/events"
 	"micro.dev/v4/service/logger"
