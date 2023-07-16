@@ -62,7 +62,7 @@ require (
 	gorm.io/datatypes v1.0.1
 	gorm.io/driver/postgres v1.4.5
 	gorm.io/gorm v1.24.1-0.20221019064659-5dd2bb482755
-	micro.dev/v4 v4.0.0-alpha.0.20230713133727-abe7bb38fb9e
+	micro.dev/v4 v4.1.0-alpha.0.20230716171658-8e9d5bb6fb57
 )
 
 require (
