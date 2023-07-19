@@ -62,7 +62,7 @@ require (
 	gorm.io/datatypes v1.0.1
 	gorm.io/driver/postgres v1.4.5
 	gorm.io/gorm v1.24.1-0.20221019064659-5dd2bb482755
-	micro.dev/v4 v4.1.0-alpha.0.20230716171658-8e9d5bb6fb57
+	micro.dev/v4 v4.2.0-alpha
 )
 
 require (
@@ -110,6 +110,7 @@ require (
 	github.com/klauspost/compress v1.13.5 // indirect
 	github.com/likexian/gokit v0.25.9 // indirect
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a // indirect
+	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	github.com/nightlyone/lockfile v1.0.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.8.0 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
@@ -119,7 +120,6 @@ require (
 	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/teamwork/test v0.0.0-20200108114543-02621bae84ad // indirect
 	github.com/teamwork/utils v0.0.0-20211103135549-f7e7a68ba696 // indirect
@@ -145,4 +145,5 @@ require (
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gorm.io/driver/sqlite v1.4.3 // indirect
 )
