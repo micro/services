@@ -44,7 +44,7 @@ func New() *Memegen {
 
 type TemplateRequest struct {
 	Success bool `json:"success"`
-	Data    Data `json:":data"`
+	Data    Data `json:"data"`
 }
 
 type Data struct {
