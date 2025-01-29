@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	log "micro.dev/v4/service/logger"
-	store "micro.dev/v4/service/store"
+	log "github.com/micro/micro/v5/service/logger"
+	store "github.com/micro/micro/v5/service/store"
 
 	pb "github.com/micro/services/test/kv/proto"
 )

@@ -10,8 +10,8 @@ import (
 	"image/png"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v5/service/errors"
 	"github.com/o1egl/govatar"
-	"micro.dev/v4/service/errors"
 
 	pb "github.com/micro/services/avatar/proto"
 	imagePb "github.com/micro/services/image/proto"

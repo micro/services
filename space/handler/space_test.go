@@ -9,11 +9,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	sthree "github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
+	"github.com/micro/micro/v5/service/auth"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/store"
+	"github.com/micro/micro/v5/service/store/memory"
 	pb "github.com/micro/services/space/proto"
-	"micro.dev/v4/service/auth"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/store"
-	"micro.dev/v4/service/store/memory"
 
 	. "github.com/onsi/gomega"
 )

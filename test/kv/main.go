@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/micro/services/test/kv/handler"
 
-	"micro.dev/v4/service"
+	"github.com/micro/micro/v5/service"
 )
 
 func main() {

@@ -9,11 +9,11 @@ import (
 	"github.com/micro/services/ip/handler"
 	pb "github.com/micro/services/ip/proto"
 
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/config"
+	"github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 	"github.com/oschwald/geoip2-golang"
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/config"
-	"micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
 )
 
 // loadFile from the blob store

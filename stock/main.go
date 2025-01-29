@@ -6,10 +6,10 @@ import (
 	"github.com/micro/services/stock/handler"
 	pb "github.com/micro/services/stock/proto"
 
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/config"
+	"github.com/micro/micro/v5/service/logger"
 	"github.com/patrickmn/go-cache"
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/config"
-	"micro.dev/v4/service/logger"
 )
 
 func main() {

@@ -8,12 +8,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/micro/micro/v5/service/auth"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/migrator"
 	"gorm.io/gorm/schema"
-	"micro.dev/v4/service/auth"
 )
 
 type Helper struct {

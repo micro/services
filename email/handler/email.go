@@ -10,15 +10,15 @@ import (
 	"net/mail"
 	"regexp"
 
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/client"
+	"github.com/micro/micro/v5/service/config"
+	"github.com/micro/micro/v5/service/errors"
+	log "github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 	pb "github.com/micro/services/email/proto"
 	"github.com/micro/services/pkg/tenant"
 	spampb "github.com/micro/services/spam/proto"
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/client"
-	"micro.dev/v4/service/config"
-	"micro.dev/v4/service/errors"
-	log "micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
 )
 
 const (

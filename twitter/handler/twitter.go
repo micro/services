@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/dghubble/go-twitter/twitter"
+	"github.com/micro/micro/v5/service/config"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
 	pb "github.com/micro/services/twitter/proto"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
-	"micro.dev/v4/service/config"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
 )
 
 type Twitter struct {

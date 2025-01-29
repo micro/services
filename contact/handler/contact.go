@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
 
 	"github.com/micro/services/contact/domain"
 	pb "github.com/micro/services/contact/proto"

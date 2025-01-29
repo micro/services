@@ -8,15 +8,15 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/micro/micro/v5/service/errors"
 	"github.com/robfig/cron/v3"
-	"micro.dev/v4/service/errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"micro.dev/v4/service/config"
-	log "micro.dev/v4/service/logger"
+	"github.com/micro/micro/v5/service/config"
+	log "github.com/micro/micro/v5/service/logger"
 
 	evchargers "github.com/micro/services/evchargers/proto"
 )

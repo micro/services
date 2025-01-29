@@ -7,11 +7,11 @@ import (
 	"hash/fnv"
 	"strings"
 
+	"github.com/micro/micro/v5/service/errors"
+	log "github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
-	"micro.dev/v4/service/errors"
-	log "micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
 
 	"github.com/micro/services/pkg/tenant"
 	pb "github.com/micro/services/rss/proto"

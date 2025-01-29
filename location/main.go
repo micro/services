@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
+	"github.com/micro/micro/v5/service"
 	"github.com/micro/services/location/handler"
 	pb "github.com/micro/services/location/proto"
 	admin "github.com/micro/services/pkg/service/proto"
-	"micro.dev/v4/service"
 )
 
 func main() {

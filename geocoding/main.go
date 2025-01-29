@@ -4,10 +4,10 @@ import (
 	"github.com/micro/services/geocoding/handler"
 	pb "github.com/micro/services/geocoding/proto"
 
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/config"
+	"github.com/micro/micro/v5/service/logger"
 	"googlemaps.github.io/maps"
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/config"
-	"micro.dev/v4/service/logger"
 )
 
 func main() {

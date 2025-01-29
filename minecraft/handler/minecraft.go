@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/iverly/go-mcping/mcping"
+	"github.com/micro/micro/v5/service/errors"
 	pb "github.com/micro/services/minecraft/proto"
-	"micro.dev/v4/service/errors"
 )
 
 type Minecraft struct{}

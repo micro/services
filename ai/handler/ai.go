@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
+	"github.com/micro/micro/v5/service/config"
+	"github.com/micro/micro/v5/service/errors"
+	log "github.com/micro/micro/v5/service/logger"
 	pb "github.com/micro/services/ai/proto"
 	"github.com/micro/services/pkg/api"
 	"github.com/micro/services/pkg/tenant"
-	"micro.dev/v4/service/config"
-	"micro.dev/v4/service/errors"
-	log "micro.dev/v4/service/logger"
 )
 
 type Ai struct{}

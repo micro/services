@@ -1,15 +1,15 @@
 package main
 
 import (
+	"github.com/micro/micro/v5/service/store"
 	admin "github.com/micro/services/pkg/service/proto"
-	"micro.dev/v4/service/store"
 
 	"github.com/micro/services/contact/domain"
 	"github.com/micro/services/contact/handler"
 	pb "github.com/micro/services/contact/proto"
 
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/logger"
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/logger"
 )
 
 func main() {

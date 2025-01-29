@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/logger"
 	pb "github.com/micro/services/test/pubsub/proto"
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/logger"
 )
 
 // Pub will publish messages every second

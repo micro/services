@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
 	db "github.com/micro/services/db/proto"
 	pauth "github.com/micro/services/pkg/auth"
 	gorm2 "github.com/micro/services/pkg/gorm"
@@ -18,8 +20,6 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
 )
 
 const idKey = "id"

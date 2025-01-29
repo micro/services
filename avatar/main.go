@@ -5,8 +5,8 @@ import (
 	pb "github.com/micro/services/avatar/proto"
 	imagePb "github.com/micro/services/image/proto"
 
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/logger"
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/logger"
 )
 
 func main() {

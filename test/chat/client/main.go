@@ -10,11 +10,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v5/service"
+	metadata "github.com/micro/micro/v5/service/context"
+	"github.com/micro/micro/v5/service/logger"
 	chat "github.com/micro/services/test/chat/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"micro.dev/v4/service"
-	metadata "micro.dev/v4/service/context"
-	"micro.dev/v4/service/logger"
 )
 
 var (

@@ -12,10 +12,10 @@ import (
 	"time"
 
 	"github.com/hashicorp/golang-lru"
+	"github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 	"github.com/micro/services/pkg/tenant"
 	"github.com/peterbourgon/diskv/v3"
-	"micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
 )
 
 type Cache interface {

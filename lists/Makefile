@@ -9,8 +9,8 @@ api:
 init:
 	go get -u github.com/golang/protobuf/proto
 	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get micro.dev/v4/cmd/protoc-gen-micro
-	go get micro.dev/v4/cmd/protoc-gen-openapi
+	go get github.com/micro/micro/v5/cmd/protoc-gen-micro
+	go get github.com/micro/micro/v5/cmd/protoc-gen-openapi
 
 .PHONY: proto
 proto:

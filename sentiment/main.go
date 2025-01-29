@@ -4,8 +4,8 @@ import (
 	"github.com/micro/services/sentiment/handler"
 	pb "github.com/micro/services/sentiment/proto"
 
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/logger"
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/logger"
 )
 
 func main() {

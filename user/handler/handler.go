@@ -10,13 +10,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 	pauth "github.com/micro/services/pkg/auth"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
 	"golang.org/x/crypto/bcrypt"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
 
 	otp "github.com/micro/services/otp/proto"
 	"github.com/micro/services/user/domain"

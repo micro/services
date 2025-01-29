@@ -6,13 +6,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/micro/micro/v5/service/errors"
+	log "github.com/micro/micro/v5/service/logger"
 	pb "github.com/micro/services/cache/proto"
 	pauth "github.com/micro/services/pkg/auth"
 	"github.com/micro/services/pkg/cache"
 	adminpb "github.com/micro/services/pkg/service/proto"
 	"github.com/micro/services/pkg/tenant"
-	"micro.dev/v4/service/errors"
-	log "micro.dev/v4/service/logger"
 )
 
 type Cache struct{}

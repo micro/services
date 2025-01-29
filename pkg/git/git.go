@@ -29,9 +29,9 @@ import (
 	"regexp"
 	"strings"
 
+	log "github.com/micro/micro/v5/service/logger"
 	"github.com/teris-io/shortid"
 	"github.com/xanzy/go-gitlab"
-	log "micro.dev/v4/service/logger"
 )
 
 const CredentialsKey = "GIT_CREDENTIALS"

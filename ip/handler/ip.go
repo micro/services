@@ -4,10 +4,10 @@ import (
 	"context"
 	"net"
 
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
 	pb "github.com/micro/services/ip/proto"
 	geoip2 "github.com/oschwald/geoip2-golang"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
 )
 
 type Ip struct {

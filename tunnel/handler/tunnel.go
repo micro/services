@@ -12,11 +12,11 @@ import (
 	"path"
 	"strings"
 
+	"github.com/micro/micro/v5/service/config"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 	pb "github.com/micro/services/tunnel/proto"
-	"micro.dev/v4/service/config"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
 )
 
 type Tunnel struct {

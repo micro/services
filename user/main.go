@@ -1,9 +1,9 @@
 package main
 
 import (
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 
 	otp "github.com/micro/services/otp/proto"
 	adminpb "github.com/micro/services/pkg/service/proto"

@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/micro/micro/v5/service/client"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
 	iproto "github.com/micro/services/image/proto"
 	thumbnail "github.com/micro/services/thumbnail/proto"
-	"micro.dev/v4/service/client"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
 )
 
 const screenshotPath = "/usr/src/app"

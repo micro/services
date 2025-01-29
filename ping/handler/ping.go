@@ -10,9 +10,9 @@ import (
 	"net/url"
 
 	"github.com/go-ping/ping"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
 	pb "github.com/micro/services/ping/proto"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
 )
 
 type Ping struct{}

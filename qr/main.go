@@ -5,8 +5,8 @@ import (
 	"github.com/micro/services/qr/handler"
 	pb "github.com/micro/services/qr/proto"
 
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/logger"
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/logger"
 )
 
 func main() {

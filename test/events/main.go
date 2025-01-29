@@ -4,10 +4,10 @@ import (
 	"sync"
 	"time"
 
-	"micro.dev/v4/service"
-	"micro.dev/v4/service/events"
-	goevents "micro.dev/v4/service/events"
-	"micro.dev/v4/service/logger"
+	"github.com/micro/micro/v5/service"
+	"github.com/micro/micro/v5/service/events"
+	goevents "github.com/micro/micro/v5/service/events"
+	"github.com/micro/micro/v5/service/logger"
 )
 
 type testPayload struct {

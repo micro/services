@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/micro/micro/v5/service/store"
 	"github.com/pkg/errors"
-	"micro.dev/v4/service/store"
 
 	pb "github.com/micro/services/contact/proto"
 	"github.com/micro/services/pkg/tenant"

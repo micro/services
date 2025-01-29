@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/micro/micro/v5/service/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"micro.dev/v4/service/logger"
 )
 
 func (e *Evchargers) loadPOIData(r io.Reader) (int, error) {

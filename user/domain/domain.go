@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"micro.dev/v4/service/config"
-	microerr "micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
+	"github.com/micro/micro/v5/service/config"
+	microerr "github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 
 	"github.com/micro/services/pkg/cache"
 	user "github.com/micro/services/user/proto"

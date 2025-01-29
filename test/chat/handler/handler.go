@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	metadata "github.com/micro/micro/v5/service/context"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/events"
+	"github.com/micro/micro/v5/service/logger"
+	"github.com/micro/micro/v5/service/store"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	metadata "micro.dev/v4/service/context"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/events"
-	"micro.dev/v4/service/logger"
-	"micro.dev/v4/service/store"
 
 	// it's standard to import the services own proto under the alias pb
 	pb "github.com/micro/services/test/chat/proto"

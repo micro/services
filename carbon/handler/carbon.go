@@ -3,11 +3,11 @@ package handler
 import (
 	"context"
 
+	"github.com/micro/micro/v5/service/config"
+	"github.com/micro/micro/v5/service/errors"
+	"github.com/micro/micro/v5/service/logger"
 	"github.com/micro/services/carbon/domain"
 	"github.com/micro/services/pkg/api"
-	"micro.dev/v4/service/config"
-	"micro.dev/v4/service/errors"
-	"micro.dev/v4/service/logger"
 
 	pb "github.com/micro/services/carbon/proto"
 )
