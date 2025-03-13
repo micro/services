@@ -1,6 +1,6 @@
 module github.com/micro/services
 
-go 1.20
+go 1.24.1
 
 require (
 	cloud.google.com/go/translate v1.10.1
