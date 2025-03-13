@@ -4,8 +4,6 @@ on: [push, pull_request]
 jobs:
   test:
     name: Test repo
-    runs-on: ubuntu-latest
-    container: node:10.18-jessie
     services:
       postgres:
         image: postgres:12.4
