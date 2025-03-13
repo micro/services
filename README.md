@@ -8,14 +8,6 @@ Micro services provide the fundamental building blocks for any products, apps or
 or combined to create powerful distributed systems. The services are intended to be consumed by each other using RPC 
 and externally through the Micro API.
 
-## Rationale
-
-Read more about the reason for Micro Services in [this blog post](https://micro.dev/blog/2022/09/27/real-world-micro-services.html).
-
-## Interfaces
-
-Every service starts with a protobuf interface definition, which is a standard used by Google and everyone else now that gRPC is so dominant. The idea is to define the API in protobuf, code generate and implement the handlers for it. The services can be called by other services on the platform using those code generated clients or an API Gateway, which Micro provides. External calls via the API use the same format but with HTTP/JSON endpoints.
-
 ## Services
 
 Services available thus far:
