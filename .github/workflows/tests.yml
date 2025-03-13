@@ -22,7 +22,7 @@ jobs:
           --health-retries 5
     steps:
       - name: Set up Go 1.24.1
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v5
         with:
           go-version: 1.24.1
         id: go
